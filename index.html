@@ -581,31 +581,17 @@
                     <p style="margin-top: 10px; color: #6c757d; font-size: 0.9rem;">This is the control ID for your Overlays.uno overlay</p>
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <p><strong>API Overlays.uno:</strong> <span class="template-id">Connexion directe active</span></p>
-                    <p style="margin-top: 10px; color: #6c757d; font-size: 0.9rem;">✅ Overlay ID: 6598bc8e-c088-43ba-a830-d24222614f4f</p>
-                    <p style="margin-top: 5px; color: #6c757d; font-size: 0.9rem;">✅ Slot ID: buWE7SvXZjFHYyE1HxcX9W (Text)</p>
-                </div>
-                
-                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #4facfe;">
-                    <h4 style="margin-bottom: 15px;">API Testing</h4>
-                    <button class="btn-primary" onclick="testGetOverlays()" style="margin-right: 10px; margin-bottom: 10px;">
-                        Get Overlays List
-                    </button>
-                    <button class="btn-primary" onclick="testGetOverlayModel()" style="margin-bottom: 10px;">
-                        Get Overlay Structure
-                    </button>
-                    <div id="apiTestResult" style="margin-top: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; display: none; max-height: 400px; overflow-y: auto;">
-                        <h5>API Response:</h5>
-                        <pre id="apiTestContent" style="white-space: pre-wrap; word-wrap: break-word; font-size: 0.85rem;"></pre>
-                    </div>
+                    <p><strong>API Overlays.uno:</strong> <span class="template-id">Direct Connection Active</span></p>
+                    <p style="margin-top: 10px; color: #6c757d; font-size: 0.9rem;">✅ Connected directly to Overlays.uno API</p>
+                    <p style="margin-top: 5px; color: #6c757d; font-size: 0.9rem;">✅ No backend relay required</p>
                 </div>
                 
                 <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #28a745;">
                     <h4 style="margin-bottom: 10px;">Configuration</h4>
                     <ul style="margin-left: 20px; color: #495057;">
-                        <li>Vercel Relay Backend</li>
+                        <li>Direct API Connection</li>
                         <li>Template ID: 4fLVHu7eHUBPzBuFJ7mXWH</li>
-                        <li>Direct API Integration</li>
+                        <li>Browser-based requests</li>
                     </ul>
                 </div>
             </div>
@@ -613,7 +599,7 @@
     </div>
 
     <script>
-        // Store content in memory (not localStorage)
+        // Store content in memory
         let contentStore = [];
         let overlayStates = {};
         
@@ -639,38 +625,33 @@
             }
         }
 
-       async function sendToOverlay(command, payload = {}) {
-    try {
-        const body = {
-            command: command,
-            ...payload
-        };
+        async function sendToOverlay(command, payload = {}) {
+            try {
+                const body = {
+                    command: command,
+                    ...payload
+                };
 
-        const response = await fetch(OVERLAY_API_URL, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Api-Key': TEMPLATE_ID,
-                'Authorization': `Bearer ${TEMPLATE_ID}`
-            },
-            body: JSON.stringify(body)
-        });
+                console.log('Sending to Overlays.uno:', body);
 
-        const result = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(result.error || `HTTP ${response.status}`);
-        }
+                const response = await fetch(OVERLAY_API_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Api-Key': TEMPLATE_ID,
+                        'Authorization': `Bearer ${TEMPLATE_ID}`
+                    },
+                    body: JSON.stringify(body)
+                });
 
-        console.log(`${command} successful:`, result);
-        return result;
-    } catch (error) {
-        console.error(`${command} failed:`, error);
-        throw error;
-    }
-}
+                const result = await response.json();
+                
+                console.log('Response from Overlays.uno:', result);
 
-                console.log(`${command} successful:`, result);
+                if (!response.ok) {
+                    throw new Error(result.error || `HTTP ${response.status}`);
+                }
+
                 return result;
             } catch (error) {
                 console.error(`${command} failed:`, error);
@@ -862,40 +843,6 @@
                 submitBtn.style.display = 'inline-block';
             }
         });
-
-        async function testGetOverlays() {
-            const resultDiv = document.getElementById('apiTestResult');
-            const contentDiv = document.getElementById('apiTestContent');
-            
-            if (!resultDiv || !contentDiv) return;
-            
-            resultDiv.style.display = 'block';
-            contentDiv.textContent = 'Testing Vercel Relay...';
-            
-            try {
-                const result = await sendToOverlay('GetOverlays');
-                contentDiv.textContent = JSON.stringify(result, null, 2);
-            } catch (error) {
-                contentDiv.textContent = 'Error: ' + error.message;
-            }
-        }
-
-        async function testGetOverlayModel() {
-            const resultDiv = document.getElementById('apiTestResult');
-            const contentDiv = document.getElementById('apiTestContent');
-            
-            if (!resultDiv || !contentDiv) return;
-            
-            resultDiv.style.display = 'block';
-            contentDiv.textContent = 'Testing Vercel Relay...';
-            
-            try {
-                const result = await sendToOverlay('GetOverlayModels');
-                contentDiv.textContent = JSON.stringify(result, null, 2);
-            } catch (error) {
-                contentDiv.textContent = 'Error: ' + error.message;
-            }
-        }
 
         document.addEventListener('DOMContentLoaded', function() {
             displayContentCards();
