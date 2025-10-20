@@ -838,18 +838,15 @@
                     timestamp: new Date().toLocaleString()
                 };
 
-                // Send content to the specific overlay
+                // Send content to the specific overlay with correct field names
                 await sendToOverlay('SetOverlayContent', {
                     id: OVERLAY_ID,
                     content: {
-                        "1": titleValue,
-                        "2": subtitleValue,
-                        "3": textValue,
-                        "4": "",
-                        "5": "",
-                        "6": "",
-                        "7": "",
-                        "8": ""
+                        "Text Active": true,
+                        "Title": titleValue,
+                        "Subtitle": subtitleValue,
+                        "Text": textValue,
+                        "Lines": 10
                     }
                 });
 
