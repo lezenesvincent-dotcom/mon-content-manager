@@ -634,7 +634,10 @@
 
                 console.log('Sending to Overlays.uno:', body);
 
-                const response = await fetch(OVERLAY_API_URL, {
+                // Use CORS proxy to bypass browser restrictions
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(OVERLAY_API_URL);
+
+                const response = await fetch(proxyUrl, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
