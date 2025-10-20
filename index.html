@@ -639,26 +639,36 @@
             }
         }
 
-        async function sendToOverlay(command, payload = {}) {
-            try {
-                const body = {
-                    command: command,
-                    ...payload
-                };
+       async function sendToOverlay(command, payload = {}) {
+    try {
+        const body = {
+            command: command,
+            ...payload
+        };
 
-                const response = await fetch(VERCEL_RELAY, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(body)
-                });
+        const response = await fetch(OVERLAY_API_URL, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Api-Key': TEMPLATE_ID,
+                'Authorization': `Bearer ${TEMPLATE_ID}`
+            },
+            body: JSON.stringify(body)
+        });
 
-                const result = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(result.error || `HTTP ${response.status}`);
-                }
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || `HTTP ${response.status}`);
+        }
+
+        console.log(`${command} successful:`, result);
+        return result;
+    } catch (error) {
+        console.error(`${command} failed:`, error);
+        throw error;
+    }
+}
 
                 console.log(`${command} successful:`, result);
                 return result;
