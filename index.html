@@ -586,6 +586,20 @@
                     <p style="margin-top: 5px; color: #6c757d; font-size: 0.9rem;">✅ No backend relay required</p>
                 </div>
                 
+                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #4facfe;">
+                    <h4 style="margin-bottom: 15px;">API Testing</h4>
+                    <button class="btn-primary" onclick="testGetOverlays()" style="margin-right: 10px; margin-bottom: 10px;">
+                        Get Overlays List
+                    </button>
+                    <button class="btn-primary" onclick="testGetOverlayModel()" style="margin-bottom: 10px;">
+                        Get Overlay Structure
+                    </button>
+                    <div id="apiTestResult" style="margin-top: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; display: none; max-height: 400px; overflow-y: auto;">
+                        <h5>API Response:</h5>
+                        <pre id="apiTestContent" style="white-space: pre-wrap; word-wrap: break-word; font-size: 0.85rem;"></pre>
+                    </div>
+                </div>
+                
                 <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #28a745;">
                     <h4 style="margin-bottom: 10px;">Configuration</h4>
                     <ul style="margin-left: 20px; color: #495057;">
@@ -700,7 +714,7 @@
 
         async function showOverlay(contentId) {
             try {
-                await sendToOverlay('ShowOverlay', { id: contentId });
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
                 overlayStates[contentId] = { active: true, hidden: false };
                 displayContentCards();
                 showStatusMessage('Overlay shown successfully!', 'success');
@@ -712,7 +726,7 @@
 
         async function hideOverlay(contentId) {
             try {
-                await sendToOverlay('HideOverlay', { id: contentId });
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID });
                 overlayStates[contentId] = { active: false, hidden: true };
                 displayContentCards();
                 showStatusMessage('Overlay hidden successfully!', 'success');
@@ -885,6 +899,40 @@
                 });
             });
         });
+
+        async function testGetOverlays() {
+            const resultDiv = document.getElementById('apiTestResult');
+            const contentDiv = document.getElementById('apiTestContent');
+            
+            if (!resultDiv || !contentDiv) return;
+            
+            resultDiv.style.display = 'block';
+            contentDiv.textContent = 'Loading...';
+            
+            try {
+                const result = await sendToOverlay('GetOverlays');
+                contentDiv.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                contentDiv.textContent = 'Error: ' + error.message + '\n\nFull error:\n' + JSON.stringify(error, null, 2);
+            }
+        }
+
+        async function testGetOverlayModel() {
+            const resultDiv = document.getElementById('apiTestResult');
+            const contentDiv = document.getElementById('apiTestContent');
+            
+            if (!resultDiv || !contentDiv) return;
+            
+            resultDiv.style.display = 'block';
+            contentDiv.textContent = 'Loading...';
+            
+            try {
+                const result = await sendToOverlay('GetOverlayModels');
+                contentDiv.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                contentDiv.textContent = 'Error: ' + error.message + '\n\nFull error:\n' + JSON.stringify(error, null, 2);
+            }
+        }
     </script>
 </body>
 </html>
