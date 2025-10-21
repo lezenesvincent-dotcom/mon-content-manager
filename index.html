@@ -591,8 +591,11 @@
                     <button class="btn-primary" onclick="testGetOverlays()" style="margin-right: 10px; margin-bottom: 10px;">
                         Get Overlays List
                     </button>
-                    <button class="btn-primary" onclick="testGetOverlayModel()" style="margin-bottom: 10px;">
+                    <button class="btn-primary" onclick="testGetOverlayModel()" style="margin-right: 10px; margin-bottom: 10px;">
                         Get Overlay Structure
+                    </button>
+                    <button class="btn-primary" onclick="testCreateOverlay()" style="margin-bottom: 10px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        Test Create Overlay
                     </button>
                     <div id="apiTestResult" style="margin-top: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; display: none; max-height: 400px; overflow-y: auto;">
                         <h5>API Response:</h5>
@@ -928,6 +931,25 @@
                 contentDiv.textContent = JSON.stringify(result, null, 2);
             } catch (error) {
                 contentDiv.textContent = 'Error: ' + error.message + '\n\nFull error:\n' + JSON.stringify(error, null, 2);
+            }
+        }
+
+        async function testCreateOverlay() {
+            const resultDiv = document.getElementById('apiTestResult');
+            const contentDiv = document.getElementById('apiTestContent');
+            
+            if (!resultDiv || !contentDiv) return;
+            
+            resultDiv.style.display = 'block';
+            contentDiv.textContent = 'Testing CreateOverlay command...';
+            
+            try {
+                const result = await sendToOverlay('CreateOverlay', {
+                    name: "Test Auto Overlay " + Date.now()
+                });
+                contentDiv.textContent = '✅ SUCCESS! CreateOverlay is supported!\n\n' + JSON.stringify(result, null, 2);
+            } catch (error) {
+                contentDiv.textContent = '❌ CreateOverlay not supported or failed\n\nError: ' + error.message + '\n\nFull response:\n' + JSON.stringify(error, null, 2);
             }
         }
     </script>
