@@ -374,6 +374,155 @@
             font-weight: 500;
         }
 
+        /* Quick Edit Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUpModal 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+        }
+
+        @keyframes slideUpModal {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: #f8f9fa;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #e9ecef;
+            color: #333;
+            transform: rotate(90deg);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .btn-update {
+            flex: 1;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-duplicate {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-duplicate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-cancel {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 15px 30px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #e9ecef;
+            border-color: #4facfe;
+            color: #4facfe;
+        }
+
+        .edit-icon {
+            font-size: 1.2rem;
+        }
+
         .success-message {
             display: none;
             background: #d4edda;
@@ -768,6 +917,65 @@
         </div>
     </div>
 
+    <!-- Quick Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <span class="edit-icon">✏️</span>
+                    Quick Edit
+                </h2>
+                <button class="modal-close" onclick="closeEditModal()">×</button>
+            </div>
+            
+            <form id="editForm">
+                <input type="hidden" id="editContentId">
+                
+                <div class="form-group">
+                    <label for="editTitle" class="required">Title</label>
+                    <input type="text" id="editTitle" name="title" required 
+                           placeholder="Enter a compelling title">
+                </div>
+
+                <div class="form-group">
+                    <label for="editSubtitle" class="required">Subtitle</label>
+                    <input type="text" id="editSubtitle" name="subtitle" required 
+                           placeholder="Add a descriptive subtitle">
+                </div>
+
+                <div class="form-group">
+                    <label for="editText" class="required">Text Content</label>
+                    <textarea id="editText" name="text" required 
+                              placeholder="Write your main content here..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory" name="category">
+                        <option value="">Select a category</option>
+                        <option value="article">Article</option>
+                        <option value="blog">Blog Post</option>
+                        <option value="news">News</option>
+                        <option value="tutorial">Tutorial</option>
+                        <option value="review">Review</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-duplicate" onclick="duplicateContent()">
+                        📋 Duplicate
+                    </button>
+                    <button type="submit" class="btn-update">
+                        💾 Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Store content in memory
         let contentStore = [];
@@ -936,13 +1144,13 @@
             
             contentList.innerHTML = contentStore.map(content => {
                 return `
-                    <div class="content-card">
+                    <div class="content-card" ondblclick="openEditModal('${content.id}')">
                         <div class="card-header-actions">
                             <div class="overlay-id-display">
                                 ID: ${content.id}
                             </div>
                             <button class="btn-danger" 
-                                    onclick="deleteContent('${content.id}')"
+                                    onclick="event.stopPropagation(); deleteContent('${content.id}')"
                                     title="Delete this content item">
                                 DELETE
                             </button>
@@ -960,13 +1168,17 @@
                         
                         <div class="overlay-controls">
                             <button class="overlay-btn take" 
-                                    onclick="showOverlay('${content.id}')">
+                                    onclick="event.stopPropagation(); showOverlay('${content.id}')">
                                 SHOW
                             </button>
                             <button class="overlay-btn hide" 
-                                    onclick="hideOverlay('${content.id}')">
+                                    onclick="event.stopPropagation(); hideOverlay('${content.id}')">
                                 HIDE
                             </button>
+                        </div>
+                        
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #f8f9fa; text-align: center; font-size: 0.85rem; color: #6c757d; font-style: italic;">
+                            💡 Double-click to edit
                         </div>
                     </div>
                 `;
@@ -1148,6 +1360,148 @@
                 contentDiv.textContent = '❌ CreateOverlay not supported or failed\n\nError: ' + error.message + '\n\nFull response:\n' + JSON.stringify(error, null, 2);
             }
         }
+
+        // Quick Edit Modal Functions
+        function openEditModal(contentId) {
+            const content = contentStore.find(item => item.id === contentId);
+            if (!content) return;
+
+            // Fill form with existing data
+            document.getElementById('editContentId').value = contentId;
+            document.getElementById('editTitle').value = content.title || '';
+            document.getElementById('editSubtitle').value = content.subtitle || '';
+            document.getElementById('editText').value = content.text || '';
+            document.getElementById('editCategory').value = content.category || '';
+
+            // Show modal
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            document.getElementById('editForm').reset();
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('editModal');
+            if (e.target === modal) {
+                closeEditModal();
+            }
+        });
+
+        // Handle edit form submission
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const contentId = document.getElementById('editContentId').value;
+            const titleValue = document.getElementById('editTitle').value.trim();
+            const subtitleValue = document.getElementById('editSubtitle').value.trim();
+            const textValue = document.getElementById('editText').value.trim();
+            const categoryValue = document.getElementById('editCategory').value.trim();
+
+            if (!titleValue || !subtitleValue || !textValue) {
+                showStatusMessage('Please fill in all required fields', 'error');
+                return;
+            }
+
+            try {
+                // Update in contentStore
+                const contentIndex = contentStore.findIndex(item => item.id === contentId);
+                if (contentIndex !== -1) {
+                    contentStore[contentIndex] = {
+                        ...contentStore[contentIndex],
+                        title: titleValue,
+                        subtitle: subtitleValue,
+                        text: textValue,
+                        category: categoryValue,
+                        timestamp: new Date().toLocaleString()
+                    };
+                }
+
+                // Send updated content to overlay
+                await sendToOverlay('SetOverlayContent', {
+                    id: OVERLAY_ID,
+                    content: {
+                        "Text Active": true,
+                        "Title": titleValue,
+                        "Subtitle": subtitleValue,
+                        "Text": textValue,
+                        "Lines": 10
+                    }
+                });
+
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
+
+                // Update display
+                displayContentCards();
+                closeEditModal();
+                
+                showStatusMessage(`✨ "${titleValue}" updated successfully!`, 'success');
+            } catch (error) {
+                console.error('Update failed:', error);
+                showStatusMessage(`Failed to update: ${error.message}`, 'error');
+            }
+        });
+
+        // Duplicate content function
+        async function duplicateContent() {
+            const titleValue = document.getElementById('editTitle').value.trim();
+            const subtitleValue = document.getElementById('editSubtitle').value.trim();
+            const textValue = document.getElementById('editText').value.trim();
+            const categoryValue = document.getElementById('editCategory').value.trim();
+
+            if (!titleValue || !subtitleValue || !textValue) {
+                showStatusMessage('Please fill in all required fields', 'error');
+                return;
+            }
+
+            try {
+                const newContentId = Date.now().toString();
+                const newContent = {
+                    id: newContentId,
+                    title: titleValue + ' (Copy)',
+                    subtitle: subtitleValue,
+                    text: textValue,
+                    category: categoryValue,
+                    timestamp: new Date().toLocaleString()
+                };
+
+                contentStore.unshift(newContent);
+                
+                // Send to overlay
+                await sendToOverlay('SetOverlayContent', {
+                    id: OVERLAY_ID,
+                    content: {
+                        "Text Active": true,
+                        "Title": newContent.title,
+                        "Subtitle": subtitleValue,
+                        "Text": textValue,
+                        "Lines": 10
+                    }
+                });
+
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
+
+                displayContentCards();
+                closeEditModal();
+                
+                showStatusMessage(`📋 Content duplicated successfully!`, 'success');
+            } catch (error) {
+                console.error('Duplicate failed:', error);
+                showStatusMessage(`Failed to duplicate: ${error.message}`, 'error');
+            }
+        }
+
+        // Keyboard shortcut: Escape to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('editModal');
+                if (modal.classList.contains('show')) {
+                    closeEditModal();
+                }
+            }
+        });
     </script>
 </body>
 </html>
