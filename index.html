@@ -865,6 +865,141 @@
             opacity: 0.7;
         }
 
+        /* Project Styles */
+        .project-card {
+            background: white;
+            border: 2px solid #4facfe;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.2);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-toggle {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .project-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .project-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .project-badge {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #f8f9fa;
+        }
+
+        .project-contents {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .project-contents.expanded {
+            display: block;
+        }
+
+        .project-content-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .btn-add-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn-add-content:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .content-form-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4facfe;
+            position: relative;
+        }
+
+        .content-form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .content-form-title {
+            font-weight: 700;
+            color: #4facfe;
+        }
+
+        .btn-remove-content {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
         .timestamp {
             color: #6c757d;
             font-size: 0.85rem;
@@ -1042,83 +1177,62 @@
         <div id="create" class="tab-content active">
             <form id="contentForm">
                 <div class="template-info">
-                    <h3>Template Information</h3>
-                    <p>Template ID: <span class="template-id">4fLVHu7eHUBPzBuFJ7mXWH</span></p>
-                    <p class="field-hint">Your overlay is configured and ready to receive content updates.</p>
+                    <h3>Create New Project</h3>
+                    <p class="field-hint">Group multiple contents together in a single project.</p>
                 </div>
 
                 <div class="form-group">
-                    <label for="title" class="required">Title</label>
-                    <input type="text" id="title" name="title" required 
-                           placeholder="Enter a compelling title for your content">
-                    <div class="field-hint">The main heading that will appear on your overlay</div>
+                    <label for="projectName" class="required">Project Name</label>
+                    <input type="text" id="projectName" name="projectName" required 
+                           placeholder="e.g., Match PSG vs OM, News du jour">
+                    <div class="field-hint">Give your project a descriptive name</div>
                 </div>
 
-                <div class="form-group">
-                    <label for="subtitle" class="required">Subtitle</label>
-                    <input type="text" id="subtitle" name="subtitle" required 
-                           placeholder="Add a descriptive subtitle">
-                    <div class="field-hint">A supporting line that provides context</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="text" class="required">Text Content</label>
-                    <textarea id="text" name="text" required 
-                              placeholder="Write your main content here..."></textarea>
-                    <div class="field-hint">The main body of your content</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="category">Category</label>
-                    <select id="category" name="category">
-                        <option value="">Select a category</option>
-                        <option value="article">Article</option>
-                        <option value="blog">Blog Post</option>
-                        <option value="news">News</option>
-                        <option value="tutorial">Tutorial</option>
-                        <option value="review">Review</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn-primary">
-                    Create & Send to Overlay
-                </button>
-
-                <button type="button" class="preview-toggle-btn" onclick="togglePreview()">
-                    <span id="previewIcon">👁️</span>
-                    <span id="previewText">Show Preview</span>
-                </button>
-
-                <div class="preview-container" id="previewContainer">
-                    <div class="preview-header">
-                        <div class="preview-label">
-                            📺 Live Preview
-                            <span class="preview-live-indicator">
-                                <span class="preview-live-dot"></span>
-                                LIVE
-                            </span>
+                <div id="contentFormsContainer">
+                    <div class="content-form-group" data-content-index="0">
+                        <div class="content-form-header">
+                            <span class="content-form-title">Content #1</span>
                         </div>
-                    </div>
-                    <div class="preview-content">
-                        <div class="preview-title" id="previewTitle">Your title will appear here</div>
-                        <div class="preview-subtitle" id="previewSubtitle">Your subtitle will appear here</div>
-                        <div class="preview-text" id="previewText">Your content text will appear here...</div>
-                        <div class="preview-stats">
-                            <div class="preview-stat">
-                                <span class="preview-stat-label">Title:</span>
-                                <span id="titleCount">0</span> chars
-                            </div>
-                            <div class="preview-stat">
-                                <span class="preview-stat-label">Subtitle:</span>
-                                <span id="subtitleCount">0</span> chars
-                            </div>
-                            <div class="preview-stat">
-                                <span class="preview-stat-label">Text:</span>
-                                <span id="textCount">0</span> chars
-                            </div>
+
+                        <div class="form-group">
+                            <label class="required">Title</label>
+                            <input type="text" class="content-title" required 
+                                   placeholder="Enter title">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="required">Subtitle</label>
+                            <input type="text" class="content-subtitle" required 
+                                   placeholder="Enter subtitle">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="required">Text Content</label>
+                            <textarea class="content-text" required 
+                                      placeholder="Write your content here..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select class="content-category">
+                                <option value="">Select a category</option>
+                                <option value="article">Article</option>
+                                <option value="blog">Blog Post</option>
+                                <option value="news">News</option>
+                                <option value="tutorial">Tutorial</option>
+                                <option value="review">Review</option>
+                            </select>
                         </div>
                     </div>
                 </div>
+
+                <button type="button" class="btn-add-content" onclick="addContentForm()">
+                    ➕ Add Another Content to Project
+                </button>
+
+                <button type="submit" class="btn-primary" style="margin-top: 20px;">
+                    Create Project & Send All to Overlay
+                </button>
 
                 <div class="progress-container">
                     <div class="progress-bar" style="width: 0%"></div>
@@ -1132,7 +1246,7 @@
                 </div>
 
                 <div class="loading">
-                    Sending content to overlay...
+                    Sending project to overlay...
                 </div>
 
                 <div class="success-message">
@@ -1147,19 +1261,19 @@
 
         <div id="manage" class="tab-content">
             <div style="margin-bottom: 20px;">
-                <h3>Content Management</h3>
-                <p>View and control your overlay content directly.</p>
+                <h3>Projects Management</h3>
+                <p>View and control your projects with multiple contents.</p>
             </div>
             
-            <div id="contentList" class="content-grid">
-                <!-- Content cards will be populated here -->
+            <div id="projectList">
+                <!-- Project cards will be populated here -->
             </div>
 
             <div id="emptyState" class="empty-state">
-                <h4>No Content Yet</h4>
-                <p>Start creating content to see it appear here.</p>
+                <h4>No Projects Yet</h4>
+                <p>Start creating projects to see them appear here.</p>
                 <button class="btn-secondary" onclick="openTab(event, 'create')">
-                    Create Your First Content
+                    Create Your First Project
                 </button>
             </div>
         </div>
@@ -1221,6 +1335,12 @@
                 <input type="hidden" id="editContentId">
                 
                 <div class="form-group">
+                    <label for="editContentName" class="required">Content Name</label>
+                    <input type="text" id="editContentName" name="contentName" required 
+                           placeholder="Name for your reference">
+                </div>
+
+                <div class="form-group">
                     <label for="editTitle" class="required">Title</label>
                     <input type="text" id="editTitle" name="title" required 
                            placeholder="Enter a compelling title">
@@ -1268,7 +1388,9 @@
     <script>
         // Store content in memory
         let contentStore = [];
+        let projectStore = [];
         let overlayStates = {};
+        let currentProject = null;
         
         const TEMPLATE_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
         const OVERLAY_ID = '6598bc8e-c088-43ba-a830-d24222614f4f';
@@ -1440,8 +1562,13 @@
                 return `
                     <div class="content-card ${cardClass} ${isNew ? 'card-highlight' : ''}">
                         <div class="card-header-actions">
-                            <div class="overlay-id-display">
-                                ID: ${content.id}
+                            <div style="flex: 1;">
+                                <div style="font-size: 1.1rem; font-weight: 700; color: #4facfe; margin-bottom: 5px;">
+                                    ${content.name || 'Unnamed Content'}
+                                </div>
+                                <div class="overlay-id-display">
+                                    ID: ${content.id}
+                                </div>
                             </div>
                             ${getStatusBadge(status)}
                             <button class="btn-danger" 
@@ -1547,12 +1674,13 @@
             setTimeout(() => progressBar.style.width = '30%', 100);
             
             try {
+                const contentNameValue = document.getElementById('contentName').value.trim();
                 const titleValue = document.getElementById('title').value.trim();
                 const subtitleValue = document.getElementById('subtitle').value.trim();
                 const textValue = document.getElementById('text').value.trim();
                 const categoryValue = document.getElementById('category').value.trim();
                 
-                if (!titleValue || !subtitleValue || !textValue) {
+                if (!contentNameValue || !titleValue || !subtitleValue || !textValue) {
                     throw new Error('Please fill in all required fields');
                 }
                 
@@ -1564,6 +1692,7 @@
                 const contentId = Date.now().toString();
                 const contentData = {
                     id: contentId,
+                    name: contentNameValue,
                     title: titleValue,
                     subtitle: subtitleValue,
                     text: textValue,
@@ -1599,7 +1728,7 @@
                 checkmark.classList.add('show');
                 
                 // Vibrant success message
-                showStatusMessage(`🎉 "${titleValue}" sent successfully!`, 'success');
+                showStatusMessage(`🎉 "${contentNameValue}" sent successfully!`, 'success');
 
                 // Keep checkmark visible longer
                 setTimeout(() => {
@@ -1704,6 +1833,7 @@
 
             // Fill form with existing data
             document.getElementById('editContentId').value = contentId;
+            document.getElementById('editContentName').value = content.name || '';
             document.getElementById('editTitle').value = content.title || '';
             document.getElementById('editSubtitle').value = content.subtitle || '';
             document.getElementById('editText').value = content.text || '';
@@ -1731,12 +1861,13 @@
             e.preventDefault();
             
             const contentId = document.getElementById('editContentId').value;
+            const contentNameValue = document.getElementById('editContentName').value.trim();
             const titleValue = document.getElementById('editTitle').value.trim();
             const subtitleValue = document.getElementById('editSubtitle').value.trim();
             const textValue = document.getElementById('editText').value.trim();
             const categoryValue = document.getElementById('editCategory').value.trim();
 
-            if (!titleValue || !subtitleValue || !textValue) {
+            if (!contentNameValue || !titleValue || !subtitleValue || !textValue) {
                 showStatusMessage('Please fill in all required fields', 'error');
                 return;
             }
@@ -1747,6 +1878,7 @@
                 if (contentIndex !== -1) {
                     contentStore[contentIndex] = {
                         ...contentStore[contentIndex],
+                        name: contentNameValue,
                         title: titleValue,
                         subtitle: subtitleValue,
                         text: textValue,
@@ -1773,7 +1905,7 @@
                 displayContentCards();
                 closeEditModal();
                 
-                showStatusMessage(`✨ "${titleValue}" updated successfully!`, 'success');
+                showStatusMessage(`✨ "${contentNameValue}" updated successfully!`, 'success');
             } catch (error) {
                 console.error('Update failed:', error);
                 showStatusMessage(`Failed to update: ${error.message}`, 'error');
@@ -1782,12 +1914,13 @@
 
         // Duplicate content function
         async function duplicateContent() {
+            const contentNameValue = document.getElementById('editContentName').value.trim();
             const titleValue = document.getElementById('editTitle').value.trim();
             const subtitleValue = document.getElementById('editSubtitle').value.trim();
             const textValue = document.getElementById('editText').value.trim();
             const categoryValue = document.getElementById('editCategory').value.trim();
 
-            if (!titleValue || !subtitleValue || !textValue) {
+            if (!contentNameValue || !titleValue || !subtitleValue || !textValue) {
                 showStatusMessage('Please fill in all required fields', 'error');
                 return;
             }
@@ -1796,6 +1929,7 @@
                 const newContentId = Date.now().toString();
                 const newContent = {
                     id: newContentId,
+                    name: contentNameValue + ' (Copy)',
                     title: titleValue + ' (Copy)',
                     subtitle: subtitleValue,
                     text: textValue,
