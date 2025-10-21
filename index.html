@@ -785,36 +785,38 @@
         .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.85rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
             animation: fadeIn 0.3s ease-out;
+            flex-shrink: 0;
         }
 
         .status-badge.active {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
         }
 
         .status-badge.hidden {
             background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
         }
 
         .status-badge.inactive {
             background: #e9ecef;
             color: #6c757d;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .status-indicator {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             display: inline-block;
         }
@@ -1441,6 +1443,7 @@
                             <div class="overlay-id-display">
                                 ID: ${content.id}
                             </div>
+                            ${getStatusBadge(status)}
                             <button class="btn-danger" 
                                     onclick="deleteContent('${content.id}')"
                                     title="Delete this content item">
@@ -1448,11 +1451,7 @@
                             </button>
                         </div>
                         
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-                            <h4 style="margin: 0;">${content.title || 'Untitled'}</h4>
-                            ${getStatusBadge(status)}
-                        </div>
-                        
+                        <h4>${content.title || 'Untitled'}</h4>
                         <div class="subtitle">${content.subtitle || ''}</div>
                         <div class="text-preview">${content.text || ''}</div>
                         <div class="content-meta">
