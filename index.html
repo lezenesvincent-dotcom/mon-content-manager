@@ -235,12 +235,13 @@
         .progress-container {
             display: none;
             width: 100%;
-            height: 6px;
+            height: 8px;
             background: #e9ecef;
             border-radius: 10px;
             overflow: hidden;
             margin-top: 15px;
             position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .progress-bar {
@@ -249,7 +250,8 @@
             background-size: 200% 100%;
             animation: progressShine 1.5s ease-in-out infinite;
             border-radius: 10px;
-            transition: width 0.3s ease;
+            transition: width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.5);
         }
 
         @keyframes progressShine {
@@ -259,27 +261,27 @@
 
         .success-checkmark {
             display: none;
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             margin: 20px auto;
             position: relative;
         }
 
         .success-checkmark.show {
             display: block;
-            animation: scaleIn 0.5s ease-out;
+            animation: scaleInBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        @keyframes scaleIn {
+        @keyframes scaleInBounce {
             0% {
-                transform: scale(0);
+                transform: scale(0) rotate(-45deg);
                 opacity: 0;
             }
             50% {
-                transform: scale(1.1);
+                transform: scale(1.2) rotate(5deg);
             }
             100% {
-                transform: scale(1);
+                transform: scale(1) rotate(0deg);
                 opacity: 1;
             }
         }
@@ -287,10 +289,10 @@
         .checkmark-circle {
             stroke-dasharray: 166;
             stroke-dashoffset: 166;
-            stroke-width: 3;
+            stroke-width: 4;
             stroke: #28a745;
-            fill: none;
-            animation: strokeCircle 0.6s ease-out forwards;
+            fill: #d4edda;
+            animation: strokeCircle 0.8s ease-out forwards;
         }
 
         @keyframes strokeCircle {
@@ -304,9 +306,9 @@
             stroke-dasharray: 48;
             stroke-dashoffset: 48;
             stroke: #28a745;
-            stroke-width: 3;
+            stroke-width: 4;
             fill: none;
-            animation: strokeCheck 0.3s 0.6s ease-out forwards;
+            animation: strokeCheck 0.5s 0.8s ease-out forwards;
         }
 
         @keyframes strokeCheck {
@@ -685,7 +687,7 @@
                 </div>
 
                 <div class="success-checkmark">
-                    <svg width="80" height="80" viewBox="0 0 52 52">
+                    <svg width="100" height="100" viewBox="0 0 52 52">
                         <circle class="checkmark-circle" cx="26" cy="26" r="25"/>
                         <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
                     </svg>
@@ -1008,6 +1010,9 @@
                 
                 progressBar.style.width = '50%';
                 
+                // Pause visible pour voir la progression
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
                 const contentId = Date.now().toString();
                 const contentData = {
                     id: contentId,
@@ -1031,7 +1036,7 @@
                 });
 
                 progressBar.style.width = '80%';
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 600));
                 
                 await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
 
@@ -1040,20 +1045,22 @@
 
                 // Success animation
                 progressBar.style.width = '100%';
-                await new Promise(resolve => setTimeout(resolve, 300));
+                await new Promise(resolve => setTimeout(resolve, 400));
                 
                 progressContainer.style.display = 'none';
                 checkmark.classList.add('show');
                 
-                showStatusMessage(`"${titleValue}" sent successfully!`, 'success');
+                // Vibrant success message
+                showStatusMessage(`🎉 "${titleValue}" sent successfully!`, 'success');
 
+                // Keep checkmark visible longer
                 setTimeout(() => {
                     this.reset();
                     checkmark.classList.remove('show');
                     submitBtn.disabled = false;
                     submitBtn.style.opacity = '1';
                     progressBar.style.width = '0%';
-                }, 2000);
+                }, 3500);
                 
             } catch (error) {
                 console.error('Form submission error:', error);
