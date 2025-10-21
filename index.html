@@ -565,11 +565,32 @@
 
         .overlay-controls {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid #f8f9fa;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
+            color: white;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            grid-column: 1 / -1;
+        }
+
+        .btn-send:hover {
+            background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(255, 165, 0, 0.3);
         }
 
         .overlay-btn {
@@ -942,7 +963,7 @@
                 </div>
 
                 <button type="submit" class="btn-primary">
-                    Create & Send to Overlay
+                    💾 Create & Save
                 </button>
 
                 <div class="progress-container">
@@ -957,7 +978,7 @@
                 </div>
 
                 <div class="loading">
-                    Sending content to overlay...
+                    Saving content...
                 </div>
 
                 <div class="success-message">
@@ -1202,6 +1223,35 @@
             }, 4000);
         }
 
+        async function sendContentToOverlay(contentId) {
+            const content = contentStore.find(item => item.id === contentId);
+            if (!content) return;
+
+            try {
+                // Send content to overlay
+                await sendToOverlay('SetOverlayContent', {
+                    id: OVERLAY_ID,
+                    content: {
+                        "Text Active": true,
+                        "Title": content.title,
+                        "Subtitle": content.subtitle,
+                        "Text": content.text,
+                        "Lines": 10
+                    }
+                });
+
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
+
+                overlayStates[contentId] = { active: true, hidden: false };
+                displayContentCards();
+                
+                showStatusMessage(`📤 "${content.title}" sent to overlay!`, 'success');
+            } catch (error) {
+                console.error('Send to overlay failed:', error);
+                showStatusMessage('Failed to send to overlay: ' + error.message, 'error');
+            }
+        }
+
         async function showOverlay(contentId) {
             try {
                 await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
@@ -1290,18 +1340,19 @@
                         </div>
                         
                         <div class="overlay-controls">
+                            <button class="btn-send" 
+                                    onclick="sendContentToOverlay('${content.id}')"
+                                    title="Send this content to overlay">
+                                📤 SEND TO OVERLAY
+                            </button>
                             <button class="btn-edit" 
                                     onclick="openEditModal('${content.id}')"
                                     title="Edit this content">
                                 ✏️ EDIT
                             </button>
-                            <button class="overlay-btn take" 
-                                    onclick="showOverlay('${content.id}')">
-                                SHOW
-                            </button>
                             <button class="overlay-btn hide" 
                                     onclick="hideOverlay('${content.id}')">
-                                HIDE
+                                🙈 HIDE
                             </button>
                         </div>
                     </div>
@@ -1384,7 +1435,7 @@
                 progressBar.style.width = '50%';
                 
                 // Pause visible pour voir la progression
-                await new Promise(resolve => setTimeout(resolve, 800));
+                await new Promise(resolve => setTimeout(resolve, 600));
                 
                 const contentId = Date.now().toString();
                 const contentData = {
@@ -1396,25 +1447,9 @@
                     timestamp: new Date().toLocaleString()
                 };
 
-                // Send content to the specific overlay with correct field names
-                await sendToOverlay('SetOverlayContent', {
-                    id: OVERLAY_ID,
-                    content: {
-                        "Text Active": true,
-                        "Title": titleValue,
-                        "Subtitle": subtitleValue,
-                        "Text": textValue,
-                        "Lines": 10
-                    }
-                });
-
-                progressBar.style.width = '80%';
-                await new Promise(resolve => setTimeout(resolve, 600));
-                
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
-
+                // Just save to contentStore, don't send to overlay
                 contentStore.unshift(contentData);
-                overlayStates[contentId] = { active: true, hidden: false };
+                overlayStates[contentId] = { active: false, hidden: false };
 
                 // Success animation
                 progressBar.style.width = '100%';
@@ -1423,8 +1458,8 @@
                 progressContainer.style.display = 'none';
                 checkmark.classList.add('show');
                 
-                // Vibrant success message
-                showStatusMessage(`🎉 "${titleValue}" sent successfully!`, 'success');
+                // Success message
+                showStatusMessage(`💾 "${titleValue}" saved! Go to Manage to send it to overlay.`, 'success');
 
                 // Keep checkmark visible longer
                 setTimeout(() => {
@@ -1433,7 +1468,7 @@
                     submitBtn.disabled = false;
                     submitBtn.style.opacity = '1';
                     progressBar.style.width = '0%';
-                }, 3500);
+                }, 2500);
                 
             } catch (error) {
                 console.error('Form submission error:', error);
@@ -1488,16 +1523,75 @@
             if (!resultDiv || !contentDiv) return;
             
             resultDiv.style.display = 'block';
-            contentDiv.textContent = 'Testing CreateOverlay command...';
+            contentDiv.textContent = 'Testing multiple CreateOverlay approaches...\n\n';
             
+            // Test 1: Simple CreateOverlay
+            contentDiv.textContent += '--- Test 1: Simple CreateOverlay ---\n';
             try {
-                const result = await sendToOverlay('CreateOverlay', {
-                    name: "Test Auto Overlay " + Date.now()
+                const result1 = await sendToOverlay('CreateOverlay', {
+                    name: "Test Overlay " + Date.now()
                 });
-                contentDiv.textContent = '✅ SUCCESS! CreateOverlay is supported!\n\n' + JSON.stringify(result, null, 2);
+                contentDiv.textContent += '✅ Test 1 SUCCESS!\n' + JSON.stringify(result1, null, 2) + '\n\n';
+                return;
             } catch (error) {
-                contentDiv.textContent = '❌ CreateOverlay not supported or failed\n\nError: ' + error.message + '\n\nFull response:\n' + JSON.stringify(error, null, 2);
+                contentDiv.textContent += '❌ Test 1 Failed: ' + error.message + '\n\n';
             }
+            
+            // Test 2: CreateOverlay with templateId
+            contentDiv.textContent += '--- Test 2: With templateId ---\n';
+            try {
+                const result2 = await sendToOverlay('CreateOverlay', {
+                    templateId: TEMPLATE_ID,
+                    name: "Test Overlay " + Date.now()
+                });
+                contentDiv.textContent += '✅ Test 2 SUCCESS!\n' + JSON.stringify(result2, null, 2) + '\n\n';
+                return;
+            } catch (error) {
+                contentDiv.textContent += '❌ Test 2 Failed: ' + error.message + '\n\n';
+            }
+            
+            // Test 3: AddOverlay command
+            contentDiv.textContent += '--- Test 3: AddOverlay command ---\n';
+            try {
+                const result3 = await sendToOverlay('AddOverlay', {
+                    name: "Test Overlay " + Date.now()
+                });
+                contentDiv.textContent += '✅ Test 3 SUCCESS!\n' + JSON.stringify(result3, null, 2) + '\n\n';
+                return;
+            } catch (error) {
+                contentDiv.textContent += '❌ Test 3 Failed: ' + error.message + '\n\n';
+            }
+            
+            // Test 4: DuplicateOverlay from existing
+            contentDiv.textContent += '--- Test 4: DuplicateOverlay ---\n';
+            try {
+                const result4 = await sendToOverlay('DuplicateOverlay', {
+                    id: OVERLAY_ID,
+                    name: "Duplicate " + Date.now()
+                });
+                contentDiv.textContent += '✅ Test 4 SUCCESS!\n' + JSON.stringify(result4, null, 2) + '\n\n';
+                return;
+            } catch (error) {
+                contentDiv.textContent += '❌ Test 4 Failed: ' + error.message + '\n\n';
+            }
+            
+            // Test 5: CloneOverlay
+            contentDiv.textContent += '--- Test 5: CloneOverlay ---\n';
+            try {
+                const result5 = await sendToOverlay('CloneOverlay', {
+                    sourceId: OVERLAY_ID,
+                    name: "Clone " + Date.now()
+                });
+                contentDiv.textContent += '✅ Test 5 SUCCESS!\n' + JSON.stringify(result5, null, 2) + '\n\n';
+                return;
+            } catch (error) {
+                contentDiv.textContent += '❌ Test 5 Failed: ' + error.message + '\n\n';
+            }
+            
+            contentDiv.textContent += '\n❌ All tests failed. CreateOverlay is not supported by this template.\n\n';
+            contentDiv.textContent += 'Available alternatives:\n';
+            contentDiv.textContent += '1. Use the 3 existing slots (Text, Image, Image+Text)\n';
+            contentDiv.textContent += '2. Manually create overlays on Overlays.uno website';
         }
 
         // Quick Edit Modal Functions
