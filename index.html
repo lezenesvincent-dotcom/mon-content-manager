@@ -677,7 +677,7 @@
 
         .overlay-controls {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-top: 15px;
             padding-top: 15px;
@@ -714,6 +714,26 @@
         .overlay-btn.hide:hover {
             background: #c82333;
             transform: translateY(-1px);
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
         }
 
         .card-header-actions {
@@ -1144,13 +1164,13 @@
             
             contentList.innerHTML = contentStore.map(content => {
                 return `
-                    <div class="content-card" ondblclick="openEditModal('${content.id}')">
+                    <div class="content-card">
                         <div class="card-header-actions">
                             <div class="overlay-id-display">
                                 ID: ${content.id}
                             </div>
                             <button class="btn-danger" 
-                                    onclick="event.stopPropagation(); deleteContent('${content.id}')"
+                                    onclick="deleteContent('${content.id}')"
                                     title="Delete this content item">
                                 DELETE
                             </button>
@@ -1167,18 +1187,19 @@
                         </div>
                         
                         <div class="overlay-controls">
+                            <button class="btn-edit" 
+                                    onclick="openEditModal('${content.id}')"
+                                    title="Edit this content">
+                                ✏️ EDIT
+                            </button>
                             <button class="overlay-btn take" 
-                                    onclick="event.stopPropagation(); showOverlay('${content.id}')">
+                                    onclick="showOverlay('${content.id}')">
                                 SHOW
                             </button>
                             <button class="overlay-btn hide" 
-                                    onclick="event.stopPropagation(); hideOverlay('${content.id}')">
+                                    onclick="hideOverlay('${content.id}')">
                                 HIDE
                             </button>
-                        </div>
-                        
-                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #f8f9fa; text-align: center; font-size: 0.85rem; color: #6c757d; font-style: italic;">
-                            💡 Double-click to edit
                         </div>
                     </div>
                 `;
