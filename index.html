@@ -16,6 +16,11 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
 
         .container {
@@ -26,6 +31,12 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             animation: slideUp 0.6s ease-out;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode .container {
+            background: #1e1e2e;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         }
 
         @keyframes slideUp {
@@ -47,6 +58,33 @@
             position: relative;
         }
 
+        body.dark-mode .header {
+            background: linear-gradient(135deg, #2d4356 0%, #1f3c4d 100%);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(15deg) scale(1.1);
+        }
+
         .header h1 {
             font-size: 2.5rem;
             font-weight: 700;
@@ -62,6 +100,12 @@
             display: flex;
             background: #f8f9fa;
             border-bottom: 1px solid #e9ecef;
+            transition: background 0.3s ease;
+        }
+
+        body.dark-mode .tabs {
+            background: #2a2a3e;
+            border-bottom: 1px solid #3a3a4e;
         }
 
         .tab-button {
@@ -77,9 +121,18 @@
             position: relative;
         }
 
+        body.dark-mode .tab-button {
+            color: #9ca3af;
+        }
+
         .tab-button.active {
             color: #4facfe;
             background: white;
+        }
+
+        body.dark-mode .tab-button.active {
+            background: #1e1e2e;
+            color: #4facfe;
         }
 
         .tab-button::after {
@@ -102,6 +155,17 @@
             display: none;
             padding: 40px;
             animation: fadeIn 0.4s ease-out;
+            transition: background 0.3s ease;
+        }
+
+        body.dark-mode .tab-content {
+            color: #e5e7eb;
+        }
+
+        body.dark-mode h3,
+        body.dark-mode h4,
+        body.dark-mode label {
+            color: #e5e7eb;
         }
 
         .tab-content.active {
@@ -137,6 +201,19 @@
             background: #fff;
         }
 
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group textarea,
+        body.dark-mode .form-group select {
+            background: #2a2a3e;
+            border-color: #3a3a4e;
+            color: #e5e7eb;
+        }
+
+        body.dark-mode .form-group input::placeholder,
+        body.dark-mode .form-group textarea::placeholder {
+            color: #6b7280;
+        }
+
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
@@ -157,6 +234,15 @@
             border-radius: 10px;
             margin-bottom: 25px;
             border-left: 4px solid #4facfe;
+            transition: background 0.3s ease;
+        }
+
+        body.dark-mode .template-info {
+            background: #2a2a3e;
+        }
+
+        body.dark-mode .field-hint {
+            color: #9ca3af;
         }
 
         .template-id {
@@ -364,6 +450,24 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+        }
+
+        body.dark-mode .content-card {
+            background: #2a2a3e;
+            border-color: #3a3a4e;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .content-card h4 {
+            color: #e5e7eb;
+        }
+
+        body.dark-mode .content-card .subtitle {
+            color: #9ca3af;
+        }
+
+        body.dark-mode .content-card .text-preview {
+            color: #d1d5db;
         }
 
         .content-card::before {
@@ -664,6 +768,21 @@
             border-radius: 4px;
             flex-grow: 1;
             min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .overlay-id-display {
+            background: #3a3a4e;
+            color: #9ca3af;
+        }
+
+        body.dark-mode .modal-content {
+            background: #1e1e2e;
+        }
+
+        body.dark-mode .modal-title,
+        body.dark-mode .modal-content label {
+            color: #e5e7eb;
         }
 
         .toast-notification {
@@ -911,6 +1030,9 @@
 <body>
     <div class="container">
         <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
+                <span id="themeIcon">🌙</span>
+            </button>
             <h1>Content Management</h1>
             <p>Create and manage your content with Overlays.uno integration</p>
         </div>
@@ -1739,6 +1861,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             displayContentCards();
             
+            // Load theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+            
             // Add form validation
             const requiredFields = document.querySelectorAll('input[required], textarea[required]');
             requiredFields.forEach(field => {
@@ -1757,6 +1886,21 @@
                 });
             });
         });
+
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
     </script>
 </body>
 </html>
