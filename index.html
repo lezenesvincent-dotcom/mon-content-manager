@@ -16,11 +16,6 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            transition: background 0.3s ease;
-        }
-
-        body.dark-mode {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
 
         .container {
@@ -31,12 +26,6 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             animation: slideUp 0.6s ease-out;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        body.dark-mode .container {
-            background: #1e1e2e;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         }
 
         @keyframes slideUp {
@@ -58,33 +47,6 @@
             position: relative;
         }
 
-        body.dark-mode .header {
-            background: linear-gradient(135deg, #2d4356 0%, #1f3c4d 100%);
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(15deg) scale(1.1);
-        }
-
         .header h1 {
             font-size: 2.5rem;
             font-weight: 700;
@@ -100,12 +62,6 @@
             display: flex;
             background: #f8f9fa;
             border-bottom: 1px solid #e9ecef;
-            transition: background 0.3s ease;
-        }
-
-        body.dark-mode .tabs {
-            background: #2a2a3e;
-            border-bottom: 1px solid #3a3a4e;
         }
 
         .tab-button {
@@ -121,18 +77,9 @@
             position: relative;
         }
 
-        body.dark-mode .tab-button {
-            color: #9ca3af;
-        }
-
         .tab-button.active {
             color: #4facfe;
             background: white;
-        }
-
-        body.dark-mode .tab-button.active {
-            background: #1e1e2e;
-            color: #4facfe;
         }
 
         .tab-button::after {
@@ -155,17 +102,6 @@
             display: none;
             padding: 40px;
             animation: fadeIn 0.4s ease-out;
-            transition: background 0.3s ease;
-        }
-
-        body.dark-mode .tab-content {
-            color: #e5e7eb;
-        }
-
-        body.dark-mode h3,
-        body.dark-mode h4,
-        body.dark-mode label {
-            color: #e5e7eb;
         }
 
         .tab-content.active {
@@ -201,19 +137,6 @@
             background: #fff;
         }
 
-        body.dark-mode .form-group input,
-        body.dark-mode .form-group textarea,
-        body.dark-mode .form-group select {
-            background: #2a2a3e;
-            border-color: #3a3a4e;
-            color: #e5e7eb;
-        }
-
-        body.dark-mode .form-group input::placeholder,
-        body.dark-mode .form-group textarea::placeholder {
-            color: #6b7280;
-        }
-
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
@@ -234,15 +157,6 @@
             border-radius: 10px;
             margin-bottom: 25px;
             border-left: 4px solid #4facfe;
-            transition: background 0.3s ease;
-        }
-
-        body.dark-mode .template-info {
-            background: #2a2a3e;
-        }
-
-        body.dark-mode .field-hint {
-            color: #9ca3af;
         }
 
         .template-id {
@@ -450,24 +364,6 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-        }
-
-        body.dark-mode .content-card {
-            background: #2a2a3e;
-            border-color: #3a3a4e;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        body.dark-mode .content-card h4 {
-            color: #e5e7eb;
-        }
-
-        body.dark-mode .content-card .subtitle {
-            color: #9ca3af;
-        }
-
-        body.dark-mode .content-card .text-preview {
-            color: #d1d5db;
         }
 
         .content-card::before {
@@ -709,16 +605,6 @@
             letter-spacing: 0.5px;
         }
 
-        .overlay-btn.take {
-            background: #28a745;
-            color: white;
-        }
-
-        .overlay-btn.take:hover {
-            background: #218838;
-            transform: translateY(-1px);
-        }
-
         .overlay-btn.hide {
             background: #dc3545;
             color: white;
@@ -768,21 +654,6 @@
             border-radius: 4px;
             flex-grow: 1;
             min-width: 200px;
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .overlay-id-display {
-            background: #3a3a4e;
-            color: #9ca3af;
-        }
-
-        body.dark-mode .modal-content {
-            background: #1e1e2e;
-        }
-
-        body.dark-mode .modal-title,
-        body.dark-mode .modal-content label {
-            color: #e5e7eb;
         }
 
         .toast-notification {
@@ -1030,9 +901,6 @@
 <body>
     <div class="container">
         <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
-                <span id="themeIcon">🌙</span>
-            </button>
             <h1>Content Management</h1>
             <p>Create and manage your content with Overlays.uno integration</p>
         </div>
@@ -1066,10 +934,31 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="text" class="required">Text Content</label>
-                    <textarea id="text" name="text" required 
-                              placeholder="Write your main content here..."></textarea>
-                    <div class="field-hint">The main body of your content</div>
+                    <label for="p1" class="required">P1</label>
+                    <textarea id="p1" name="p1" required 
+                              placeholder="Enter P1 content..."></textarea>
+                    <div class="field-hint">First text field</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="p2" class="required">P2</label>
+                    <textarea id="p2" name="p2" required 
+                              placeholder="Enter P2 content..."></textarea>
+                    <div class="field-hint">Second text field</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="p3" class="required">P3</label>
+                    <textarea id="p3" name="p3" required 
+                              placeholder="Enter P3 content..."></textarea>
+                    <div class="field-hint">Third text field</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="p4" class="required">P4</label>
+                    <textarea id="p4" name="p4" required 
+                              placeholder="Enter P4 content..."></textarea>
+                    <div class="field-hint">Fourth text field</div>
                 </div>
 
                 <div class="form-group">
@@ -1145,23 +1034,6 @@
                     <p style="margin-top: 5px; color: #6c757d; font-size: 0.9rem;">✅ No backend relay required</p>
                 </div>
                 
-                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #4facfe;">
-                    <h4 style="margin-bottom: 15px;">API Testing</h4>
-                    <button class="btn-primary" onclick="testGetOverlays()" style="margin-right: 10px; margin-bottom: 10px;">
-                        Get Overlays List
-                    </button>
-                    <button class="btn-primary" onclick="testGetOverlayModel()" style="margin-right: 10px; margin-bottom: 10px;">
-                        Get Overlay Structure
-                    </button>
-                    <button class="btn-primary" onclick="testCreateOverlay()" style="margin-bottom: 10px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                        Test Create Overlay
-                    </button>
-                    <div id="apiTestResult" style="margin-top: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; display: none; max-height: 400px; overflow-y: auto;">
-                        <h5>API Response:</h5>
-                        <pre id="apiTestContent" style="white-space: pre-wrap; word-wrap: break-word; font-size: 0.85rem;"></pre>
-                    </div>
-                </div>
-                
                 <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #28a745;">
                     <h4 style="margin-bottom: 10px;">Configuration</h4>
                     <ul style="margin-left: 20px; color: #495057;">
@@ -1201,9 +1073,27 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="editText" class="required">Text Content</label>
-                    <textarea id="editText" name="text" required 
-                              placeholder="Write your main content here..."></textarea>
+                    <label for="editP1" class="required">P1</label>
+                    <textarea id="editP1" name="p1" required 
+                              placeholder="Enter P1 content..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editP2" class="required">P2</label>
+                    <textarea id="editP2" name="p2" required 
+                              placeholder="Enter P2 content..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editP3" class="required">P3</label>
+                    <textarea id="editP3" name="p3" required 
+                              placeholder="Enter P3 content..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editP4" class="required">P4</label>
+                    <textarea id="editP4" name="p4" required 
+                              placeholder="Enter P4 content..."></textarea>
                 </div>
 
                 <div class="form-group">
@@ -1374,18 +1264,6 @@
             }
         }
 
-        async function showOverlay(contentId) {
-            try {
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
-                overlayStates[contentId] = { active: true, hidden: false };
-                displayContentCards();
-                showStatusMessage('Overlay shown successfully!', 'success');
-            } catch (error) {
-                console.error('Show overlay failed:', error);
-                showStatusMessage('Failed to show overlay: ' + error.message, 'error');
-            }
-        }
-
         async function hideOverlay(contentId) {
             try {
                 await sendToOverlay('HideOverlay', { id: OVERLAY_ID });
@@ -1450,7 +1328,12 @@
                         
                         <h4>${content.title || 'Untitled'}</h4>
                         <div class="subtitle">${content.subtitle || ''}</div>
-                        <div class="text-preview">${content.text || ''}</div>
+                        <div class="text-preview">
+                            <div><strong>P1:</strong> ${content.p1 || ''}</div>
+                            <div><strong>P2:</strong> ${content.p2 || ''}</div>
+                            <div><strong>P3:</strong> ${content.p3 || ''}</div>
+                            <div><strong>P4:</strong> ${content.p4 || ''}</div>
+                        </div>
                         <div class="content-meta">
                             <div>
                                 ${content.category ? `<span class="category-tag">${content.category}</span>` : ''}
@@ -1547,10 +1430,13 @@
             try {
                 const titleValue = document.getElementById('title').value.trim();
                 const subtitleValue = document.getElementById('subtitle').value.trim();
-                const textValue = document.getElementById('text').value.trim();
+                const p1Value = document.getElementById('p1').value.trim();
+                const p2Value = document.getElementById('p2').value.trim();
+                const p3Value = document.getElementById('p3').value.trim();
+                const p4Value = document.getElementById('p4').value.trim();
                 const categoryValue = document.getElementById('category').value.trim();
                 
-                if (!titleValue || !subtitleValue || !textValue) {
+                if (!titleValue || !subtitleValue || !p1Value || !p2Value || !p3Value || !p4Value) {
                     throw new Error('Please fill in all required fields');
                 }
                 
@@ -1564,7 +1450,10 @@
                     id: contentId,
                     title: titleValue,
                     subtitle: subtitleValue,
-                    text: textValue,
+                    p1: p1Value,
+                    p2: p2Value,
+                    p3: p3Value,
+                    p4: p4Value,
                     category: categoryValue,
                     timestamp: new Date().toLocaleString()
                 };
@@ -1604,118 +1493,6 @@
             }
         });
 
-        async function testGetOverlays() {
-            const resultDiv = document.getElementById('apiTestResult');
-            const contentDiv = document.getElementById('apiTestContent');
-            
-            if (!resultDiv || !contentDiv) return;
-            
-            resultDiv.style.display = 'block';
-            contentDiv.textContent = 'Loading...';
-            
-            try {
-                const result = await sendToOverlay('GetOverlays');
-                contentDiv.textContent = JSON.stringify(result, null, 2);
-            } catch (error) {
-                contentDiv.textContent = 'Error: ' + error.message + '\n\nFull error:\n' + JSON.stringify(error, null, 2);
-            }
-        }
-
-        async function testGetOverlayModel() {
-            const resultDiv = document.getElementById('apiTestResult');
-            const contentDiv = document.getElementById('apiTestContent');
-            
-            if (!resultDiv || !contentDiv) return;
-            
-            resultDiv.style.display = 'block';
-            contentDiv.textContent = 'Loading...';
-            
-            try {
-                const result = await sendToOverlay('GetOverlayModels');
-                contentDiv.textContent = JSON.stringify(result, null, 2);
-            } catch (error) {
-                contentDiv.textContent = 'Error: ' + error.message + '\n\nFull error:\n' + JSON.stringify(error, null, 2);
-            }
-        }
-
-        async function testCreateOverlay() {
-            const resultDiv = document.getElementById('apiTestResult');
-            const contentDiv = document.getElementById('apiTestContent');
-            
-            if (!resultDiv || !contentDiv) return;
-            
-            resultDiv.style.display = 'block';
-            contentDiv.textContent = 'Testing multiple CreateOverlay approaches...\n\n';
-            
-            // Test 1: Simple CreateOverlay
-            contentDiv.textContent += '--- Test 1: Simple CreateOverlay ---\n';
-            try {
-                const result1 = await sendToOverlay('CreateOverlay', {
-                    name: "Test Overlay " + Date.now()
-                });
-                contentDiv.textContent += '✅ Test 1 SUCCESS!\n' + JSON.stringify(result1, null, 2) + '\n\n';
-                return;
-            } catch (error) {
-                contentDiv.textContent += '❌ Test 1 Failed: ' + error.message + '\n\n';
-            }
-            
-            // Test 2: CreateOverlay with templateId
-            contentDiv.textContent += '--- Test 2: With templateId ---\n';
-            try {
-                const result2 = await sendToOverlay('CreateOverlay', {
-                    templateId: TEMPLATE_ID,
-                    name: "Test Overlay " + Date.now()
-                });
-                contentDiv.textContent += '✅ Test 2 SUCCESS!\n' + JSON.stringify(result2, null, 2) + '\n\n';
-                return;
-            } catch (error) {
-                contentDiv.textContent += '❌ Test 2 Failed: ' + error.message + '\n\n';
-            }
-            
-            // Test 3: AddOverlay command
-            contentDiv.textContent += '--- Test 3: AddOverlay command ---\n';
-            try {
-                const result3 = await sendToOverlay('AddOverlay', {
-                    name: "Test Overlay " + Date.now()
-                });
-                contentDiv.textContent += '✅ Test 3 SUCCESS!\n' + JSON.stringify(result3, null, 2) + '\n\n';
-                return;
-            } catch (error) {
-                contentDiv.textContent += '❌ Test 3 Failed: ' + error.message + '\n\n';
-            }
-            
-            // Test 4: DuplicateOverlay from existing
-            contentDiv.textContent += '--- Test 4: DuplicateOverlay ---\n';
-            try {
-                const result4 = await sendToOverlay('DuplicateOverlay', {
-                    id: OVERLAY_ID,
-                    name: "Duplicate " + Date.now()
-                });
-                contentDiv.textContent += '✅ Test 4 SUCCESS!\n' + JSON.stringify(result4, null, 2) + '\n\n';
-                return;
-            } catch (error) {
-                contentDiv.textContent += '❌ Test 4 Failed: ' + error.message + '\n\n';
-            }
-            
-            // Test 5: CloneOverlay
-            contentDiv.textContent += '--- Test 5: CloneOverlay ---\n';
-            try {
-                const result5 = await sendToOverlay('CloneOverlay', {
-                    sourceId: OVERLAY_ID,
-                    name: "Clone " + Date.now()
-                });
-                contentDiv.textContent += '✅ Test 5 SUCCESS!\n' + JSON.stringify(result5, null, 2) + '\n\n';
-                return;
-            } catch (error) {
-                contentDiv.textContent += '❌ Test 5 Failed: ' + error.message + '\n\n';
-            }
-            
-            contentDiv.textContent += '\n❌ All tests failed. CreateOverlay is not supported by this template.\n\n';
-            contentDiv.textContent += 'Available alternatives:\n';
-            contentDiv.textContent += '1. Use the 3 existing slots (Text, Image, Image+Text)\n';
-            contentDiv.textContent += '2. Manually create overlays on Overlays.uno website';
-        }
-
         // Quick Edit Modal Functions
         function openEditModal(contentId) {
             const content = contentStore.find(item => item.id === contentId);
@@ -1725,7 +1502,10 @@
             document.getElementById('editContentId').value = contentId;
             document.getElementById('editTitle').value = content.title || '';
             document.getElementById('editSubtitle').value = content.subtitle || '';
-            document.getElementById('editText').value = content.text || '';
+            document.getElementById('editP1').value = content.p1 || '';
+            document.getElementById('editP2').value = content.p2 || '';
+            document.getElementById('editP3').value = content.p3 || '';
+            document.getElementById('editP4').value = content.p4 || '';
             document.getElementById('editCategory').value = content.category || '';
 
             // Show modal
@@ -1752,10 +1532,13 @@
             const contentId = document.getElementById('editContentId').value;
             const titleValue = document.getElementById('editTitle').value.trim();
             const subtitleValue = document.getElementById('editSubtitle').value.trim();
-            const textValue = document.getElementById('editText').value.trim();
+            const p1Value = document.getElementById('editP1').value.trim();
+            const p2Value = document.getElementById('editP2').value.trim();
+            const p3Value = document.getElementById('editP3').value.trim();
+            const p4Value = document.getElementById('editP4').value.trim();
             const categoryValue = document.getElementById('editCategory').value.trim();
 
-            if (!titleValue || !subtitleValue || !textValue) {
+            if (!titleValue || !subtitleValue || !p1Value || !p2Value || !p3Value || !p4Value) {
                 showStatusMessage('Please fill in all required fields', 'error');
                 return;
             }
@@ -1768,25 +1551,14 @@
                         ...contentStore[contentIndex],
                         title: titleValue,
                         subtitle: subtitleValue,
-                        text: textValue,
+                        p1: p1Value,
+                        p2: p2Value,
+                        p3: p3Value,
+                        p4: p4Value,
                         category: categoryValue,
                         timestamp: new Date().toLocaleString()
                     };
                 }
-
-                // Send updated content to overlay
-                await sendToOverlay('SetOverlayContent', {
-                    id: OVERLAY_ID,
-                    content: {
-                        "Text Active": true,
-                        "Title": titleValue,
-                        "Subtitle": subtitleValue,
-                        "Text": textValue,
-                        "Lines": 10
-                    }
-                });
-
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
 
                 // Update display
                 displayContentCards();
@@ -1803,10 +1575,13 @@
         async function duplicateContent() {
             const titleValue = document.getElementById('editTitle').value.trim();
             const subtitleValue = document.getElementById('editSubtitle').value.trim();
-            const textValue = document.getElementById('editText').value.trim();
+            const p1Value = document.getElementById('editP1').value.trim();
+            const p2Value = document.getElementById('editP2').value.trim();
+            const p3Value = document.getElementById('editP3').value.trim();
+            const p4Value = document.getElementById('editP4').value.trim();
             const categoryValue = document.getElementById('editCategory').value.trim();
 
-            if (!titleValue || !subtitleValue || !textValue) {
+            if (!titleValue || !subtitleValue || !p1Value || !p2Value || !p3Value || !p4Value) {
                 showStatusMessage('Please fill in all required fields', 'error');
                 return;
             }
@@ -1817,26 +1592,16 @@
                     id: newContentId,
                     title: titleValue + ' (Copy)',
                     subtitle: subtitleValue,
-                    text: textValue,
+                    p1: p1Value,
+                    p2: p2Value,
+                    p3: p3Value,
+                    p4: p4Value,
                     category: categoryValue,
                     timestamp: new Date().toLocaleString()
                 };
 
                 contentStore.unshift(newContent);
-                
-                // Send to overlay
-                await sendToOverlay('SetOverlayContent', {
-                    id: OVERLAY_ID,
-                    content: {
-                        "Text Active": true,
-                        "Title": newContent.title,
-                        "Subtitle": subtitleValue,
-                        "Text": textValue,
-                        "Lines": 10
-                    }
-                });
-
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
+                overlayStates[newContentId] = { active: false, hidden: false };
 
                 displayContentCards();
                 closeEditModal();
@@ -1861,13 +1626,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             displayContentCards();
             
-            // Load theme preference
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                document.getElementById('themeIcon').textContent = '☀️';
-            }
-            
             // Add form validation
             const requiredFields = document.querySelectorAll('input[required], textarea[required]');
             requiredFields.forEach(field => {
@@ -1886,21 +1644,6 @@
                 });
             });
         });
-
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('themeIcon');
-            
-            body.classList.toggle('dark-mode');
-            
-            if (body.classList.contains('dark-mode')) {
-                icon.textContent = '☀️';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                icon.textContent = '🌙';
-                localStorage.setItem('theme', 'light');
-            }
-        }
     </script>
 </body>
 </html>
