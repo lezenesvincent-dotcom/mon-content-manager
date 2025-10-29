@@ -1663,61 +1663,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             displayContentCards();
             
-            // Auto line break every 22 characters in text content (without cutting words)
-            const textArea = document.getElementById('text');
-            if (textArea) {
-                textArea.addEventListener('input', function(e) {
-                    let text = this.value;
-                    let lines = text.split('\n');
-                    let newLines = [];
-                    
-                    lines.forEach(line => {
-                        if (line.length <= 22) {
-                            newLines.push(line);
-                        } else {
-                            // Split line into chunks of max 22 characters without cutting words
-                            let words = line.split(' ');
-                            let currentLine = '';
-                            
-                            words.forEach((word, index) => {
-                                if (currentLine.length === 0) {
-                                    // First word on the line
-                                    if (word.length > 22) {
-                                        // Word is too long, have to cut it
-                                        newLines.push(word.substring(0, 22));
-                                        currentLine = word.substring(22);
-                                    } else {
-                                        currentLine = word;
-                                    }
-                                } else if ((currentLine + ' ' + word).length <= 22) {
-                                    // Add word to current line
-                                    currentLine += ' ' + word;
-                                } else {
-                                    // Start new line
-                                    newLines.push(currentLine);
-                                    if (word.length > 22) {
-                                        // Word is too long, have to cut it
-                                        newLines.push(word.substring(0, 22));
-                                        currentLine = word.substring(22);
-                                    } else {
-                                        currentLine = word;
-                                    }
-                                }
-                            });
-                            
-                            if (currentLine.length > 0) {
-                                newLines.push(currentLine);
-                            }
-                        }
-                    });
-                    
-                    const newText = newLines.join('\n');
-                    if (newText !== text) {
-                        this.value = newText;
-                    }
-                });
-            }
-            
             // Add form validation
             const requiredFields = document.querySelectorAll('input[required], textarea[required]');
             requiredFields.forEach(field => {
