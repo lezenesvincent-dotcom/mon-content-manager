@@ -1316,7 +1316,9 @@
             if (!content) return;
 
             try {
-                // Combine all text parts (P1 to P5), removing ALL line breaks
+                // Process each text part (P1 to P5)
+                // Each part's internal line breaks are removed to make one continuous line
+                // Then parts are joined with \n to create separate lines in UNO
                 const textParts = content.textParts || {};
                 const allParts = [];
                 for (let i = 1; i <= 5; i++) {
@@ -1328,8 +1330,9 @@
                         }
                     }
                 }
-                // Join parts with spaces - no line breaks at all
-                const combinedText = allParts.join(' ');
+                // Join parts with line breaks - each part becomes ONE line in UNO
+                const combinedText = allParts.join('\n');
+                const lineCount = allParts.length;
                 
                 // Send content to main overlay
                 await sendToOverlay('SetOverlayContent', {
@@ -1339,7 +1342,7 @@
                         "Title": content.title,
                         "Subtitle": content.subtitle,
                         "Text": combinedText,
-                        "Lines": 1
+                        "Lines": lineCount
                     }
                 });
 
@@ -1357,7 +1360,7 @@
                                 "Title": content.title,
                                 "Subtitle": content.subtitle,
                                 "Text": combinedText,
-                                "Lines": 1
+                                "Lines": lineCount
                             }
                         });
                         await sendToOverlay('ShowOverlay', { id: overlayId });
