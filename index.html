@@ -1647,6 +1647,32 @@
         document.addEventListener('DOMContentLoaded', function() {
             displayContentCards();
             
+            // Auto line break every 20 characters in text content
+            const textArea = document.getElementById('text');
+            if (textArea) {
+                textArea.addEventListener('input', function(e) {
+                    let text = this.value;
+                    let lines = text.split('\n');
+                    let newLines = [];
+                    
+                    lines.forEach(line => {
+                        if (line.length <= 20) {
+                            newLines.push(line);
+                        } else {
+                            // Split line into chunks of 20 characters
+                            for (let i = 0; i < line.length; i += 20) {
+                                newLines.push(line.substring(i, i + 20));
+                            }
+                        }
+                    });
+                    
+                    const newText = newLines.join('\n');
+                    if (newText !== text) {
+                        this.value = newText;
+                    }
+                });
+            }
+            
             // Add form validation
             const requiredFields = document.querySelectorAll('input[required], textarea[required]');
             requiredFields.forEach(field => {
