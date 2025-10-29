@@ -1260,6 +1260,10 @@
             if (!content) return;
 
             try {
+                // Split text by manual line breaks (\n) to create separate text parts
+                const textParts = content.text.split('\n').filter(part => part.trim() !== '');
+                const formattedText = textParts.join('\n');
+                
                 // Send content to main overlay
                 await sendToOverlay('SetOverlayContent', {
                     id: OVERLAY_ID,
@@ -1267,8 +1271,8 @@
                         "Text Active": true,
                         "Title": content.title,
                         "Subtitle": content.subtitle,
-                        "Text": content.text,
-                        "Lines": 10
+                        "Text": formattedText,
+                        "Lines": textParts.length
                     }
                 });
 
@@ -1285,8 +1289,8 @@
                                 "Text Active": true,
                                 "Title": content.title,
                                 "Subtitle": content.subtitle,
-                                "Text": content.text,
-                                "Lines": 10
+                                "Text": formattedText,
+                                "Lines": textParts.length
                             }
                         });
                         await sendToOverlay('ShowOverlay', { id: overlayId });
@@ -1658,6 +1662,61 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             displayContentCards();
+            
+            // Auto line break every 20 characters in text content (without cutting words)
+            const textArea = document.getElementById('text');
+            if (textArea) {
+                textArea.addEventListener('input', function(e) {
+                    let text = this.value;
+                    let lines = text.split('\n');
+                    let newLines = [];
+                    
+                    lines.forEach(line => {
+                        if (line.length <= 20) {
+                            newLines.push(line);
+                        } else {
+                            // Split line into chunks of max 20 characters without cutting words
+                            let words = line.split(' ');
+                            let currentLine = '';
+                            
+                            words.forEach((word, index) => {
+                                if (currentLine.length === 0) {
+                                    // First word on the line
+                                    if (word.length > 20) {
+                                        // Word is too long, have to cut it
+                                        newLines.push(word.substring(0, 20));
+                                        currentLine = word.substring(20);
+                                    } else {
+                                        currentLine = word;
+                                    }
+                                } else if ((currentLine + ' ' + word).length <= 20) {
+                                    // Add word to current line
+                                    currentLine += ' ' + word;
+                                } else {
+                                    // Start new line
+                                    newLines.push(currentLine);
+                                    if (word.length > 20) {
+                                        // Word is too long, have to cut it
+                                        newLines.push(word.substring(0, 20));
+                                        currentLine = word.substring(20);
+                                    } else {
+                                        currentLine = word;
+                                    }
+                                }
+                            });
+                            
+                            if (currentLine.length > 0) {
+                                newLines.push(currentLine);
+                            }
+                        }
+                    });
+                    
+                    const newText = newLines.join('\n');
+                    if (newText !== text) {
+                        this.value = newText;
+                    }
+                });
+            }
             
             // Add form validation
             const requiredFields = document.querySelectorAll('input[required], textarea[required]');
