@@ -1092,6 +1092,16 @@
         const TEMPLATE_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
         const OVERLAY_ID = '6598bc8e-c088-43ba-a830-d24222614f4f';
         const OVERLAY_API_URL = `https://app.overlays.uno/apiv2/controlapps/${TEMPLATE_ID}/api`;
+        
+        // Additional overlays P1, P2, P3, P4
+        const CONTROL_ID_P1 = '59fQaeqpYJYUuXEYJ2Fyxs';
+        const CONTROL_ID_P2 = '6dj1Iardwfo5SY7XU7GaLz';
+        const CONTROL_ID_P3 = '6KTvKwCyhSS5GXxYP7rzlU';
+        const CONTROL_ID_P4 = '2p8sBjsUCiW0QnaWBUDZDf';
+        const OVERLAY_ID_P1 = '59fQaeqpYJYUuXEYJ2Fyxs';
+        const OVERLAY_ID_P2 = '6dj1Iardwfo5SY7XU7GaLz';
+        const OVERLAY_ID_P3 = '6KTvKwCyhSS5GXxYP7rzlU';
+        const OVERLAY_ID_P4 = '2p8sBjsUCiW0QnaWBUDZDf';
 
         function openTab(evt, tabName) {
             const tabcontent = document.getElementsByClassName("tab-content");
@@ -1165,6 +1175,48 @@
             }
         }
 
+        async function sendToControlApp(controlId, overlayId, command, payload = {}) {
+            try {
+                const body = {
+                    command: command,
+                    ...payload
+                };
+
+                console.log('Sending to Control App:', controlId, body);
+
+                const apiUrl = `https://app.overlays.uno/apiv2/controlapps/${controlId}/api`;
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(apiUrl);
+
+                const response = await fetch(proxyUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Api-Key': controlId,
+                        'Authorization': `Bearer ${controlId}`
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                let result;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    result = await response.json();
+                } else {
+                    const text = await response.text();
+                    result = { raw: text };
+                }
+
+                if (!response.ok) {
+                    throw new Error(result.error || result.message || `HTTP ${response.status}`);
+                }
+
+                return result;
+            } catch (error) {
+                console.error(`Send to ${controlId} failed:`, error);
+                throw error;
+            }
+        }
+
         function showStatusMessage(message, type) {
             // Create toast notification
             const toast = document.createElement('div');
@@ -1201,7 +1253,7 @@
             if (!content) return;
 
             try {
-                // Send content to overlay
+                // Send content to main overlay
                 await sendToOverlay('SetOverlayContent', {
                     id: OVERLAY_ID,
                     content: {
@@ -1215,10 +1267,38 @@
 
                 await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
 
+                // Send to P1, P2, P3, P4 overlays
+                const overlays = [
+                    { controlId: CONTROL_ID_P1, overlayId: OVERLAY_ID_P1 },
+                    { controlId: CONTROL_ID_P2, overlayId: OVERLAY_ID_P2 },
+                    { controlId: CONTROL_ID_P3, overlayId: OVERLAY_ID_P3 },
+                    { controlId: CONTROL_ID_P4, overlayId: OVERLAY_ID_P4 }
+                ];
+
+                for (const overlay of overlays) {
+                    try {
+                        await sendToControlApp(overlay.controlId, overlay.overlayId, 'SetOverlayContent', {
+                            id: overlay.overlayId,
+                            content: {
+                                "Text Active": true,
+                                "Title": content.title,
+                                "Subtitle": content.subtitle,
+                                "Text": content.text,
+                                "Lines": 10
+                            }
+                        });
+                        await sendToControlApp(overlay.controlId, overlay.overlayId, 'ShowOverlay', { 
+                            id: overlay.overlayId 
+                        });
+                    } catch (error) {
+                        console.error(`Failed to send to ${overlay.controlId}:`, error);
+                    }
+                }
+
                 overlayStates[contentId] = { active: true, hidden: false };
                 displayContentCards();
                 
-                showStatusMessage(`📤 "${content.title}" sent to overlay!`, 'success');
+                showStatusMessage(`📤 "${content.title}" sent to all overlays!`, 'success');
             } catch (error) {
                 console.error('Send to overlay failed:', error);
                 showStatusMessage('Failed to send to overlay: ' + error.message, 'error');
@@ -1228,9 +1308,28 @@
         async function hideOverlay(contentId) {
             try {
                 await sendToOverlay('HideOverlay', { id: OVERLAY_ID });
+                
+                // Hide P1, P2, P3, P4 overlays
+                const overlays = [
+                    { controlId: CONTROL_ID_P1, overlayId: OVERLAY_ID_P1 },
+                    { controlId: CONTROL_ID_P2, overlayId: OVERLAY_ID_P2 },
+                    { controlId: CONTROL_ID_P3, overlayId: OVERLAY_ID_P3 },
+                    { controlId: CONTROL_ID_P4, overlayId: OVERLAY_ID_P4 }
+                ];
+
+                for (const overlay of overlays) {
+                    try {
+                        await sendToControlApp(overlay.controlId, overlay.overlayId, 'HideOverlay', { 
+                            id: overlay.overlayId 
+                        });
+                    } catch (error) {
+                        console.error(`Failed to hide ${overlay.controlId}:`, error);
+                    }
+                }
+                
                 overlayStates[contentId] = { active: false, hidden: true };
                 displayContentCards();
-                showStatusMessage('Overlay hidden successfully!', 'success');
+                showStatusMessage('All overlays hidden successfully!', 'success');
             } catch (error) {
                 console.error('Hide overlay failed:', error);
                 showStatusMessage('Failed to hide overlay: ' + error.message, 'error');
