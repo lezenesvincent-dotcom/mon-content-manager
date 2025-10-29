@@ -1296,6 +1296,7 @@
                 }
 
                 overlayStates[contentId] = { active: true, hidden: false };
+                saveToLocalStorage();
                 displayContentCards();
                 
                 showStatusMessage(`📤 "${content.title}" sent to all overlays!`, 'success');
