@@ -1316,18 +1316,20 @@
             if (!content) return;
 
             try {
-                // Combine all text parts (P1 to P5), removing line breaks within each part
+                // Combine all text parts (P1 to P5), removing ALL line breaks
                 const textParts = content.textParts || {};
                 const allParts = [];
                 for (let i = 1; i <= 5; i++) {
                     if (textParts[`p${i}`]) {
                         // Remove all line breaks within this part to make it one continuous line
-                        const cleanedPart = textParts[`p${i}`].replace(/\n/g, ' ');
-                        allParts.push(cleanedPart);
+                        const cleanedPart = textParts[`p${i}`].replace(/\n/g, ' ').trim();
+                        if (cleanedPart) {
+                            allParts.push(cleanedPart);
+                        }
                     }
                 }
-                // Join parts with line breaks - each part becomes one line in the overlay
-                const combinedText = allParts.join('\n');
+                // Join parts with spaces - no line breaks at all
+                const combinedText = allParts.join(' ');
                 
                 // Send content to main overlay
                 await sendToOverlay('SetOverlayContent', {
