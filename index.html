@@ -1260,10 +1260,6 @@
             if (!content) return;
 
             try {
-                // Split text by manual line breaks (\n) to create separate text parts
-                const textParts = content.text.split('\n').filter(part => part.trim() !== '');
-                const formattedText = textParts.join('\n');
-                
                 // Send content to main overlay
                 await sendToOverlay('SetOverlayContent', {
                     id: OVERLAY_ID,
@@ -1271,8 +1267,8 @@
                         "Text Active": true,
                         "Title": content.title,
                         "Subtitle": content.subtitle,
-                        "Text": formattedText,
-                        "Lines": textParts.length
+                        "Text": content.text,
+                        "Lines": 10
                     }
                 });
 
@@ -1289,8 +1285,8 @@
                                 "Text Active": true,
                                 "Title": content.title,
                                 "Subtitle": content.subtitle,
-                                "Text": formattedText,
-                                "Lines": textParts.length
+                                "Text": content.text,
+                                "Lines": 10
                             }
                         });
                         await sendToOverlay('ShowOverlay', { id: overlayId });
