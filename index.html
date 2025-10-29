@@ -935,32 +935,37 @@
 
                 <div class="form-group">
                     <label for="p1" class="required">Text Part 1 (P1) - Lines 1-2</label>
-                    <input type="text" id="p1" name="p1" required 
-                           placeholder="First part of your text (2 lines)">
+                    <textarea id="p1" name="p1" required rows="8"
+                           placeholder="First part of your text (max 8 lines, 22 chars per line)"></textarea>
+                    <div class="field-hint">Max 8 lines, 22 characters per line</div>
                 </div>
 
                 <div class="form-group">
                     <label for="p2">Text Part 2 (P2) - Lines 3-4</label>
-                    <input type="text" id="p2" name="p2" 
-                           placeholder="Second part of your text (2 lines)">
+                    <textarea id="p2" name="p2" rows="8"
+                           placeholder="Second part of your text (max 8 lines, 22 chars per line)"></textarea>
+                    <div class="field-hint">Max 8 lines, 22 characters per line</div>
                 </div>
 
                 <div class="form-group">
                     <label for="p3">Text Part 3 (P3) - Lines 5-6</label>
-                    <input type="text" id="p3" name="p3" 
-                           placeholder="Third part of your text (2 lines)">
+                    <textarea id="p3" name="p3" rows="8"
+                           placeholder="Third part of your text (max 8 lines, 22 chars per line)"></textarea>
+                    <div class="field-hint">Max 8 lines, 22 characters per line</div>
                 </div>
 
                 <div class="form-group">
                     <label for="p4">Text Part 4 (P4) - Lines 7-8</label>
-                    <input type="text" id="p4" name="p4" 
-                           placeholder="Fourth part of your text (2 lines)">
+                    <textarea id="p4" name="p4" rows="8"
+                           placeholder="Fourth part of your text (max 8 lines, 22 chars per line)"></textarea>
+                    <div class="field-hint">Max 8 lines, 22 characters per line</div>
                 </div>
 
                 <div class="form-group">
                     <label for="p5">Text Part 5 (P5) - Lines 9-10</label>
-                    <input type="text" id="p5" name="p5" 
-                           placeholder="Fifth part of your text (2 lines)">
+                    <textarea id="p5" name="p5" rows="8"
+                           placeholder="Fifth part of your text (max 8 lines, 22 chars per line)"></textarea>
+                    <div class="field-hint">Max 8 lines, 22 characters per line</div>
                 </div>
 
                 <div class="form-group">
@@ -1076,32 +1081,37 @@
 
                 <div class="form-group">
                     <label for="editP1" class="required">Text Part 1 (P1) - Lines 1-2</label>
-                    <input type="text" id="editP1" name="p1" required 
-                           placeholder="First part of your text (2 lines)">
+                    <textarea id="editP1" name="p1" required rows="8"
+                           placeholder="First part of your text (max 8 lines, 22 chars per line)"></textarea>
+                    <div class="field-hint">Max 8 lines, 22 characters per line</div>
                 </div>
 
                 <div class="form-group">
                     <label for="editP2">Text Part 2 (P2) - Lines 3-4</label>
-                    <input type="text" id="editP2" name="p2" 
-                           placeholder="Second part of your text (2 lines)">
+                    <textarea id="editP2" name="p2" rows="8"
+                           placeholder="Second part of your text (max 8 lines, 22 chars per line)"></textarea>
+                    <div class="field-hint">Max 8 lines, 22 characters per line</div>
                 </div>
 
                 <div class="form-group">
                     <label for="editP3">Text Part 3 (P3) - Lines 5-6</label>
-                    <input type="text" id="editP3" name="p3" 
-                           placeholder="Third part of your text (2 lines)">
+                    <textarea id="editP3" name="p3" rows="8"
+                           placeholder="Third part of your text (max 8 lines, 22 chars per line)"></textarea>
+                    <div class="field-hint">Max 8 lines, 22 characters per line</div>
                 </div>
 
                 <div class="form-group">
                     <label for="editP4">Text Part 4 (P4) - Lines 7-8</label>
-                    <input type="text" id="editP4" name="p4" 
-                           placeholder="Fourth part of your text (2 lines)">
+                    <textarea id="editP4" name="p4" rows="8"
+                           placeholder="Fourth part of your text (max 8 lines, 22 chars per line)"></textarea>
+                    <div class="field-hint">Max 8 lines, 22 characters per line</div>
                 </div>
 
                 <div class="form-group">
                     <label for="editP5">Text Part 5 (P5) - Lines 9-10</label>
-                    <input type="text" id="editP5" name="p5" 
-                           placeholder="Fifth part of your text (2 lines)">
+                    <textarea id="editP5" name="p5" rows="8"
+                           placeholder="Fifth part of your text (max 8 lines, 22 chars per line)"></textarea>
+                    <div class="field-hint">Max 8 lines, 22 characters per line</div>
                 </div>
 
                 <div class="form-group">
@@ -1745,6 +1755,71 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             displayContentCards();
+            
+            // Add line break validation for P1-P5 textareas (max 8 lines, 22 chars per line)
+            const textPartIds = ['p1', 'p2', 'p3', 'p4', 'p5', 'editP1', 'editP2', 'editP3', 'editP4', 'editP5'];
+            
+            textPartIds.forEach(id => {
+                const textarea = document.getElementById(id);
+                if (textarea) {
+                    textarea.addEventListener('input', function(e) {
+                        let text = this.value;
+                        let lines = text.split('\n');
+                        let newLines = [];
+                        
+                        // Limit to 8 lines
+                        lines = lines.slice(0, 8);
+                        
+                        lines.forEach(line => {
+                            if (line.length <= 22) {
+                                newLines.push(line);
+                            } else {
+                                // Split line into chunks of max 22 characters without cutting words
+                                let words = line.split(' ');
+                                let currentLine = '';
+                                
+                                words.forEach((word, index) => {
+                                    if (currentLine.length === 0) {
+                                        // First word on the line
+                                        if (word.length > 22) {
+                                            // Word is too long, have to cut it
+                                            newLines.push(word.substring(0, 22));
+                                            currentLine = word.substring(22);
+                                        } else {
+                                            currentLine = word;
+                                        }
+                                    } else if ((currentLine + ' ' + word).length <= 22) {
+                                        // Add word to current line
+                                        currentLine += ' ' + word;
+                                    } else {
+                                        // Start new line
+                                        newLines.push(currentLine);
+                                        if (word.length > 22) {
+                                            // Word is too long, have to cut it
+                                            newLines.push(word.substring(0, 22));
+                                            currentLine = word.substring(22);
+                                        } else {
+                                            currentLine = word;
+                                        }
+                                    }
+                                });
+                                
+                                if (currentLine.length > 0) {
+                                    newLines.push(currentLine);
+                                }
+                            }
+                        });
+                        
+                        // Limit to 8 lines again after word wrapping
+                        newLines = newLines.slice(0, 8);
+                        
+                        const newText = newLines.join('\n');
+                        if (newText !== text) {
+                            this.value = newText;
+                        }
+                    });
+                }
+            });
             
             // Add form validation
             const requiredFields = document.querySelectorAll('input[required], textarea[required]');
