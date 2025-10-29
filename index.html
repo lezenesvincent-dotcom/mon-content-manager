@@ -1267,18 +1267,13 @@
 
                 await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
 
-                // Send to P1, P2, P3, P4 overlays
-                const overlays = [
-                    { controlId: CONTROL_ID_P1, overlayId: OVERLAY_ID_P1 },
-                    { controlId: CONTROL_ID_P2, overlayId: OVERLAY_ID_P2 },
-                    { controlId: CONTROL_ID_P3, overlayId: OVERLAY_ID_P3 },
-                    { controlId: CONTROL_ID_P4, overlayId: OVERLAY_ID_P4 }
-                ];
+                // Send to P1, P2, P3, P4 using the SAME API (main template API)
+                const overlayIds = [OVERLAY_ID_P1, OVERLAY_ID_P2, OVERLAY_ID_P3, OVERLAY_ID_P4];
 
-                for (const overlay of overlays) {
+                for (const overlayId of overlayIds) {
                     try {
-                        await sendToControlApp(overlay.controlId, overlay.overlayId, 'SetOverlayContent', {
-                            id: overlay.overlayId,
+                        await sendToOverlay('SetOverlayContent', {
+                            id: overlayId,
                             content: {
                                 "Text Active": true,
                                 "Title": content.title,
@@ -1287,11 +1282,9 @@
                                 "Lines": 10
                             }
                         });
-                        await sendToControlApp(overlay.controlId, overlay.overlayId, 'ShowOverlay', { 
-                            id: overlay.overlayId 
-                        });
+                        await sendToOverlay('ShowOverlay', { id: overlayId });
                     } catch (error) {
-                        console.error(`Failed to send to ${overlay.controlId}:`, error);
+                        console.error(`Failed to send to ${overlayId}:`, error);
                     }
                 }
 
@@ -1309,21 +1302,14 @@
             try {
                 await sendToOverlay('HideOverlay', { id: OVERLAY_ID });
                 
-                // Hide P1, P2, P3, P4 overlays
-                const overlays = [
-                    { controlId: CONTROL_ID_P1, overlayId: OVERLAY_ID_P1 },
-                    { controlId: CONTROL_ID_P2, overlayId: OVERLAY_ID_P2 },
-                    { controlId: CONTROL_ID_P3, overlayId: OVERLAY_ID_P3 },
-                    { controlId: CONTROL_ID_P4, overlayId: OVERLAY_ID_P4 }
-                ];
+                // Hide P1, P2, P3, P4 using the same API
+                const overlayIds = [OVERLAY_ID_P1, OVERLAY_ID_P2, OVERLAY_ID_P3, OVERLAY_ID_P4];
 
-                for (const overlay of overlays) {
+                for (const overlayId of overlayIds) {
                     try {
-                        await sendToControlApp(overlay.controlId, overlay.overlayId, 'HideOverlay', { 
-                            id: overlay.overlayId 
-                        });
+                        await sendToOverlay('HideOverlay', { id: overlayId });
                     } catch (error) {
-                        console.error(`Failed to hide ${overlay.controlId}:`, error);
+                        console.error(`Failed to hide ${overlayId}:`, error);
                     }
                 }
                 
