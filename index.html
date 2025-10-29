@@ -1128,13 +1128,17 @@
         let contentStore = [];
         let overlayStates = {};
         
-        const TEMPLATE_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
-        // 4 overlay IDs - one for each text field
+        // 4 separate Control Apps - one for each overlay
+        const CONTROL_ID_P1 = '59fQaeqpYJYUuXEYJ2Fyxs';
+        const CONTROL_ID_P2 = '6dj1Iardwfo5SY7XU7GaLz';
+        const CONTROL_ID_P3 = '6KTvKwCyhSS5GXxYP7rzlU';
+        const CONTROL_ID_P4 = '2p8sBjsUCiW0QnaWBUDZDf';
+        
+        // Output IDs for each overlay
         const OVERLAY_ID_P1 = '2TsCECJ2wIbsiXe9VAsIPt';
         const OVERLAY_ID_P2 = '0vLh3hPFvSxWyxAiUxcPSh';
         const OVERLAY_ID_P3 = '2zBLUcTDqp44NE3w2MUlZ7';
         const OVERLAY_ID_P4 = '64U330b1PNhPBUH9RfZyc7';
-        const OVERLAY_API_URL = `https://app.overlays.uno/apiv2/controlapps/${TEMPLATE_ID}/api`;
 
         function openTab(evt, tabName) {
             const tabcontent = document.getElementsByClassName("tab-content");
@@ -1155,24 +1159,25 @@
             }
         }
 
-        async function sendToOverlay(command, payload = {}) {
+        async function sendToOverlay(command, payload = {}, controlId) {
             try {
                 const body = {
                     command: command,
                     ...payload
                 };
 
-                console.log('Sending to Overlays.uno:', body);
+                console.log('Sending to Overlays.uno:', body, 'Control ID:', controlId);
 
                 // Use CORS proxy to bypass browser restrictions
-                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(OVERLAY_API_URL);
+                const apiUrl = `https://app.overlays.uno/apiv2/controlapps/${controlId}/api`;
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(apiUrl);
 
                 const response = await fetch(proxyUrl, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Api-Key': TEMPLATE_ID,
-                        'Authorization': `Bearer ${TEMPLATE_ID}`
+                        'X-Api-Key': controlId,
+                        'Authorization': `Bearer ${controlId}`
                     },
                     body: JSON.stringify(body)
                 });
@@ -1254,8 +1259,8 @@
                         "Text": content.p1,
                         "Lines": 10
                     }
-                });
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P1 });
+                }, CONTROL_ID_P1);
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P1 }, CONTROL_ID_P1);
 
                 // Send P2 to its overlay
                 await sendToOverlay('SetOverlayContent', {
@@ -1267,8 +1272,8 @@
                         "Text": content.p2,
                         "Lines": 10
                     }
-                });
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P2 });
+                }, CONTROL_ID_P2);
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P2 }, CONTROL_ID_P2);
 
                 // Send P3 to its overlay
                 await sendToOverlay('SetOverlayContent', {
@@ -1280,8 +1285,8 @@
                         "Text": content.p3,
                         "Lines": 10
                     }
-                });
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P3 });
+                }, CONTROL_ID_P3);
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P3 }, CONTROL_ID_P3);
 
                 // Send P4 to its overlay
                 await sendToOverlay('SetOverlayContent', {
@@ -1293,8 +1298,8 @@
                         "Text": content.p4,
                         "Lines": 10
                     }
-                });
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P4 });
+                }, CONTROL_ID_P4);
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P4 }, CONTROL_ID_P4);
 
                 overlayStates[contentId] = { active: true, hidden: false };
                 displayContentCards();
@@ -1309,10 +1314,10 @@
         async function hideOverlay(contentId) {
             try {
                 // Hide all 4 overlays
-                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P1 });
-                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P2 });
-                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P3 });
-                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P4 });
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P1 }, CONTROL_ID_P1);
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P2 }, CONTROL_ID_P2);
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P3 }, CONTROL_ID_P3);
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P4 }, CONTROL_ID_P4);
                 
                 overlayStates[contentId] = { active: false, hidden: true };
                 displayContentCards();
