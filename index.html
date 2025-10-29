@@ -1647,7 +1647,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             displayContentCards();
             
-            // Auto line break every 20 characters in text content
+            // Auto line break every 20 characters in text content (without cutting words)
             const textArea = document.getElementById('text');
             if (textArea) {
                 textArea.addEventListener('input', function(e) {
@@ -1659,9 +1659,38 @@
                         if (line.length <= 20) {
                             newLines.push(line);
                         } else {
-                            // Split line into chunks of 20 characters
-                            for (let i = 0; i < line.length; i += 20) {
-                                newLines.push(line.substring(i, i + 20));
+                            // Split line into chunks of max 20 characters without cutting words
+                            let words = line.split(' ');
+                            let currentLine = '';
+                            
+                            words.forEach((word, index) => {
+                                if (currentLine.length === 0) {
+                                    // First word on the line
+                                    if (word.length > 20) {
+                                        // Word is too long, have to cut it
+                                        newLines.push(word.substring(0, 20));
+                                        currentLine = word.substring(20);
+                                    } else {
+                                        currentLine = word;
+                                    }
+                                } else if ((currentLine + ' ' + word).length <= 20) {
+                                    // Add word to current line
+                                    currentLine += ' ' + word;
+                                } else {
+                                    // Start new line
+                                    newLines.push(currentLine);
+                                    if (word.length > 20) {
+                                        // Word is too long, have to cut it
+                                        newLines.push(word.substring(0, 20));
+                                        currentLine = word.substring(20);
+                                    } else {
+                                        currentLine = word;
+                                    }
+                                }
+                            });
+                            
+                            if (currentLine.length > 0) {
+                                newLines.push(currentLine);
                             }
                         }
                     });
