@@ -984,18 +984,8 @@
 
         <div id="manage" class="tab-content">
             <div style="margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                    <div>
-                        <h3>Content Management</h3>
-                        <p>View and control your overlay content directly.</p>
-                        <p style="color: #6c757d; font-size: 0.9rem; margin-top: 10px;">
-                            📦 <span id="contentCount">0</span> item(s) saved in history (persisted in browser storage)
-                        </p>
-                    </div>
-                    <button class="btn-danger" onclick="clearAllHistory()" style="padding: 12px 20px;">
-                        🗑️ Clear All History
-                    </button>
-                </div>
+                <h3>Content Management</h3>
+                <p>View and control your overlay content directly.</p>
             </div>
             
             <div id="contentList" class="content-grid">
@@ -1031,21 +1021,6 @@
                         <li>Template ID: 4fLVHu7eHUBPzBuFJ7mXWH</li>
                         <li>Browser-based requests</li>
                     </ul>
-                </div>
-
-                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #4facfe;">
-                    <h4 style="margin-bottom: 10px;">💾 Local Storage Information</h4>
-                    <ul style="margin-left: 20px; color: #495057; list-style: none;">
-                        <li style="margin-bottom: 8px;">📦 <strong>Content Items:</strong> <span id="storageContentCount">0</span></li>
-                        <li style="margin-bottom: 8px;">🔄 <strong>Overlay States:</strong> <span id="storageStatesCount">0</span></li>
-                        <li style="margin-bottom: 8px;">💿 <strong>Storage Used:</strong> <span id="storageSize">0 KB</span></li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #6c757d; font-size: 0.85rem;">
-                        ℹ️ All data is stored locally in your browser's localStorage. It persists between sessions but is specific to this browser and domain.
-                    </p>
-                    <button class="btn-secondary" onclick="updateStorageInfo()" style="margin-top: 15px;">
-                        🔄 Refresh Storage Info
-                    </button>
                 </div>
             </div>
         </div>
@@ -1151,10 +1126,6 @@
 
             if (tabName === 'manage') {
                 displayContentCards();
-            }
-            
-            if (tabName === 'settings') {
-                updateStorageInfo();
             }
         }
 
@@ -1377,64 +1348,9 @@
             }
         }
 
-        function clearAllHistory() {
-            if (!confirm('⚠️ Are you sure you want to delete ALL content history? This action cannot be undone and will remove all saved items permanently.')) {
-                return;
-            }
-
-            // Double confirmation for safety
-            if (!confirm('This is your last chance! Click OK to permanently delete all ' + contentStore.length + ' items.')) {
-                return;
-            }
-
-            try {
-                contentStore = [];
-                overlayStates = {};
-                saveToLocalStorage();
-                displayContentCards();
-                
-                showStatusMessage('✅ All history cleared successfully!', 'success');
-            } catch (error) {
-                console.error('Clear history failed:', error);
-                showStatusMessage('Failed to clear history: ' + error.message, 'error');
-            }
-        }
-
-        function updateStorageInfo() {
-            // Update content count
-            const storageContentCount = document.getElementById('storageContentCount');
-            if (storageContentCount) {
-                storageContentCount.textContent = contentStore.length;
-            }
-
-            // Update states count
-            const storageStatesCount = document.getElementById('storageStatesCount');
-            if (storageStatesCount) {
-                storageStatesCount.textContent = Object.keys(overlayStates).length;
-            }
-
-            // Calculate storage size
-            const storageSize = document.getElementById('storageSize');
-            if (storageSize) {
-                const contentStoreSize = JSON.stringify(contentStore).length;
-                const overlayStatesSize = JSON.stringify(overlayStates).length;
-                const totalBytes = contentStoreSize + overlayStatesSize;
-                const totalKB = (totalBytes / 1024).toFixed(2);
-                storageSize.textContent = totalKB + ' KB';
-            }
-
-            showStatusMessage('📊 Storage info updated!', 'success');
-        }
-
         function displayContentCards() {
             const contentList = document.getElementById('contentList');
             const emptyState = document.getElementById('emptyState');
-            const contentCount = document.getElementById('contentCount');
-            
-            // Update counter
-            if (contentCount) {
-                contentCount.textContent = contentStore.length;
-            }
             
             if (contentStore.length === 0) {
                 contentList.style.display = 'none';
@@ -1741,16 +1657,7 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Load saved data from localStorage on page load
-            console.log('Loading data from localStorage...');
-            console.log('Content Store:', contentStore);
-            console.log('Overlay States:', overlayStates);
-            
-            // Display content cards immediately on load
             displayContentCards();
-            
-            // Update storage info
-            updateStorageInfo();
             
             // Auto line break every 20 characters in text content (without cutting words)
             const textArea = document.getElementById('text');
