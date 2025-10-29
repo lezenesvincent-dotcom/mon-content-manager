@@ -934,11 +934,63 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="text" class="required">Text Content</label>
-                    <textarea id="text" name="text" required 
-                              wrap="hard" cols="20"
-                              placeholder="Write your main content here..."></textarea>
-                    <div class="field-hint">The main body of your content</div>
+                    <label for="p1" class="required">Text Part 1 (P1)</label>
+                    <input type="text" id="p1" name="p1" required 
+                           placeholder="First part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="p2">Text Part 2 (P2)</label>
+                    <input type="text" id="p2" name="p2" 
+                           placeholder="Second part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="p3">Text Part 3 (P3)</label>
+                    <input type="text" id="p3" name="p3" 
+                           placeholder="Third part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="p4">Text Part 4 (P4)</label>
+                    <input type="text" id="p4" name="p4" 
+                           placeholder="Fourth part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="p5">Text Part 5 (P5)</label>
+                    <input type="text" id="p5" name="p5" 
+                           placeholder="Fifth part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="p6">Text Part 6 (P6)</label>
+                    <input type="text" id="p6" name="p6" 
+                           placeholder="Sixth part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="p7">Text Part 7 (P7)</label>
+                    <input type="text" id="p7" name="p7" 
+                           placeholder="Seventh part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="p8">Text Part 8 (P8)</label>
+                    <input type="text" id="p8" name="p8" 
+                           placeholder="Eighth part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="p9">Text Part 9 (P9)</label>
+                    <input type="text" id="p9" name="p9" 
+                           placeholder="Ninth part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="p10">Text Part 10 (P10)</label>
+                    <input type="text" id="p10" name="p10" 
+                           placeholder="Tenth part of your text">
                 </div>
 
                 <div class="form-group">
@@ -1053,9 +1105,63 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="editText" class="required">Text Content</label>
-                    <textarea id="editText" name="text" required 
-                              placeholder="Write your main content here..."></textarea>
+                    <label for="editP1" class="required">Text Part 1 (P1)</label>
+                    <input type="text" id="editP1" name="p1" required 
+                           placeholder="First part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="editP2">Text Part 2 (P2)</label>
+                    <input type="text" id="editP2" name="p2" 
+                           placeholder="Second part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="editP3">Text Part 3 (P3)</label>
+                    <input type="text" id="editP3" name="p3" 
+                           placeholder="Third part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="editP4">Text Part 4 (P4)</label>
+                    <input type="text" id="editP4" name="p4" 
+                           placeholder="Fourth part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="editP5">Text Part 5 (P5)</label>
+                    <input type="text" id="editP5" name="p5" 
+                           placeholder="Fifth part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="editP6">Text Part 6 (P6)</label>
+                    <input type="text" id="editP6" name="p6" 
+                           placeholder="Sixth part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="editP7">Text Part 7 (P7)</label>
+                    <input type="text" id="editP7" name="p7" 
+                           placeholder="Seventh part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="editP8">Text Part 8 (P8)</label>
+                    <input type="text" id="editP8" name="p8" 
+                           placeholder="Eighth part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="editP9">Text Part 9 (P9)</label>
+                    <input type="text" id="editP9" name="p9" 
+                           placeholder="Ninth part of your text">
+                </div>
+
+                <div class="form-group">
+                    <label for="editP10">Text Part 10 (P10)</label>
+                    <input type="text" id="editP10" name="p10" 
+                           placeholder="Tenth part of your text">
                 </div>
 
                 <div class="form-group">
@@ -1260,6 +1366,10 @@
             if (!content) return;
 
             try {
+                // Get P1 text part
+                const textParts = content.textParts || {};
+                const p1Text = textParts.p1 || '';
+                
                 // Send content to main overlay
                 await sendToOverlay('SetOverlayContent', {
                     id: OVERLAY_ID,
@@ -1267,8 +1377,8 @@
                         "Text Active": true,
                         "Title": content.title,
                         "Subtitle": content.subtitle,
-                        "Text": content.text,
-                        "Lines": 10
+                        "Text": p1Text,
+                        "Lines": 2
                     }
                 });
 
@@ -1285,8 +1395,8 @@
                                 "Text Active": true,
                                 "Title": content.title,
                                 "Subtitle": content.subtitle,
-                                "Text": content.text,
-                                "Lines": 10
+                                "Text": p1Text,
+                                "Lines": 2
                             }
                         });
                         await sendToOverlay('ShowOverlay', { id: overlayId });
@@ -1383,7 +1493,7 @@
                         
                         <h4>${content.title || 'Untitled'}</h4>
                         <div class="subtitle">${content.subtitle || ''}</div>
-                        <div class="text-preview">${content.text || ''}</div>
+                        <div class="text-preview">${content.textParts ? Object.values(content.textParts).join(' | ') : (content.text || '')}</div>
                         <div class="content-meta">
                             <div>
                                 ${content.category ? `<span class="category-tag">${content.category}</span>` : ''}
@@ -1480,11 +1590,19 @@
             try {
                 const titleValue = document.getElementById('title').value.trim();
                 const subtitleValue = document.getElementById('subtitle').value.trim();
-                const textValue = document.getElementById('text').value.trim();
                 const categoryValue = document.getElementById('category').value.trim();
                 
-                if (!titleValue || !subtitleValue || !textValue) {
-                    throw new Error('Please fill in all required fields');
+                // Collect all text parts (p1-p10)
+                const textParts = {};
+                for (let i = 1; i <= 10; i++) {
+                    const partValue = document.getElementById(`p${i}`).value.trim();
+                    if (partValue) {
+                        textParts[`p${i}`] = partValue;
+                    }
+                }
+                
+                if (!titleValue || !subtitleValue || !textParts.p1) {
+                    throw new Error('Please fill in at least Title, Subtitle and Text Part 1');
                 }
                 
                 progressBar.style.width = '50%';
@@ -1497,7 +1615,7 @@
                     id: contentId,
                     title: titleValue,
                     subtitle: subtitleValue,
-                    text: textValue,
+                    textParts: textParts,
                     category: categoryValue,
                     timestamp: new Date().toLocaleString()
                 };
@@ -1547,8 +1665,16 @@
             document.getElementById('editContentId').value = contentId;
             document.getElementById('editTitle').value = content.title || '';
             document.getElementById('editSubtitle').value = content.subtitle || '';
-            document.getElementById('editText').value = content.text || '';
             document.getElementById('editCategory').value = content.category || '';
+            
+            // Fill text parts (p1-p10)
+            const textParts = content.textParts || {};
+            for (let i = 1; i <= 10; i++) {
+                const field = document.getElementById(`editP${i}`);
+                if (field) {
+                    field.value = textParts[`p${i}`] || '';
+                }
+            }
 
             // Show modal
             document.getElementById('editModal').classList.add('show');
@@ -1574,11 +1700,19 @@
             const contentId = document.getElementById('editContentId').value;
             const titleValue = document.getElementById('editTitle').value.trim();
             const subtitleValue = document.getElementById('editSubtitle').value.trim();
-            const textValue = document.getElementById('editText').value.trim();
             const categoryValue = document.getElementById('editCategory').value.trim();
+            
+            // Collect all text parts (p1-p10)
+            const textParts = {};
+            for (let i = 1; i <= 10; i++) {
+                const partValue = document.getElementById(`editP${i}`).value.trim();
+                if (partValue) {
+                    textParts[`p${i}`] = partValue;
+                }
+            }
 
-            if (!titleValue || !subtitleValue || !textValue) {
-                showStatusMessage('Please fill in all required fields', 'error');
+            if (!titleValue || !subtitleValue || !textParts.p1) {
+                showStatusMessage('Please fill in at least Title, Subtitle and Text Part 1', 'error');
                 return;
             }
 
@@ -1590,7 +1724,7 @@
                         ...contentStore[contentIndex],
                         title: titleValue,
                         subtitle: subtitleValue,
-                        text: textValue,
+                        textParts: textParts,
                         category: categoryValue,
                         timestamp: new Date().toLocaleString()
                     };
@@ -1613,10 +1747,17 @@
         async function duplicateContent() {
             const titleValue = document.getElementById('editTitle').value.trim();
             const subtitleValue = document.getElementById('editSubtitle').value.trim();
-            const textValue = document.getElementById('editText').value.trim();
             const categoryValue = document.getElementById('editCategory').value.trim();
-
-            if (!titleValue || !subtitleValue || !textValue) {
+            
+            // Collect all text parts (p1-p10)
+            const textParts = {};
+            for (let i = 1; i <= 10; i++) {
+                const partValue = document.getElementById(`editP${i}`).value.trim();
+                if (partValue) {
+                    textParts[`p${i}`] = partValue;
+                }
+            }
+            if (!titleValue || !subtitleValue || !textParts.p1) {
                 showStatusMessage('Please fill in all required fields', 'error');
                 return;
             }
@@ -1627,7 +1768,7 @@
                     id: newContentId,
                     title: titleValue + ' (Copy)',
                     subtitle: subtitleValue,
-                    text: textValue,
+                    textParts: textParts,
                     category: categoryValue,
                     timestamp: new Date().toLocaleString()
                 };
