@@ -1086,9 +1086,15 @@
     </div>
 
     <script>
-        // Store content in memory
-        let contentStore = [];
-        let overlayStates = {};
+        // Store content in localStorage for persistence
+        let contentStore = JSON.parse(localStorage.getItem('contentStore')) || [];
+        let overlayStates = JSON.parse(localStorage.getItem('overlayStates')) || {};
+        
+        // Save to localStorage whenever contentStore changes
+        function saveToLocalStorage() {
+            localStorage.setItem('contentStore', JSON.stringify(contentStore));
+            localStorage.setItem('overlayStates', JSON.stringify(overlayStates));
+        }
         
         const TEMPLATE_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
         const OVERLAY_ID = '6598bc8e-c088-43ba-a830-d24222614f4f';
@@ -1331,6 +1337,7 @@
             try {
                 contentStore = contentStore.filter(item => item.id !== contentId);
                 delete overlayStates[contentId];
+                saveToLocalStorage();
                 displayContentCards();
                 
                 showStatusMessage('Content item deleted successfully!', 'success');
@@ -1497,6 +1504,7 @@
                 // Just save to contentStore, don't send to overlay
                 contentStore.unshift(contentData);
                 overlayStates[contentId] = { active: false, hidden: false };
+                saveToLocalStorage();
 
                 // Success animation
                 progressBar.style.width = '100%';
@@ -1587,6 +1595,8 @@
                     };
                 }
 
+                saveToLocalStorage();
+                
                 // Update display
                 displayContentCards();
                 closeEditModal();
@@ -1623,6 +1633,7 @@
 
                 contentStore.unshift(newContent);
                 overlayStates[newContentId] = { active: false, hidden: false };
+                saveToLocalStorage();
 
                 displayContentCards();
                 closeEditModal();
