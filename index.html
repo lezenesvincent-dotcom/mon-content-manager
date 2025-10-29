@@ -934,31 +934,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="p1" class="required">P1</label>
-                    <textarea id="p1" name="p1" required 
-                              placeholder="Enter P1 content..."></textarea>
-                    <div class="field-hint">First text field</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="p2" class="required">P2</label>
-                    <textarea id="p2" name="p2" required 
-                              placeholder="Enter P2 content..."></textarea>
-                    <div class="field-hint">Second text field</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="p3" class="required">P3</label>
-                    <textarea id="p3" name="p3" required 
-                              placeholder="Enter P3 content..."></textarea>
-                    <div class="field-hint">Third text field</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="p4" class="required">P4</label>
-                    <textarea id="p4" name="p4" required 
-                              placeholder="Enter P4 content..."></textarea>
-                    <div class="field-hint">Fourth text field</div>
+                    <label for="text" class="required">Text Content</label>
+                    <textarea id="text" name="text" required 
+                              placeholder="Write your main content here..."></textarea>
+                    <div class="field-hint">The main body of your content</div>
                 </div>
 
                 <div class="form-group">
@@ -1073,27 +1052,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="editP1" class="required">P1</label>
-                    <textarea id="editP1" name="p1" required 
-                              placeholder="Enter P1 content..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="editP2" class="required">P2</label>
-                    <textarea id="editP2" name="p2" required 
-                              placeholder="Enter P2 content..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="editP3" class="required">P3</label>
-                    <textarea id="editP3" name="p3" required 
-                              placeholder="Enter P3 content..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="editP4" class="required">P4</label>
-                    <textarea id="editP4" name="p4" required 
-                              placeholder="Enter P4 content..."></textarea>
+                    <label for="editText" class="required">Text Content</label>
+                    <textarea id="editText" name="text" required 
+                              placeholder="Write your main content here..."></textarea>
                 </div>
 
                 <div class="form-group">
@@ -1128,9 +1089,9 @@
         let contentStore = [];
         let overlayStates = {};
         
-        // Single overlay configuration
-        const CONTROL_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
-        const OVERLAY_ID = '4fLVHu7eHUBPzBuFJ7mXWH'; // Using Control ID as Overlay ID
+        const TEMPLATE_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
+        const OVERLAY_ID = '6598bc8e-c088-43ba-a830-d24222614f4f';
+        const OVERLAY_API_URL = `https://app.overlays.uno/apiv2/controlapps/${TEMPLATE_ID}/api`;
 
         function openTab(evt, tabName) {
             const tabcontent = document.getElementsByClassName("tab-content");
@@ -1161,15 +1122,14 @@
                 console.log('Sending to Overlays.uno:', body);
 
                 // Use CORS proxy to bypass browser restrictions
-                const apiUrl = `https://app.overlays.uno/apiv2/controlapps/${CONTROL_ID}/api`;
-                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(apiUrl);
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(OVERLAY_API_URL);
 
                 const response = await fetch(proxyUrl, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Api-Key': CONTROL_ID,
-                        'Authorization': `Bearer ${CONTROL_ID}`
+                        'X-Api-Key': TEMPLATE_ID,
+                        'Authorization': `Bearer ${TEMPLATE_ID}`
                     },
                     body: JSON.stringify(body)
                 });
@@ -1241,21 +1201,18 @@
             if (!content) return;
 
             try {
-                // Send all 4 texts as bullets to single overlay
+                // Send content to overlay
                 await sendToOverlay('SetOverlayContent', {
                     id: OVERLAY_ID,
                     content: {
                         "Text Active": true,
                         "Title": content.title,
                         "Subtitle": content.subtitle,
-                        "Bullet 1": content.p1,
-                        "Bullet 2": content.p2,
-                        "Bullet 3": content.p3,
-                        "Bullet 4": content.p4,
-                        "Bullet 5": "",
+                        "Text": content.text,
                         "Lines": 10
                     }
                 });
+
                 await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
 
                 overlayStates[contentId] = { active: true, hidden: false };
@@ -1271,7 +1228,6 @@
         async function hideOverlay(contentId) {
             try {
                 await sendToOverlay('HideOverlay', { id: OVERLAY_ID });
-                
                 overlayStates[contentId] = { active: false, hidden: true };
                 displayContentCards();
                 showStatusMessage('Overlay hidden successfully!', 'success');
@@ -1333,12 +1289,7 @@
                         
                         <h4>${content.title || 'Untitled'}</h4>
                         <div class="subtitle">${content.subtitle || ''}</div>
-                        <div class="text-preview">
-                            <div><strong>P1:</strong> ${content.p1 || ''}</div>
-                            <div><strong>P2:</strong> ${content.p2 || ''}</div>
-                            <div><strong>P3:</strong> ${content.p3 || ''}</div>
-                            <div><strong>P4:</strong> ${content.p4 || ''}</div>
-                        </div>
+                        <div class="text-preview">${content.text || ''}</div>
                         <div class="content-meta">
                             <div>
                                 ${content.category ? `<span class="category-tag">${content.category}</span>` : ''}
@@ -1435,13 +1386,10 @@
             try {
                 const titleValue = document.getElementById('title').value.trim();
                 const subtitleValue = document.getElementById('subtitle').value.trim();
-                const p1Value = document.getElementById('p1').value.trim();
-                const p2Value = document.getElementById('p2').value.trim();
-                const p3Value = document.getElementById('p3').value.trim();
-                const p4Value = document.getElementById('p4').value.trim();
+                const textValue = document.getElementById('text').value.trim();
                 const categoryValue = document.getElementById('category').value.trim();
                 
-                if (!titleValue || !subtitleValue || !p1Value || !p2Value || !p3Value || !p4Value) {
+                if (!titleValue || !subtitleValue || !textValue) {
                     throw new Error('Please fill in all required fields');
                 }
                 
@@ -1455,10 +1403,7 @@
                     id: contentId,
                     title: titleValue,
                     subtitle: subtitleValue,
-                    p1: p1Value,
-                    p2: p2Value,
-                    p3: p3Value,
-                    p4: p4Value,
+                    text: textValue,
                     category: categoryValue,
                     timestamp: new Date().toLocaleString()
                 };
@@ -1507,10 +1452,7 @@
             document.getElementById('editContentId').value = contentId;
             document.getElementById('editTitle').value = content.title || '';
             document.getElementById('editSubtitle').value = content.subtitle || '';
-            document.getElementById('editP1').value = content.p1 || '';
-            document.getElementById('editP2').value = content.p2 || '';
-            document.getElementById('editP3').value = content.p3 || '';
-            document.getElementById('editP4').value = content.p4 || '';
+            document.getElementById('editText').value = content.text || '';
             document.getElementById('editCategory').value = content.category || '';
 
             // Show modal
@@ -1537,13 +1479,10 @@
             const contentId = document.getElementById('editContentId').value;
             const titleValue = document.getElementById('editTitle').value.trim();
             const subtitleValue = document.getElementById('editSubtitle').value.trim();
-            const p1Value = document.getElementById('editP1').value.trim();
-            const p2Value = document.getElementById('editP2').value.trim();
-            const p3Value = document.getElementById('editP3').value.trim();
-            const p4Value = document.getElementById('editP4').value.trim();
+            const textValue = document.getElementById('editText').value.trim();
             const categoryValue = document.getElementById('editCategory').value.trim();
 
-            if (!titleValue || !subtitleValue || !p1Value || !p2Value || !p3Value || !p4Value) {
+            if (!titleValue || !subtitleValue || !textValue) {
                 showStatusMessage('Please fill in all required fields', 'error');
                 return;
             }
@@ -1556,10 +1495,7 @@
                         ...contentStore[contentIndex],
                         title: titleValue,
                         subtitle: subtitleValue,
-                        p1: p1Value,
-                        p2: p2Value,
-                        p3: p3Value,
-                        p4: p4Value,
+                        text: textValue,
                         category: categoryValue,
                         timestamp: new Date().toLocaleString()
                     };
@@ -1580,13 +1516,10 @@
         async function duplicateContent() {
             const titleValue = document.getElementById('editTitle').value.trim();
             const subtitleValue = document.getElementById('editSubtitle').value.trim();
-            const p1Value = document.getElementById('editP1').value.trim();
-            const p2Value = document.getElementById('editP2').value.trim();
-            const p3Value = document.getElementById('editP3').value.trim();
-            const p4Value = document.getElementById('editP4').value.trim();
+            const textValue = document.getElementById('editText').value.trim();
             const categoryValue = document.getElementById('editCategory').value.trim();
 
-            if (!titleValue || !subtitleValue || !p1Value || !p2Value || !p3Value || !p4Value) {
+            if (!titleValue || !subtitleValue || !textValue) {
                 showStatusMessage('Please fill in all required fields', 'error');
                 return;
             }
@@ -1597,10 +1530,7 @@
                     id: newContentId,
                     title: titleValue + ' (Copy)',
                     subtitle: subtitleValue,
-                    p1: p1Value,
-                    p2: p2Value,
-                    p3: p3Value,
-                    p4: p4Value,
+                    text: textValue,
                     category: categoryValue,
                     timestamp: new Date().toLocaleString()
                 };
