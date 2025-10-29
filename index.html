@@ -1129,7 +1129,11 @@
         let overlayStates = {};
         
         const TEMPLATE_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
-        const OVERLAY_ID = '6598bc8e-c088-43ba-a830-d24222614f4f';
+        // 4 overlay IDs - one for each text field
+        const OVERLAY_ID_P1 = '2TsCECJ2wIbsiXe9VAsIPt';
+        const OVERLAY_ID_P2 = '0vLh3hPFvSxWyxAiUxcPSh';
+        const OVERLAY_ID_P3 = '2zBLUcTDqp44NE3w2MUlZ7';
+        const OVERLAY_ID_P4 = '64U330b1PNhPBUH9RfZyc7';
         const OVERLAY_API_URL = `https://app.overlays.uno/apiv2/controlapps/${TEMPLATE_ID}/api`;
 
         function openTab(evt, tabName) {
@@ -1240,27 +1244,62 @@
             if (!content) return;
 
             try {
-                // Send content to overlay
+                // Send P1 to its overlay
                 await sendToOverlay('SetOverlayContent', {
-                    id: OVERLAY_ID,
+                    id: OVERLAY_ID_P1,
                     content: {
                         "Text Active": true,
                         "Title": content.title,
                         "Subtitle": content.subtitle,
-                        "P1": content.p1,
-                        "P2": content.p2,
-                        "P3": content.p3,
-                        "P4": content.p4,
+                        "Text": content.p1,
                         "Lines": 10
                     }
                 });
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P1 });
 
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
+                // Send P2 to its overlay
+                await sendToOverlay('SetOverlayContent', {
+                    id: OVERLAY_ID_P2,
+                    content: {
+                        "Text Active": true,
+                        "Title": content.title,
+                        "Subtitle": content.subtitle,
+                        "Text": content.p2,
+                        "Lines": 10
+                    }
+                });
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P2 });
+
+                // Send P3 to its overlay
+                await sendToOverlay('SetOverlayContent', {
+                    id: OVERLAY_ID_P3,
+                    content: {
+                        "Text Active": true,
+                        "Title": content.title,
+                        "Subtitle": content.subtitle,
+                        "Text": content.p3,
+                        "Lines": 10
+                    }
+                });
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P3 });
+
+                // Send P4 to its overlay
+                await sendToOverlay('SetOverlayContent', {
+                    id: OVERLAY_ID_P4,
+                    content: {
+                        "Text Active": true,
+                        "Title": content.title,
+                        "Subtitle": content.subtitle,
+                        "Text": content.p4,
+                        "Lines": 10
+                    }
+                });
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID_P4 });
 
                 overlayStates[contentId] = { active: true, hidden: false };
                 displayContentCards();
                 
-                showStatusMessage(`📤 "${content.title}" sent to overlay!`, 'success');
+                showStatusMessage(`📤 "${content.title}" sent to all 4 overlays!`, 'success');
             } catch (error) {
                 console.error('Send to overlay failed:', error);
                 showStatusMessage('Failed to send to overlay: ' + error.message, 'error');
@@ -1269,10 +1308,15 @@
 
         async function hideOverlay(contentId) {
             try {
-                await sendToOverlay('HideOverlay', { id: OVERLAY_ID });
+                // Hide all 4 overlays
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P1 });
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P2 });
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P3 });
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID_P4 });
+                
                 overlayStates[contentId] = { active: false, hidden: true };
                 displayContentCards();
-                showStatusMessage('Overlay hidden successfully!', 'success');
+                showStatusMessage('All overlays hidden successfully!', 'success');
             } catch (error) {
                 console.error('Hide overlay failed:', error);
                 showStatusMessage('Failed to hide overlay: ' + error.message, 'error');
