@@ -949,9 +949,70 @@
         <div id="settings" class="tab-content">
             <h3>Settings & Configuration</h3>
             
+            <!-- GitHub Gist Sync -->
+            <div style="background: #e3f2fd; padding: 30px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #2196f3;">
+                <h4 style="margin-bottom: 15px; color: #1565c0;">🔄 GitHub Gist Sync (RECOMMANDÉ)</h4>
+                <p style="color: #1565c0; margin-bottom: 15px; font-weight: 600;">
+                    Synchronisation automatique en temps réel entre tous vos ordinateurs !
+                </p>
+                
+                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
+                        <strong>📝 Configuration en 3 étapes :</strong>
+                        <ol style="margin: 10px 0 0 20px; color: #495057; line-height: 1.8;">
+                            <li><strong>Créer un GitHub Gist :</strong>
+                                <ul style="margin-left: 20px;">
+                                    <li>Aller sur <a href="https://gist.github.com" target="_blank">gist.github.com</a></li>
+                                    <li>Créer un nouveau Gist public ou secret</li>
+                                    <li>Nom du fichier : <code>content-store-p1p4.json</code></li>
+                                    <li>Contenu initial : <code>[]</code></li>
+                                    <li>Copier l'ID du Gist (dans l'URL)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Créer un token GitHub :</strong>
+                                <ul style="margin-left: 20px;">
+                                    <li>Aller sur <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a></li>
+                                    <li>Cliquer "Generate new token" → "Generate new token (classic)"</li>
+                                    <li>Cocher uniquement la case <strong>"gist"</strong></li>
+                                    <li>Copier le token généré</li>
+                                </ul>
+                            </li>
+                            <li><strong>Configurer dans le code :</strong>
+                                <ul style="margin-left: 20px;">
+                                    <li>Ouvrir ce fichier HTML dans un éditeur de texte</li>
+                                    <li>Chercher : <code>const GIST_CONFIG = {</code></li>
+                                    <li>Modifier :
+                                        <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 5px;">enabled: true,
+gistId: 'VOTRE_GIST_ID',
+token: 'VOTRE_TOKEN_GITHUB'</pre>
+                                    </li>
+                                    <li>Sauvegarder le fichier</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
+                        <strong>✅ Avantages :</strong>
+                        <ul style="margin: 10px 0 0 20px; color: #495057;">
+                            <li><strong>Sync automatique :</strong> Toutes les 60 secondes entre tous les PC</li>
+                            <li><strong>Temps réel :</strong> Créer du contenu sur PC1, il apparaît sur PC2</li>
+                            <li><strong>100% dans le code :</strong> Pas besoin de copier/coller manuellement</li>
+                            <li><strong>Gratuit :</strong> GitHub Gist est gratuit</li>
+                            <li><strong>Sécurisé :</strong> Token personnel, données privées</li>
+                        </ul>
+                    </div>
+                    
+                    <div id="gistStatus" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <strong>État actuel :</strong> 
+                        <span id="gistStatusText" style="color: #dc3545; font-weight: 600;">❌ Non configuré</span>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Embedded Database Info -->
             <div style="background: #d4edda; padding: 30px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #28a745;">
-                <h4 style="margin-bottom: 15px; color: #155724;">✅ Embedded Shared Database</h4>
+                <h4 style="margin-bottom: 15px; color: #155724;">✅ Embedded Shared Database (Méthode manuelle)</h4>
                 <p style="color: #155724; margin-bottom: 15px; font-weight: 600;">
                     Data is stored directly in the HTML file - No external services needed!
                 </p>
@@ -1156,6 +1217,88 @@
 
     <script>
         // ===================================================================
+        // GITHUB GIST SYNC - Synchronisation automatique entre machines
+        // ===================================================================
+        // Configuration du Gist GitHub pour la synchronisation
+        const GIST_CONFIG = {
+            enabled: false, // Mettre à true pour activer la sync
+            gistId: '', // Votre Gist ID (ex: 'abc123def456')
+            token: '', // Votre token GitHub (avec scope 'gist')
+            filename: 'content-store-p1p4.json',
+            autoSyncInterval: 60000 // Sync toutes les 60 secondes
+        };
+        
+        // Fonction pour charger les données depuis le Gist
+        async function loadFromGist() {
+            if (!GIST_CONFIG.enabled || !GIST_CONFIG.gistId || !GIST_CONFIG.token) {
+                return null;
+            }
+            
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_CONFIG.gistId}`, {
+                    headers: {
+                        'Authorization': `token ${GIST_CONFIG.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.error('Failed to load from Gist:', response.status);
+                    return null;
+                }
+                
+                const gist = await response.json();
+                const content = gist.files[GIST_CONFIG.filename]?.content;
+                
+                if (content) {
+                    const data = JSON.parse(content);
+                    console.log('✅ Loaded from GitHub Gist:', data.length, 'items');
+                    return data;
+                }
+            } catch (error) {
+                console.error('Error loading from Gist:', error);
+            }
+            
+            return null;
+        }
+        
+        // Fonction pour sauvegarder les données dans le Gist
+        async function saveToGist(data) {
+            if (!GIST_CONFIG.enabled || !GIST_CONFIG.gistId || !GIST_CONFIG.token) {
+                return false;
+            }
+            
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_CONFIG.gistId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${GIST_CONFIG.token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            [GIST_CONFIG.filename]: {
+                                content: JSON.stringify(data, null, 2)
+                            }
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Saved to GitHub Gist');
+                    return true;
+                }
+                
+                console.error('Failed to save to Gist:', response.status);
+            } catch (error) {
+                console.error('Error saving to Gist:', error);
+            }
+            
+            return false;
+        }
+        
+        // ===================================================================
         // EMBEDDED SHARED DATABASE - Edit this section to share data
         // ===================================================================
         // To share new content across all machines:
@@ -1183,15 +1326,27 @@
         // ===================================================================
         
         let contentStore = [];
+        let syncInterval = null;
         
-        function loadSharedData() {
-            // Priority 1: Load from embedded database (shared across all machines)
+        async function loadSharedData() {
+            // Priority 1: Load from GitHub Gist (if enabled)
+            if (GIST_CONFIG.enabled) {
+                const gistData = await loadFromGist();
+                if (gistData && gistData.length > 0) {
+                    contentStore = [...gistData];
+                    console.log('✅ Loaded from GitHub Gist:', contentStore.length, 'items');
+                    saveToLocalStorage(); // Backup localement
+                    return contentStore;
+                }
+            }
+            
+            // Priority 2: Load from embedded database (shared across all machines)
             if (DEFAULT_CONTENT_STORE.length > 0) {
                 contentStore = [...DEFAULT_CONTENT_STORE];
                 console.log('✅ Loaded from embedded database:', contentStore.length, 'items');
             }
             
-            // Priority 2: Merge with localStorage (local additions)
+            // Priority 3: Merge with localStorage (local additions)
             const localData = JSON.parse(localStorage.getItem('contentStore_p1p4')) || [];
             
             // Add local items that are not in the embedded database
@@ -1213,6 +1368,41 @@
             // Save to localStorage for local backup
             localStorage.setItem('contentStore_p1p4', JSON.stringify(contentStore));
             console.log('💾 Saved to local storage');
+            
+            // Also save to Gist if enabled
+            if (GIST_CONFIG.enabled) {
+                saveToGist(contentStore);
+            }
+        }
+        
+        function startAutoSync() {
+            if (!GIST_CONFIG.enabled || syncInterval) return;
+            
+            syncInterval = setInterval(async () => {
+                const gistData = await loadFromGist();
+                if (gistData) {
+                    // Merge avec les données locales
+                    gistData.forEach(gistItem => {
+                        const exists = contentStore.find(item => item.id === gistItem.id);
+                        if (!exists) {
+                            contentStore.unshift(gistItem);
+                        }
+                    });
+                    
+                    saveToLocalStorage();
+                    displayContentCards();
+                }
+            }, GIST_CONFIG.autoSyncInterval);
+            
+            console.log('🔄 Auto-sync enabled (every', GIST_CONFIG.autoSyncInterval / 1000, 'seconds)');
+        }
+        
+        function stopAutoSync() {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+                syncInterval = null;
+                console.log('⏸️ Auto-sync disabled');
+            }
         }
         
         function exportDataToConsole() {
@@ -1383,7 +1573,7 @@
                     content.p4_line8
                 ].map(line => (line || '').trim()); // Trim whitespace
                 
-                // Fonction pour ajouter des espaces insécables tous les 11 caractères sans couper les mots
+                // Fonction pour ajouter des espaces insécables tous les 15 caractères sans couper les mots
                 function addSpacesEvery20Chars(text) {
                     if (!text) return '';
                     
@@ -1391,13 +1581,13 @@
                     let currentPos = 0;
                     
                     while (currentPos < text.length) {
-                        // Prendre 11 caractères
-                        let chunk = text.substring(currentPos, currentPos + 11);
+                        // Prendre 15 caractères
+                        let chunk = text.substring(currentPos, currentPos + 15);
                         
                         // Si on n'est pas à la fin et que le chunk ne se termine pas par un espace
-                        if (currentPos + 11 < text.length && chunk[chunk.length - 1] !== ' ') {
+                        if (currentPos + 15 < text.length && chunk[chunk.length - 1] !== ' ') {
                             // Vérifier si on coupe un mot
-                            const nextChar = text[currentPos + 11];
+                            const nextChar = text[currentPos + 15];
                             if (nextChar && nextChar !== ' ') {
                                 // On coupe un mot, trouver le dernier espace dans le chunk
                                 const lastSpaceIndex = chunk.lastIndexOf(' ');
@@ -1700,8 +1890,19 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             // Load shared data on startup
-            loadSharedData();
-            displayContentCards();
+            loadSharedData().then(() => {
+                displayContentCards();
+                
+                // Start auto-sync if enabled
+                if (GIST_CONFIG.enabled) {
+                    startAutoSync();
+                    document.getElementById('gistStatusText').innerHTML = '✅ Activé - Sync automatique toutes les 60 secondes';
+                    document.getElementById('gistStatusText').style.color = '#28a745';
+                } else {
+                    document.getElementById('gistStatusText').innerHTML = '❌ Non configuré - Voir instructions ci-dessus';
+                    document.getElementById('gistStatusText').style.color = '#dc3545';
+                }
+            });
             
             // Character counters for all text areas
             const textareas = [
