@@ -1107,7 +1107,8 @@
                 console.log('Content:', content);
                 
                 // Concatenate all 8 lines into one Text field
-                const fullText = [
+                // Filter out empty lines to avoid duplicates
+                const lines = [
                     content.p1_line1,
                     content.p1_line2,
                     content.p2_line3,
@@ -1116,9 +1117,13 @@
                     content.p3_line6,
                     content.p4_line7,
                     content.p4_line8
-                ].join('\n');
+                ].map(line => (line || '').trim()); // Trim whitespace
+                
+                const fullText = lines.join('\n');
                 
                 console.log('Full text (8 lines):', fullText);
+                console.log('Text length:', fullText.length);
+                console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
                 
                 // Send all 8 lines to the single overlay
                 await sendToOverlay('SetOverlayContent', {
