@@ -983,8 +983,8 @@
                                     <li>Chercher : <code>const GIST_CONFIG = {</code></li>
                                     <li>Modifier :
                                         <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 5px;">enabled: true,
-gistId: 'cd535a80f0ecd71bc36ce70522edfd8a',
-token: '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'</pre>
+gistId: 'VOTRE_GIST_ID',
+token: 'VOTRE_TOKEN_GITHUB'</pre>
                                     </li>
                                     <li>Sauvegarder le fichier</li>
                                 </ul>
@@ -1221,9 +1221,9 @@ token: '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'</pre>
         // ===================================================================
         // Configuration du Gist GitHub pour la synchronisation
         const GIST_CONFIG = {
-            enabled: true, // Mettre à true pour activer la sync
-            gistId: 'cd535a80f0ecd71bc36ce70522edfd8a', // Votre Gist ID (ex: 'abc123def456')
-            token: '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', // Votre token GitHub (avec scope 'gist')
+            enabled: false, // Mettre à true pour activer la sync
+            gistId: '', // Votre Gist ID (ex: 'abc123def456')
+            token: '', // Votre token GitHub (avec scope 'gist')
             filename: 'content-store-p1p4.json',
             autoSyncInterval: 60000 // Sync toutes les 60 secondes
         };
@@ -1573,7 +1573,7 @@ token: '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'</pre>
                     content.p4_line8
                 ].map(line => (line || '').trim()); // Trim whitespace
                 
-                // Fonction pour ajouter des espaces insécables tous les 15 caractères sans couper les mots
+                // Fonction pour aligner les groupes de texte sur des multiples de 15 caractères
                 function addSpacesEvery20Chars(text) {
                     if (!text) return '';
                     
@@ -1581,7 +1581,7 @@ token: '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'</pre>
                     let currentPos = 0;
                     
                     while (currentPos < text.length) {
-                        // Prendre 15 caractères
+                        // Prendre jusqu'à 15 caractères
                         let chunk = text.substring(currentPos, currentPos + 15);
                         
                         // Si on n'est pas à la fin et que le chunk ne se termine pas par un espace
@@ -1599,11 +1599,15 @@ token: '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'</pre>
                         }
                         
                         result += chunk;
-                        currentPos += chunk.length;
+                        const chunkLength = chunk.length;
+                        currentPos += chunkLength;
                         
-                        // Ajouter 8 espaces insécables si on n'est pas à la fin
+                        // Ajouter des espaces insécables pour compléter jusqu'au prochain multiple de 15
                         if (currentPos < text.length) {
-                            result += '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'; // 8 espaces insécables
+                            // Calculer combien d'espaces ajouter pour atteindre le prochain multiple de 15
+                            const spacesToAdd = 15 - (chunkLength % 15);
+                            result += '\u00A0'.repeat(spacesToAdd);
+                            
                             // Sauter les espaces au début du prochain chunk
                             while (currentPos < text.length && text[currentPos] === ' ') {
                                 currentPos++;
@@ -2025,6 +2029,4 @@ token: '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'</pre>
     </script>
 </body>
 </html>
-
-
 
