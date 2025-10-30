@@ -951,55 +951,50 @@
             
             <!-- GitHub Gist Sync -->
             <div style="background: #e3f2fd; padding: 30px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #2196f3;">
-                <h4 style="margin-bottom: 15px; color: #1565c0;">🔄 GitHub Gist Sync (RECOMMANDÉ)</h4>
+                <h4 style="margin-bottom: 15px; color: #1565c0;">🔄 GitHub Gist Sync (ACTIVÉ)</h4>
                 <p style="color: #1565c0; margin-bottom: 15px; font-weight: 600;">
                     Synchronisation automatique en temps réel entre tous vos ordinateurs !
                 </p>
                 
                 <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; margin-bottom: 15px;">
+                        <strong>✅ Token jamais sur GitHub - 100% sécurisé !</strong>
+                        <p style="margin: 10px 0 0 0; color: #495057;">
+                            Le token est stocké uniquement dans votre navigateur (localStorage).<br>
+                            Il n'est JAMAIS visible sur GitHub → GitHub ne peut pas le révoquer !
+                        </p>
+                    </div>
+                    
                     <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
-                        <strong>📝 Configuration en 3 étapes :</strong>
+                        <strong>📝 Configuration rapide :</strong>
                         <ol style="margin: 10px 0 0 20px; color: #495057; line-height: 1.8;">
-                            <li><strong>Créer un GitHub Gist :</strong>
+                            <li><strong>Première utilisation :</strong>
                                 <ul style="margin-left: 20px;">
-                                    <li>Aller sur <a href="https://gist.github.com" target="_blank">gist.github.com</a></li>
-                                    <li>Créer un nouveau Gist public ou secret</li>
-                                    <li>Nom du fichier : <code>content-store-p1p4.json</code></li>
-                                    <li>Contenu initial : <code>[]</code></li>
-                                    <li>Copier l'ID du Gist (dans l'URL)</li>
+                                    <li>Au premier lancement, une popup demande votre token GitHub</li>
+                                    <li>Créez un token sur <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a></li>
+                                    <li>Scope requis : <strong>"gist"</strong> uniquement</li>
+                                    <li>Collez le token dans la popup</li>
+                                    <li>✅ C'est tout ! Le token est sauvegardé localement</li>
                                 </ul>
                             </li>
-                            <li><strong>Créer un token GitHub :</strong>
+                            <li><strong>Sur vos autres PC :</strong>
                                 <ul style="margin-left: 20px;">
-                                    <li>Aller sur <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a></li>
-                                    <li>Cliquer "Generate new token" → "Generate new token (classic)"</li>
-                                    <li>Cocher uniquement la case <strong>"gist"</strong></li>
-                                    <li>Copier le token généré</li>
-                                </ul>
-                            </li>
-                            <li><strong>Configurer dans le code :</strong>
-                                <ul style="margin-left: 20px;">
-                                    <li>Ouvrir ce fichier HTML dans un éditeur de texte</li>
-                                    <li>Chercher : <code>const GIST_CONFIG = {</code></li>
-                                    <li>Modifier :
-                                        <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 5px;">enabled: true,
-gistId: 'VOTRE_GIST_ID',
-token: 'VOTRE_TOKEN_GITHUB'</pre>
-                                    </li>
-                                    <li>Sauvegarder le fichier</li>
+                                    <li>Ouvrez le site</li>
+                                    <li>Entrez le même token quand demandé</li>
+                                    <li>✅ Synchronisation automatique activée !</li>
                                 </ul>
                             </li>
                         </ol>
                     </div>
                     
-                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
-                        <strong>✅ Avantages :</strong>
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3;">
+                        <strong>✨ Avantages :</strong>
                         <ul style="margin: 10px 0 0 20px; color: #495057;">
                             <li><strong>Sync automatique :</strong> Toutes les 60 secondes entre tous les PC</li>
+                            <li><strong>Sécurisé :</strong> Token jamais visible sur GitHub</li>
+                            <li><strong>Simple :</strong> Entrez le token une seule fois par PC</li>
                             <li><strong>Temps réel :</strong> Créer du contenu sur PC1, il apparaît sur PC2</li>
-                            <li><strong>100% dans le code :</strong> Pas besoin de copier/coller manuellement</li>
-                            <li><strong>Gratuit :</strong> GitHub Gist est gratuit</li>
-                            <li><strong>Sécurisé :</strong> Token personnel, données privées</li>
+                            <li><strong>Gratuit :</strong> GitHub Gist est 100% gratuit</li>
                         </ul>
                     </div>
                     
@@ -1007,6 +1002,10 @@ token: 'VOTRE_TOKEN_GITHUB'</pre>
                         <strong>État actuel :</strong> 
                         <span id="gistStatusText" style="color: #dc3545; font-weight: 600;">❌ Non configuré</span>
                     </div>
+                    
+                    <button onclick="promptForToken()" class="btn-primary" style="width: 100%; margin-top: 15px;">
+                        🔑 Configurer / Changer le token
+                    </button>
                 </div>
             </div>
             
@@ -1221,23 +1220,68 @@ token: 'VOTRE_TOKEN_GITHUB'</pre>
         // ===================================================================
         // Configuration du Gist GitHub pour la synchronisation
         const GIST_CONFIG = {
-            enabled: false, // Mettre à true pour activer la sync
-            gistId: '', // Votre Gist ID (ex: 'abc123def456')
-            token: '', // Votre token GitHub (avec scope 'gist')
+            enabled: true, // Toujours activé
+            gistId: 'cd535a80f0ecd71bc36ce70522edfd8a', // Votre Gist ID
+            token: '', // NE JAMAIS mettre le token ici - il sera demandé au premier lancement
             filename: 'content-store-p1p4.json',
             autoSyncInterval: 60000 // Sync toutes les 60 secondes
         };
         
+        // Récupérer le token depuis localStorage
+        function getStoredToken() {
+            return localStorage.getItem('github_gist_token');
+        }
+        
+        // Sauvegarder le token dans localStorage
+        function saveToken(token) {
+            localStorage.setItem('github_gist_token', token);
+            GIST_CONFIG.token = token;
+        }
+        
+        // Demander le token à l'utilisateur
+        function promptForToken() {
+            const token = prompt(
+                '🔑 Configuration de la synchronisation\n\n' +
+                'Pour synchroniser entre vos PC, entrez votre token GitHub:\n\n' +
+                '1. Allez sur: https://github.com/settings/tokens\n' +
+                '2. Créez un token avec le scope "gist"\n' +
+                '3. Collez-le ci-dessous\n\n' +
+                'Le token sera sauvegardé localement (jamais sur GitHub).'
+            );
+            
+            if (token && token.trim()) {
+                saveToken(token.trim());
+                showStatusMessage('✅ Token configuré ! Synchronisation activée.', 'success');
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // Vérifier et initialiser le token
+        function initializeToken() {
+            const storedToken = getStoredToken();
+            
+            if (storedToken) {
+                GIST_CONFIG.token = storedToken;
+                return true;
+            }
+            
+            // Pas de token stocké, demander à l'utilisateur
+            return promptForToken();
+        }
+        
         // Fonction pour charger les données depuis le Gist
         async function loadFromGist() {
-            if (!GIST_CONFIG.enabled || !GIST_CONFIG.gistId || !GIST_CONFIG.token) {
+            const token = getStoredToken();
+            if (!GIST_CONFIG.enabled || !GIST_CONFIG.gistId || !token) {
                 return null;
             }
             
             try {
                 const response = await fetch(`https://api.github.com/gists/${GIST_CONFIG.gistId}`, {
                     headers: {
-                        'Authorization': `token ${GIST_CONFIG.token}`,
+                        'Authorization': `token ${token}`,
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
@@ -1264,7 +1308,8 @@ token: 'VOTRE_TOKEN_GITHUB'</pre>
         
         // Fonction pour sauvegarder les données dans le Gist
         async function saveToGist(data) {
-            if (!GIST_CONFIG.enabled || !GIST_CONFIG.gistId || !GIST_CONFIG.token) {
+            const token = getStoredToken();
+            if (!GIST_CONFIG.enabled || !GIST_CONFIG.gistId || !token) {
                 return false;
             }
             
@@ -1272,7 +1317,7 @@ token: 'VOTRE_TOKEN_GITHUB'</pre>
                 const response = await fetch(`https://api.github.com/gists/${GIST_CONFIG.gistId}`, {
                     method: 'PATCH',
                     headers: {
-                        'Authorization': `token ${GIST_CONFIG.token}`,
+                        'Authorization': `token ${token}`,
                         'Accept': 'application/vnd.github.v3+json',
                         'Content-Type': 'application/json'
                     },
@@ -1329,8 +1374,13 @@ token: 'VOTRE_TOKEN_GITHUB'</pre>
         let syncInterval = null;
         
         async function loadSharedData() {
-            // Priority 1: Load from GitHub Gist (if enabled)
+            // Initialiser le token au démarrage
             if (GIST_CONFIG.enabled) {
+                initializeToken();
+            }
+            
+            // Priority 1: Load from GitHub Gist (if enabled)
+            if (GIST_CONFIG.enabled && getStoredToken()) {
                 const gistData = await loadFromGist();
                 if (gistData && gistData.length > 0) {
                     contentStore = [...gistData];
@@ -1899,9 +1949,15 @@ token: 'VOTRE_TOKEN_GITHUB'</pre>
                 
                 // Start auto-sync if enabled
                 if (GIST_CONFIG.enabled) {
-                    startAutoSync();
-                    document.getElementById('gistStatusText').innerHTML = '✅ Activé - Sync automatique toutes les 60 secondes';
-                    document.getElementById('gistStatusText').style.color = '#28a745';
+                    const hasToken = !!getStoredToken();
+                    if (hasToken) {
+                        startAutoSync();
+                        document.getElementById('gistStatusText').innerHTML = '✅ Activé - Sync automatique toutes les 60 secondes';
+                        document.getElementById('gistStatusText').style.color = '#28a745';
+                    } else {
+                        document.getElementById('gistStatusText').innerHTML = '⚠️ Token non configuré - Entrez votre token pour activer la sync';
+                        document.getElementById('gistStatusText').style.color = '#ffc107';
+                    }
                 } else {
                     document.getElementById('gistStatusText').innerHTML = '❌ Non configuré - Voir instructions ci-dessus';
                     document.getElementById('gistStatusText').style.color = '#dc3545';
@@ -2029,4 +2085,5 @@ token: 'VOTRE_TOKEN_GITHUB'</pre>
     </script>
 </body>
 </html>
+
 
