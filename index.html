@@ -1676,17 +1676,13 @@
                 console.log('Text length:', fullText.length);
                 console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
                 
-                // Send all 8 lines to the single overlay with reduced font size
+                // Send all 8 lines to the single overlay
                 await sendToOverlay('SetOverlayContent', {
-                    id: OVERLAY_ID,
+                    id: '4dqe9yEBokrtEVAstBsprG',
                     content: {
-                        "Text Active": true,
                         "Title": content.title || "",
                         "Subtitle": content.subtitle || "",
-                        "Text": fullText,
-                        "Lines": 8,
-                        "Font Size": 20,
-                        "Text Align": "left"
+                        "Text": fullText
                     }
                 });
                 
