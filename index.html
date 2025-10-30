@@ -1224,10 +1224,16 @@
                             </button>
                         </div>
                         
-                        <button class="btn-send" 
-                                onclick="sendContentToOverlay('${content.id}')">
-                            📤 SEND TO OVERLAY (8 LINES)
-                        </button>
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-top: 15px;">
+                            <button class="btn-send" 
+                                    onclick="sendContentToOverlay('${content.id}')">
+                                📤 SEND TO OVERLAY (8 LINES)
+                            </button>
+                            <button onclick="hideOverlay()" 
+                                    style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; padding: 12px 24px; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer;">
+                                🙈 HIDE
+                            </button>
+                        </div>
                     </div>
                 `;
             }).join('');
