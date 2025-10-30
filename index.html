@@ -1428,11 +1428,11 @@
                 const processedLines = lines.map(line => addSpacesEvery20Chars(line));
                 const fullText = processedLines.join('\n');
                 
-                console.log('Full text (8 lines):', fullText);
+                console.log('Full text (8 lines with spaces):', fullText);
                 console.log('Text length:', fullText.length);
                 console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
                 
-                // Send all 8 lines to the single overlay
+                // Send all 8 lines to the single overlay with reduced font size
                 await sendToOverlay('SetOverlayContent', {
                     id: OVERLAY_ID,
                     content: {
@@ -1440,7 +1440,8 @@
                         "Title": content.title || "",
                         "Subtitle": content.subtitle || "",
                         "Text": fullText,
-                        "Lines": 8
+                        "Lines": 8,
+                        "Font Size": 24
                     }
                 });
                 
