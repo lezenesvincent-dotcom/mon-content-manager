@@ -840,31 +840,8 @@
         }
         
         const TEMPLATE_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
+        const OVERLAY_ID = '6598bc8e-c088-43ba-a830-d24222614f4f';
         const OVERLAY_API_URL = `https://app.overlays.uno/apiv2/controlapps/${TEMPLATE_ID}/api`;
-        
-        // P1, P2, P3, P4 Control IDs and Overlay IDs
-        const P_CONFIG = {
-            P1: {
-                controlId: '0FMiQNcS5Qvj030fgt6Uhd',
-                overlayId: '2RpB8WNDydbjZWQzsyFBIO',
-                lines: [1, 2]
-            },
-            P2: {
-                controlId: '5SplyVqe0AFk0BSkkfZ1Ea',
-                overlayId: '5pl4nXXnFpR9ry3df6uqrI',
-                lines: [3, 4]
-            },
-            P3: {
-                controlId: '4tuxIMbEnRneDSe07PBErz',
-                overlayId: '3ZNUhEFUMSI9khhm4jJEh8',
-                lines: [5, 6]
-            },
-            P4: {
-                controlId: '4swff6179BaIxm5slHPEzr',
-                overlayId: '5UDxKf73fGCDtSYndUnte2',
-                lines: [7, 8]
-            }
-        };
 
         function openTab(evt, tabName) {
             const tabcontent = document.getElementsByClassName("tab-content");
@@ -898,7 +875,7 @@
                 console.log('Full body:', JSON.stringify(body, null, 2));
                 
                 const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(OVERLAY_API_URL);
-                console.log('URL:', proxyUrl);
+                console.log('Proxy URL:', proxyUrl);
 
                 const response = await fetch(proxyUrl, {
                     method: 'PUT',
@@ -929,11 +906,15 @@
                 if (!response.ok) {
                     console.error('Response not OK. Status:', response.status);
                     console.error('Result object:', result);
-                    console.error('Result.error:', result.error);
-                    console.error('Result.message:', result.message);
-                    console.error('Result.raw:', result.raw);
                     
-                    const errorMsg = result.error || result.message || result.raw || JSON.stringify(result) || `HTTP ${response.status}`;
+                    // Extract error message properly
+                    let errorMsg;
+                    if (result.error && typeof result.error === 'object') {
+                        errorMsg = result.error.message || JSON.stringify(result.error);
+                    } else {
+                        errorMsg = result.error || result.message || result.raw || JSON.stringify(result) || `HTTP ${response.status}`;
+                    }
+                    
                     console.error('Final error message:', errorMsg);
                     throw new Error(errorMsg);
                 }
@@ -944,7 +925,6 @@
                 console.error('Error name:', error.name);
                 console.error('Error message:', error.message);
                 console.error('Error stack:', error.stack);
-                console.error('Full error object:', error);
                 throw error;
             }
         }
@@ -982,120 +962,56 @@
             if (!content) return;
 
             try {
-                console.log('=== STARTING SEND TO ALL OVERLAYS ===');
+                console.log('=== STARTING SEND TO OVERLAY ===');
                 console.log('Content:', content);
                 
-                // Send to P1: Lines 1-2
-                console.log('--- Sending to P1 ---');
-                const p1Text = `${content.p1_line1}\n${content.p1_line2}`;
-                console.log('P1 Text:', p1Text);
+                // Concatenate all 8 lines into one Text field
+                const fullText = [
+                    content.p1_line1,
+                    content.p1_line2,
+                    content.p2_line3,
+                    content.p2_line4,
+                    content.p3_line5,
+                    content.p3_line6,
+                    content.p4_line7,
+                    content.p4_line8
+                ].join('\n');
                 
+                console.log('Full text (8 lines):', fullText);
+                
+                // Send all 8 lines to the single overlay
                 await sendToOverlay('SetOverlayContent', {
-                    id: P_CONFIG.P1.overlayId,
+                    id: OVERLAY_ID,
                     content: {
                         "Text Active": true,
                         "Title": content.title || "",
                         "Subtitle": content.subtitle || "",
-                        "Text": p1Text,
-                        "Lines": 2
+                        "Text": fullText,
+                        "Lines": 8
                     }
                 });
-                await sendToOverlay('ShowOverlay', { id: P_CONFIG.P1.overlayId });
-                console.log('✓ P1 sent successfully');
-
-                // Send to P2: Lines 3-4
-                console.log('--- Sending to P2 ---');
-                const p2Text = `${content.p2_line3}\n${content.p2_line4}`;
-                console.log('P2 Text:', p2Text);
                 
-                await sendToOverlay('SetOverlayContent', {
-                    id: P_CONFIG.P2.overlayId,
-                    content: {
-                        "Text Active": true,
-                        "Title": content.title || "",
-                        "Subtitle": content.subtitle || "",
-                        "Text": p2Text,
-                        "Lines": 2
-                    }
-                });
-                await sendToOverlay('ShowOverlay', { id: P_CONFIG.P2.overlayId });
-                console.log('✓ P2 sent successfully');
-
-                // Send to P3: Lines 5-6
-                console.log('--- Sending to P3 ---');
-                const p3Text = `${content.p3_line5}\n${content.p3_line6}`;
-                console.log('P3 Text:', p3Text);
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
                 
-                await sendToOverlay('SetOverlayContent', {
-                    id: P_CONFIG.P3.overlayId,
-                    content: {
-                        "Text Active": true,
-                        "Title": content.title || "",
-                        "Subtitle": content.subtitle || "",
-                        "Text": p3Text,
-                        "Lines": 2
-                    }
-                });
-                await sendToOverlay('ShowOverlay', { id: P_CONFIG.P3.overlayId });
-                console.log('✓ P3 sent successfully');
-
-                // Send to P4: Lines 7-8
-                console.log('--- Sending to P4 ---');
-                const p4Text = `${content.p4_line7}\n${content.p4_line8}`;
-                console.log('P4 Text:', p4Text);
-                
-                await sendToOverlay('SetOverlayContent', {
-                    id: P_CONFIG.P4.overlayId,
-                    content: {
-                        "Text Active": true,
-                        "Title": content.title || "",
-                        "Subtitle": content.subtitle || "",
-                        "Text": p4Text,
-                        "Lines": 2
-                    }
-                });
-                await sendToOverlay('ShowOverlay', { id: P_CONFIG.P4.overlayId });
-                console.log('✓ P4 sent successfully');
-
-                console.log('=== ALL OVERLAYS SENT SUCCESSFULLY ===');
-                showStatusMessage(`📤 "${content.title}" sent to all overlays (8 lines)!`, 'success');
+                console.log('=== OVERLAY SENT SUCCESSFULLY ===');
+                showStatusMessage(`📤 "${content.title}" sent to overlay (8 lines)!`, 'success');
             } catch (error) {
                 console.error('=== SEND CONTENT TO OVERLAY FAILED ===');
                 console.error('Error type:', typeof error);
                 console.error('Error:', error);
-                console.error('Error name:', error.name);
                 console.error('Error message:', error.message);
-                console.error('Error stack:', error.stack);
                 
-                // Try to extract meaningful error message
-                let errorMsg = 'Unknown error';
-                if (error.message) {
-                    errorMsg = error.message;
-                } else if (typeof error === 'string') {
-                    errorMsg = error;
-                } else {
-                    try {
-                        errorMsg = JSON.stringify(error);
-                    } catch (e) {
-                        errorMsg = String(error);
-                    }
-                }
-                
-                showStatusMessage('Failed to send to overlay: ' + errorMsg, 'error');
+                showStatusMessage('Failed to send to overlay: ' + error.message, 'error');
             }
         }
 
-        async function hideAllOverlays() {
+        async function hideOverlay() {
             try {
-                await sendToOverlay('HideOverlay', { id: P_CONFIG.P1.overlayId });
-                await sendToOverlay('HideOverlay', { id: P_CONFIG.P2.overlayId });
-                await sendToOverlay('HideOverlay', { id: P_CONFIG.P3.overlayId });
-                await sendToOverlay('HideOverlay', { id: P_CONFIG.P4.overlayId });
-                
-                showStatusMessage('All overlays hidden successfully!', 'success');
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID });
+                showStatusMessage('Overlay hidden successfully!', 'success');
             } catch (error) {
                 console.error('Hide overlay failed:', error);
-                showStatusMessage('Failed to hide overlays: ' + error.message, 'error');
+                showStatusMessage('Failed to hide overlay: ' + error.message, 'error');
             }
         }
 
