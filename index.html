@@ -949,45 +949,42 @@
         <div id="settings" class="tab-content">
             <h3>Settings & Configuration</h3>
             
-            <!-- Cloud Sync Status -->
+            <!-- Embedded Database Info -->
             <div style="background: #d4edda; padding: 30px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #28a745;">
-                <h4 style="margin-bottom: 15px; color: #155724;">✅ Automatic Cloud Sync ENABLED</h4>
+                <h4 style="margin-bottom: 15px; color: #155724;">✅ Embedded Shared Database</h4>
                 <p style="color: #155724; margin-bottom: 15px; font-weight: 600;">
-                    Your content is automatically shared across ALL machines!
+                    Data is stored directly in the HTML file - No external services needed!
                 </p>
                 
                 <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
-                    <div style="margin-bottom: 15px;">
-                        <strong>🌐 Shared Space ID:</strong>
-                        <p style="font-family: monospace; font-size: 0.9rem; color: #495057; background: #f8f9fa; padding: 8px; border-radius: 4px; margin-top: 5px;">
-                            ${SHARED_SPACE_ID}
-                        </p>
-                        <p style="font-size: 0.85rem; color: #6c757d; margin-top: 5px;">
-                            💡 Anyone with this page sees the same data. To create your own private space, change this ID in the code.
-                        </p>
+                    
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3; margin-bottom: 15px;">
+                        <strong>🚀 How to share content across machines:</strong>
+                        <ol style="margin: 10px 0 0 20px; color: #495057; line-height: 1.8;">
+                            <li>Create/edit content on any machine</li>
+                            <li>Click the <strong>"📥 EXPORT DATA"</strong> button below</li>
+                            <li>The data will be copied to your clipboard and logged to console</li>
+                            <li>Open the HTML file in a text editor</li>
+                            <li>Find the section: <code>const DEFAULT_CONTENT_STORE = [</code></li>
+                            <li>Paste your data array between the brackets</li>
+                            <li>Save the file and push to GitHub</li>
+                            <li>🎉 All machines loading this page will see the data!</li>
+                        </ol>
                     </div>
                     
-                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3; margin-top: 15px;">
-                        <strong>🚀 How it works:</strong>
-                        <ul style="margin: 10px 0 0 20px; color: #495057; line-height: 1.8;">
-                            <li><strong>Create content</strong> on any machine → Instantly saved to cloud</li>
-                            <li><strong>Open page on another machine</strong> → See all content automatically!</li>
-                            <li><strong>Auto-refresh</strong> every 10 seconds</li>
-                            <li><strong>No configuration</strong> needed - just works!</li>
+                    <button onclick="exportDataToConsole()" class="btn-primary" style="width: 100%; margin-bottom: 15px;">
+                        📥 EXPORT DATA (Copy to Clipboard)
+                    </button>
+                    
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                        <strong>💡 How it works:</strong>
+                        <ul style="margin: 10px 0 0 20px; color: #495057;">
+                            <li><strong>Embedded storage:</strong> Data is stored directly in the HTML file</li>
+                            <li><strong>Local additions:</strong> New content is saved in localStorage</li>
+                            <li><strong>Merge on load:</strong> Both sources are combined when the page loads</li>
+                            <li><strong>100% offline:</strong> No external API calls needed</li>
+                            <li><strong>GitHub sync:</strong> Push updated file to share with all machines</li>
                         </ul>
-                    </div>
-                    
-                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-top: 15px;">
-                        <strong>🔒 Want a private space?</strong>
-                        <p style="margin: 10px 0; color: #495057;">
-                            Change <code>SHARED_SPACE_ID</code> in the code to any unique string (like your template ID):
-                        </p>
-                        <code style="display: block; background: #f8f9fa; padding: 10px; border-radius: 4px; color: #e83e8c;">
-                            const SHARED_SPACE_ID = 'your-unique-id-here';
-                        </code>
-                        <p style="margin-top: 10px; font-size: 0.85rem; color: #6c757d;">
-                            All machines using the same ID will share data!
-                        </p>
                     </div>
                 </div>
             </div>
@@ -1014,7 +1011,7 @@
                     <h4 style="margin-bottom: 10px;">Connection Status</h4>
                     <p style="color: #6c757d; font-size: 0.9rem;">✅ Direct API connection active</p>
                     <p style="color: #6c757d; font-size: 0.9rem;">✅ 8 lines available (80 chars/line)</p>
-                    <p style="color: #6c757d; font-size: 0.9rem;">✅ Cloud sync active (auto-refresh: 10s)</p>
+                    <p style="color: #6c757d; font-size: 0.9rem;">✅ Embedded database active</p>
                 </div>
             </div>
         </div>
@@ -1158,110 +1155,91 @@
     </div>
 
     <script>
-        // Store content - Using FREE shared database (no config needed!)
+        // ===================================================================
+        // EMBEDDED SHARED DATABASE - Edit this section to share data
+        // ===================================================================
+        // To share new content across all machines:
+        // 1. Create/edit content on any machine
+        // 2. Click "📥 EXPORT DATA" button in Settings tab
+        // 3. Copy the JSON array from the console
+        // 4. Paste it in DEFAULT_CONTENT_STORE below
+        // 5. Push to GitHub
+        // 6. All machines will see the new data!
+        // ===================================================================
+        
+        const DEFAULT_CONTENT_STORE = [
+            // Paste your exported data here
+            // Example:
+            // {
+            //     "id": "1234567890",
+            //     "title": "Example Title",
+            //     "subtitle": "Example Subtitle",
+            //     "p1_line1": "Line 1",
+            //     "p1_line2": "Line 2",
+            //     ...
+            // }
+        ];
+        
+        // ===================================================================
+        
         let contentStore = [];
-        let isSyncing = false;
         
-        // SHARED DATABASE - Everyone with this URL sees the same data
-        // Change this ID to create your own private space (just change the random string)
-        const SHARED_SPACE_ID = 'content-manager-4fLVHu7eHUBPzBuFJ7mXWH';
-        
-        // Using JSONBox.io - Free, no account needed!
-        const DB_URL = `https://jsonbox.io/${SHARED_SPACE_ID}`;
-        
-        // Backup: If JSONBox is down, use localStorage only
-        let useCloudDB = true;
-        
-        async function syncFromCloud() {
-            if (!useCloudDB) {
-                contentStore = JSON.parse(localStorage.getItem('contentStore_p1p4')) || [];
-                return;
+        function loadSharedData() {
+            // Priority 1: Load from embedded database (shared across all machines)
+            if (DEFAULT_CONTENT_STORE.length > 0) {
+                contentStore = [...DEFAULT_CONTENT_STORE];
+                console.log('✅ Loaded from embedded database:', contentStore.length, 'items');
             }
             
-            try {
-                console.log('🔄 Loading shared data from cloud...');
-                
-                // Read all records from shared database
-                const response = await fetch(DB_URL + '?sort=-_createdOn&limit=1000', {
-                    method: 'GET'
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (Array.isArray(data) && data.length > 0) {
-                        // JSONBox returns array of records, we want the content array
-                        const latestRecord = data[0];
-                        contentStore = latestRecord.contents || [];
-                    } else {
-                        contentStore = [];
-                    }
-                    
-                    // Save to localStorage as backup
-                    localStorage.setItem('contentStore_p1p4', JSON.stringify(contentStore));
-                    console.log('✅ Loaded from cloud:', contentStore.length, 'items');
-                    showStatusMessage('🔄 Synced from cloud - ' + contentStore.length + ' items', 'success');
-                } else {
-                    throw new Error('Cloud DB unavailable');
+            // Priority 2: Merge with localStorage (local additions)
+            const localData = JSON.parse(localStorage.getItem('contentStore_p1p4')) || [];
+            
+            // Add local items that are not in the embedded database
+            localData.forEach(localItem => {
+                const exists = contentStore.find(item => item.id === localItem.id);
+                if (!exists) {
+                    contentStore.unshift(localItem);
                 }
-            } catch (error) {
-                console.error('❌ Cloud sync error:', error);
-                console.log('⚠️ Using localStorage backup');
-                contentStore = JSON.parse(localStorage.getItem('contentStore_p1p4')) || [];
-                useCloudDB = false;
-            }
-        }
-        
-        async function syncToCloud() {
-            if (!useCloudDB || isSyncing) {
-                localStorage.setItem('contentStore_p1p4', JSON.stringify(contentStore));
-                return;
+            });
+            
+            if (localData.length > 0) {
+                console.log('✅ Merged with local data:', localData.length, 'local items');
             }
             
-            isSyncing = true;
-            
-            try {
-                // Save to localStorage first
-                localStorage.setItem('contentStore_p1p4', JSON.stringify(contentStore));
-                
-                console.log('☁️ Saving to shared cloud...');
-                
-                // Delete old records first (keep database clean)
-                const oldRecords = await fetch(DB_URL + '?limit=1000');
-                if (oldRecords.ok) {
-                    const records = await oldRecords.json();
-                    for (const record of records) {
-                        await fetch(DB_URL + '/' + record._id, { method: 'DELETE' });
-                    }
-                }
-                
-                // Upload new data
-                const response = await fetch(DB_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        contents: contentStore,
-                        lastUpdate: new Date().toISOString()
-                    })
-                });
-                
-                if (response.ok) {
-                    console.log('✅ Saved to cloud!');
-                    showStatusMessage('☁️ Synced to cloud - All machines will see this!', 'success');
-                } else {
-                    throw new Error('Failed to save to cloud');
-                }
-            } catch (error) {
-                console.error('❌ Cloud save error:', error);
-                showStatusMessage('⚠️ Saved locally only - Cloud sync failed', 'error');
-            } finally {
-                isSyncing = false;
-            }
+            return contentStore;
         }
         
         function saveToLocalStorage() {
-            syncToCloud();
+            // Save to localStorage for local backup
+            localStorage.setItem('contentStore_p1p4', JSON.stringify(contentStore));
+            console.log('💾 Saved to local storage');
+        }
+        
+        function exportDataToConsole() {
+            console.log('===================================================================');
+            console.log('📤 COPY THIS DATA TO SHARE ACROSS ALL MACHINES:');
+            console.log('===================================================================');
+            console.log('');
+            console.log('Copy the array below and paste it in DEFAULT_CONTENT_STORE:');
+            console.log('');
+            console.log(JSON.stringify(contentStore, null, 2));
+            console.log('');
+            console.log('===================================================================');
+            console.log('Then push to GitHub to share with all machines!');
+            console.log('===================================================================');
+            
+            // Also copy to clipboard if available
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(JSON.stringify(contentStore, null, 2))
+                    .then(() => {
+                        showStatusMessage('📋 Data copied to clipboard! Paste it in DEFAULT_CONTENT_STORE in the code', 'success');
+                    })
+                    .catch(() => {
+                        showStatusMessage('💡 Data logged to console - check browser console (F12)', 'success');
+                    });
+            } else {
+                showStatusMessage('💡 Data logged to console - check browser console (F12)', 'success');
+            }
         }
         
         const TEMPLATE_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
@@ -1283,10 +1261,9 @@
             evt.currentTarget.classList.add("active");
 
             if (tabName === 'manage') {
-                // Sync from cloud when opening Manage tab
-                syncFromCloud().then(() => {
-                    displayContentCards();
-                });
+                // Reload shared data when opening Manage tab
+                loadSharedData();
+                displayContentCards();
             }
         }
 
@@ -1406,7 +1383,50 @@
                     content.p4_line8
                 ].map(line => (line || '').trim()); // Trim whitespace
                 
-                const fullText = lines.join('\n');
+                // Fonction pour ajouter des espaces tous les 20 caractères sans couper les mots
+                function addSpacesEvery20Chars(text) {
+                    if (!text) return '';
+                    
+                    let result = '';
+                    let currentPos = 0;
+                    
+                    while (currentPos < text.length) {
+                        // Prendre 20 caractères
+                        let chunk = text.substring(currentPos, currentPos + 20);
+                        
+                        // Si on n'est pas à la fin et que le chunk ne se termine pas par un espace
+                        if (currentPos + 20 < text.length && chunk[chunk.length - 1] !== ' ') {
+                            // Vérifier si on coupe un mot
+                            const nextChar = text[currentPos + 20];
+                            if (nextChar && nextChar !== ' ') {
+                                // On coupe un mot, trouver le dernier espace dans le chunk
+                                const lastSpaceIndex = chunk.lastIndexOf(' ');
+                                if (lastSpaceIndex > 0) {
+                                    // Couper au dernier espace
+                                    chunk = chunk.substring(0, lastSpaceIndex);
+                                }
+                            }
+                        }
+                        
+                        result += chunk;
+                        currentPos += chunk.length;
+                        
+                        // Ajouter 8 espaces si on n'est pas à la fin
+                        if (currentPos < text.length) {
+                            result += '        '; // 8 espaces
+                            // Sauter les espaces au début du prochain chunk
+                            while (currentPos < text.length && text[currentPos] === ' ') {
+                                currentPos++;
+                            }
+                        }
+                    }
+                    
+                    return result;
+                }
+                
+                // Appliquer la fonction à chaque ligne
+                const processedLines = lines.map(line => addSpacesEvery20Chars(line));
+                const fullText = processedLines.join('\n');
                 
                 console.log('Full text (8 lines):', fullText);
                 console.log('Text length:', fullText.length);
@@ -1678,10 +1698,9 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Load from cloud on startup
-            syncFromCloud().then(() => {
-                displayContentCards();
-            });
+            // Load shared data on startup
+            loadSharedData();
+            displayContentCards();
             
             // Character counters for all text areas
             const textareas = [
@@ -1710,17 +1729,6 @@
                     });
                 }
             });
-
-            // Auto-sync from cloud every 10 seconds
-            setInterval(() => {
-                syncFromCloud().then(() => {
-                    // Only update display if we're on the manage tab
-                    const manageTab = document.getElementById('manage');
-                    if (manageTab && manageTab.classList.contains('active')) {
-                        displayContentCards();
-                    }
-                });
-            }, 10000); // 10 seconds
 
             // Character counters for edit modal
             const editTextareas = [
