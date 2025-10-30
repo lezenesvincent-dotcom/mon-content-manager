@@ -892,8 +892,13 @@
                     ...payload
                 };
 
-                console.log('Sending to Overlays.uno:', body);
+                console.log('=== SENDING TO OVERLAY ===');
+                console.log('Command:', command);
+                console.log('Payload:', JSON.stringify(payload, null, 2));
+                console.log('Full body:', JSON.stringify(body, null, 2));
+                
                 const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(OVERLAY_API_URL);
+                console.log('URL:', proxyUrl);
 
                 const response = await fetch(proxyUrl, {
                     method: 'PUT',
@@ -905,24 +910,34 @@
                     body: JSON.stringify(body)
                 });
 
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+
                 let result;
                 const contentType = response.headers.get('content-type');
                 if (contentType && contentType.includes('application/json')) {
                     result = await response.json();
                 } else {
                     const text = await response.text();
+                    console.log('Raw response text:', text);
                     result = { raw: text };
                 }
                 
-                console.log('Response from Overlays.uno:', result);
+                console.log('Parsed result:', result);
 
                 if (!response.ok) {
-                    throw new Error(result.error || result.message || `HTTP ${response.status}`);
+                    const errorMsg = result.error || result.message || result.raw || `HTTP ${response.status}`;
+                    console.error('API Error:', errorMsg);
+                    throw new Error(errorMsg);
                 }
 
                 return result;
             } catch (error) {
-                console.error(`${command} failed:`, error);
+                console.error('=== SEND TO OVERLAY ERROR ===');
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                console.error('Full error object:', error);
                 throw error;
             }
         }
@@ -960,8 +975,14 @@
             if (!content) return;
 
             try {
+                console.log('=== STARTING SEND TO ALL OVERLAYS ===');
+                console.log('Content:', content);
+                
                 // Send to P1: Lines 1-2
+                console.log('--- Sending to P1 ---');
                 const p1Text = `${content.p1_line1}\n${content.p1_line2}`;
+                console.log('P1 Text:', p1Text);
+                
                 await sendToOverlay('SetOverlayContent', {
                     id: P_CONFIG.P1.overlayId,
                     content: {
@@ -973,9 +994,13 @@
                     }
                 });
                 await sendToOverlay('ShowOverlay', { id: P_CONFIG.P1.overlayId });
+                console.log('✓ P1 sent successfully');
 
                 // Send to P2: Lines 3-4
+                console.log('--- Sending to P2 ---');
                 const p2Text = `${content.p2_line3}\n${content.p2_line4}`;
+                console.log('P2 Text:', p2Text);
+                
                 await sendToOverlay('SetOverlayContent', {
                     id: P_CONFIG.P2.overlayId,
                     content: {
@@ -987,9 +1012,13 @@
                     }
                 });
                 await sendToOverlay('ShowOverlay', { id: P_CONFIG.P2.overlayId });
+                console.log('✓ P2 sent successfully');
 
                 // Send to P3: Lines 5-6
+                console.log('--- Sending to P3 ---');
                 const p3Text = `${content.p3_line5}\n${content.p3_line6}`;
+                console.log('P3 Text:', p3Text);
+                
                 await sendToOverlay('SetOverlayContent', {
                     id: P_CONFIG.P3.overlayId,
                     content: {
@@ -1001,9 +1030,13 @@
                     }
                 });
                 await sendToOverlay('ShowOverlay', { id: P_CONFIG.P3.overlayId });
+                console.log('✓ P3 sent successfully');
 
                 // Send to P4: Lines 7-8
+                console.log('--- Sending to P4 ---');
                 const p4Text = `${content.p4_line7}\n${content.p4_line8}`;
+                console.log('P4 Text:', p4Text);
+                
                 await sendToOverlay('SetOverlayContent', {
                     id: P_CONFIG.P4.overlayId,
                     content: {
@@ -1015,11 +1048,32 @@
                     }
                 });
                 await sendToOverlay('ShowOverlay', { id: P_CONFIG.P4.overlayId });
+                console.log('✓ P4 sent successfully');
 
+                console.log('=== ALL OVERLAYS SENT SUCCESSFULLY ===');
                 showStatusMessage(`📤 "${content.title}" sent to all overlays (8 lines)!`, 'success');
             } catch (error) {
-                console.error('Send to overlay failed:', error);
-                const errorMsg = error.message || JSON.stringify(error);
+                console.error('=== SEND CONTENT TO OVERLAY FAILED ===');
+                console.error('Error type:', typeof error);
+                console.error('Error:', error);
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                
+                // Try to extract meaningful error message
+                let errorMsg = 'Unknown error';
+                if (error.message) {
+                    errorMsg = error.message;
+                } else if (typeof error === 'string') {
+                    errorMsg = error;
+                } else {
+                    try {
+                        errorMsg = JSON.stringify(error);
+                    } catch (e) {
+                        errorMsg = String(error);
+                    }
+                }
+                
                 showStatusMessage('Failed to send to overlay: ' + errorMsg, 'error');
             }
         }
