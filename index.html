@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Content Management Interface - P1-P4 System</title>
@@ -1623,7 +1623,7 @@
                     content.p4_line8
                 ].map(line => (line || '').trim()); // Trim whitespace
                 
-                // Fonction pour aligner les groupes de texte sur des multiples de 15 caractères
+                // Fonction pour aligner les groupes de texte avec des tabulations
                 function addSpacesEvery20Chars(text) {
                     if (!text) return '';
                     
@@ -1649,14 +1649,11 @@
                         }
                         
                         result += chunk;
-                        const chunkLength = chunk.length;
-                        currentPos += chunkLength;
+                        currentPos += chunk.length;
                         
-                        // Ajouter des espaces insécables pour compléter jusqu'au prochain multiple de 15
+                        // Ajouter 4 tabulations si on n'est pas à la fin
                         if (currentPos < text.length) {
-                            // Calculer combien d'espaces ajouter pour atteindre le prochain multiple de 15
-                            const spacesToAdd = 15 - (chunkLength % 15);
-                            result += '\u00A0'.repeat(spacesToAdd);
+                            result += '\t\t\t\t'; // 4 tabulations pour plus d'espace
                             
                             // Sauter les espaces au début du prochain chunk
                             while (currentPos < text.length && text[currentPos] === ' ') {
@@ -1776,7 +1773,7 @@
                             <button class="btn-send" 
                                     onclick="sendContentToOverlay('${content.id}')"
                                     style="padding: 10px 16px; font-size: 0.85rem;">
-                                📤 SEND
+                                📤 PUSH
                             </button>
                             <button onclick="openEditModal('${content.id}')" 
                                     class="btn-edit"
@@ -1785,7 +1782,7 @@
                             </button>
                             <button onclick="hideOverlay()" 
                                     style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; padding: 10px 16px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
-                                🙈 HIDE
+                                🙈 MASQUER
                             </button>
                         </div>
                         
@@ -2085,5 +2082,4 @@
     </script>
 </body>
 </html>
-
 
