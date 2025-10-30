@@ -798,6 +798,50 @@
 
         <div id="settings" class="tab-content">
             <h3>Settings & Configuration</h3>
+            
+            <!-- Cloud Sync Status -->
+            <div style="background: #d4edda; padding: 30px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #28a745;">
+                <h4 style="margin-bottom: 15px; color: #155724;">✅ Automatic Cloud Sync ENABLED</h4>
+                <p style="color: #155724; margin-bottom: 15px; font-weight: 600;">
+                    Your content is automatically shared across ALL machines!
+                </p>
+                
+                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                    <div style="margin-bottom: 15px;">
+                        <strong>🌐 Shared Space ID:</strong>
+                        <p style="font-family: monospace; font-size: 0.9rem; color: #495057; background: #f8f9fa; padding: 8px; border-radius: 4px; margin-top: 5px;">
+                            ${SHARED_SPACE_ID}
+                        </p>
+                        <p style="font-size: 0.85rem; color: #6c757d; margin-top: 5px;">
+                            💡 Anyone with this page sees the same data. To create your own private space, change this ID in the code.
+                        </p>
+                    </div>
+                    
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3; margin-top: 15px;">
+                        <strong>🚀 How it works:</strong>
+                        <ul style="margin: 10px 0 0 20px; color: #495057; line-height: 1.8;">
+                            <li><strong>Create content</strong> on any machine → Instantly saved to cloud</li>
+                            <li><strong>Open page on another machine</strong> → See all content automatically!</li>
+                            <li><strong>Auto-refresh</strong> every 10 seconds</li>
+                            <li><strong>No configuration</strong> needed - just works!</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-top: 15px;">
+                        <strong>🔒 Want a private space?</strong>
+                        <p style="margin: 10px 0; color: #495057;">
+                            Change <code>SHARED_SPACE_ID</code> in the code to any unique string (like your template ID):
+                        </p>
+                        <code style="display: block; background: #f8f9fa; padding: 10px; border-radius: 4px; color: #e83e8c;">
+                            const SHARED_SPACE_ID = 'your-unique-id-here';
+                        </code>
+                        <p style="margin-top: 10px; font-size: 0.85rem; color: #6c757d;">
+                            All machines using the same ID will share data!
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
             <div style="background: #f8f9fa; padding: 30px; border-radius: 10px; margin-top: 20px;">
                 <div style="margin-bottom: 20px;">
                     <p><strong>Main Template ID:</strong> <span class="template-id">4fLVHu7eHUBPzBuFJ7mXWH</span></p>
@@ -805,19 +849,13 @@
                 </div>
                 
                 <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #4facfe;">
-                    <h4 style="margin-bottom: 15px;">P1-P4 Control IDs</h4>
+                    <h4 style="margin-bottom: 15px;">Overlay Information</h4>
                     <ul style="list-style: none; padding: 0; color: #495057;">
                         <li style="padding: 8px 0; border-bottom: 1px solid #f8f9fa;">
-                            <strong>P1 (Lines 1-2):</strong> <span class="template-id">0FMiQNcS5Qvj030fgt6Uhd</span>
-                        </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid #f8f9fa;">
-                            <strong>P2 (Lines 3-4):</strong> <span class="template-id">5SplyVqe0AFk0BSkkfZ1Ea</span>
-                        </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid #f8f9fa;">
-                            <strong>P3 (Lines 5-6):</strong> <span class="template-id">4tuxIMbEnRneDSe07PBErz</span>
+                            <strong>Overlay ID:</strong> <span class="template-id">6598bc8e-c088-43ba-a830-d24222614f4f</span>
                         </li>
                         <li style="padding: 8px 0;">
-                            <strong>P4 (Lines 7-8):</strong> <span class="template-id">4swff6179BaIxm5slHPEzr</span>
+                            <strong>Lines:</strong> 8 lines (80 characters each)
                         </li>
                     </ul>
                 </div>
@@ -826,17 +864,117 @@
                     <h4 style="margin-bottom: 10px;">Connection Status</h4>
                     <p style="color: #6c757d; font-size: 0.9rem;">✅ Direct API connection active</p>
                     <p style="color: #6c757d; font-size: 0.9rem;">✅ 8 lines available (80 chars/line)</p>
+                    <p style="color: #6c757d; font-size: 0.9rem;">✅ Cloud sync active (auto-refresh: 10s)</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Store content in localStorage
-        let contentStore = JSON.parse(localStorage.getItem('contentStore_p1p4')) || [];
+        // Store content - Using FREE shared database (no config needed!)
+        let contentStore = [];
+        let isSyncing = false;
+        
+        // SHARED DATABASE - Everyone with this URL sees the same data
+        // Change this ID to create your own private space (just change the random string)
+        const SHARED_SPACE_ID = 'content-manager-4fLVHu7eHUBPzBuFJ7mXWH';
+        
+        // Using JSONBox.io - Free, no account needed!
+        const DB_URL = `https://jsonbox.io/${SHARED_SPACE_ID}`;
+        
+        // Backup: If JSONBox is down, use localStorage only
+        let useCloudDB = true;
+        
+        async function syncFromCloud() {
+            if (!useCloudDB) {
+                contentStore = JSON.parse(localStorage.getItem('contentStore_p1p4')) || [];
+                return;
+            }
+            
+            try {
+                console.log('🔄 Loading shared data from cloud...');
+                
+                // Read all records from shared database
+                const response = await fetch(DB_URL + '?sort=-_createdOn&limit=1000', {
+                    method: 'GET'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        // JSONBox returns array of records, we want the content array
+                        const latestRecord = data[0];
+                        contentStore = latestRecord.contents || [];
+                    } else {
+                        contentStore = [];
+                    }
+                    
+                    // Save to localStorage as backup
+                    localStorage.setItem('contentStore_p1p4', JSON.stringify(contentStore));
+                    console.log('✅ Loaded from cloud:', contentStore.length, 'items');
+                    showStatusMessage('🔄 Synced from cloud - ' + contentStore.length + ' items', 'success');
+                } else {
+                    throw new Error('Cloud DB unavailable');
+                }
+            } catch (error) {
+                console.error('❌ Cloud sync error:', error);
+                console.log('⚠️ Using localStorage backup');
+                contentStore = JSON.parse(localStorage.getItem('contentStore_p1p4')) || [];
+                useCloudDB = false;
+            }
+        }
+        
+        async function syncToCloud() {
+            if (!useCloudDB || isSyncing) {
+                localStorage.setItem('contentStore_p1p4', JSON.stringify(contentStore));
+                return;
+            }
+            
+            isSyncing = true;
+            
+            try {
+                // Save to localStorage first
+                localStorage.setItem('contentStore_p1p4', JSON.stringify(contentStore));
+                
+                console.log('☁️ Saving to shared cloud...');
+                
+                // Delete old records first (keep database clean)
+                const oldRecords = await fetch(DB_URL + '?limit=1000');
+                if (oldRecords.ok) {
+                    const records = await oldRecords.json();
+                    for (const record of records) {
+                        await fetch(DB_URL + '/' + record._id, { method: 'DELETE' });
+                    }
+                }
+                
+                // Upload new data
+                const response = await fetch(DB_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: contentStore,
+                        lastUpdate: new Date().toISOString()
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Saved to cloud!');
+                    showStatusMessage('☁️ Synced to cloud - All machines will see this!', 'success');
+                } else {
+                    throw new Error('Failed to save to cloud');
+                }
+            } catch (error) {
+                console.error('❌ Cloud save error:', error);
+                showStatusMessage('⚠️ Saved locally only - Cloud sync failed', 'error');
+            } finally {
+                isSyncing = false;
+            }
+        }
         
         function saveToLocalStorage() {
-            localStorage.setItem('contentStore_p1p4', JSON.stringify(contentStore));
+            syncToCloud();
         }
         
         const TEMPLATE_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
@@ -858,7 +996,10 @@
             evt.currentTarget.classList.add("active");
 
             if (tabName === 'manage') {
-                displayContentCards();
+                // Sync from cloud when opening Manage tab
+                syncFromCloud().then(() => {
+                    displayContentCards();
+                });
             }
         }
 
@@ -1089,6 +1230,12 @@
 
         // Character counters for all text areas
         document.addEventListener('DOMContentLoaded', function() {
+            // Load from cloud on startup
+            syncFromCloud().then(() => {
+                displayContentCards();
+            });
+            
+            // Character counters for all text areas
             const textareas = [
                 'p1_line1', 'p1_line2',
                 'p2_line3', 'p2_line4',
@@ -1116,7 +1263,16 @@
                 }
             });
 
-            displayContentCards();
+            // Auto-sync from cloud every 10 seconds
+            setInterval(() => {
+                syncFromCloud().then(() => {
+                    // Only update display if we're on the manage tab
+                    const manageTab = document.getElementById('manage');
+                    if (manageTab && manageTab.classList.contains('active')) {
+                        displayContentCards();
+                    }
+                });
+            }, 10000); // 10 seconds
         });
 
         document.getElementById('contentForm').addEventListener('submit', async function(e) {
