@@ -1383,7 +1383,7 @@
                     content.p4_line8
                 ].map(line => (line || '').trim()); // Trim whitespace
                 
-                // Fonction pour ajouter des espaces insécables tous les 20 caractères sans couper les mots
+                // Fonction pour ajouter des espaces insécables tous les 11 caractères sans couper les mots
                 function addSpacesEvery20Chars(text) {
                     if (!text) return '';
                     
@@ -1391,13 +1391,13 @@
                     let currentPos = 0;
                     
                     while (currentPos < text.length) {
-                        // Prendre 20 caractères
-                        let chunk = text.substring(currentPos, currentPos + 20);
+                        // Prendre 11 caractères
+                        let chunk = text.substring(currentPos, currentPos + 11);
                         
                         // Si on n'est pas à la fin et que le chunk ne se termine pas par un espace
-                        if (currentPos + 20 < text.length && chunk[chunk.length - 1] !== ' ') {
+                        if (currentPos + 11 < text.length && chunk[chunk.length - 1] !== ' ') {
                             // Vérifier si on coupe un mot
-                            const nextChar = text[currentPos + 20];
+                            const nextChar = text[currentPos + 11];
                             if (nextChar && nextChar !== ' ') {
                                 // On coupe un mot, trouver le dernier espace dans le chunk
                                 const lastSpaceIndex = chunk.lastIndexOf(' ');
