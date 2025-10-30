@@ -525,6 +525,156 @@
             box-shadow: 0 6px 15px rgba(255, 165, 0, 0.3);
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUpModal 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+        }
+
+        @keyframes slideUpModal {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: #f8f9fa;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #e9ecef;
+            color: #333;
+            transform: rotate(90deg);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .btn-update {
+            flex: 1;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-duplicate {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-duplicate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-cancel {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 15px 30px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #e9ecef;
+            border-color: #4facfe;
+            color: #4facfe;
+        }
+
+        .edit-icon {
+            font-size: 1.2rem;
+        }
+
         .btn-danger {
             background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             color: white;
@@ -867,6 +1017,143 @@
                     <p style="color: #6c757d; font-size: 0.9rem;">✅ Cloud sync active (auto-refresh: 10s)</p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Quick Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <span class="edit-icon">✏️</span>
+                    Quick Edit
+                </h2>
+                <button class="modal-close" onclick="closeEditModal()">×</button>
+            </div>
+            
+            <form id="editForm">
+                <input type="hidden" id="editContentId">
+                
+                <div class="form-group">
+                    <label for="editTitle" class="required">Title</label>
+                    <input type="text" id="editTitle" name="title" required 
+                           placeholder="Enter a title">
+                </div>
+
+                <div class="form-group">
+                    <label for="editSubtitle" class="required">Subtitle</label>
+                    <input type="text" id="editSubtitle" name="subtitle" required 
+                           placeholder="Enter a subtitle">
+                </div>
+
+                <!-- P1 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P1</span>
+                        <span class="p-description">Lines 1-2</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP1Line1" class="required">Line 1</label>
+                        <textarea id="editP1Line1" name="p1_line1" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="First line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p1_line1">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP1Line2" class="required">Line 2</label>
+                        <textarea id="editP1Line2" name="p1_line2" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Second line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p1_line2">0 / 80</div>
+                    </div>
+                </div>
+
+                <!-- P2 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P2</span>
+                        <span class="p-description">Lines 3-4</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP2Line3" class="required">Line 3</label>
+                        <textarea id="editP2Line3" name="p2_line3" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Third line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p2_line3">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP2Line4" class="required">Line 4</label>
+                        <textarea id="editP2Line4" name="p2_line4" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Fourth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p2_line4">0 / 80</div>
+                    </div>
+                </div>
+
+                <!-- P3 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P3</span>
+                        <span class="p-description">Lines 5-6</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP3Line5" class="required">Line 5</label>
+                        <textarea id="editP3Line5" name="p3_line5" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Fifth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p3_line5">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP3Line6" class="required">Line 6</label>
+                        <textarea id="editP3Line6" name="p3_line6" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Sixth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p3_line6">0 / 80</div>
+                    </div>
+                </div>
+
+                <!-- P4 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P4</span>
+                        <span class="p-description">Lines 7-8</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP4Line7" class="required">Line 7</label>
+                        <textarea id="editP4Line7" name="p4_line7" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Seventh line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p4_line7">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP4Line8" class="required">Line 8</label>
+                        <textarea id="editP4Line8" name="p4_line8" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Eighth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p4_line8">0 / 80</div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-duplicate" onclick="duplicateContent()">
+                        📋 Duplicate
+                    </button>
+                    <button type="submit" class="btn-update">
+                        💾 Update
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1218,28 +1505,178 @@
 
                         <div class="content-meta">
                             <div class="timestamp">${content.timestamp || ''}</div>
-                            <button class="btn-danger" 
-                                    onclick="deleteContent('${content.id}')">
-                                DELETE
-                            </button>
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-top: 15px;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px;">
                             <button class="btn-send" 
-                                    onclick="sendContentToOverlay('${content.id}')">
-                                📤 SEND TO OVERLAY (8 LINES)
+                                    onclick="sendContentToOverlay('${content.id}')"
+                                    style="padding: 10px 16px; font-size: 0.85rem;">
+                                📤 SEND
+                            </button>
+                            <button onclick="openEditModal('${content.id}')" 
+                                    class="btn-edit"
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 16px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                                ✏️ EDIT
                             </button>
                             <button onclick="hideOverlay()" 
-                                    style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; padding: 12px 24px; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer;">
+                                    style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; padding: 10px 16px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
                                 🙈 HIDE
                             </button>
                         </div>
+                        
+                        <button class="btn-danger" 
+                                onclick="deleteContent('${content.id}')"
+                                style="width: 100%; margin-top: 8px; padding: 8px 16px; font-size: 0.85rem;">
+                            🗑️ DELETE
+                        </button>
                     </div>
                 `;
             }).join('');
         }
 
         // Character counters for all text areas
+        // Quick Edit Modal Functions
+        function openEditModal(contentId) {
+            const content = contentStore.find(item => item.id === contentId);
+            if (!content) return;
+
+            // Fill form with existing data
+            document.getElementById('editContentId').value = contentId;
+            document.getElementById('editTitle').value = content.title || '';
+            document.getElementById('editSubtitle').value = content.subtitle || '';
+            document.getElementById('editP1Line1').value = content.p1_line1 || '';
+            document.getElementById('editP1Line2').value = content.p1_line2 || '';
+            document.getElementById('editP2Line3').value = content.p2_line3 || '';
+            document.getElementById('editP2Line4').value = content.p2_line4 || '';
+            document.getElementById('editP3Line5').value = content.p3_line5 || '';
+            document.getElementById('editP3Line6').value = content.p3_line6 || '';
+            document.getElementById('editP4Line7').value = content.p4_line7 || '';
+            document.getElementById('editP4Line8').value = content.p4_line8 || '';
+
+            // Update character counters
+            updateEditCounter('editP1Line1', 'editCounter_p1_line1');
+            updateEditCounter('editP1Line2', 'editCounter_p1_line2');
+            updateEditCounter('editP2Line3', 'editCounter_p2_line3');
+            updateEditCounter('editP2Line4', 'editCounter_p2_line4');
+            updateEditCounter('editP3Line5', 'editCounter_p3_line5');
+            updateEditCounter('editP3Line6', 'editCounter_p3_line6');
+            updateEditCounter('editP4Line7', 'editCounter_p4_line7');
+            updateEditCounter('editP4Line8', 'editCounter_p4_line8');
+
+            // Show modal
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            document.getElementById('editForm').reset();
+        }
+
+        function updateEditCounter(textareaId, counterId) {
+            const textarea = document.getElementById(textareaId);
+            const counter = document.getElementById(counterId);
+            if (textarea && counter) {
+                const length = textarea.value.length;
+                counter.textContent = `${length} / 80 characters`;
+                counter.classList.remove('warning', 'error');
+                if (length > 70) counter.classList.add('warning');
+                if (length === 80) counter.classList.add('error');
+            }
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('editModal');
+            if (e.target === modal) {
+                closeEditModal();
+            }
+        });
+
+        // Handle edit form submission
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const contentId = document.getElementById('editContentId').value;
+
+            try {
+                // Update in contentStore
+                const contentIndex = contentStore.findIndex(item => item.id === contentId);
+                if (contentIndex !== -1) {
+                    contentStore[contentIndex] = {
+                        ...contentStore[contentIndex],
+                        title: document.getElementById('editTitle').value.trim(),
+                        subtitle: document.getElementById('editSubtitle').value.trim(),
+                        p1_line1: document.getElementById('editP1Line1').value.trim(),
+                        p1_line2: document.getElementById('editP1Line2').value.trim(),
+                        p2_line3: document.getElementById('editP2Line3').value.trim(),
+                        p2_line4: document.getElementById('editP2Line4').value.trim(),
+                        p3_line5: document.getElementById('editP3Line5').value.trim(),
+                        p3_line6: document.getElementById('editP3Line6').value.trim(),
+                        p4_line7: document.getElementById('editP4Line7').value.trim(),
+                        p4_line8: document.getElementById('editP4Line8').value.trim(),
+                        timestamp: new Date().toLocaleString()
+                    };
+                }
+
+                saveToLocalStorage();
+                
+                // Update display
+                displayContentCards();
+                closeEditModal();
+                
+                showStatusMessage(`✨ "${contentStore[contentIndex].title}" updated successfully!`, 'success');
+            } catch (error) {
+                console.error('Update failed:', error);
+                showStatusMessage(`Failed to update: ${error.message}`, 'error');
+            }
+        });
+
+        // Duplicate content function
+        async function duplicateContent() {
+            const contentId = document.getElementById('editContentId').value;
+            const content = contentStore.find(item => item.id === contentId);
+            if (!content) return;
+
+            try {
+                const newContentId = Date.now().toString();
+                const newContent = {
+                    id: newContentId,
+                    title: document.getElementById('editTitle').value.trim() + ' (Copy)',
+                    subtitle: document.getElementById('editSubtitle').value.trim(),
+                    p1_line1: document.getElementById('editP1Line1').value.trim(),
+                    p1_line2: document.getElementById('editP1Line2').value.trim(),
+                    p2_line3: document.getElementById('editP2Line3').value.trim(),
+                    p2_line4: document.getElementById('editP2Line4').value.trim(),
+                    p3_line5: document.getElementById('editP3Line5').value.trim(),
+                    p3_line6: document.getElementById('editP3Line6').value.trim(),
+                    p4_line7: document.getElementById('editP4Line7').value.trim(),
+                    p4_line8: document.getElementById('editP4Line8').value.trim(),
+                    timestamp: new Date().toLocaleString()
+                };
+
+                contentStore.unshift(newContent);
+                saveToLocalStorage();
+
+                displayContentCards();
+                closeEditModal();
+                
+                showStatusMessage(`📋 Content duplicated successfully!`, 'success');
+            } catch (error) {
+                console.error('Duplicate failed:', error);
+                showStatusMessage(`Failed to duplicate: ${error.message}`, 'error');
+            }
+        }
+
+        // Keyboard shortcut: Escape to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('editModal');
+                if (modal.classList.contains('show')) {
+                    closeEditModal();
+                }
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             // Load from cloud on startup
             syncFromCloud().then(() => {
@@ -1284,6 +1721,27 @@
                     }
                 });
             }, 10000); // 10 seconds
+
+            // Character counters for edit modal
+            const editTextareas = [
+                { id: 'editP1Line1', counter: 'editCounter_p1_line1' },
+                { id: 'editP1Line2', counter: 'editCounter_p1_line2' },
+                { id: 'editP2Line3', counter: 'editCounter_p2_line3' },
+                { id: 'editP2Line4', counter: 'editCounter_p2_line4' },
+                { id: 'editP3Line5', counter: 'editCounter_p3_line5' },
+                { id: 'editP3Line6', counter: 'editCounter_p3_line6' },
+                { id: 'editP4Line7', counter: 'editCounter_p4_line7' },
+                { id: 'editP4Line8', counter: 'editCounter_p4_line8' }
+            ];
+
+            editTextareas.forEach(item => {
+                const textarea = document.getElementById(item.id);
+                if (textarea) {
+                    textarea.addEventListener('input', function() {
+                        updateEditCounter(item.id, item.counter);
+                    });
+                }
+            });
         });
 
         document.getElementById('contentForm').addEventListener('submit', async function(e) {
