@@ -924,10 +924,17 @@
                 }
                 
                 console.log('Parsed result:', result);
+                console.log('Parsed result (stringified):', JSON.stringify(result, null, 2));
 
                 if (!response.ok) {
-                    const errorMsg = result.error || result.message || result.raw || `HTTP ${response.status}`;
-                    console.error('API Error:', errorMsg);
+                    console.error('Response not OK. Status:', response.status);
+                    console.error('Result object:', result);
+                    console.error('Result.error:', result.error);
+                    console.error('Result.message:', result.message);
+                    console.error('Result.raw:', result.raw);
+                    
+                    const errorMsg = result.error || result.message || result.raw || JSON.stringify(result) || `HTTP ${response.status}`;
+                    console.error('Final error message:', errorMsg);
                     throw new Error(errorMsg);
                 }
 
