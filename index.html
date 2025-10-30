@@ -1383,7 +1383,7 @@
                     content.p4_line8
                 ].map(line => (line || '').trim()); // Trim whitespace
                 
-                // Fonction pour ajouter des espaces tous les 20 caractères sans couper les mots
+                // Fonction pour ajouter des espaces insécables tous les 20 caractères sans couper les mots
                 function addSpacesEvery20Chars(text) {
                     if (!text) return '';
                     
@@ -1411,9 +1411,9 @@
                         result += chunk;
                         currentPos += chunk.length;
                         
-                        // Ajouter 8 espaces si on n'est pas à la fin
+                        // Ajouter 8 espaces insécables si on n'est pas à la fin
                         if (currentPos < text.length) {
-                            result += '        '; // 8 espaces
+                            result += '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'; // 8 espaces insécables
                             // Sauter les espaces au début du prochain chunk
                             while (currentPos < text.length && text[currentPos] === ' ') {
                                 currentPos++;
@@ -1428,7 +1428,7 @@
                 const processedLines = lines.map(line => addSpacesEvery20Chars(line));
                 const fullText = processedLines.join('\n');
                 
-                console.log('Full text (8 lines with spaces):', fullText);
+                console.log('Full text (8 lines with non-breaking spaces):', fullText);
                 console.log('Text length:', fullText.length);
                 console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
                 
@@ -1441,7 +1441,7 @@
                         "Subtitle": content.subtitle || "",
                         "Text": fullText,
                         "Lines": 8,
-                        "Font Size": 24
+                        "Font Size": 20
                     }
                 });
                 
