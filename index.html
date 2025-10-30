@@ -642,7 +642,14 @@
                     <label for="title" class="required">Content Title</label>
                     <input type="text" id="title" name="title" required 
                            placeholder="Enter a title for this content set">
-                    <div class="field-hint">Identifier for this content (not sent to overlay)</div>
+                    <div class="field-hint">Main identifier for this content</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="subtitle" class="required">Subtitle</label>
+                    <input type="text" id="subtitle" name="subtitle" required 
+                           placeholder="Enter a subtitle">
+                    <div class="field-hint">Additional description for this content</div>
                 </div>
 
                 <!-- P1 Section: Lines 1-2 -->
@@ -959,8 +966,8 @@
                     id: P_CONFIG.P1.overlayId,
                     content: {
                         "Text Active": true,
-                        "Title": "",
-                        "Subtitle": "",
+                        "Title": content.title || "",
+                        "Subtitle": content.subtitle || "",
                         "Text": p1Text,
                         "Lines": 2
                     }
@@ -973,8 +980,8 @@
                     id: P_CONFIG.P2.overlayId,
                     content: {
                         "Text Active": true,
-                        "Title": "",
-                        "Subtitle": "",
+                        "Title": content.title || "",
+                        "Subtitle": content.subtitle || "",
                         "Text": p2Text,
                         "Lines": 2
                     }
@@ -987,8 +994,8 @@
                     id: P_CONFIG.P3.overlayId,
                     content: {
                         "Text Active": true,
-                        "Title": "",
-                        "Subtitle": "",
+                        "Title": content.title || "",
+                        "Subtitle": content.subtitle || "",
                         "Text": p3Text,
                         "Lines": 2
                     }
@@ -1001,8 +1008,8 @@
                     id: P_CONFIG.P4.overlayId,
                     content: {
                         "Text Active": true,
-                        "Title": "",
-                        "Subtitle": "",
+                        "Title": content.title || "",
+                        "Subtitle": content.subtitle || "",
                         "Text": p4Text,
                         "Lines": 2
                     }
@@ -1012,7 +1019,8 @@
                 showStatusMessage(`📤 "${content.title}" sent to all overlays (8 lines)!`, 'success');
             } catch (error) {
                 console.error('Send to overlay failed:', error);
-                showStatusMessage('Failed to send to overlay: ' + error.message, 'error');
+                const errorMsg = error.message || JSON.stringify(error);
+                showStatusMessage('Failed to send to overlay: ' + errorMsg, 'error');
             }
         }
 
@@ -1059,6 +1067,7 @@
                 return `
                     <div class="content-card">
                         <h4>${content.title || 'Untitled'}</h4>
+                        ${content.subtitle ? `<div class="subtitle" style="color: #6c757d; font-size: 1rem; margin-bottom: 15px; font-weight: 500;">${content.subtitle}</div>` : ''}
                         
                         <div class="p-preview p1">
                             <div class="p-preview-label">P1 - Lines 1-2</div>
@@ -1154,6 +1163,7 @@
                 const contentData = {
                     id: contentId,
                     title: document.getElementById('title').value.trim(),
+                    subtitle: document.getElementById('subtitle').value.trim(),
                     p1_line1: document.getElementById('p1_line1').value.trim(),
                     p1_line2: document.getElementById('p1_line2').value.trim(),
                     p2_line3: document.getElementById('p2_line3').value.trim(),
