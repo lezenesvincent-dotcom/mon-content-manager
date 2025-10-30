@@ -1623,7 +1623,7 @@
                     content.p4_line8
                 ].map(line => (line || '').trim()); // Trim whitespace
                 
-                // Fonction pour aligner les groupes de texte avec des tabulations
+                // Fonction pour séparer les groupes de texte avec des espaces insécables
                 function addSpacesEvery20Chars(text) {
                     if (!text) return '';
                     
@@ -1651,9 +1651,9 @@
                         result += chunk;
                         currentPos += chunk.length;
                         
-                        // Ajouter 4 tabulations si on n'est pas à la fin
+                        // Ajouter 10 espaces insécables si on n'est pas à la fin
                         if (currentPos < text.length) {
-                            result += '\t\t\t\t'; // 4 tabulations pour plus d'espace
+                            result += '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'; // 10 espaces insécables
                             
                             // Sauter les espaces au début du prochain chunk
                             while (currentPos < text.length && text[currentPos] === ' ') {
