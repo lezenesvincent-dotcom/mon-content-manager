@@ -1676,9 +1676,9 @@
                 console.log('Text length:', fullText.length);
                 console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
                 
-                // Send all 8 lines to the Text Panel
+                // Send all 8 lines to the Text Panel using datastore
                 await sendToOverlay('SetOverlayContent', {
-                    id: '8a8a7bcb-55b7-4ada-a566-011ff13965e8',
+                    id: 'app_1zIvGMS51COHhe6lV6LfF5',
                     content: {
                         "Title": content.title || "",
                         "Subtitle": content.subtitle || "",
@@ -1686,7 +1686,7 @@
                     }
                 });
                 
-                await sendToOverlay('ShowOverlay', { id: '8a8a7bcb-55b7-4ada-a566-011ff13965e8' });
+                await sendToOverlay('ShowOverlay', { id: 'app_1zIvGMS51COHhe6lV6LfF5' });
                 
                 console.log('=== OVERLAY SENT SUCCESSFULLY ===');
                 showStatusMessage(`📤 "${content.title}" sent to overlay (8 lines)!`, 'success');
@@ -1702,7 +1702,7 @@
 
         async function hideOverlay() {
             try {
-                await sendToOverlay('HideOverlay', { id: '8a8a7bcb-55b7-4ada-a566-011ff13965e8' });
+                await sendToOverlay('HideOverlay', { id: 'app_1zIvGMS51COHhe6lV6LfF5' });
                 showStatusMessage('Overlay hidden successfully!', 'success');
             } catch (error) {
                 console.error('Hide overlay failed:', error);
