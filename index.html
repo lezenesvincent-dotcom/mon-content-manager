@@ -1675,15 +1675,34 @@
                 console.log('Text length:', fullText.length);
                 console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
                 
-                // Send all 8 lines to the Text Panel using datastore
-                await sendToOverlay('SetOverlayContent', {
-                    id: '5724186',
-                    content: {
-                        "Title": content.title || "",
-                        "Subtitle": content.subtitle || "",
-                        "Text": fullText
-                    }
+                // Send content directly to Firebase datastore
+                const datastorePath = 'app_1zIvGMS51COHhe6lV6LfF5';
+                
+                // Construct Firebase database URL
+                const firebaseUrl = `https://fiery-torch-2122.firebaseio.com/accounts/216547/appinstances/5724186/datastores/${datastorePath}.json`;
+                
+                const dataToSend = {
+                    Title: content.title || "",
+                    Subtitle: content.subtitle || "",
+                    Text: fullText
+                };
+                
+                console.log('Sending to Firebase:', firebaseUrl);
+                console.log('Data:', dataToSend);
+                
+                const response = await fetch(firebaseUrl, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`Firebase write failed: ${response.status}`);
+                }
+                
+                console.log('✅ Data written to Firebase');
                 
                 await sendToOverlay('ShowOverlay', { id: '5724186' });
                 
