@@ -1677,9 +1677,10 @@
                 
                 // Send content directly to Firebase datastore
                 const datastorePath = 'app_1zIvGMS51COHhe6lV6LfF5';
+                const firebaseToken = '1I3sSjulyQ2yZuFZLPeAd8'; // Access token
                 
-                // Construct Firebase database URL
-                const firebaseUrl = `https://fiery-torch-2122.firebaseio.com/accounts/216547/appinstances/5724186/datastores/${datastorePath}.json`;
+                // Construct Firebase database URL with auth
+                const firebaseUrl = `https://fiery-torch-2122.firebaseio.com/accounts/216547/appinstances/5724186/datastores/${datastorePath}.json?access_token=${firebaseToken}`;
                 
                 const dataToSend = {
                     Title: content.title || "",
@@ -1699,10 +1700,13 @@
                 });
                 
                 if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Firebase error:', errorText);
                     throw new Error(`Firebase write failed: ${response.status}`);
                 }
                 
-                console.log('✅ Data written to Firebase');
+                const result = await response.json();
+                console.log('✅ Data written to Firebase:', result);
                 
                 await sendToOverlay('ShowOverlay', { id: '5724186' });
                 
