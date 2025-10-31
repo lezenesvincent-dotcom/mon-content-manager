@@ -424,16 +424,16 @@
 
         .content-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
             margin-top: 20px;
         }
 
         .content-card {
             background: linear-gradient(135deg, #2a2a3e 0%, #1f1f2e 100%);
             border: 1px solid #0f3460;
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             position: relative;
@@ -446,35 +446,35 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 3px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .content-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
         }
 
         .content-card h4 {
             color: #e4e4e4;
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
             font-weight: 700;
         }
         
         .content-card h5 {
             color: #8b92a8;
-            font-size: 1rem;
-            margin-bottom: 15px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
             font-weight: 500;
         }
 
         .p-preview {
             background: #16213e;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-left: 4px solid #667eea;
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid #667eea;
         }
 
         .p-preview-label {
@@ -484,19 +484,20 @@
 
         .p-preview-line {
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             color: #b8c1ec;
-            padding: 5px 0;
-            white-space: pre-wrap;
-            word-break: break-all;
+            padding: 2px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .content-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
-            padding-top: 15px;
+            margin-top: 10px;
+            padding-top: 10px;
             border-top: 1px solid #0f3460;
         }
 
@@ -1621,83 +1622,25 @@
 
             try {
                 console.log('=== STARTING SEND TO OVERLAY ===');
-                console.log('Content ID:', contentId);
-                console.log('Content object:', content);
-                console.log('Title:', content.title);
-                console.log('Subtitle:', content.subtitle);
+                console.log('Content:', content);
                 
-                // Concatenate all 8 lines into one Text field
+                // Créer un tableau avec les 8 lignes, en gardant les lignes vides
                 const lines = [
-                    content.p1_line1,
-                    content.p1_line2,
-                    content.p2_line3,
-                    content.p2_line4,
-                    content.p3_line5,
-                    content.p3_line6,
-                    content.p4_line7,
-                    content.p4_line8
+                    content.p1_line1 || '',
+                    content.p1_line2 || '',
+                    content.p2_line3 || '',
+                    content.p2_line4 || '',
+                    content.p3_line5 || '',
+                    content.p3_line6 || '',
+                    content.p4_line7 || '',
+                    content.p4_line8 || ''
                 ];
                 
-                console.log('Raw lines:', lines);
+                // Joindre avec des retours à la ligne
+                const fullText = lines.join('\n');
                 
-                // Trim whitespace but keep empty lines to maintain structure
-                const trimmedLines = lines.map(line => (line || '').trim());
-                
-                console.log('Trimmed lines:', trimmedLines);
-                
-                // Fonction pour aligner les groupes de texte sur des multiples de 18 caractères
-                function addSpacesEvery18Chars(text) {
-                    if (!text) return '';
-                    
-                    let result = '';
-                    let currentPos = 0;
-                    
-                    while (currentPos < text.length) {
-                        // Prendre jusqu'à 18 caractères
-                        let chunk = text.substring(currentPos, currentPos + 18);
-                        
-                        // Si on n'est pas à la fin et que le chunk ne se termine pas par un espace
-                        if (currentPos + 18 < text.length && chunk[chunk.length - 1] !== ' ') {
-                            // Vérifier si on coupe un mot
-                            const nextChar = text[currentPos + 18];
-                            if (nextChar && nextChar !== ' ') {
-                                // On coupe un mot, trouver le dernier espace dans le chunk
-                                const lastSpaceIndex = chunk.lastIndexOf(' ');
-                                if (lastSpaceIndex > 0) {
-                                    // Couper au dernier espace
-                                    chunk = chunk.substring(0, lastSpaceIndex);
-                                }
-                            }
-                        }
-                        
-                        result += chunk;
-                        const chunkLength = chunk.length;
-                        currentPos += chunkLength;
-                        
-                        // Ajouter des espaces insécables pour compléter jusqu'au prochain multiple de 18
-                        if (currentPos < text.length) {
-                            // Calculer combien d'espaces ajouter pour atteindre le prochain multiple de 18
-                            const spacesToAdd = 18 - (chunkLength % 18);
-                            result += '\u00A0'.repeat(spacesToAdd);
-                            
-                            // Sauter les espaces au début du prochain chunk
-                            while (currentPos < text.length && text[currentPos] === ' ') {
-                                currentPos++;
-                            }
-                        }
-                    }
-                    
-                    return result;
-                }
-                
-                // Appliquer la fonction à chaque ligne
-                const processedLines = trimmedLines.map(line => addSpacesEvery18Chars(line));
-                const fullText = processedLines.join('\n');
-                
-                console.log('Processed lines:', processedLines);
-                console.log('Full text (8 lines with non-breaking spaces):', fullText);
-                console.log('Text length:', fullText.length);
-                console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
+                console.log('Full text:', fullText);
+                console.log('Lines count:', lines.length);
                 
                 const payload = {
                     id: OVERLAY_ID,
@@ -1711,12 +1654,20 @@
                     }
                 };
                 
-                console.log('Payload to send:', JSON.stringify(payload, null, 2));
+                console.log('Payload:', JSON.stringify(payload, null, 2));
                 
-                // Send all 8 lines to the single overlay with reduced font size
+                // Envoyer à l'overlay
                 await sendToOverlay('SetOverlayContent', payload);
-                
                 await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
+                
+                console.log('=== OVERLAY SENT SUCCESSFULLY ===');
+                showStatusMessage(`📤 "${content.title}" envoyé à l'overlay !`, 'success');
+            } catch (error) {
+                console.error('=== SEND FAILED ===');
+                console.error('Error:', error);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
                 
                 console.log('=== OVERLAY SENT SUCCESSFULLY ===');
                 showStatusMessage(`📤 "${content.title}" sent to overlay (8 lines)!`, 'success');
@@ -1775,61 +1726,45 @@
             
             contentList.innerHTML = contentStore.map((content, index) => {
                 console.log(`📝 Carte ${index + 1}:`, content);
+                
+                // Regrouper toutes les lignes non vides
+                const allLines = [
+                    content.p1_line1,
+                    content.p1_line2,
+                    content.p2_line3,
+                    content.p2_line4,
+                    content.p3_line5,
+                    content.p3_line6,
+                    content.p4_line7,
+                    content.p4_line8
+                ].filter(line => line && line.trim() !== '');
+                
                 return `
                     <div class="content-card">
                         <h4>${content.title || 'Untitled'}</h4>
-                        ${content.subtitle ? `<div class="subtitle" style="color: #6c757d; font-size: 1rem; margin-bottom: 15px; font-weight: 500;">${content.subtitle}</div>` : ''}
+                        ${content.subtitle ? `<h5>${content.subtitle}</h5>` : ''}
                         
-                        <div class="p-preview p1">
-                            <div class="p-preview-label">P1 - Lines 1-2</div>
-                            <div class="p-preview-line">${content.p1_line1 || '<em style="color: #666;">(vide)</em>'}</div>
-                            <div class="p-preview-line">${content.p1_line2 || '<em style="color: #666;">(vide)</em>'}</div>
-                        </div>
-
-                        <div class="p-preview p2">
-                            <div class="p-preview-label">P2 - Lines 3-4</div>
-                            <div class="p-preview-line">${content.p2_line3 || '<em style="color: #666;">(vide)</em>'}</div>
-                            <div class="p-preview-line">${content.p2_line4 || '<em style="color: #666;">(vide)</em>'}</div>
-                        </div>
-
-                        <div class="p-preview p3">
-                            <div class="p-preview-label">P3 - Lines 5-6</div>
-                            <div class="p-preview-line">${content.p3_line5 || '<em style="color: #666;">(vide)</em>'}</div>
-                            <div class="p-preview-line">${content.p3_line6 || '<em style="color: #666;">(vide)</em>'}</div>
-                        </div>
-
-                        <div class="p-preview p4">
-                            <div class="p-preview-label">P4 - Lines 7-8</div>
-                            <div class="p-preview-line">${content.p4_line7 || '<em style="color: #666;">(vide)</em>'}</div>
-                            <div class="p-preview-line">${content.p4_line8 || '<em style="color: #666;">(vide)</em>'}</div>
-                        </div>
+                        ${allLines.length > 0 ? `
+                            <div class="p-preview">
+                                ${allLines.map(line => `<div class="p-preview-line">${line}</div>`).join('')}
+                            </div>
+                        ` : '<div class="p-preview"><div class="p-preview-line"><em style="color: #666;">Aucun contenu</em></div></div>'}
 
                         <div class="content-meta">
-                            <div class="timestamp">${content.timestamp || ''}</div>
+                            <div class="timestamp" style="font-size: 0.75rem;">${content.timestamp || ''}</div>
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px;">
                             <button class="btn-send" 
                                     onclick="sendContentToOverlay('${content.id}')"
-                                    style="padding: 10px 16px; font-size: 0.85rem;">
+                                    style="padding: 8px 12px; font-size: 0.8rem;">
                                 📤 SEND
                             </button>
-                            <button onclick="openEditModal('${content.id}')" 
-                                    class="btn-edit"
-                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 16px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
-                                ✏️ EDIT
-                            </button>
                             <button onclick="hideOverlay()" 
-                                    style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; padding: 10px 16px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                                    style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; padding: 8px 12px; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
                                 🙈 HIDE
                             </button>
                         </div>
-                        
-                        <button class="btn-danger" 
-                                onclick="deleteContent('${content.id}')"
-                                style="width: 100%; margin-top: 8px; padding: 8px 16px; font-size: 0.85rem;">
-                            🗑️ DELETE
-                        </button>
                     </div>
                 `;
             }).join('');
