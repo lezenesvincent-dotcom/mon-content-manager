@@ -775,12 +775,11 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-button active" onclick="openTab(event, 'create')">Create</button>
-            <button class="tab-button" onclick="openTab(event, 'manage')">Manage</button>
+            <button class="tab-button active" onclick="openTab(event, 'manage')">Manage</button>
             <button class="tab-button" onclick="openTab(event, 'settings')">Settings</button>
         </div>
 
-        <div id="create" class="tab-content active">
+        <div id="create" class="tab-content" style="display: none;">
             <form id="contentForm">
                 <div class="template-info">
                     <h3>Overlay Configuration</h3>
@@ -927,7 +926,7 @@
             </form>
         </div>
 
-        <div id="manage" class="tab-content">
+        <div id="manage" class="tab-content active">
             <div style="margin-bottom: 20px;">
                 <h3>Saved Content</h3>
                 <p>View and send your 8-line content to overlay.</p>
@@ -939,10 +938,7 @@
 
             <div id="emptyState" class="empty-state">
                 <h4>No Content Yet</h4>
-                <p>Create your first 8-line content to see it appear here.</p>
-                <button class="btn-secondary" onclick="openTab(event, 'create')">
-                    Create Your First Content
-                </button>
+                <p>Use "Création" page to create content, it will appear here automatically.</p>
             </div>
         </div>
 
@@ -2082,6 +2078,70 @@
                 showStatusMessage(`Error: ${error.message}`, 'error');
             }
         });
+
+        // ========== WEBSOCKET INTEGRATION ==========
+        // Charger les données depuis le serveur WebSocket (depuis "Création")
+        const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
+        
+        async function loadFromWebSocket() {
+            try {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`);
+                if (!response.ok) {
+                    console.log('⚠️ Unable to load from WebSocket server');
+                    return null;
+                }
+                
+                const data = await response.json();
+                console.log('✅ Loaded data from WebSocket server:', data.title);
+                
+                // Convertir les données WebSocket (24 lignes) vers le format P1-P4 (8 lignes)
+                const convertedData = {
+                    id: 'websocket-' + Date.now(),
+                    title: data.title || 'Untitled',
+                    subtitle: data.subtitle || '',
+                    p1_line1: data.line1 || '',
+                    p1_line2: data.line2 || '',
+                    p2_line3: data.line3 || '',
+                    p2_line4: data.line4 || '',
+                    p3_line5: data.line5 || '',
+                    p3_line6: data.line6 || '',
+                    p4_line7: data.line7 || '',
+                    p4_line8: data.line8 || '',
+                    timestamp: new Date().toLocaleString(),
+                    source: 'websocket'
+                };
+                
+                return convertedData;
+            } catch (error) {
+                console.error('Error loading from WebSocket:', error);
+                return null;
+            }
+        }
+        
+        // Charger automatiquement depuis WebSocket au démarrage
+        async function initializeWithWebSocket() {
+            const wsData = await loadFromWebSocket();
+            if (wsData && wsData.title && wsData.title !== 'En attente...') {
+                // Vérifier si ce contenu existe déjà
+                const exists = contentStore.find(item => 
+                    item.title === wsData.title && 
+                    item.subtitle === wsData.subtitle
+                );
+                
+                if (!exists) {
+                    contentStore.unshift(wsData);
+                    saveToLocalStorage();
+                    displayContentCards();
+                    console.log('🎉 New content loaded from "Création"!');
+                }
+            }
+        }
+        
+        // Charger depuis WebSocket toutes les 5 secondes
+        setInterval(initializeWithWebSocket, 5000);
+        
+        // Charger immédiatement au démarrage
+        setTimeout(initializeWithWebSocket, 1000);
     </script>
 </body>
 </html>
