@@ -940,7 +940,7 @@
                     <h3 style="margin: 0 0 5px 0;">Gestion des Overlays</h3>
                     <p style="margin: 0; color: #8b92a8; font-size: 0.95rem;">Visualisez et envoyez vos contenus à l'overlay</p>
                 </div>
-                <div id="wsStatusIndicator" style="padding: 12px 20px; background: #ffc107; color: #000; border-radius: 10px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3); transition: all 0.3s ease;">
+                <div id="wsStatusIndicator" style="padding: 12px 20px; background: #ffc107; color: #000; border-radius: 10px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.3s ease, color 0.3s ease;">
                     🔄 Connexion...
                 </div>
             </div>
@@ -1600,14 +1600,20 @@
 
         async function sendContentToOverlay(contentId) {
             const content = contentStore.find(item => item.id === contentId);
-            if (!content) return;
+            if (!content) {
+                console.error('Content not found:', contentId);
+                showStatusMessage('❌ Contenu introuvable', 'error');
+                return;
+            }
 
             try {
                 console.log('=== STARTING SEND TO OVERLAY ===');
-                console.log('Content:', content);
+                console.log('Content ID:', contentId);
+                console.log('Content object:', content);
+                console.log('Title:', content.title);
+                console.log('Subtitle:', content.subtitle);
                 
                 // Concatenate all 8 lines into one Text field
-                // Filter out empty lines to avoid duplicates
                 const lines = [
                     content.p1_line1,
                     content.p1_line2,
@@ -1617,23 +1623,30 @@
                     content.p3_line6,
                     content.p4_line7,
                     content.p4_line8
-                ].map(line => (line || '').trim()); // Trim whitespace
+                ];
                 
-                // Fonction pour aligner les groupes de texte sur des multiples de 15 caractères
-                function addSpacesEvery20Chars(text) {
+                console.log('Raw lines:', lines);
+                
+                // Trim whitespace but keep empty lines to maintain structure
+                const trimmedLines = lines.map(line => (line || '').trim());
+                
+                console.log('Trimmed lines:', trimmedLines);
+                
+                // Fonction pour aligner les groupes de texte sur des multiples de 18 caractères
+                function addSpacesEvery18Chars(text) {
                     if (!text) return '';
                     
                     let result = '';
                     let currentPos = 0;
                     
                     while (currentPos < text.length) {
-                        // Prendre jusqu'à 15 caractères
-                        let chunk = text.substring(currentPos, currentPos + 15);
+                        // Prendre jusqu'à 18 caractères
+                        let chunk = text.substring(currentPos, currentPos + 18);
                         
                         // Si on n'est pas à la fin et que le chunk ne se termine pas par un espace
-                        if (currentPos + 15 < text.length && chunk[chunk.length - 1] !== ' ') {
+                        if (currentPos + 18 < text.length && chunk[chunk.length - 1] !== ' ') {
                             // Vérifier si on coupe un mot
-                            const nextChar = text[currentPos + 15];
+                            const nextChar = text[currentPos + 18];
                             if (nextChar && nextChar !== ' ') {
                                 // On coupe un mot, trouver le dernier espace dans le chunk
                                 const lastSpaceIndex = chunk.lastIndexOf(' ');
@@ -1648,10 +1661,10 @@
                         const chunkLength = chunk.length;
                         currentPos += chunkLength;
                         
-                        // Ajouter des espaces insécables pour compléter jusqu'au prochain multiple de 15
+                        // Ajouter des espaces insécables pour compléter jusqu'au prochain multiple de 18
                         if (currentPos < text.length) {
-                            // Calculer combien d'espaces ajouter pour atteindre le prochain multiple de 15
-                            const spacesToAdd = 15 - (chunkLength % 15);
+                            // Calculer combien d'espaces ajouter pour atteindre le prochain multiple de 18
+                            const spacesToAdd = 18 - (chunkLength % 18);
                             result += '\u00A0'.repeat(spacesToAdd);
                             
                             // Sauter les espaces au début du prochain chunk
@@ -1665,15 +1678,15 @@
                 }
                 
                 // Appliquer la fonction à chaque ligne
-                const processedLines = lines.map(line => addSpacesEvery20Chars(line));
+                const processedLines = trimmedLines.map(line => addSpacesEvery18Chars(line));
                 const fullText = processedLines.join('\n');
                 
+                console.log('Processed lines:', processedLines);
                 console.log('Full text (8 lines with non-breaking spaces):', fullText);
                 console.log('Text length:', fullText.length);
                 console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
                 
-                // Send all 8 lines to the single overlay with reduced font size
-                await sendToOverlay('SetOverlayContent', {
+                const payload = {
                     id: OVERLAY_ID,
                     content: {
                         "Text Active": true,
@@ -1683,7 +1696,12 @@
                         "Lines": 8,
                         "Font Size": 20
                     }
-                });
+                };
+                
+                console.log('Payload to send:', JSON.stringify(payload, null, 2));
+                
+                // Send all 8 lines to the single overlay with reduced font size
+                await sendToOverlay('SetOverlayContent', payload);                });
                 
                 await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
                 
@@ -1742,26 +1760,26 @@
                         
                         <div class="p-preview p1">
                             <div class="p-preview-label">P1 - Lines 1-2</div>
-                            <div class="p-preview-line">${content.p1_line1}</div>
-                            <div class="p-preview-line">${content.p1_line2}</div>
+                            <div class="p-preview-line">${content.p1_line1 || '<em style="color: #666;">(vide)</em>'}</div>
+                            <div class="p-preview-line">${content.p1_line2 || '<em style="color: #666;">(vide)</em>'}</div>
                         </div>
 
                         <div class="p-preview p2">
                             <div class="p-preview-label">P2 - Lines 3-4</div>
-                            <div class="p-preview-line">${content.p2_line3}</div>
-                            <div class="p-preview-line">${content.p2_line4}</div>
+                            <div class="p-preview-line">${content.p2_line3 || '<em style="color: #666;">(vide)</em>'}</div>
+                            <div class="p-preview-line">${content.p2_line4 || '<em style="color: #666;">(vide)</em>'}</div>
                         </div>
 
                         <div class="p-preview p3">
                             <div class="p-preview-label">P3 - Lines 5-6</div>
-                            <div class="p-preview-line">${content.p3_line5}</div>
-                            <div class="p-preview-line">${content.p3_line6}</div>
+                            <div class="p-preview-line">${content.p3_line5 || '<em style="color: #666;">(vide)</em>'}</div>
+                            <div class="p-preview-line">${content.p3_line6 || '<em style="color: #666;">(vide)</em>'}</div>
                         </div>
 
                         <div class="p-preview p4">
                             <div class="p-preview-label">P4 - Lines 7-8</div>
-                            <div class="p-preview-line">${content.p4_line7}</div>
-                            <div class="p-preview-line">${content.p4_line8}</div>
+                            <div class="p-preview-line">${content.p4_line7 || '<em style="color: #666;">(vide)</em>'}</div>
+                            <div class="p-preview-line">${content.p4_line8 || '<em style="color: #666;">(vide)</em>'}</div>
                         </div>
 
                         <div class="content-meta">
