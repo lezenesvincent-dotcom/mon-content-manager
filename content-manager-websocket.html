@@ -420,31 +420,68 @@
             });
         });
 
-        // Validation des textareas (7 lignes, 15 caractères max par ligne)
+        // Validation des textareas (7 lignes, 18 caractères max par ligne, pas de coupure de mots)
         ['p1_contenu', 'p2_contenu', 'p3_contenu', 'p4_contenu'].forEach(id => {
             const textarea = document.getElementById(id);
             textarea.addEventListener('input', function() {
-                let lines = this.value.split('\n');
+                let text = this.value;
+                let lines = [];
+                let words = text.split(/(\s+)/); // Garde les espaces
+                let currentLine = '';
+                
+                for (let word of words) {
+                    // Si c'est un retour à la ligne manuel
+                    if (word.includes('\n')) {
+                        let parts = word.split('\n');
+                        for (let i = 0; i < parts.length; i++) {
+                            if (i > 0) {
+                                lines.push(currentLine);
+                                currentLine = '';
+                            }
+                            if (parts[i]) {
+                                if ((currentLine + parts[i]).length <= 18) {
+                                    currentLine += parts[i];
+                                } else if (currentLine) {
+                                    lines.push(currentLine);
+                                    currentLine = parts[i].substring(0, 18);
+                                } else {
+                                    currentLine = parts[i].substring(0, 18);
+                                }
+                            }
+                        }
+                        continue;
+                    }
+                    
+                    // Tester si on peut ajouter le mot à la ligne actuelle
+                    if ((currentLine + word).length <= 18) {
+                        currentLine += word;
+                    } else {
+                        // Le mot ne rentre pas
+                        if (currentLine.trim()) {
+                            lines.push(currentLine);
+                        }
+                        // Si le mot seul est trop long, le couper
+                        if (word.trim().length > 18) {
+                            currentLine = word.trim().substring(0, 18);
+                        } else {
+                            // Supprimer les espaces en début de mot pour l'alignement
+                            currentLine = word.trimStart();
+                        }
+                    }
+                }
+                
+                // Ajouter la dernière ligne
+                if (currentLine) {
+                    lines.push(currentLine);
+                }
                 
                 // Limiter à 7 lignes
                 if (lines.length > 7) {
                     lines = lines.slice(0, 7);
-                    this.value = lines.join('\n');
                 }
                 
-                // Limiter à 15 caractères par ligne
-                let modified = false;
-                lines = lines.map(line => {
-                    if (line.length > 15) {
-                        modified = true;
-                        return line.substring(0, 15);
-                    }
-                    return line;
-                });
-                
-                if (modified) {
-                    this.value = lines.join('\n');
-                }
+                // Mettre à jour le textarea
+                this.value = lines.join('\n');
             });
         });
 
