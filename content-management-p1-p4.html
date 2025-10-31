@@ -1399,17 +1399,30 @@
         let syncInterval = null;
         
         async function loadSharedData() {
-            console.log('🔄 Loading data from WebSocket server...');
+            console.log('==============================================');
+            console.log('🔄 CHARGEMENT DES DONNÉES depuis WebSocket...');
+            console.log('==============================================');
             
             // Charger depuis WebSocket
             const wsData = await loadFromWebSocket();
-            if (wsData && wsData.title && wsData.title !== 'Untitled' && wsData.title.trim() !== '') {
+            
+            console.log('📦 Données reçues de loadFromWebSocket:', wsData);
+            
+            if (!wsData) {
+                console.log('❌ Aucune donnée reçue (wsData est null)');
+                contentStore = [];
+                return contentStore;
+            }
+            
+            // Validation moins stricte : accepter même si le titre est vide
+            if (wsData) {
                 contentStore = [wsData];
-                console.log('✅ Loaded from WebSocket:', wsData.title);
-                console.log('Content details:', wsData);
+                console.log('✅ Données ajoutées au contentStore');
+                console.log('📊 contentStore.length:', contentStore.length);
+                console.log('📄 Contenu:', JSON.stringify(contentStore, null, 2));
                 return contentStore;
             } else {
-                console.log('ℹ️ No valid content from WebSocket yet - waiting for data from "Création" page');
+                console.log('ℹ️ Pas de contenu valide - contentStore reste vide');
                 contentStore = [];
                 return contentStore;
             }
@@ -1701,7 +1714,7 @@
                 console.log('Payload to send:', JSON.stringify(payload, null, 2));
                 
                 // Send all 8 lines to the single overlay with reduced font size
-                await sendToOverlay('SetOverlayContent', payload);                });
+                await sendToOverlay('SetOverlayContent', payload);
                 
                 await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
                 
@@ -1740,19 +1753,28 @@
         }
 
         function displayContentCards() {
+            console.log('==============================================');
+            console.log('🎨 AFFICHAGE DES CARTES');
+            console.log('==============================================');
+            console.log('📊 contentStore.length:', contentStore.length);
+            console.log('📦 contentStore:', JSON.stringify(contentStore, null, 2));
+            
             const contentList = document.getElementById('contentList');
             const emptyState = document.getElementById('emptyState');
             
             if (contentStore.length === 0) {
+                console.log('❌ Aucun contenu à afficher (contentStore vide)');
                 contentList.style.display = 'none';
                 emptyState.style.display = 'block';
                 return;
             }
             
+            console.log('✅ Affichage de', contentStore.length, 'carte(s)');
             contentList.style.display = 'grid';
             emptyState.style.display = 'none';
             
-            contentList.innerHTML = contentStore.map((content) => {
+            contentList.innerHTML = contentStore.map((content, index) => {
+                console.log(`📝 Carte ${index + 1}:`, content);
                 return `
                     <div class="content-card">
                         <h4>${content.title || 'Untitled'}</h4>
@@ -2103,6 +2125,27 @@
         
         async function loadFromWebSocket() {
             const wsStatusIndicator = document.getElementById('wsStatusIndicator');
+            
+            // D'abord essayer localStorage
+            try {
+                const localData = localStorage.getItem('overlay_content');
+                if (localData) {
+                    const parsedLocal = JSON.parse(localData);
+                    console.log('📦 Données trouvées dans localStorage:', parsedLocal);
+                    
+                    if (wsStatusIndicator) {
+                        wsStatusIndicator.style.background = '#17a2b8';
+                        wsStatusIndicator.style.color = '#fff';
+                        wsStatusIndicator.textContent = '💾 localStorage';
+                    }
+                    
+                    return parsedLocal;
+                }
+            } catch (localError) {
+                console.log('ℹ️ Pas de données dans localStorage');
+            }
+            
+            // Ensuite essayer WebSocket
             try {
                 if (wsStatusIndicator) {
                     wsStatusIndicator.style.background = '#ffc107';
@@ -2114,9 +2157,9 @@
                 if (!response.ok) {
                     console.log('⚠️ Unable to load from WebSocket server');
                     if (wsStatusIndicator) {
-                        wsStatusIndicator.style.background = '#dc3545';
-                        wsStatusIndicator.style.color = '#fff';
-                        wsStatusIndicator.textContent = '❌ Serveur inaccessible';
+                        wsStatusIndicator.style.background = '#ffc107';
+                        wsStatusIndicator.style.color = '#000';
+                        wsStatusIndicator.textContent = '💾 Mode local';
                     }
                     return null;
                 }
@@ -2128,7 +2171,7 @@
                 if (wsStatusIndicator) {
                     wsStatusIndicator.style.background = '#28a745';
                     wsStatusIndicator.style.color = '#fff';
-                    wsStatusIndicator.textContent = '✅ Connecté';
+                    wsStatusIndicator.textContent = '✅ Connecté WebSocket';
                 }
                 
                 // Vérifier si les données sont valides
@@ -2138,21 +2181,16 @@
                 }
                 
                 // Convertir les données WebSocket vers le format P1-P4 (8 lignes)
-                // Structure reçue: { titre, soustitre, p1: {sujet, contenu: []}, p2: {...}, p3: {...}, p4: {...} }
                 const convertedData = {
                     id: 'websocket-' + Date.now(),
                     title: data.titre || 'Untitled',
                     subtitle: data.soustitre || '',
-                    // P1 - contenu est un tableau, on prend les 2 premières lignes
                     p1_line1: (data.p1 && data.p1.contenu && data.p1.contenu[0]) ? data.p1.contenu[0] : '',
                     p1_line2: (data.p1 && data.p1.contenu && data.p1.contenu[1]) ? data.p1.contenu[1] : '',
-                    // P2
                     p2_line3: (data.p2 && data.p2.contenu && data.p2.contenu[0]) ? data.p2.contenu[0] : '',
                     p2_line4: (data.p2 && data.p2.contenu && data.p2.contenu[1]) ? data.p2.contenu[1] : '',
-                    // P3
                     p3_line5: (data.p3 && data.p3.contenu && data.p3.contenu[0]) ? data.p3.contenu[0] : '',
                     p3_line6: (data.p3 && data.p3.contenu && data.p3.contenu[1]) ? data.p3.contenu[1] : '',
-                    // P4
                     p4_line7: (data.p4 && data.p4.contenu && data.p4.contenu[0]) ? data.p4.contenu[0] : '',
                     p4_line8: (data.p4 && data.p4.contenu && data.p4.contenu[1]) ? data.p4.contenu[1] : '',
                     timestamp: new Date().toLocaleString(),
@@ -2165,9 +2203,9 @@
             } catch (error) {
                 console.error('Error loading from WebSocket:', error);
                 if (wsStatusIndicator) {
-                    wsStatusIndicator.style.background = '#dc3545';
-                    wsStatusIndicator.style.color = '#fff';
-                    wsStatusIndicator.textContent = '❌ Erreur de connexion';
+                    wsStatusIndicator.style.background = '#ffc107';
+                    wsStatusIndicator.style.color = '#000';
+                    wsStatusIndicator.textContent = '💾 Mode local';
                 }
                 return null;
             }
