@@ -1486,7 +1486,7 @@
         }
         
         const TEMPLATE_ID = '1I3sSjulyQ2yZuFZLPeAd8';
-        const OVERLAY_ID = '4dqe9yEBokrtEVAstBsprG';
+        const OVERLAY_ID = '8a8a7bcb-55b7-4ada-a566-011ff13965e8'; // FID du widget
         const OVERLAY_API_URL = `https://app.overlays.uno/apiv2/controlapps/${TEMPLATE_ID}/api`;
 
         function openTab(evt, tabName) {
@@ -1676,17 +1676,15 @@
                 console.log('Text length:', fullText.length);
                 console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
                 
-                // Send all 8 lines to the single overlay
-                await sendToOverlay('SetOverlayContent', {
-                    id: '4dqe9yEBokrtEVAstBsprG',
-                    content: {
-                        "Title": content.title || "",
-                        "Subtitle": content.subtitle || "",
-                        "Text": fullText
-                    }
+                // Send all 8 lines to the Text Panel
+                await sendToOverlay('UpdatePanel', {
+                    id: '8a8a7bcb-55b7-4ada-a566-011ff13965e8',
+                    Title: content.title || "",
+                    Subtitle: content.subtitle || "",
+                    Text: fullText
                 });
                 
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
+                await sendToOverlay('ShowOverlay', { id: '8a8a7bcb-55b7-4ada-a566-011ff13965e8' });
                 
                 console.log('=== OVERLAY SENT SUCCESSFULLY ===');
                 showStatusMessage(`📤 "${content.title}" sent to overlay (8 lines)!`, 'success');
@@ -1702,7 +1700,7 @@
 
         async function hideOverlay() {
             try {
-                await sendToOverlay('HideOverlay', { id: OVERLAY_ID });
+                await sendToOverlay('HideOverlay', { id: '8a8a7bcb-55b7-4ada-a566-011ff13965e8' });
                 showStatusMessage('Overlay hidden successfully!', 'success');
             } catch (error) {
                 console.error('Hide overlay failed:', error);
@@ -2082,4 +2080,3 @@
     </script>
 </body>
 </html>
-
