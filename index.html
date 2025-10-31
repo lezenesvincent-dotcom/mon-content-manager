@@ -1486,8 +1486,8 @@
         }
         
         const TEMPLATE_ID = '1I3sSjulyQ2yZuFZLPeAd8';
-        const OVERLAY_ID = '5724186'; // App Instance ID
-        const OVERLAY_API_URL = `https://app.overlays.uno/apiv1/appinstances/${OVERLAY_ID}/metadata`;
+        const OVERLAY_ID = '1I3sSjulyQ2yZuFZLPeAd8'; // Utiliser le Control ID
+        const OVERLAY_API_URL = `https://app.overlays.uno/apiv2/controlapps/${TEMPLATE_ID}/api`;
 
         function openTab(evt, tabName) {
             const tabcontent = document.getElementsByClassName("tab-content");
@@ -1522,14 +1522,15 @@
                 console.log('Payload:', JSON.stringify(payload, null, 2));
                 console.log('Full body:', JSON.stringify(body, null, 2));
                 
-                const apiUrl = `${OVERLAY_API_URL}?access_token=${TEMPLATE_ID}`;
-                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(apiUrl);
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(OVERLAY_API_URL);
                 console.log('Proxy URL:', proxyUrl);
 
                 const response = await fetch(proxyUrl, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Api-Key': TEMPLATE_ID,
+                        'Authorization': `Bearer ${TEMPLATE_ID}`
                     },
                     body: JSON.stringify(body)
                 });
@@ -1675,40 +1676,17 @@
                 console.log('Text length:', fullText.length);
                 console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
                 
-                // Send content directly to Firebase datastore
-                const datastorePath = 'app_1zIvGMS51COHhe6lV6LfF5';
-                const firebaseToken = '1I3sSjulyQ2yZuFZLPeAd8'; // Access token
-                
-                // Construct Firebase database URL with auth
-                const firebaseUrl = `https://fiery-torch-2122.firebaseio.com/accounts/216547/appinstances/5724186/datastores/${datastorePath}.json?access_token=${firebaseToken}`;
-                
-                const dataToSend = {
-                    Title: content.title || "",
-                    Subtitle: content.subtitle || "",
-                    Text: fullText
-                };
-                
-                console.log('Sending to Firebase:', firebaseUrl);
-                console.log('Data:', dataToSend);
-                
-                const response = await fetch(firebaseUrl, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dataToSend)
+                // Send all 8 lines to the overlay
+                await sendToOverlay('SetOverlayContent', {
+                    id: OVERLAY_ID,
+                    content: {
+                        "Title": content.title || "",
+                        "Subtitle": content.subtitle || "",
+                        "Text": fullText
+                    }
                 });
                 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Firebase error:', errorText);
-                    throw new Error(`Firebase write failed: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                console.log('✅ Data written to Firebase:', result);
-                
-                await sendToOverlay('ShowOverlay', { id: '5724186' });
+                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
                 
                 console.log('=== OVERLAY SENT SUCCESSFULLY ===');
                 showStatusMessage(`📤 "${content.title}" sent to overlay (8 lines)!`, 'success');
@@ -1724,7 +1702,7 @@
 
         async function hideOverlay() {
             try {
-                await sendToOverlay('HideOverlay', { id: '5724186' });
+                await sendToOverlay('HideOverlay', { id: OVERLAY_ID });
                 showStatusMessage('Overlay hidden successfully!', 'success');
             } catch (error) {
                 console.error('Hide overlay failed:', error);
