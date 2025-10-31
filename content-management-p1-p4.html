@@ -935,9 +935,18 @@
         </div>
 
         <div id="manage" class="tab-content active">
-            <div style="margin-bottom: 20px;">
-                <h3>Saved Content</h3>
-                <p>View and send your 8-line content to overlay.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px;">
+                <div>
+                    <h3 style="margin: 0 0 5px 0;">Gestion des Overlays</h3>
+                    <p style="margin: 0; color: #8b92a8; font-size: 0.95rem;">Visualisez et envoyez vos contenus à l'overlay</p>
+                </div>
+                <div id="wsStatusIndicator" style="padding: 12px 20px; background: #ffc107; color: #000; border-radius: 10px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);">
+                    🔄 Connexion...
+                </div>
+            </div>
+            
+            <div style="background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                <p style="margin: 0; color: #b8c1ec;">💡 <strong>Synchronisation automatique active :</strong> Les données se synchronisent depuis la page "Création" toutes les 3 secondes</p>
             </div>
             
             <div id="contentList" class="content-grid">
@@ -945,8 +954,20 @@
             </div>
 
             <div id="emptyState" class="empty-state">
-                <h4>No Content Yet</h4>
-                <p>Use "Création" page to create content, it will appear here automatically.</p>
+                <h4>📭 Aucun contenu disponible</h4>
+                <p>Utilisez la page "🚀 Création" pour créer du contenu.</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">
+                    Le contenu créé dans "Création" apparaîtra ici automatiquement<br>
+                    (synchronisation toutes les 3 secondes)
+                </p>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; border: 1px solid rgba(255, 193, 7, 0.3);">
+                    <p style="font-size: 0.9rem; color: #ffc107;">
+                        💡 <strong>Vérifiez :</strong><br>
+                        • Le serveur WebSocket est-il accessible ?<br>
+                        • Avez-vous créé du contenu dans la page Création ?<br>
+                        • Ouvrez la console (F12) pour voir les logs de connexion
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -1378,24 +1399,20 @@
         let syncInterval = null;
         
         async function loadSharedData() {
-            // ⚠️ MODIFICATION: Charger UNIQUEMENT depuis le serveur WebSocket
-            // Ne plus charger depuis Gist, localStorage ou base embarquée
-            
-            console.log('🔄 Loading ONLY from WebSocket server...');
-            
-            // Vider le contentStore pour partir de zéro
-            contentStore = [];
+            console.log('🔄 Loading data from WebSocket server...');
             
             // Charger depuis WebSocket
             const wsData = await loadFromWebSocket();
             if (wsData && wsData.title && wsData.title !== 'En attente...') {
-                contentStore.push(wsData);
+                contentStore = [wsData];
                 console.log('✅ Loaded from WebSocket:', wsData.title);
+                console.log('Content details:', wsData);
+                return contentStore;
             } else {
-                console.log('ℹ️ No content from WebSocket yet');
+                console.log('ℹ️ No content from WebSocket yet - waiting for data from "Création" page');
+                contentStore = [];
+                return contentStore;
             }
-            
-            return contentStore;
         }
         
         function saveToLocalStorage() {
@@ -2067,15 +2084,33 @@
         const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
         
         async function loadFromWebSocket() {
+            const wsStatusIndicator = document.getElementById('wsStatusIndicator');
             try {
+                if (wsStatusIndicator) {
+                    wsStatusIndicator.style.background = '#ffc107';
+                    wsStatusIndicator.style.color = '#000';
+                    wsStatusIndicator.textContent = '🔄 Chargement...';
+                }
+                
                 const response = await fetch(`${WS_SERVER_URL}/api/data`);
                 if (!response.ok) {
                     console.log('⚠️ Unable to load from WebSocket server');
+                    if (wsStatusIndicator) {
+                        wsStatusIndicator.style.background = '#dc3545';
+                        wsStatusIndicator.style.color = '#fff';
+                        wsStatusIndicator.textContent = '❌ Serveur inaccessible';
+                    }
                     return null;
                 }
                 
                 const data = await response.json();
                 console.log('✅ Loaded data from WebSocket server:', data.title);
+                
+                if (wsStatusIndicator) {
+                    wsStatusIndicator.style.background = '#28a745';
+                    wsStatusIndicator.style.color = '#fff';
+                    wsStatusIndicator.textContent = '✅ Connecté';
+                }
                 
                 // Convertir les données WebSocket (24 lignes) vers le format P1-P4 (8 lignes)
                 const convertedData = {
@@ -2097,6 +2132,11 @@
                 return convertedData;
             } catch (error) {
                 console.error('Error loading from WebSocket:', error);
+                if (wsStatusIndicator) {
+                    wsStatusIndicator.style.background = '#dc3545';
+                    wsStatusIndicator.style.color = '#fff';
+                    wsStatusIndicator.textContent = '❌ Erreur de connexion';
+                }
                 return null;
             }
         }
