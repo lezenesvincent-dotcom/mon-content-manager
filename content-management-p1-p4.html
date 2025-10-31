@@ -1659,18 +1659,6 @@
                 showStatusMessage('❌ Erreur: ' + error.message, 'error');
             }
         }
-                
-                console.log('=== OVERLAY SENT SUCCESSFULLY ===');
-                showStatusMessage(`📤 "${content.title}" sent to overlay (8 lines)!`, 'success');
-            } catch (error) {
-                console.error('=== SEND CONTENT TO OVERLAY FAILED ===');
-                console.error('Error type:', typeof error);
-                console.error('Error:', error);
-                console.error('Error message:', error.message);
-                
-                showStatusMessage('Failed to send to overlay: ' + error.message, 'error');
-            }
-        }
 
         async function hideOverlay() {
             try {
