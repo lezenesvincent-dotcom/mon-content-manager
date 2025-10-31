@@ -1677,11 +1677,13 @@
                 console.log('Number of newlines:', (fullText.match(/\n/g) || []).length);
                 
                 // Send all 8 lines to the Text Panel
-                await sendToOverlay('UpdatePanel', {
+                await sendToOverlay('SetOverlayContent', {
                     id: '8a8a7bcb-55b7-4ada-a566-011ff13965e8',
-                    Title: content.title || "",
-                    Subtitle: content.subtitle || "",
-                    Text: fullText
+                    content: {
+                        "Title": content.title || "",
+                        "Subtitle": content.subtitle || "",
+                        "Text": fullText
+                    }
                 });
                 
                 await sendToOverlay('ShowOverlay', { id: '8a8a7bcb-55b7-4ada-a566-011ff13965e8' });
