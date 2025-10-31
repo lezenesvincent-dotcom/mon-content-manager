@@ -542,8 +542,27 @@
                     source: 'creation'
                 };
                 
-                localStorage.setItem('overlay_content', JSON.stringify(manageData));
-                console.log('💾 Données sauvegardées dans localStorage');
+                // Charger l'historique existant
+                let history = [];
+                try {
+                    const existingHistory = localStorage.getItem('overlay_content_history');
+                    if (existingHistory) {
+                        history = JSON.parse(existingHistory);
+                    }
+                } catch (e) {
+                    console.log('Pas d\'historique existant');
+                }
+                
+                // Ajouter au début de l'historique
+                history.unshift(manageData);
+                
+                // Limiter à 50 éléments
+                if (history.length > 50) {
+                    history = history.slice(0, 50);
+                }
+                
+                localStorage.setItem('overlay_content_history', JSON.stringify(history));
+                console.log('💾 Données sauvegardées dans localStorage (historique:', history.length, 'éléments)');
             } catch (storageError) {
                 console.error('Erreur localStorage:', storageError);
             }
