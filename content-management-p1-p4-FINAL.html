@@ -21,9 +21,9 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: white;
+            background: #1a1a2e;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             overflow: hidden;
             animation: slideUp 0.6s ease-out;
         }
@@ -40,10 +40,9 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
-            text-align: center;
             position: relative;
         }
 
@@ -60,8 +59,8 @@
 
         .tabs {
             display: flex;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
+            background: #16213e;
+            border-bottom: 1px solid #0f3460;
         }
 
         .tab-button {
@@ -71,15 +70,15 @@
             border: none;
             font-size: 1.1rem;
             font-weight: 600;
-            color: #6c757d;
+            color: #8b92a8;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
         }
 
         .tab-button.active {
-            color: #4facfe;
-            background: white;
+            color: #667eea;
+            background: #1a1a2e;
         }
 
         .tab-button::after {
@@ -89,7 +88,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: #4facfe;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
@@ -102,6 +101,8 @@
             display: none;
             padding: 40px;
             animation: fadeIn 0.4s ease-out;
+            background: #1a1a2e;
+            color: #e4e4e4;
         }
 
         .tab-content.active {
@@ -121,7 +122,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #e4e4e4;
             font-size: 1rem;
         }
 
@@ -130,19 +131,20 @@
         .form-group select {
             width: 100%;
             padding: 15px;
-            border: 2px solid #e9ecef;
+            border: 2px solid #0f3460;
             border-radius: 10px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: #fff;
+            background: #16213e;
+            color: #e4e4e4;
         }
 
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #4facfe;
-            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
             transform: translateY(-2px);
         }
 
@@ -428,11 +430,11 @@
         }
 
         .content-card {
-            background: white;
-            border: 1px solid #e9ecef;
+            background: linear-gradient(135deg, #2a2a3e 0%, #1f1f2e 100%);
+            border: 1px solid #0f3460;
             border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -445,51 +447,45 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .content-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.2);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .content-card h4 {
-            color: #333;
+            color: #e4e4e4;
             font-size: 1.3rem;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-weight: 700;
+        }
+        
+        .content-card h5 {
+            color: #8b92a8;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            font-weight: 500;
         }
 
         .p-preview {
-            background: #f8f9fa;
+            background: #16213e;
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 10px;
-            border-left: 4px solid;
+            border-left: 4px solid #667eea;
         }
-
-        .p-preview.p1 { border-color: #4facfe; }
-        .p-preview.p2 { border-color: #00f2fe; }
-        .p-preview.p3 { border-color: #667eea; }
-        .p-preview.p4 { border-color: #764ba2; }
 
         .p-preview-label {
-            font-weight: 700;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            /* MASQUÉ - Ne plus afficher P1, P2, P3, P4 */
+            display: none;
         }
-
-        .p-preview.p1 .p-preview-label { color: #4facfe; }
-        .p-preview.p2 .p-preview-label { color: #00f2fe; }
-        .p-preview.p3 .p-preview-label { color: #667eea; }
-        .p-preview.p4 .p-preview-label { color: #764ba2; }
 
         .p-preview-line {
             font-family: 'Courier New', monospace;
             font-size: 0.9rem;
-            color: #495057;
+            color: #b8c1ec;
             padding: 5px 0;
             white-space: pre-wrap;
             word-break: break-all;
@@ -501,7 +497,7 @@
             align-items: center;
             margin-top: 15px;
             padding-top: 15px;
-            border-top: 1px solid #f8f9fa;
+            border-top: 1px solid #0f3460;
         }
 
         .btn-send {
@@ -700,18 +696,19 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #6c757d;
+            color: #8b92a8;
         }
 
         .empty-state h4 {
             font-size: 1.5rem;
             margin-bottom: 10px;
-            color: #495057;
+            color: #e4e4e4;
         }
 
         .empty-state p {
             font-size: 1rem;
             margin-bottom: 20px;
+            color: #b8c1ec;
         }
 
         .btn-secondary {
@@ -788,7 +785,6 @@
 
         <div class="tabs">
             <button class="tab-button active" onclick="openTab(event, 'manage')">Manage</button>
-            <button class="tab-button" onclick="openTab(event, 'settings')">Settings</button>
         </div>
 
         <div id="create" class="tab-content" style="display: none;">
