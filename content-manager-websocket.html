@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Overlay eCamm - WebSocket</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-connected {
+            background: #00ff00;
+        }
+
+        .status-disconnected {
+            background: #ff0000;
+        }
+
+        .status-connecting {
+            background: #ffaa00;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .lines-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .line-input {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .line-input label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-send {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-send:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-clear {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #c0392b;
+        }
+
+        .btn-send:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            padding: 15px;
+            background: #00ff0020;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            color: #006600;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .config-section {
+            background: #fff9e6;
+            border: 2px solid #ffcc00;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 30px;
+        }
+
+        .config-section input {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎥 Gestion Overlay eCamm Live</h1>
+        
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot status-connecting" id="statusDot"></div>
+                <span id="statusText">Connexion...</span>
+            </div>
+            <div>
+                <small id="lastUpdate">Jamais envoyé</small>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <strong>⚙️ Configuration du serveur WebSocket</strong>
+            <input type="text" id="wsUrl" placeholder="wss://ecamm-overlay-server.onrender.com" value="wss://ecamm-overlay-server.onrender.com">
+            <button onclick="reconnect()" style="margin-top: 10px; background: #3498db; color: white; padding: 8px 15px;">
+                🔄 Reconnecter
+            </button>
+        </div>
+
+        <div class="form-section">
+            <h2>📋 En-tête</h2>
+            <div class="input-group">
+                <label for="title">Titre principal</label>
+                <input type="text" id="title" placeholder="Mon Titre Principal">
+            </div>
+            <div class="input-group">
+                <label for="subtitle">Sous-titre</label>
+                <input type="text" id="subtitle" placeholder="Mon Sous-titre">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>📝 24 Lignes de contenu</h2>
+            <div class="lines-grid" id="linesContainer">
+                <!-- Les 24 lignes seront générées par JavaScript -->
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-send" onclick="sendToOverlay()" id="sendBtn">
+                🚀 Envoyer à l'Overlay
+            </button>
+            <button class="btn-clear" onclick="clearAll()">
+                🗑️ Tout effacer
+            </button>
+        </div>
+
+        <div class="success-message" id="successMsg">
+            ✅ Données envoyées avec succès à l'overlay !
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let reconnectTimeout = null;
+
+        // Générer les 24 champs de saisie
+        function generateLineInputs() {
+            const container = document.getElementById('linesContainer');
+            for (let i = 1; i <= 24; i++) {
+                const div = document.createElement('div');
+                div.className = 'line-input';
+                div.innerHTML = `
+                    <label for="line${i}">Ligne ${i}</label>
+                    <input type="text" id="line${i}" placeholder="Contenu ligne ${i}">
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        // Mettre à jour le statut visuel
+        function updateStatus(status, message) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            dot.className = 'status-dot status-' + status;
+            text.textContent = message;
+            
+            if (status === 'connected') {
+                sendBtn.disabled = false;
+            } else {
+                sendBtn.disabled = true;
+            }
+        }
+
+        // Connexion au serveur WebSocket
+        function connect() {
+            const wsUrl = document.getElementById('wsUrl').value;
+            
+            try {
+                updateStatus('connecting', 'Connexion en cours...');
+                
+                ws = new WebSocket(wsUrl);
+
+                ws.onopen = () => {
+                    console.log('✓ Connecté au serveur WebSocket');
+                    updateStatus('connected', 'Connecté au serveur');
+                };
+
+                ws.onerror = (error) => {
+                    console.error('Erreur WebSocket:', error);
+                    updateStatus('disconnected', 'Erreur de connexion');
+                };
+
+                ws.onclose = () => {
+                    console.log('Connexion fermée');
+                    updateStatus('disconnected', 'Déconnecté - Reconnexion dans 3s...');
+                    
+                    reconnectTimeout = setTimeout(connect, 3000);
+                };
+
+            } catch (error) {
+                console.error('Erreur de connexion:', error);
+                updateStatus('disconnected', 'Erreur: ' + error.message);
+                reconnectTimeout = setTimeout(connect, 3000);
+            }
+        }
+
+        // Reconnecter manuellement
+        function reconnect() {
+            if (reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
+            }
+            if (ws) {
+                ws.close();
+            }
+            connect();
+        }
+
+        // Récupérer toutes les données du formulaire
+        function getFormData() {
+            const data = {
+                title: document.getElementById('title').value,
+                subtitle: document.getElementById('subtitle').value
+            };
+            
+            for (let i = 1; i <= 24; i++) {
+                data[`line${i}`] = document.getElementById(`line${i}`).value;
+            }
+            
+            return data;
+        }
+
+        // Envoyer les données à l'overlay
+        function sendToOverlay() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                alert('❌ Non connecté au serveur WebSocket !');
+                return;
+            }
+
+            const data = getFormData();
+            
+            const message = {
+                type: 'update',
+                data: data
+            };
+
+            ws.send(JSON.stringify(message));
+            
+            // Afficher le message de succès
+            const successMsg = document.getElementById('successMsg');
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+
+            // Mettre à jour la date
+            document.getElementById('lastUpdate').textContent = 
+                'Dernier envoi: ' + new Date().toLocaleTimeString();
+            
+            console.log('✓ Données envoyées:', data.title);
+        }
+
+        // Effacer tous les champs
+        function clearAll() {
+            if (!confirm('Êtes-vous sûr de vouloir tout effacer ?')) {
+                return;
+            }
+            
+            document.getElementById('title').value = '';
+            document.getElementById('subtitle').value = '';
+            
+            for (let i = 1; i <= 24; i++) {
+                document.getElementById(`line${i}`).value = '';
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            generateLineInputs();
+            connect();
+        });
+    </script>
+</body>
+</html>
