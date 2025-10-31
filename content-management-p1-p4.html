@@ -2153,28 +2153,6 @@
                 return [];
             }
         }
-        
-        // Charger automatiquement depuis WebSocket au démarrage
-        async function initializeWithWebSocket() {
-            const wsData = await loadFromWebSocket();
-            if (wsData && wsData.title && wsData.title !== 'En attente...') {
-                // Remplacer le contentStore avec les données du WebSocket
-                contentStore = [wsData];
-                displayContentCards();
-                console.log('🔄 Content refreshed from "Création":', wsData.title);
-            } else {
-                // Aucun contenu disponible
-                contentStore = [];
-                displayContentCards();
-                console.log('ℹ️ No content available from "Création"');
-            }
-        }
-        
-        // Charger depuis WebSocket toutes les 3 secondes
-        setInterval(initializeWithWebSocket, 3000);
-        
-        // Charger immédiatement au démarrage
-        setTimeout(initializeWithWebSocket, 500);
     </script>
 </body>
 </html>
