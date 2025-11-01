@@ -424,174 +424,151 @@
 
         .content-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
             margin-top: 30px;
         }
 
         .content-card {
-            background: linear-gradient(135deg, rgba(93, 63, 211, 0.15) 0%, rgba(93, 63, 211, 0.05) 100%);
-            border: 2px solid rgba(93, 63, 211, 0.3);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(93, 63, 211, 0.1);
+            background: linear-gradient(135deg, #7b68ee 0%, #a78bfa 100%);
+            border-radius: 30px;
+            padding: 40px 30px 30px 30px;
+            box-shadow: 0 10px 40px rgba(123, 104, 238, 0.3);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .content-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px 20px 0 0;
+            cursor: pointer;
         }
 
         .content-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(93, 63, 211, 0.25);
-            border-color: rgba(93, 63, 211, 0.5);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 50px rgba(123, 104, 238, 0.4);
         }
 
-        /* Animation de pulsation douce pour le contenu online */
+        /* Animation de respiration pour le contenu online */
         .content-card.online {
-            animation: gentlePulse 3s ease-in-out infinite;
+            animation: breathe 3s ease-in-out infinite;
         }
 
-        @keyframes gentlePulse {
+        @keyframes breathe {
             0%, 100% {
-                box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
-                border-color: rgba(102, 126, 234, 0.5);
+                box-shadow: 0 10px 40px rgba(123, 104, 238, 0.3);
             }
             50% {
-                box-shadow: 0 12px 48px rgba(102, 126, 234, 0.4);
-                border-color: rgba(102, 126, 234, 0.7);
+                box-shadow: 0 10px 60px rgba(123, 104, 238, 0.6), 0 0 30px rgba(167, 139, 250, 0.5);
             }
+        }
+
+        /* Fusée au-dessus du titre */
+        .content-card::before {
+            content: '🚀';
+            font-size: 60px;
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .content-card h4 {
             color: #ffffff;
-            font-size: 1.5rem;
-            margin-bottom: 8px;
+            font-size: 2.5rem;
+            margin-top: 80px;
+            margin-bottom: 15px;
             font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
         .content-card h5 {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.1rem;
-            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3rem;
+            margin-bottom: 40px;
             font-weight: 400;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* Suppression du bloc de prévisualisation des lignes */
-        .p-preview {
-            display: none;
-        }
-
-        .p-preview-label {
-            display: none;
-        }
-
+        /* Supprimer les anciennes classes */
+        .p-preview,
+        .p-preview-label,
         .p-preview-line {
             display: none;
         }
 
         .content-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(93, 63, 211, 0.2);
+            display: none;
         }
 
         .timestamp {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
+            display: none;
         }
 
         .online-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            display: none;
         }
 
-        /* Boutons redessinés */
+        /* Boutons en bas */
         .card-actions {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+            position: relative;
         }
 
+        .btn-edit, .btn-hide {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-edit:hover, .btn-hide:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        /* Bouton de suppression (croix en haut à droite) */
+        .btn-delete-corner {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 2px 10px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-delete-corner:hover {
+            background: rgba(200, 35, 51, 1);
+            transform: scale(1.1);
+        }
+
+        /* Masquer les anciens boutons */
         .btn-send {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-send:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-hide {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-hide:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .btn-delete {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-        }
-
-        .btn-delete:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+            display: none;
         }
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(255, 165, 0, 0.3);
@@ -1611,6 +1588,9 @@
             }, 4000);
         }
 
+        // Variable pour stocker l'ID du contenu actuellement affiché
+        let currentOnlineContentId = null;
+
         async function sendContentToOverlay(contentId) {
             const content = contentStore.find(item => item.id === contentId);
             if (!content) {
@@ -1664,6 +1644,10 @@
                 console.log('=== SENT SUCCESSFULLY ===');
                 console.log('Result:', result);
                 
+                // Marquer ce contenu comme online
+                currentOnlineContentId = contentId;
+                displayContentCards(); // Rafraîchir pour afficher l'animation
+                
                 showStatusMessage(`📤 "${content.title}" envoyé au widget eCamm !`, 'success');
             } catch (error) {
                 console.error('=== SEND FAILED ===');
@@ -1699,6 +1683,11 @@
                 }
                 
                 console.log('=== OVERLAY HIDDEN ===');
+                
+                // Retirer le statut online
+                currentOnlineContentId = null;
+                displayContentCards(); // Rafraîchir pour retirer l'animation
+                
                 showStatusMessage('🙈 Overlay masqué !', 'success');
             } catch (error) {
                 console.error('=== HIDE FAILED ===');
@@ -1747,24 +1736,25 @@
             contentList.innerHTML = contentStore.map((content, index) => {
                 console.log(`📝 Carte ${index + 1}:`, content);
                 
+                // Vérifier si ce contenu est actuellement online
+                const isOnline = content.id === currentOnlineContentId;
+                const onlineClass = isOnline ? ' online' : '';
+                
                 return `
-                    <div class="content-card">
-                        <h4>${content.title || 'Sans titre'}</h4>
-                        ${content.subtitle ? `<h5>${content.subtitle}</h5>` : '<h5 style="opacity: 0.5;">Sans sous-titre</h5>'}
-
-                        <div class="content-meta">
-                            <div class="timestamp">${content.timestamp || ''}</div>
-                        </div>
+                    <div class="content-card${onlineClass}" onclick="sendContentToOverlay('${content.id}')">
+                        <button class="btn-delete-corner" onclick="event.stopPropagation(); deleteContent('${content.id}')">
+                            ✕
+                        </button>
                         
+                        <h4>${content.title || 'TITRE'}</h4>
+                        <h5>${content.subtitle || 'SOUS TITRE'}</h5>
+
                         <div class="card-actions">
-                            <button class="btn-send" onclick="sendContentToOverlay('${content.id}')">
-                                📤 SEND
+                            <button class="btn-edit" onclick="event.stopPropagation(); openEditModal('${content.id}')">
+                                EDIT
                             </button>
-                            <button class="btn-hide" onclick="hideOverlay()">
-                                🙈 HIDE
-                            </button>
-                            <button class="btn-delete" onclick="deleteContent('${content.id}')">
-                                🗑️
+                            <button class="btn-hide" onclick="event.stopPropagation(); hideOverlay()">
+                                MASQUER
                             </button>
                         </div>
                     </div>
