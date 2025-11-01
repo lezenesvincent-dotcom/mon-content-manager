@@ -1633,39 +1633,14 @@
                 console.log('=== SENDING TO WEBSOCKET ===');
                 console.log('Content:', content);
                 
-                // Convertir au format P1-P4 pour le serveur
-                // Chaque section contient toutes ses lignes dans un tableau
+                // Envoyer directement au format P1-P4 (déjà dans le bon format)
                 const dataToSend = {
                     titre: content.title || '',
                     soustitre: content.subtitle || '',
-                    p1: {
-                        sujet: 'P1',
-                        contenu: [
-                            content.p1_line1 || '', 
-                            content.p1_line2 || ''
-                        ].filter(line => line.trim()) // Enlever les lignes vides
-                    },
-                    p2: {
-                        sujet: 'P2',
-                        contenu: [
-                            content.p2_line3 || '', 
-                            content.p2_line4 || ''
-                        ].filter(line => line.trim())
-                    },
-                    p3: {
-                        sujet: 'P3',
-                        contenu: [
-                            content.p3_line5 || '', 
-                            content.p3_line6 || ''
-                        ].filter(line => line.trim())
-                    },
-                    p4: {
-                        sujet: 'P4',
-                        contenu: [
-                            content.p4_line7 || '', 
-                            content.p4_line8 || ''
-                        ].filter(line => line.trim())
-                    }
+                    p1: content.p1 || { sujet: '', contenu: [] },
+                    p2: content.p2 || { sujet: '', contenu: [] },
+                    p3: content.p3 || { sujet: '', contenu: [] },
+                    p4: content.p4 || { sujet: '', contenu: [] }
                 };
                 
                 console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
@@ -2243,18 +2218,17 @@
                 // Convertir chaque élément de l'historique
                 const convertedHistory = history.map((data, index) => {
                     console.log(`🔄 Conversion élément ${index + 1}:`, data);
+                    
+                    // Stocker les données COMPLÈTES au lieu de les aplatir
                     const converted = {
                         id: data.id || 'ws-' + Date.now(),
                         title: data.titre || 'Untitled',
                         subtitle: data.soustitre || '',
-                        p1_line1: (data.p1 && data.p1.contenu && data.p1.contenu[0]) ? data.p1.contenu[0] : '',
-                        p1_line2: (data.p1 && data.p1.contenu && data.p1.contenu[1]) ? data.p1.contenu[1] : '',
-                        p2_line3: (data.p2 && data.p2.contenu && data.p2.contenu[0]) ? data.p2.contenu[0] : '',
-                        p2_line4: (data.p2 && data.p2.contenu && data.p2.contenu[1]) ? data.p2.contenu[1] : '',
-                        p3_line5: (data.p3 && data.p3.contenu && data.p3.contenu[0]) ? data.p3.contenu[0] : '',
-                        p3_line6: (data.p3 && data.p3.contenu && data.p3.contenu[1]) ? data.p3.contenu[1] : '',
-                        p4_line7: (data.p4 && data.p4.contenu && data.p4.contenu[0]) ? data.p4.contenu[0] : '',
-                        p4_line8: (data.p4 && data.p4.contenu && data.p4.contenu[1]) ? data.p4.contenu[1] : '',
+                        // Garder les données P1-P4 complètes avec sujets et toutes les lignes
+                        p1: data.p1 || { sujet: '', contenu: [] },
+                        p2: data.p2 || { sujet: '', contenu: [] },
+                        p3: data.p3 || { sujet: '', contenu: [] },
+                        p4: data.p4 || { sujet: '', contenu: [] },
                         timestamp: data.timestamp || new Date().toLocaleString(),
                         source: data.source || 'websocket'
                     };
