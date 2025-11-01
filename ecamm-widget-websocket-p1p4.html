@@ -28,7 +28,17 @@
             height: 720px;
         }
 
-        /* Titre principal - AU DESSUS du carton - TRÈS COLLÉ */
+        /* Header avec titre et sous-titre côte à côte */
+        .header-row {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 5px;
+            padding-left: 50px;
+            height: 70px;
+        }
+
+        /* Titre principal - À GAUCHE */
         .main-title {
             font-size: 4.2rem;
             font-weight: 800;
@@ -36,41 +46,85 @@
             text-transform: uppercase;
             letter-spacing: 4px;
             text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
-            margin-bottom: 5px;
-            padding-left: 50px;
-            height: 70px;
+            line-height: 70px;
+            flex-shrink: 0;
+        }
+
+        /* Sous-titre - À DROITE DU TITRE */
+        .subtitle-inline {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
             line-height: 70px;
         }
 
-        /* Carton avec dégradé - AGRANDI VERS LE BAS (650px) */
+        /* Carton avec dégradé ANIMÉ + effet respiration lumineux */
         .content-box {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
             border-radius: 30px;
             padding: 15px 50px 50px 50px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(10px);
             height: 650px;
+            position: relative;
         }
 
-        /* Sous-titre - EN HAUT du carton - TRÈS REMONTÉ */
+        /* Bord lumineux respirant (remplace le blanc) */
+        .content-box::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(135deg, 
+                rgba(102, 126, 234, 0.6) 0%, 
+                rgba(118, 75, 162, 0.6) 50%,
+                rgba(102, 126, 234, 0.6) 100%);
+            border-radius: 33px;
+            z-index: -1;
+            opacity: 0.5;
+            animation: breathe 3s ease-in-out infinite;
+            filter: blur(8px);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                opacity: 0.3;
+                filter: blur(8px);
+            }
+            50% {
+                opacity: 0.7;
+                filter: blur(12px);
+            }
+        }
+
+        /* Sous-titre - EN HAUT du carton (ancien style gardé pour compatibilité) */
         .subtitle {
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 15px;
-            letter-spacing: 1.5px;
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
-            height: 55px;
-            line-height: 55px;
+            display: none; /* Caché car maintenant inline avec titre */
         }
 
         /* 4 sujets alignés - CONTENEUR FLEX pour carrousel circulaire */
         .subjects-row {
             display: flex;
             gap: 30px;
-            height: 515px;
+            height: 585px;
             position: relative;
             overflow: visible;
+            margin-top: 15px;
         }
 
         .subject-box {
@@ -105,9 +159,11 @@
             transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        /* Cadre du texte - RECTANGULAIRE VERTICAL (plus haut que large) */
+        /* Cadre du texte - DÉGRADÉ VERTICAL + OPACITÉ 90% */
         .subject-content-box {
-            background: rgba(26, 43, 94, 0.7);
+            background: linear-gradient(to bottom, 
+                rgba(26, 43, 94, 0.9) 0%, 
+                rgba(41, 72, 152, 0.9) 100%);
             backdrop-filter: blur(10px);
             border-radius: 18px;
             padding: 28px 22px;
@@ -292,14 +348,14 @@
 
     <!-- Container de l'overlay -->
     <div id="overlay" class="overlay-container hidden">
-        <!-- Titre principal - AU DESSUS du carton -->
-        <div id="title" class="main-title">TITRE</div>
+        <!-- Header avec titre et sous-titre côte à côte -->
+        <div class="header-row">
+            <div id="title" class="main-title">TITRE</div>
+            <div id="subtitle" class="subtitle-inline">Sous-titre</div>
+        </div>
         
         <!-- Carton avec dégradé -->
         <div class="content-box">
-            <!-- Sous-titre - dans le carton -->
-            <div id="subtitle" class="subtitle">Sous-titre</div>
-
             <!-- 4 Sujets alignés -->
             <div class="subjects-row">
                 <div class="subject-box">
