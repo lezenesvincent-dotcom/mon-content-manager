@@ -597,9 +597,8 @@
             box-shadow: 0 6px 15px rgba(255, 165, 0, 0.3);
         }
 
-        /* Modal Styles */
+        /* Modal Styles - CORRIGÉ POUR AFFICHAGE AU-DESSUS */
         .modal-overlay {
-            display: none;
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
@@ -607,19 +606,22 @@
             bottom: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px);
-            z-index: 99999 !important;
-            animation: fadeIn 0.3s ease-out;
+            z-index: 999999 !important;
             margin: 0 !important;
             padding: 0 !important;
-        }
-
-        .modal-overlay.show {
+            opacity: 0;
+            pointer-events: none;
             display: flex !important;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: all;
         }
 
         .modal-content {
@@ -627,16 +629,18 @@
             border-radius: 20px;
             padding: 40px;
             max-width: 800px;
-            width: 100%;
+            width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             position: relative;
-            z-index: 100000 !important;
+            z-index: 1000000 !important;
+            transform: translateY(30px);
+            transition: transform 0.3s ease-out;
         }
 
         .modal-overlay.show .modal-content {
-            animation: slideUpModal 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: translateY(0);
         }
 
         @keyframes slideUpModal {
@@ -1877,8 +1881,13 @@
         }
 
         function closeEditModal() {
-            document.getElementById('editModal').classList.remove('show');
-            document.getElementById('editForm').reset();
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('show');
+            
+            // Reset le formulaire après la transition de fermeture
+            setTimeout(() => {
+                document.getElementById('editForm').reset();
+            }, 300);
         }
 
         function updateEditCounter(textareaId, counterId) {
