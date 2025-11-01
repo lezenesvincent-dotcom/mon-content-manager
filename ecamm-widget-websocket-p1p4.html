@@ -64,23 +64,22 @@
             line-height: 55px;
         }
 
-        /* 4 sujets alignés - CONTENEUR AVEC PERSPECTIVE pour l'effet 3D */
+        /* 4 sujets alignés - CONTENEUR FLEX pour animation de glissement */
         .subjects-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            display: flex;
             gap: 30px;
             height: 465px;
-            perspective: 2000px;
             position: relative;
+            overflow: visible;
         }
 
         .subject-box {
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100%;
-            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            transform-style: preserve-3d;
+            min-width: calc((100% - 90px) / 4);
+            flex-shrink: 0;
+            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
         }
 
@@ -96,7 +95,7 @@
             height: 45px;
             line-height: 45px;
             flex-shrink: 0;
-            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         /* Cadre du texte - RECTANGULAIRE VERTICAL (plus haut que large) */
@@ -111,7 +110,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             flex-shrink: 0;
-            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         /* Texte - même taille que sous-titre, gras */
@@ -124,78 +123,85 @@
             text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
         }
 
-        /* Animation de carrousel - Rotation façon manège */
+        /* Animation de glissement horizontal - Les fenêtres SE DÉPLACENT réellement */
         
-        /* Ordre de base : 1, 2, 3, 4 */
-        .subject-box:nth-child(1) { order: 1; }
-        .subject-box:nth-child(2) { order: 2; }
-        .subject-box:nth-child(3) { order: 3; }
-        .subject-box:nth-child(4) { order: 4; }
+        /* Tous visibles - position normale */
+        .subjects-row.focus-0 .subject-box {
+            transform: translateX(0);
+            opacity: 1;
+            filter: brightness(1);
+        }
 
-        /* Focus sur sujet 1 - ordre normal, sujet 1 mis en avant */
+        /* Focus sur sujet 1 - Aucun déplacement */
         .subjects-row.focus-1 .subject-box:nth-child(1) {
-            order: 1;
-            transform: scale(1.05) translateZ(50px);
+            transform: translateX(0) scale(1.08);
             z-index: 10;
         }
         .subjects-row.focus-1 .subject-box:nth-child(1) .subject-content-box {
-            background: rgba(26, 43, 94, 0.9);
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            background: rgba(26, 43, 94, 0.95);
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
-        .subjects-row.focus-1 .subject-box:nth-child(2) { order: 2; opacity: 0.5; transform: scale(0.95); }
-        .subjects-row.focus-1 .subject-box:nth-child(3) { order: 3; opacity: 0.5; transform: scale(0.95); }
-        .subjects-row.focus-1 .subject-box:nth-child(4) { order: 4; opacity: 0.5; transform: scale(0.95); }
+        .subjects-row.focus-1 .subject-box:nth-child(2),
+        .subjects-row.focus-1 .subject-box:nth-child(3),
+        .subjects-row.focus-1 .subject-box:nth-child(4) {
+            opacity: 0.4;
+            filter: brightness(0.7);
+            transform: scale(0.92);
+        }
 
-        /* Focus sur sujet 2 - rotation : 2, 3, 4, 1 */
+        /* Focus sur sujet 2 - Tout glisse vers la gauche de la largeur d'une carte */
+        .subjects-row.focus-2 .subject-box {
+            transform: translateX(calc(-100% - 30px)) scale(0.92);
+            opacity: 0.4;
+            filter: brightness(0.7);
+        }
         .subjects-row.focus-2 .subject-box:nth-child(2) {
-            order: 1;
-            transform: scale(1.05) translateZ(50px);
+            transform: translateX(calc(-100% - 30px)) scale(1.08);
             z-index: 10;
+            opacity: 1;
+            filter: brightness(1);
         }
         .subjects-row.focus-2 .subject-box:nth-child(2) .subject-content-box {
-            background: rgba(26, 43, 94, 0.9);
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            background: rgba(26, 43, 94, 0.95);
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
-        .subjects-row.focus-2 .subject-box:nth-child(3) { order: 2; opacity: 0.5; transform: scale(0.95); }
-        .subjects-row.focus-2 .subject-box:nth-child(4) { order: 3; opacity: 0.5; transform: scale(0.95); }
-        .subjects-row.focus-2 .subject-box:nth-child(1) { order: 4; opacity: 0.5; transform: scale(0.95); }
 
-        /* Focus sur sujet 3 - rotation : 3, 4, 1, 2 */
+        /* Focus sur sujet 3 - Tout glisse de 2 cartes vers la gauche */
+        .subjects-row.focus-3 .subject-box {
+            transform: translateX(calc(-200% - 60px)) scale(0.92);
+            opacity: 0.4;
+            filter: brightness(0.7);
+        }
         .subjects-row.focus-3 .subject-box:nth-child(3) {
-            order: 1;
-            transform: scale(1.05) translateZ(50px);
+            transform: translateX(calc(-200% - 60px)) scale(1.08);
             z-index: 10;
+            opacity: 1;
+            filter: brightness(1);
         }
         .subjects-row.focus-3 .subject-box:nth-child(3) .subject-content-box {
-            background: rgba(26, 43, 94, 0.9);
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            background: rgba(26, 43, 94, 0.95);
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
-        .subjects-row.focus-3 .subject-box:nth-child(4) { order: 2; opacity: 0.5; transform: scale(0.95); }
-        .subjects-row.focus-3 .subject-box:nth-child(1) { order: 3; opacity: 0.5; transform: scale(0.95); }
-        .subjects-row.focus-3 .subject-box:nth-child(2) { order: 4; opacity: 0.5; transform: scale(0.95); }
 
-        /* Focus sur sujet 4 - rotation : 4, 1, 2, 3 */
+        /* Focus sur sujet 4 - Tout glisse de 3 cartes vers la gauche */
+        .subjects-row.focus-4 .subject-box {
+            transform: translateX(calc(-300% - 90px)) scale(0.92);
+            opacity: 0.4;
+            filter: brightness(0.7);
+        }
         .subjects-row.focus-4 .subject-box:nth-child(4) {
-            order: 1;
-            transform: scale(1.05) translateZ(50px);
+            transform: translateX(calc(-300% - 90px)) scale(1.08);
             z-index: 10;
+            opacity: 1;
+            filter: brightness(1);
         }
         .subjects-row.focus-4 .subject-box:nth-child(4) .subject-content-box {
-            background: rgba(26, 43, 94, 0.9);
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-        }
-        .subjects-row.focus-4 .subject-box:nth-child(1) { order: 2; opacity: 0.5; transform: scale(0.95); }
-        .subjects-row.focus-4 .subject-box:nth-child(2) { order: 3; opacity: 0.5; transform: scale(0.95); }
-        .subjects-row.focus-4 .subject-box:nth-child(3) { order: 4; opacity: 0.5; transform: scale(0.95); }
-
-        /* Tous visibles - retour à l'ordre normal */
-        .subjects-row.focus-0 .subject-box {
-            opacity: 1;
-            transform: scale(1) translateZ(0);
+            background: rgba(26, 43, 94, 0.95);
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
 
         /* Animation pour l'apparition */
