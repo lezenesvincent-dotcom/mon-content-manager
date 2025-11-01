@@ -1510,19 +1510,12 @@
         }
         
         function startAutoSync() {
-            // ⚠️ DÉSACTIVÉ: Plus de Gist sync - uniquement serveur WebSocket
-            console.log('ℹ️ Gist auto-sync disabled - using WebSocket server only');
+            // ⚠️ DÉSACTIVÉ COMPLÈTEMENT: Plus de refresh auto pour éviter d'écraser les modifications locales
+            console.log('ℹ️ Auto-refresh DISABLED - Load history manually by refreshing the page');
             
-            // Rafraîchir depuis le serveur toutes les 5 secondes
-            if (syncInterval) return;
-            
-            syncInterval = setInterval(async () => {
-                console.log('🔄 Rafraîchissement automatique depuis serveur...');
-                await loadSharedData();
-                displayContentCards();
-            }, 5000); // Toutes les 5 secondes
-            
-            console.log('🔄 Auto-refresh enabled from WebSocket server (every 5 seconds)');
+            // NE PLUS FAIRE DE REFRESH AUTOMATIQUE
+            // Le refresh automatique écrase les modifications locales (édition, suppression)
+            // Les données sont chargées au démarrage uniquement
         }
         
         function stopAutoSync() {
