@@ -1483,9 +1483,7 @@
             }
         }
         
-        const TEMPLATE_ID = '4fLVHu7eHUBPzBuFJ7mXWH';
-        const OVERLAY_ID = '6598bc8e-c088-43ba-a830-d24222614f4f';
-        const OVERLAY_API_URL = `https://app.overlays.uno/apiv2/controlapps/${TEMPLATE_ID}/api`;
+        // Plus besoin de ces constantes overlays.uno - on utilise maintenant WebSocket
 
         function openTab(evt, tabName) {
             const tabcontent = document.getElementsByClassName("tab-content");
@@ -1508,72 +1506,7 @@
             }
         }
 
-        async function sendToOverlay(command, payload = {}) {
-            try {
-                const body = {
-                    command: command,
-                    ...payload
-                };
-
-                console.log('=== SENDING TO OVERLAY ===');
-                console.log('Command:', command);
-                console.log('Payload:', JSON.stringify(payload, null, 2));
-                console.log('Full body:', JSON.stringify(body, null, 2));
-                
-                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(OVERLAY_API_URL);
-                console.log('Proxy URL:', proxyUrl);
-
-                const response = await fetch(proxyUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Api-Key': TEMPLATE_ID,
-                        'Authorization': `Bearer ${TEMPLATE_ID}`
-                    },
-                    body: JSON.stringify(body)
-                });
-
-                console.log('Response status:', response.status);
-                console.log('Response headers:', [...response.headers.entries()]);
-
-                let result;
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    result = await response.json();
-                } else {
-                    const text = await response.text();
-                    console.log('Raw response text:', text);
-                    result = { raw: text };
-                }
-                
-                console.log('Parsed result:', result);
-                console.log('Parsed result (stringified):', JSON.stringify(result, null, 2));
-
-                if (!response.ok) {
-                    console.error('Response not OK. Status:', response.status);
-                    console.error('Result object:', result);
-                    
-                    // Extract error message properly
-                    let errorMsg;
-                    if (result.error && typeof result.error === 'object') {
-                        errorMsg = result.error.message || JSON.stringify(result.error);
-                    } else {
-                        errorMsg = result.error || result.message || result.raw || JSON.stringify(result) || `HTTP ${response.status}`;
-                    }
-                    
-                    console.error('Final error message:', errorMsg);
-                    throw new Error(errorMsg);
-                }
-
-                return result;
-            } catch (error) {
-                console.error('=== SEND TO OVERLAY ERROR ===');
-                console.error('Error name:', error.name);
-                console.error('Error message:', error.message);
-                console.error('Error stack:', error.stack);
-                throw error;
-            }
-        }
+        // L'ancienne fonction sendToOverlay (overlays.uno) a été supprimée - on utilise maintenant WebSocket
 
         function showStatusMessage(message, type) {
             const toast = document.createElement('div');
@@ -1612,47 +1545,51 @@
             }
 
             try {
-                console.log('=== STARTING SEND TO OVERLAY ===');
+                console.log('=== SENDING TO WEBSOCKET ===');
                 console.log('Content:', content);
                 
-                // Créer un tableau avec les 8 lignes, en gardant les lignes vides
-                const lines = [
-                    content.p1_line1 || '',
-                    content.p1_line2 || '',
-                    content.p2_line3 || '',
-                    content.p2_line4 || '',
-                    content.p3_line5 || '',
-                    content.p3_line6 || '',
-                    content.p4_line7 || '',
-                    content.p4_line8 || ''
-                ];
-                
-                // Joindre avec des retours à la ligne
-                const fullText = lines.join('\n');
-                
-                console.log('Full text:', fullText);
-                console.log('Lines count:', lines.length);
-                
-                const payload = {
-                    id: OVERLAY_ID,
-                    content: {
-                        "Text Active": true,
-                        "Title": content.title || "",
-                        "Subtitle": content.subtitle || "",
-                        "Text": fullText,
-                        "Lines": 8,
-                        "Font Size": 20
+                // Convertir au format P1-P4 pour le serveur
+                const dataToSend = {
+                    titre: content.title || '',
+                    soustitre: content.subtitle || '',
+                    p1: {
+                        sujet: '',
+                        contenu: [content.p1_line1 || '', content.p1_line2 || '']
+                    },
+                    p2: {
+                        sujet: '',
+                        contenu: [content.p2_line3 || '', content.p2_line4 || '']
+                    },
+                    p3: {
+                        sujet: '',
+                        contenu: [content.p3_line5 || '', content.p3_line6 || '']
+                    },
+                    p4: {
+                        sujet: '',
+                        contenu: [content.p4_line7 || '', content.p4_line8 || '']
                     }
                 };
                 
-                console.log('Payload:', JSON.stringify(payload, null, 2));
+                console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
                 
-                // Envoyer à l'overlay
-                await sendToOverlay('SetOverlayContent', payload);
-                await sendToOverlay('ShowOverlay', { id: OVERLAY_ID });
+                // Envoyer via HTTP POST au serveur
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
+                });
                 
-                console.log('=== OVERLAY SENT SUCCESSFULLY ===');
-                showStatusMessage(`📤 "${content.title}" envoyé à l'overlay !`, 'success');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('=== SENT SUCCESSFULLY ===');
+                console.log('Result:', result);
+                
+                showStatusMessage(`📤 "${content.title}" envoyé au widget eCamm !`, 'success');
             } catch (error) {
                 console.error('=== SEND FAILED ===');
                 console.error('Error:', error);
@@ -1662,12 +1599,38 @@
 
         async function hideOverlay() {
             try {
-                await sendToOverlay('HideOverlay', { id: OVERLAY_ID });
-                showStatusMessage('Overlay hidden successfully!', 'success');
+                console.log('=== HIDING OVERLAY ===');
+                
+                // Envoyer un contenu vide
+                const emptyData = {
+                    titre: '',
+                    soustitre: '',
+                    p1: { sujet: '', contenu: ['', ''] },
+                    p2: { sujet: '', contenu: ['', ''] },
+                    p3: { sujet: '', contenu: ['', ''] },
+                    p4: { sujet: '', contenu: ['', ''] }
+                };
+                
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(emptyData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                console.log('=== OVERLAY HIDDEN ===');
+                showStatusMessage('🙈 Overlay masqué !', 'success');
             } catch (error) {
-                console.error('Hide overlay failed:', error);
-                showStatusMessage('Failed to hide overlay: ' + error.message, 'error');
+                console.error('=== HIDE FAILED ===');
+                console.error('Error:', error);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
             }
+        }
         }
 
         function deleteContent(contentId) {
@@ -2040,7 +2003,6 @@
         async function loadFromWebSocket() {
             const wsStatusIndicator = document.getElementById('wsStatusIndicator');
             
-            // Essayer de charger l'historique depuis le serveur
             try {
                 if (wsStatusIndicator) {
                     wsStatusIndicator.style.background = '#ffc107';
@@ -2050,28 +2012,7 @@
                 
                 const response = await fetch(`${WS_SERVER_URL}/api/history`);
                 if (!response.ok) {
-                    console.log('⚠️ Unable to load history from WebSocket server, trying localStorage');
-                    
-                    // Fallback sur localStorage
-                    try {
-                        const localData = localStorage.getItem('overlay_content_history');
-                        if (localData) {
-                            const parsedLocal = JSON.parse(localData);
-                            console.log('📦 Données trouvées dans localStorage:', parsedLocal.length, 'éléments');
-                            
-                            if (wsStatusIndicator) {
-                                wsStatusIndicator.style.background = '#17a2b8';
-                                wsStatusIndicator.style.color = '#fff';
-                                wsStatusIndicator.textContent = '💾 Mode local';
-                            }
-                            
-                            return parsedLocal;
-                        }
-                    } catch (localError) {
-                        console.log('ℹ️ Pas de données dans localStorage');
-                    }
-                    
-                    return [];
+                    throw new Error(`HTTP ${response.status}`);
                 }
                 
                 const history = await response.json();
@@ -2102,40 +2043,14 @@
                     };
                 });
                 
-                // Sauvegarder aussi dans localStorage comme backup
-                try {
-                    localStorage.setItem('overlay_content_history', JSON.stringify(convertedHistory));
-                } catch (e) {
-                    console.log('Cannot save to localStorage:', e);
-                }
-                
                 return convertedHistory;
             } catch (error) {
-                console.error('Error loading from WebSocket:', error);
-                
-                // Fallback sur localStorage
-                try {
-                    const localData = localStorage.getItem('overlay_content_history');
-                    if (localData) {
-                        const parsedLocal = JSON.parse(localData);
-                        console.log('📦 Fallback sur localStorage:', parsedLocal.length, 'éléments');
-                        
-                        if (wsStatusIndicator) {
-                            wsStatusIndicator.style.background = '#17a2b8';
-                            wsStatusIndicator.style.color = '#fff';
-                            wsStatusIndicator.textContent = '💾 Mode local (' + parsedLocal.length + ')';
-                        }
-                        
-                        return parsedLocal;
-                    }
-                } catch (localError) {
-                    console.log('ℹ️ Pas de données dans localStorage');
-                }
+                console.error('❌ Erreur chargement WebSocket:', error);
                 
                 if (wsStatusIndicator) {
-                    wsStatusIndicator.style.background = '#ffc107';
-                    wsStatusIndicator.style.color = '#000';
-                    wsStatusIndicator.textContent = '⚠️ Aucune donnée';
+                    wsStatusIndicator.style.background = '#dc3545';
+                    wsStatusIndicator.style.color = '#fff';
+                    wsStatusIndicator.textContent = '❌ Serveur inaccessible';
                 }
                 
                 return [];
