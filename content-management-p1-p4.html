@@ -528,20 +528,20 @@
         /* Boutons en bas */
         .card-actions {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
             margin-top: 20px;
             position: relative;
         }
 
-        .btn-edit, .btn-hide {
+        .btn-edit, .btn-hide, .btn-next {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(10px);
             color: white;
             padding: 14px;
             border: none;
             border-radius: 50px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -549,9 +549,17 @@
             letter-spacing: 1px;
         }
 
-        .btn-edit:hover, .btn-hide:hover {
+        .btn-edit:hover, .btn-hide:hover, .btn-next:hover {
             background: rgba(255, 255, 255, 0.35);
             transform: translateY(-2px);
+        }
+
+        .btn-next {
+            background: rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-next:hover {
+            background: rgba(76, 175, 80, 0.45);
         }
 
         /* Bouton de suppression (croix en haut à droite) - GRIS */
@@ -1716,6 +1724,44 @@
             }
         }
 
+        // Gestion du focus - Navigation entre les sujets
+        let currentFocusIndex = 0; // 0 = tous visibles, 1-4 = sujet focalisé
+
+        async function focusNextSubject() {
+            try {
+                // Passer au sujet suivant (1 → 2 → 3 → 4 → 0 → 1 ...)
+                currentFocusIndex = (currentFocusIndex % 4) + 1;
+                
+                // Si on arrive à 5, revenir à 0 (tout afficher)
+                if (currentFocusIndex > 4) {
+                    currentFocusIndex = 0;
+                }
+                
+                console.log('🎯 Focus sur sujet:', currentFocusIndex);
+                
+                // Envoyer le message de focus via WebSocket
+                const response = await fetch(`${WS_SERVER_URL}/api/focus`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ subjectIndex: currentFocusIndex })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const focusText = currentFocusIndex === 0 ? 'Tous les sujets' : `Sujet ${currentFocusIndex}`;
+                showStatusMessage(`🎯 Focus: ${focusText}`, 'success');
+                
+            } catch (error) {
+                console.error('=== FOCUS FAILED ===');
+                console.error('Error:', error);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+
         function deleteContent(contentId) {
             if (!confirm('🗑️ Supprimer ce contenu ?\n\nCette action est définitive.')) {
                 return;
@@ -1772,6 +1818,9 @@
                         <div class="card-actions">
                             <button class="btn-edit" onclick="event.stopPropagation(); openEditModal('${content.id}')">
                                 EDIT
+                            </button>
+                            <button class="btn-next" onclick="event.stopPropagation(); focusNextSubject()">
+                                NEXT ▶
                             </button>
                             <button class="btn-hide" onclick="event.stopPropagation(); hideOverlay()">
                                 MASQUER
