@@ -1762,20 +1762,42 @@
             }
         }
 
-        function deleteContent(contentId) {
+        async function deleteContent(contentId) {
             if (!confirm('🗑️ Supprimer ce contenu ?\n\nCette action est définitive.')) {
                 return;
             }
 
-            // Supprimer du store local
-            contentStore = contentStore.filter(item => item.id !== contentId);
-            
-            // Réafficher
-            displayContentCards();
-            
-            showStatusMessage('🗑️ Contenu supprimé !', 'success');
-            
-            console.log('✅ Contenu supprimé:', contentId);
+            try {
+                // Supprimer sur le serveur
+                const response = await fetch(`${WS_SERVER_URL}/api/history/${contentId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('✅ Supprimé sur le serveur:', result);
+
+                // Supprimer du store local
+                contentStore = contentStore.filter(item => item.id !== contentId);
+                
+                // Réafficher
+                displayContentCards();
+                
+                showStatusMessage('🗑️ Contenu supprimé !', 'success');
+                
+                console.log('✅ Contenu supprimé:', contentId);
+            } catch (error) {
+                console.error('❌ Erreur suppression:', error);
+                
+                // Même en cas d'erreur serveur, supprimer localement
+                contentStore = contentStore.filter(item => item.id !== contentId);
+                displayContentCards();
+                
+                showStatusMessage('⚠️ Supprimé localement uniquement', 'warning');
+            }
         }
 
         function displayContentCards() {
