@@ -1868,23 +1868,6 @@
                 showStatusMessage('❌ Erreur: ' + error.message, 'error');
             }
         }
-                
-                // Réafficher
-                displayContentCards();
-                
-                showStatusMessage('🗑️ Contenu supprimé !', 'success');
-                
-                console.log('✅ Contenu supprimé:', contentId);
-            } catch (error) {
-                console.error('❌ Erreur suppression:', error);
-                
-                // Même en cas d'erreur serveur, supprimer localement
-                contentStore = contentStore.filter(item => item.id !== contentId);
-                displayContentCards();
-                
-                showStatusMessage('⚠️ Supprimé localement uniquement', 'warning');
-            }
-        }
 
         function displayContentCards() {
             console.log('==============================================');
