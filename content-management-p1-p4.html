@@ -1142,14 +1142,14 @@
                         📥 EXPORT DATA (Copy to Clipboard)
                     </button>
                     
-                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
-                        <strong>💡 How it works:</strong>
+                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
+                        <strong>✅ Synchronisation multi-machines:</strong>
                         <ul style="margin: 10px 0 0 20px; color: #495057;">
-                            <li><strong>Embedded storage:</strong> Data is stored directly in the HTML file</li>
-                            <li><strong>Local additions:</strong> New content is saved in localStorage</li>
-                            <li><strong>Merge on load:</strong> Both sources are combined when the page loads</li>
-                            <li><strong>100% offline:</strong> No external API calls needed</li>
-                            <li><strong>GitHub sync:</strong> Push updated file to share with all machines</li>
+                            <li><strong>Serveur WebSocket:</strong> Toutes les données sont sur le serveur</li>
+                            <li><strong>Synchronisation automatique:</strong> Rafraîchissement toutes les 5 secondes</li>
+                            <li><strong>Multi-machines:</strong> Accessible depuis tous vos appareils</li>
+                            <li><strong>Historique partagé:</strong> 50 contenus disponibles partout</li>
+                            <li><strong>Temps réel:</strong> Les modifications sont instantanées</li>
                         </ul>
                     </div>
                 </div>
@@ -1481,51 +1481,48 @@
         
         async function loadSharedData() {
             console.log('==============================================');
-            console.log('🔄 CHARGEMENT DE L\'HISTORIQUE depuis le serveur...');
+            console.log('🔄 CHARGEMENT DE L\'HISTORIQUE depuis le serveur WebSocket...');
             console.log('==============================================');
             
-            // Charger l'historique depuis WebSocket
+            // Charger UNIQUEMENT depuis WebSocket - plus de localStorage ni Gist
             const history = await loadFromWebSocket();
             
             console.log('📦 Historique reçu:', history);
             
             if (history && Array.isArray(history) && history.length > 0) {
+                // REMPLACER complètement contentStore (pas de merge)
                 contentStore = history;
-                console.log('✅ Historique chargé:', contentStore.length, 'éléments');
+                console.log('✅ Historique chargé depuis serveur:', contentStore.length, 'éléments');
+                showStatusMessage(`✅ Synchronisé: ${contentStore.length} éléments`, 'success');
                 return contentStore;
             } else {
-                console.log('ℹ️ Aucun historique disponible');
+                console.log('ℹ️ Aucun historique disponible sur le serveur');
                 contentStore = [];
+                showStatusMessage('ℹ️ Aucun contenu sur le serveur', 'info');
                 return contentStore;
             }
         }
         
         function saveToLocalStorage() {
             // ⚠️ DÉSACTIVÉ: Ne plus sauvegarder dans localStorage
-            // Les données viennent maintenant uniquement du serveur WebSocket
-            console.log('ℹ️ localStorage save disabled - using WebSocket only');
+            // Les données viennent UNIQUEMENT du serveur WebSocket
+            console.log('ℹ️ localStorage save disabled - using WebSocket server only');
         }
         
         function startAutoSync() {
-            if (!GIST_CONFIG.enabled || syncInterval) return;
+            // ⚠️ DÉSACTIVÉ: Plus de Gist sync - uniquement serveur WebSocket
+            console.log('ℹ️ Gist auto-sync disabled - using WebSocket server only');
+            
+            // Rafraîchir depuis le serveur toutes les 5 secondes
+            if (syncInterval) return;
             
             syncInterval = setInterval(async () => {
-                const gistData = await loadFromGist();
-                if (gistData) {
-                    // Merge avec les données locales
-                    gistData.forEach(gistItem => {
-                        const exists = contentStore.find(item => item.id === gistItem.id);
-                        if (!exists) {
-                            contentStore.unshift(gistItem);
-                        }
-                    });
-                    
-                    saveToLocalStorage();
-                    displayContentCards();
-                }
-            }, GIST_CONFIG.autoSyncInterval);
+                console.log('🔄 Rafraîchissement automatique depuis serveur...');
+                await loadSharedData();
+                displayContentCards();
+            }, 5000); // Toutes les 5 secondes
             
-            console.log('🔄 Auto-sync enabled (every', GIST_CONFIG.autoSyncInterval / 1000, 'seconds)');
+            console.log('🔄 Auto-refresh enabled from WebSocket server (every 5 seconds)');
         }
         
         function stopAutoSync() {
