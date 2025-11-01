@@ -25,6 +25,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             position: relative;
+            z-index: 1;
             animation: slideUp 0.6s ease-out;
         }
 
@@ -1626,24 +1627,37 @@
                 console.log('Content:', content);
                 
                 // Convertir au format P1-P4 pour le serveur
+                // Chaque section contient toutes ses lignes dans un tableau
                 const dataToSend = {
                     titre: content.title || '',
                     soustitre: content.subtitle || '',
                     p1: {
-                        sujet: '',
-                        contenu: [content.p1_line1 || '', content.p1_line2 || '']
+                        sujet: 'P1',
+                        contenu: [
+                            content.p1_line1 || '', 
+                            content.p1_line2 || ''
+                        ].filter(line => line.trim()) // Enlever les lignes vides
                     },
                     p2: {
-                        sujet: '',
-                        contenu: [content.p2_line3 || '', content.p2_line4 || '']
+                        sujet: 'P2',
+                        contenu: [
+                            content.p2_line3 || '', 
+                            content.p2_line4 || ''
+                        ].filter(line => line.trim())
                     },
                     p3: {
-                        sujet: '',
-                        contenu: [content.p3_line5 || '', content.p3_line6 || '']
+                        sujet: 'P3',
+                        contenu: [
+                            content.p3_line5 || '', 
+                            content.p3_line6 || ''
+                        ].filter(line => line.trim())
                     },
                     p4: {
-                        sujet: '',
-                        contenu: [content.p4_line7 || '', content.p4_line8 || '']
+                        sujet: 'P4',
+                        contenu: [
+                            content.p4_line7 || '', 
+                            content.p4_line8 || ''
+                        ].filter(line => line.trim())
                     }
                 };
                 
