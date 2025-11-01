@@ -21,11 +21,11 @@
 
         .overlay-container {
             position: absolute;
-            bottom: 50px;
+            bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
             width: 1800px;
-            height: 630px;
+            height: 670px;
         }
 
         /* Titre principal - AU DESSUS du carton - TRÈS COLLÉ */
@@ -42,34 +42,36 @@
             line-height: 70px;
         }
 
-        /* Carton avec dégradé */
+        /* Carton avec dégradé - AGRANDI VERS LE BAS */
         .content-box {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
             border-radius: 30px;
-            padding: 20px 50px 45px 50px;
+            padding: 15px 50px 50px 50px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(10px);
-            height: 560px;
+            height: 600px;
         }
 
-        /* Sous-titre - EN HAUT du carton - TRÈS COLLÉ */
+        /* Sous-titre - EN HAUT du carton - ENCORE PLUS REMONTÉ */
         .subtitle {
             font-size: 2.8rem;
             font-weight: 700;
             color: white;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
             letter-spacing: 1.5px;
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
             height: 55px;
             line-height: 55px;
         }
 
-        /* 4 sujets alignés */
+        /* 4 sujets alignés - CONTENEUR AVEC PERSPECTIVE pour l'effet 3D */
         .subjects-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 30px;
-            height: 430px;
+            height: 465px;
+            perspective: 2000px;
+            position: relative;
         }
 
         .subject-box {
@@ -77,22 +79,24 @@
             flex-direction: column;
             align-items: center;
             height: 100%;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-style: preserve-3d;
+            position: relative;
         }
 
-        /* Sujet - AU DESSUS du cadre - DESCENDU */
+        /* Sujet - AU DESSUS du cadre - ENCORE PLUS DESCENDU */
         .subject-title {
             font-size: 2rem;
             font-weight: 700;
             color: white;
-            margin-bottom: 18px;
+            margin-bottom: 22px;
             letter-spacing: 1.2px;
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
             text-align: center;
             height: 45px;
             line-height: 45px;
             flex-shrink: 0;
-            transition: all 0.5s ease;
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         /* Cadre du texte - RECTANGULAIRE VERTICAL (plus haut que large) */
@@ -102,12 +106,12 @@
             border-radius: 18px;
             padding: 28px 22px;
             border: 2px solid rgba(255, 255, 255, 0.2);
-            height: 367px;
+            height: 398px;
             width: 100%;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             flex-shrink: 0;
-            transition: all 0.5s ease;
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         /* Texte - même taille que sous-titre, gras */
@@ -120,30 +124,78 @@
             text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
         }
 
-        /* Animation de focus - Sujet actif */
-        .subject-box.focused {
-            transform: scale(1.08);
+        /* Animation de carrousel - Rotation façon manège */
+        
+        /* Ordre de base : 1, 2, 3, 4 */
+        .subject-box:nth-child(1) { order: 1; }
+        .subject-box:nth-child(2) { order: 2; }
+        .subject-box:nth-child(3) { order: 3; }
+        .subject-box:nth-child(4) { order: 4; }
+
+        /* Focus sur sujet 1 - ordre normal, sujet 1 mis en avant */
+        .subjects-row.focus-1 .subject-box:nth-child(1) {
+            order: 1;
+            transform: scale(1.05) translateZ(50px);
             z-index: 10;
         }
-
-        .subject-box.focused .subject-content-box {
+        .subjects-row.focus-1 .subject-box:nth-child(1) .subject-content-box {
             background: rgba(26, 43, 94, 0.9);
-            border: 3px solid rgba(255, 255, 255, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
         }
+        .subjects-row.focus-1 .subject-box:nth-child(2) { order: 2; opacity: 0.5; transform: scale(0.95); }
+        .subjects-row.focus-1 .subject-box:nth-child(3) { order: 3; opacity: 0.5; transform: scale(0.95); }
+        .subjects-row.focus-1 .subject-box:nth-child(4) { order: 4; opacity: 0.5; transform: scale(0.95); }
 
-        .subject-box.focused .subject-title {
-            transform: scale(1.05);
+        /* Focus sur sujet 2 - rotation : 2, 3, 4, 1 */
+        .subjects-row.focus-2 .subject-box:nth-child(2) {
+            order: 1;
+            transform: scale(1.05) translateZ(50px);
+            z-index: 10;
         }
-
-        /* Sujets non-focalisés (opacifiés) */
-        .subject-box.dimmed {
-            opacity: 0.4;
-            transform: scale(0.97);
+        .subjects-row.focus-2 .subject-box:nth-child(2) .subject-content-box {
+            background: rgba(26, 43, 94, 0.9);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
         }
+        .subjects-row.focus-2 .subject-box:nth-child(3) { order: 2; opacity: 0.5; transform: scale(0.95); }
+        .subjects-row.focus-2 .subject-box:nth-child(4) { order: 3; opacity: 0.5; transform: scale(0.95); }
+        .subjects-row.focus-2 .subject-box:nth-child(1) { order: 4; opacity: 0.5; transform: scale(0.95); }
 
-        .subject-box.dimmed .subject-content-box {
-            background: rgba(26, 43, 94, 0.5);
+        /* Focus sur sujet 3 - rotation : 3, 4, 1, 2 */
+        .subjects-row.focus-3 .subject-box:nth-child(3) {
+            order: 1;
+            transform: scale(1.05) translateZ(50px);
+            z-index: 10;
+        }
+        .subjects-row.focus-3 .subject-box:nth-child(3) .subject-content-box {
+            background: rgba(26, 43, 94, 0.9);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        }
+        .subjects-row.focus-3 .subject-box:nth-child(4) { order: 2; opacity: 0.5; transform: scale(0.95); }
+        .subjects-row.focus-3 .subject-box:nth-child(1) { order: 3; opacity: 0.5; transform: scale(0.95); }
+        .subjects-row.focus-3 .subject-box:nth-child(2) { order: 4; opacity: 0.5; transform: scale(0.95); }
+
+        /* Focus sur sujet 4 - rotation : 4, 1, 2, 3 */
+        .subjects-row.focus-4 .subject-box:nth-child(4) {
+            order: 1;
+            transform: scale(1.05) translateZ(50px);
+            z-index: 10;
+        }
+        .subjects-row.focus-4 .subject-box:nth-child(4) .subject-content-box {
+            background: rgba(26, 43, 94, 0.9);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        }
+        .subjects-row.focus-4 .subject-box:nth-child(1) { order: 2; opacity: 0.5; transform: scale(0.95); }
+        .subjects-row.focus-4 .subject-box:nth-child(2) { order: 3; opacity: 0.5; transform: scale(0.95); }
+        .subjects-row.focus-4 .subject-box:nth-child(3) { order: 4; opacity: 0.5; transform: scale(0.95); }
+
+        /* Tous visibles - retour à l'ordre normal */
+        .subjects-row.focus-0 .subject-box {
+            opacity: 1;
+            transform: scale(1) translateZ(0);
         }
 
         /* Animation pour l'apparition */
@@ -288,38 +340,24 @@
             });
         }
 
-        // Gestion du focus sur un sujet
+        // Gestion du focus avec animation de carrousel
         function focusSubject(index) {
-            console.log('🎯 Focus sur le sujet:', index);
+            console.log('🎠 Rotation du carrousel vers le sujet:', index);
             
-            // Réinitialiser tous les sujets
-            for (let i = 1; i <= 4; i++) {
-                const subjectBox = document.querySelector(`.subject-box:nth-child(${i})`);
-                if (subjectBox) {
-                    subjectBox.classList.remove('focused', 'dimmed');
-                }
-            }
+            const subjectsRow = document.querySelector('.subjects-row');
+            if (!subjectsRow) return;
+
+            // Retirer toutes les classes focus
+            subjectsRow.classList.remove('focus-0', 'focus-1', 'focus-2', 'focus-3', 'focus-4');
 
             // Si index est null ou 0, tout afficher normalement
             if (!index || index < 1 || index > 4) {
+                subjectsRow.classList.add('focus-0');
                 return;
             }
 
-            // Appliquer le focus au sujet sélectionné
-            const focusedBox = document.querySelector(`.subject-box:nth-child(${index})`);
-            if (focusedBox) {
-                focusedBox.classList.add('focused');
-            }
-
-            // Opacifier les autres
-            for (let i = 1; i <= 4; i++) {
-                if (i !== index) {
-                    const subjectBox = document.querySelector(`.subject-box:nth-child(${i})`);
-                    if (subjectBox) {
-                        subjectBox.classList.add('dimmed');
-                    }
-                }
-            }
+            // Appliquer la classe de focus correspondante
+            subjectsRow.classList.add(`focus-${index}`);
         }
 
         function connect() {
