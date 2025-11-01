@@ -1035,6 +1035,13 @@
                 <p style="margin: 0; color: #b8c1ec;">💡 <strong>Synchronisation automatique active :</strong> Les données se synchronisent depuis la page "Création" toutes les 3 secondes</p>
             </div>
             
+            <!-- Bouton pour vider l'historique -->
+            <div style="margin-bottom: 20px; text-align: right;">
+                <button onclick="clearAllHistory()" class="btn-secondary" style="background: #dc3545; color: white; border-color: #dc3545;">
+                    🗑️ Vider tout l'historique
+                </button>
+            </div>
+            
             <div id="contentList" class="content-grid">
                 <!-- Content cards will be populated here -->
             </div>
@@ -1771,25 +1778,96 @@
         }
 
         async function deleteContent(contentId) {
+            console.log('==============================================');
+            console.log('🗑️ TENTATIVE DE SUPPRESSION');
+            console.log('==============================================');
+            console.log('Content ID:', contentId);
+            console.log('contentStore avant suppression:', contentStore.length, 'éléments');
+            
             if (!confirm('🗑️ Supprimer ce contenu ?\n\nCette action est définitive.')) {
+                console.log('❌ Suppression annulée par l\'utilisateur');
                 return;
             }
 
             try {
+                const deleteUrl = `${WS_SERVER_URL}/api/history/${contentId}`;
+                console.log('🌐 URL de suppression:', deleteUrl);
+                
                 // Supprimer sur le serveur
-                const response = await fetch(`${WS_SERVER_URL}/api/history/${contentId}`, {
+                const response = await fetch(deleteUrl, {
                     method: 'DELETE'
                 });
+
+                console.log('📡 Réponse serveur status:', response.status);
+                console.log('📡 Réponse serveur ok?:', response.ok);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const result = await response.json();
-                console.log('✅ Supprimé sur le serveur:', result);
+                console.log('✅ Réponse serveur complète:', result);
 
                 // Supprimer du store local
+                const lengthBefore = contentStore.length;
                 contentStore = contentStore.filter(item => item.id !== contentId);
+                console.log('📊 contentStore après suppression:', contentStore.length, 'éléments');
+                console.log('📊 Différence:', lengthBefore - contentStore.length, 'élément(s) supprimé(s)');
+                
+                displayContentCards();
+                showStatusMessage('✅ Contenu supprimé', 'success');
+                
+                console.log('==============================================');
+                console.log('✅ SUPPRESSION TERMINÉE');
+                console.log('==============================================');
+            } catch (error) {
+                console.error('==============================================');
+                console.error('❌ ERREUR LORS DE LA SUPPRESSION');
+                console.error('==============================================');
+                console.error('Error:', error);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+
+        // Fonction pour vider TOUT l'historique
+        async function clearAllHistory() {
+            if (!confirm('⚠️ ATTENTION !\n\nVoulez-vous vraiment VIDER TOUT L\'HISTORIQUE ?\n\nCette action supprimera TOUTES les cartes (actuellement : ' + contentStore.length + ' éléments).\n\nCette action est IRRÉVERSIBLE !')) {
+                return;
+            }
+
+            // Double confirmation pour être sûr
+            if (!confirm('🚨 DERNIÈRE CONFIRMATION\n\nÊtes-vous ABSOLUMENT SÛR de vouloir tout supprimer ?\n\nIl n\'y aura AUCUN moyen de récupérer ces données !')) {
+                return;
+            }
+
+            try {
+                showStatusMessage('🔄 Suppression en cours...', 'info');
+                
+                // Supprimer chaque élément un par un
+                const deletePromises = contentStore.map(content => 
+                    fetch(`${WS_SERVER_URL}/api/history/${content.id}`, {
+                        method: 'DELETE'
+                    })
+                );
+
+                await Promise.all(deletePromises);
+                
+                // Vider le store local
+                contentStore = [];
+                
+                // Rafraîchir l'affichage
+                displayContentCards();
+                
+                console.log('✅ TOUT L\'HISTORIQUE A ÉTÉ SUPPRIMÉ');
+                showStatusMessage('✅ Historique complètement vidé !', 'success');
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du vidage:', error);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
                 
                 // Réafficher
                 displayContentCards();
