@@ -2079,6 +2079,7 @@
                 
                 const history = await response.json();
                 console.log('✅ Historique chargé depuis WebSocket:', history.length, 'éléments');
+                console.log('📦 Données brutes du serveur:', history);
                 
                 if (wsStatusIndicator) {
                     wsStatusIndicator.style.background = '#28a745';
@@ -2087,8 +2088,9 @@
                 }
                 
                 // Convertir chaque élément de l'historique
-                const convertedHistory = history.map(data => {
-                    return {
+                const convertedHistory = history.map((data, index) => {
+                    console.log(`🔄 Conversion élément ${index + 1}:`, data);
+                    const converted = {
                         id: data.id || 'ws-' + Date.now(),
                         title: data.titre || 'Untitled',
                         subtitle: data.soustitre || '',
@@ -2103,7 +2105,11 @@
                         timestamp: data.timestamp || new Date().toLocaleString(),
                         source: data.source || 'websocket'
                     };
+                    console.log(`✅ Converti:`, converted);
+                    return converted;
                 });
+                
+                console.log('📊 Historique converti final:', convertedHistory);
                 
                 return convertedHistory;
             } catch (error) {
