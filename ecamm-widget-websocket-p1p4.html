@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4 + Three.js 3D</title>
-    <!-- Version 4.1 - Three.js : Tube 3D + Animation dessin + Abscisses/Ordonnées + Plus grand - 3 nov 2025 22:15 -->
+    <!-- Version 5.0 FUSION - Three.js 3D + Toutes animations (lévitation, bordures respirantes, dégradés) - 3 nov 2025 22:25 -->
     <style>
         * {
             margin: 0;
@@ -244,6 +244,13 @@
             color: white;
             text-align: center;
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(180deg, 
+                rgba(255, 255, 255, 1) 0%, 
+                rgba(255, 255, 255, 0.8) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            padding: 10px 0;
         }
 
         .subject-content-box {
@@ -260,6 +267,45 @@
             justify-content: center;
             position: relative;
             border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Animation de lévitation pour les sujets non focalisés */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .subjects-row:not(.focus-0) .subject-box:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) .subject-content-box,
+        .subjects-row.focus-1 .subject-box:not(:nth-child(1)) .subject-content-box,
+        .subjects-row.focus-2 .subject-box:not(:nth-child(2)) .subject-content-box,
+        .subjects-row.focus-3 .subject-box:not(:nth-child(3)) .subject-content-box,
+        .subjects-row.focus-4 .subject-box:not(:nth-child(4)) .subject-content-box {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Bordure respirante pour le sujet en focus */
+        @keyframes breathingBorder {
+            0%, 100% { 
+                border-color: rgba(255, 255, 255, 0.6);
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.3),
+                            0 0 40px rgba(255, 255, 255, 0.2),
+                            0 8px 30px rgba(0, 0, 0, 0.4);
+            }
+            50% { 
+                border-color: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.5),
+                            0 0 60px rgba(255, 255, 255, 0.3),
+                            0 0 90px rgba(255, 255, 255, 0.2),
+                            0 12px 40px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        .subjects-row.focus-1 .subject-box:nth-child(1) .subject-content-box,
+        .subjects-row.focus-2 .subject-box:nth-child(2) .subject-content-box,
+        .subjects-row.focus-3 .subject-box:nth-child(3) .subject-content-box,
+        .subjects-row.focus-4 .subject-box:nth-child(4) .subject-content-box {
+            animation: breathingBorder 2s ease-in-out infinite;
         }
 
         .subject-content {
