@@ -107,6 +107,7 @@
             position: relative;
             overflow: visible;
             margin-top: 110px;
+            transition: opacity 0.8s ease, transform 0.8s ease;
         }
 
         .subject-box {
@@ -216,6 +217,106 @@
                 filter: blur(16px);
                 transform: scale(1.01);
             }
+        }
+
+        /* ============================================ */
+        /* GRAPHIQUE BOURSIER STYLE APPLE HEALTH */
+        /* ============================================ */
+        
+        .stock-chart-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stock-chart-container.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .chart-header {
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .chart-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .chart-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 10px 0;
+        }
+
+        .chart-value.positive {
+            color: #34C759;
+        }
+
+        .chart-value.negative {
+            color: #FF3B30;
+        }
+
+        .chart-change {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .chart-canvas-wrapper {
+            flex: 1;
+            position: relative;
+            min-height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #stockChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Animation d'entrée du graphique */
+        @keyframes chartSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .stock-chart-container.active .chart-canvas-wrapper {
+            animation: chartSlideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* Masquer les sujets quand le graphique est actif */
+        .subjects-row.focus-5 .subject-box {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
         }
 
         /* Texte - même taille que sous-titre, gras */
@@ -414,6 +515,153 @@
         .status.disconnected {
             background: rgba(220, 53, 69, 0.8);
         }
+
+        /* ============================================ */
+        /* GRAPHIQUE BOURSIER STYLE APPLE HEALTH       */
+        /* ============================================ */
+        
+        .stock-chart-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            padding: 40px 50px;
+        }
+
+        .stock-chart-container.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .chart-period {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+        }
+
+        .chart-stats {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .stat-value.positive {
+            color: #34C759;
+        }
+
+        .stat-value.negative {
+            color: #FF3B30;
+        }
+
+        .chart-canvas-wrapper {
+            position: relative;
+            height: 520px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* SVG Chart styles */
+        .chart-grid-line {
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 1;
+        }
+
+        .chart-axis-label {
+            fill: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke: url(#lineGradient);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 4px 8px rgba(52, 199, 89, 0.3));
+        }
+
+        .chart-area {
+            fill: url(#areaGradient);
+            opacity: 0.3;
+        }
+
+        .chart-dot {
+            fill: white;
+            stroke: #34C759;
+            stroke-width: 3;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Animation pour le graphique */
+        @keyframes drawLine {
+            from {
+                stroke-dashoffset: 2000;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes fadeInChart {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chart-canvas-wrapper {
+            animation: fadeInChart 0.8s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -455,6 +703,55 @@
                     <div class="subject-content-box">
                         <div id="content4" class="subject-content"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Graphique boursier (masqué par défaut) -->
+            <div id="stockChart" class="stock-chart-container">
+                <div class="chart-header">
+                    <div class="chart-title" id="chartCompanyName">Renault</div>
+                    <div class="chart-period">1 An</div>
+                </div>
+                
+                <div class="chart-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Cours actuel</div>
+                        <div class="stat-value positive" id="currentPrice">€48.50</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Variation</div>
+                        <div class="stat-value positive" id="priceChange">+€8.50 (+21.3%)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Plus haut</div>
+                        <div class="stat-value" id="highPrice">€50.20</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Plus bas</div>
+                        <div class="stat-value" id="lowPrice">€30.10</div>
+                    </div>
+                </div>
+
+                <div class="chart-canvas-wrapper">
+                    <svg id="chartSvg" class="chart-canvas" viewBox="0 0 1600 450" preserveAspectRatio="none">
+                        <!-- Dégradés -->
+                        <defs>
+                            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#34C759;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#30D158;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#34C759;stop-opacity:0.6" />
+                                <stop offset="100%" style="stop-color:#34C759;stop-opacity:0" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Grille et axes seront générés par JS -->
+                        <g id="chartGrid"></g>
+                        <g id="chartArea"></g>
+                        <g id="chartLine"></g>
+                        <g id="chartDots"></g>
+                    </svg>
                 </div>
             </div>
         </div>
@@ -519,10 +816,26 @@
             console.log('🎠 Rotation du carrousel vers le sujet:', index);
             
             const subjectsRow = document.querySelector('.subjects-row');
+            const stockChart = document.getElementById('stockChart');
             if (!subjectsRow) return;
 
             // Retirer toutes les classes focus
             subjectsRow.classList.remove('focus-0', 'focus-1', 'focus-2', 'focus-3', 'focus-4');
+
+            // Si index est 5, afficher le graphique
+            if (index === 5) {
+                console.log('📈 Affichage du graphique boursier');
+                subjectsRow.style.opacity = '0';
+                subjectsRow.style.transform = 'scale(0.95)';
+                stockChart.classList.add('active');
+                drawStockChart();
+                return;
+            }
+
+            // Sinon, masquer le graphique et afficher les sujets
+            subjectsRow.style.opacity = '1';
+            subjectsRow.style.transform = 'scale(1)';
+            stockChart.classList.remove('active');
 
             // Si index est null ou 0, tout afficher normalement
             if (!index || index < 1 || index > 4) {
@@ -532,6 +845,162 @@
 
             // Appliquer la classe de focus correspondante
             subjectsRow.classList.add(`focus-${index}`);
+        }
+
+        // Générer des données MOCK pour le graphique (1 an)
+        function generateMockData() {
+            const data = [];
+            const months = ['Nov 24', 'Déc 24', 'Jan 25', 'Fév 25', 'Mars 25', 'Avr 25', 'Mai 25', 'Juin 25', 'Juil 25', 'Août 25', 'Sep 25', 'Oct 25', 'Nov 25'];
+            let value = 40;
+            
+            for (let i = 0; i < months.length; i++) {
+                // Variation aléatoire mais avec tendance haussière
+                const change = (Math.random() - 0.3) * 4;
+                value = Math.max(30, Math.min(52, value + change));
+                data.push({
+                    label: months[i],
+                    value: parseFloat(value.toFixed(2))
+                });
+            }
+            return data;
+        }
+
+        // Dessiner le graphique style Apple Health
+        function drawStockChart() {
+            const data = generateMockData();
+            const svg = document.getElementById('chartSvg');
+            const width = 1600;
+            const height = 450;
+            const padding = { top: 20, right: 40, bottom: 40, left: 60 };
+            
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            
+            // Trouver min et max
+            const values = data.map(d => d.value);
+            const minValue = Math.min(...values) - 2;
+            const maxValue = Math.max(...values) + 2;
+            
+            // Échelle
+            const scaleX = chartWidth / (data.length - 1);
+            const scaleY = chartHeight / (maxValue - minValue);
+            
+            // Clear previous chart
+            document.getElementById('chartGrid').innerHTML = '';
+            document.getElementById('chartArea').innerHTML = '';
+            document.getElementById('chartLine').innerHTML = '';
+            document.getElementById('chartDots').innerHTML = '';
+            
+            // Dessiner la grille horizontale
+            const gridGroup = document.getElementById('chartGrid');
+            for (let i = 0; i <= 4; i++) {
+                const y = padding.top + (chartHeight / 4) * i;
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', padding.left);
+                line.setAttribute('y1', y);
+                line.setAttribute('x2', width - padding.right);
+                line.setAttribute('y2', y);
+                line.setAttribute('class', 'chart-grid-line');
+                gridGroup.appendChild(line);
+                
+                // Label de prix
+                const value = maxValue - (maxValue - minValue) * (i / 4);
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', padding.left - 10);
+                text.setAttribute('y', y + 5);
+                text.setAttribute('text-anchor', 'end');
+                text.setAttribute('class', 'chart-axis-label');
+                text.textContent = '€' + value.toFixed(0);
+                gridGroup.appendChild(text);
+            }
+            
+            // Labels de mois (afficher 1 sur 2)
+            for (let i = 0; i < data.length; i += 2) {
+                const x = padding.left + i * scaleX;
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', x);
+                text.setAttribute('y', height - padding.bottom + 25);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('class', 'chart-axis-label');
+                text.textContent = data[i].label;
+                gridGroup.appendChild(text);
+            }
+            
+            // Créer le path de la ligne
+            let pathD = '';
+            let areaD = '';
+            
+            data.forEach((point, i) => {
+                const x = padding.left + i * scaleX;
+                const y = padding.top + chartHeight - (point.value - minValue) * scaleY;
+                
+                if (i === 0) {
+                    pathD += `M ${x} ${y}`;
+                    areaD += `M ${x} ${height - padding.bottom} L ${x} ${y}`;
+                } else {
+                    pathD += ` L ${x} ${y}`;
+                    areaD += ` L ${x} ${y}`;
+                }
+            });
+            
+            // Fermer l'area
+            const lastX = padding.left + (data.length - 1) * scaleX;
+            areaD += ` L ${lastX} ${height - padding.bottom} Z`;
+            
+            // Dessiner l'area (sous la ligne)
+            const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            area.setAttribute('d', areaD);
+            area.setAttribute('class', 'chart-area');
+            document.getElementById('chartArea').appendChild(area);
+            
+            // Dessiner la ligne
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            line.setAttribute('d', pathD);
+            line.setAttribute('class', 'chart-line');
+            line.style.strokeDasharray = '2000';
+            line.style.strokeDashoffset = '2000';
+            document.getElementById('chartLine').appendChild(line);
+            
+            // Animation de la ligne
+            setTimeout(() => {
+                line.style.transition = 'stroke-dashoffset 2s ease-out';
+                line.style.strokeDashoffset = '0';
+            }, 100);
+            
+            // Dessiner les points (avec animation décalée)
+            const dotsGroup = document.getElementById('chartDots');
+            data.forEach((point, i) => {
+                const x = padding.left + i * scaleX;
+                const y = padding.top + chartHeight - (point.value - minValue) * scaleY;
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', x);
+                circle.setAttribute('cy', y);
+                circle.setAttribute('r', 0);
+                circle.setAttribute('class', 'chart-dot');
+                dotsGroup.appendChild(circle);
+                
+                // Animation des points
+                setTimeout(() => {
+                    circle.style.transition = 'r 0.3s ease-out';
+                    circle.setAttribute('r', 5);
+                }, 2000 + i * 50);
+            });
+            
+            // Mettre à jour les stats
+            const currentPrice = data[data.length - 1].value;
+            const startPrice = data[0].value;
+            const change = currentPrice - startPrice;
+            const changePercent = ((change / startPrice) * 100).toFixed(1);
+            
+            document.getElementById('currentPrice').textContent = '€' + currentPrice.toFixed(2);
+            document.getElementById('currentPrice').className = 'stat-value ' + (change >= 0 ? 'positive' : 'negative');
+            
+            document.getElementById('priceChange').textContent = (change >= 0 ? '+' : '') + '€' + change.toFixed(2) + ' (' + (change >= 0 ? '+' : '') + changePercent + '%)';
+            document.getElementById('priceChange').className = 'stat-value ' + (change >= 0 ? 'positive' : 'negative');
+            
+            document.getElementById('highPrice').textContent = '€' + maxValue.toFixed(2);
+            document.getElementById('lowPrice').textContent = '€' + minValue.toFixed(2);
         }
 
         function connect() {

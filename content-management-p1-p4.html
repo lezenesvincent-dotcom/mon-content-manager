@@ -1719,11 +1719,11 @@
 
         async function focusNextSubject() {
             try {
-                // Passer au sujet suivant (1 → 2 → 3 → 4 → 0 → 1 ...)
-                currentFocusIndex = (currentFocusIndex % 4) + 1;
+                // Passer au sujet suivant (1 → 2 → 3 → 4 → 5 (graphique) → 0 → 1 ...)
+                currentFocusIndex = (currentFocusIndex % 5) + 1;
                 
-                // Si on arrive à 5, revenir à 0 (tout afficher)
-                if (currentFocusIndex > 4) {
+                // Si on arrive à 6, revenir à 0 (tout afficher)
+                if (currentFocusIndex > 5) {
                     currentFocusIndex = 0;
                 }
                 
@@ -1742,7 +1742,14 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                const focusText = currentFocusIndex === 0 ? 'Tous les sujets' : `Sujet ${currentFocusIndex}`;
+                let focusText;
+                if (currentFocusIndex === 0) {
+                    focusText = 'Tous les sujets';
+                } else if (currentFocusIndex === 5) {
+                    focusText = '📈 Graphique boursier';
+                } else {
+                    focusText = `Sujet ${currentFocusIndex}`;
+                }
                 showStatusMessage(`🎯 Focus: ${focusText}`, 'success');
                 
             } catch (error) {
