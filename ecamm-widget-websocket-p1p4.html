@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
-    <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 3.2 - Graphique aligné gauche, trait 15px optimisé, ombres renforcées - 3 nov 2025 21:55 -->
+    <title>eCamm Overlay - WebSocket P1-P4 + Three.js 3D</title>
+    <!-- Version 4.0 - Three.js : Vraie courbe 3D volumétrique avec tube et lumières - 3 nov 2025 22:05 -->
     <style>
         * {
             margin: 0;
@@ -39,7 +39,6 @@
             height: 70px;
         }
 
-        /* Titre principal - À GAUCHE */
         .main-title {
             font-size: 4.2rem;
             font-weight: 800;
@@ -51,7 +50,6 @@
             flex-shrink: 0;
         }
 
-        /* Sous-titre - À DROITE DU TITRE */
         .subtitle-inline {
             font-size: 2.8rem;
             font-weight: 700;
@@ -61,7 +59,7 @@
             line-height: 70px;
         }
 
-        /* Carton avec dégradé ANIMÉ LENT à 3 couleurs */
+        /* Carton avec dégradé ANIMÉ */
         .content-box {
             background: linear-gradient(135deg, 
                 rgba(102, 126, 234, 0.95) 0%, 
@@ -78,150 +76,12 @@
         }
 
         @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            25% {
-                background-position: 50% 75%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            75% {
-                background-position: 50% 25%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        /* Sous-titre - EN HAUT du carton (ancien style gardé pour compatibilité) */
-        .subtitle {
-            display: none; /* Caché car maintenant inline avec titre */
-        }
-
-        /* 4 sujets alignés - CONTENEUR FLEX pour carrousel circulaire */
-        .subjects-row {
-            display: flex;
-            gap: 30px;
-            height: 715px;
-            position: relative;
-            overflow: visible;
-            margin-top: 110px;
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-
-        .subject-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: calc((100% - 90px) / 4);
-            flex-shrink: 0;
-            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: absolute;
-            left: 0;
-            animation: levitate 6s ease-in-out infinite;
-        }
-
-        /* Animation de lévitation douce */
-        @keyframes levitate {
-            0%, 100% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-15px);
-            }
-        }
-
-        /* Désactiver la lévitation sur le sujet en focus */
-        .subjects-row.focus-1 .subject-box:nth-child(1),
-        .subjects-row.focus-2 .subject-box:nth-child(2),
-        .subjects-row.focus-3 .subject-box:nth-child(3),
-        .subjects-row.focus-4 .subject-box:nth-child(4) {
-            animation: none;
-        }
-
-        /* Décalage des animations pour effet naturel */
-        .subject-box:nth-child(1) { animation-delay: 0s; }
-        .subject-box:nth-child(2) { animation-delay: 1.5s; }
-        .subject-box:nth-child(3) { animation-delay: 3s; }
-        .subject-box:nth-child(4) { animation-delay: 4.5s; }
-
-        /* Positions de base pour chaque sujet */
-        .subject-box:nth-child(1) { left: 0; }
-        .subject-box:nth-child(2) { left: calc(25% + 7.5px); }
-        .subject-box:nth-child(3) { left: calc(50% + 15px); }
-        .subject-box:nth-child(4) { left: calc(75% + 22.5px); }
-
-        /* Sujet - AU DESSUS du cadre - ENCORE PLUS DESCENDU */
-        .subject-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 22px;
-            letter-spacing: 1.2px;
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            height: 45px;
-            line-height: 45px;
-            flex-shrink: 0;
-            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        /* Cadre du texte - DÉGRADÉ VERTICAL PLUS CLAIR + OPACITÉ */
-        .subject-content-box {
-            background: linear-gradient(to bottom, 
-                rgba(60, 80, 130, 0.75) 0%, 
-                rgba(80, 100, 170, 0.75) 100%);
-            backdrop-filter: blur(10px);
-            border-radius: 18px;
-            padding: 28px 22px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            height: 448px;
-            width: 100%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            flex-shrink: 0;
-            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-        }
-
-        /* Effet lumineux respirant pour le sujet en focus */
-        .subject-content-box::before {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            right: -4px;
-            bottom: -4px;
-            background: linear-gradient(135deg, 
-                rgba(138, 159, 255, 0) 0%, 
-                rgba(164, 113, 222, 0) 50%,
-                rgba(138, 159, 255, 0) 100%);
-            border-radius: 22px;
-            z-index: -1;
-            pointer-events: none;
-            opacity: 0;
-            filter: blur(12px);
-            transition: opacity 1.5s ease;
-        }
-
-        /* Animation de respiration pour l'effet lumineux */
-        @keyframes glowPulse {
-            0%, 100% {
-                opacity: 0.5;
-                filter: blur(12px);
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.9;
-                filter: blur(16px);
-                transform: scale(1.01);
-            }
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         /* ============================================ */
-        /* GRAPHIQUE BOURSIER STYLE APPLE HEALTH + KEYNOTE 3D */
+        /* GRAPHIQUE BOURSIER THREE.JS */
         /* ============================================ */
         
         .stock-chart-container {
@@ -236,8 +96,7 @@
             padding: 40px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            align-items: flex-start; /* Aligné à gauche */
         }
 
         .stock-chart-container.active {
@@ -246,15 +105,14 @@
         }
 
         .chart-header {
-            display: none; /* Plus de titre, déjà en haut */
+            display: none;
         }
 
         .chart-stats {
             display: flex;
             gap: 40px;
-            justify-content: flex-start; /* Aligné à gauche */
+            justify-content: flex-start;
             margin-bottom: 30px;
-            perspective: 1200px; /* Effet 3D */
         }
 
         .stat-item {
@@ -281,118 +139,88 @@
             color: #FF3B30;
         }
 
+        /* Canvas Three.js */
         .chart-canvas-wrapper {
-            width: 50%; /* 50% moins large */
-            max-width: 900px;
+            width: 60%;
             height: 500px;
             position: relative;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 20px;
-            padding: 30px;
             backdrop-filter: blur(10px);
             box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
-            perspective: 2000px; /* Perspective plus douce */
-            transform-style: preserve-3d;
-            margin-left: 0; /* Aligné à gauche */
+            margin-left: 0;
             margin-right: auto;
+            overflow: hidden;
         }
 
-        #chartSvg {
-            width: 100% !important;
-            height: 100% !important;
+        #threeCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
-        /* Fade-in doux à l'arrivée (pas de zoom violent) */
+        /* Fade-in doux */
         @keyframes smoothFadeIn {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        /* Rotation progressive vers la GAUCHE avec ralentissement */
+        /* Rotation progressive */
         @keyframes appleKeynoteRotation {
-            /* Phase 1 : Démarrage rapide (0-10s) */
-            0% {
-                transform: 
-                    perspective(2000px)
-                    rotateY(0deg)
-                    rotateX(0deg);
-            }
-            33% {
-                transform: 
-                    perspective(2000px)
-                    rotateY(-12deg)  /* Vers la gauche (négatif) */
-                    rotateX(3deg);
-            }
-            /* Phase 2 : Ralentissement progressif (10-20s) */
-            66% {
-                transform: 
-                    perspective(2000px)
-                    rotateY(-17deg)
-                    rotateX(4deg);
-            }
-            /* Phase 3 : Très lent (20-30s) */
-            100% {
-                transform: 
-                    perspective(2000px)
-                    rotateY(-20deg)  /* Maximum 20° vers la gauche */
-                    rotateX(5deg);
-            }
+            0% { transform: perspective(2000px) rotateY(0deg) rotateX(0deg); }
+            33% { transform: perspective(2000px) rotateY(-12deg) rotateX(3deg); }
+            66% { transform: perspective(2000px) rotateY(-17deg) rotateX(4deg); }
+            100% { transform: perspective(2000px) rotateY(-20deg) rotateX(5deg); }
         }
 
         .stock-chart-container.active .chart-canvas-wrapper {
-            /* Fade-in doux de 1 seconde */
             animation: 
                 smoothFadeIn 1s ease-out forwards,
                 appleKeynoteRotation 30s cubic-bezier(0.25, 0.1, 0.25, 1) 1s forwards;
-            /* cubic-bezier pour : rapide au début → ralentissement → très lent */
         }
 
-        /* Masquer les sujets quand le graphique est actif */
-        .subjects-row.focus-5 .subject-box {
-            opacity: 0;
-            transform: scale(0.8);
-            pointer-events: none;
+        /* Sujets - styles simplifiés */
+        .subjects-row {
+            display: flex;
+            gap: 30px;
+            position: relative;
+            height: 600px;
+            margin-top: 80px;
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        /* Styles pour le graphique SVG */
-        .chart-grid-line {
-            stroke: rgba(255, 255, 255, 0.1);
-            stroke-width: 1;
+        .subject-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .chart-axis-label {
-            fill: rgba(255, 255, 255, 0.8);
-            font-size: 16px; /* Plus gros : 16px au lieu de 12px */
-            font-weight: 600;
+        .subject-title {
+            font-size: 2.3rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
         }
 
-        .chart-line {
-            fill: none;
-            stroke: url(#lineGradient);
-            stroke-width: 15; /* Trait épais mais proportionnel au viewBox */
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            /* Effet 3D : ombre portée pour donner de la profondeur */
-            filter: drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.6))
-                    drop-shadow(0px 16px 32px rgba(52, 199, 89, 0.5));
+        .subject-content-box {
+            background: linear-gradient(180deg, 
+                rgba(26, 43, 94, 0.9) 0%, 
+                rgba(41, 72, 152, 0.9) 100%);
+            border-radius: 22px;
+            padding: 30px 22px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            height: 520px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        .chart-area {
-            fill: url(#areaGradient);
-            /* Ombre légère sur l'area aussi */
-            filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2));
-        }
-
-        .chart-dot {
-            fill: #34C759;
-            filter: drop-shadow(0 0 4px rgba(52, 199, 89, 0.8));
-        }
-
-        /* Texte - même taille que sous-titre, gras */
         .subject-content {
             font-size: 2rem;
             font-weight: 700;
@@ -402,357 +230,42 @@
             text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
         }
 
-        /* Animation de carrousel circulaire - Les sujets tournent en boucle */
-        
-        /* Tous visibles - position normale */
-        .subjects-row.focus-0 .subject-box:nth-child(1) { left: 0; opacity: 1; transform: scale(1); filter: brightness(1); z-index: 1; }
-        .subjects-row.focus-0 .subject-box:nth-child(2) { left: calc(25% + 7.5px); opacity: 1; transform: scale(1); filter: brightness(1); z-index: 1; }
-        .subjects-row.focus-0 .subject-box:nth-child(3) { left: calc(50% + 15px); opacity: 1; transform: scale(1); filter: brightness(1); z-index: 1; }
-        .subjects-row.focus-0 .subject-box:nth-child(4) { left: calc(75% + 22.5px); opacity: 1; transform: scale(1); filter: brightness(1); z-index: 1; }
-
-        /* Focus sur sujet 1 - Position normale, sujet 1 mis en avant */
-        .subjects-row.focus-1 .subject-box:nth-child(1) { 
-            left: 0; 
-            transform: scale(1.08); 
-            z-index: 10; 
-            opacity: 1;
-            filter: brightness(1);
-        }
-        .subjects-row.focus-1 .subject-box:nth-child(1) .subject-content-box {
-            border: 3px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-        }
-        /* Effet lumineux actif sur le sujet 1 en focus */
-        .subjects-row.focus-1 .subject-box:nth-child(1) .subject-content-box::before {
-            background: linear-gradient(135deg, 
-                rgba(138, 159, 255, 0.8) 0%, 
-                rgba(164, 113, 222, 0.8) 50%,
-                rgba(138, 159, 255, 0.8) 100%);
-            opacity: 1;
-            animation: glowPulse 3s ease-in-out infinite;
-        }
-        .subjects-row.focus-1 .subject-box:nth-child(2) { left: calc(25% + 7.5px); opacity: 0.4; transform: scale(0.92); filter: brightness(0.7); z-index: 1; }
-        .subjects-row.focus-1 .subject-box:nth-child(3) { left: calc(50% + 15px); opacity: 0.4; transform: scale(0.92); filter: brightness(0.7); z-index: 1; }
-        .subjects-row.focus-1 .subject-box:nth-child(4) { left: calc(75% + 22.5px); opacity: 0.4; transform: scale(0.92); filter: brightness(0.7); z-index: 1; }
-
-        /* Focus sur sujet 2 - Sujet 1 part à droite, sujet 2 en première position */
-        .subjects-row.focus-2 .subject-box:nth-child(1) { 
-            left: calc(75% + 22.5px); 
-            opacity: 0.4; 
-            transform: scale(0.92); 
-            filter: brightness(0.7); 
-            z-index: 0;
-        }
-        .subjects-row.focus-2 .subject-box:nth-child(2) { 
-            left: 0; 
-            transform: scale(1.08); 
-            z-index: 10;
-            opacity: 1;
-            filter: brightness(1);
-        }
-        .subjects-row.focus-2 .subject-box:nth-child(2) .subject-content-box {
-            border: 3px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-        }
-        /* Effet lumineux actif sur le sujet 2 en focus */
-        .subjects-row.focus-2 .subject-box:nth-child(2) .subject-content-box::before {
-            background: linear-gradient(135deg, 
-                rgba(138, 159, 255, 0.8) 0%, 
-                rgba(164, 113, 222, 0.8) 50%,
-                rgba(138, 159, 255, 0.8) 100%);
-            opacity: 1;
-            animation: glowPulse 3s ease-in-out infinite;
-        }
-        .subjects-row.focus-2 .subject-box:nth-child(3) { left: calc(25% + 7.5px); opacity: 0.4; transform: scale(0.92); filter: brightness(0.7); z-index: 1; }
-        .subjects-row.focus-2 .subject-box:nth-child(4) { left: calc(50% + 15px); opacity: 0.4; transform: scale(0.92); filter: brightness(0.7); z-index: 1; }
-
-        /* Focus sur sujet 3 - Sujets 1 et 2 à droite, sujet 3 en première position */
-        .subjects-row.focus-3 .subject-box:nth-child(1) { 
-            left: calc(50% + 15px); 
-            opacity: 0.4; 
-            transform: scale(0.92); 
-            filter: brightness(0.7); 
-            z-index: 0;
-        }
-        .subjects-row.focus-3 .subject-box:nth-child(2) { 
-            left: calc(75% + 22.5px); 
-            opacity: 0.4; 
-            transform: scale(0.92); 
-            filter: brightness(0.7); 
-            z-index: 0;
-        }
-        .subjects-row.focus-3 .subject-box:nth-child(3) { 
-            left: 0; 
-            transform: scale(1.08); 
-            z-index: 10;
-            opacity: 1;
-            filter: brightness(1);
-        }
-        .subjects-row.focus-3 .subject-box:nth-child(3) .subject-content-box {
-            border: 3px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-        }
-        /* Effet lumineux actif sur le sujet 3 en focus */
-        .subjects-row.focus-3 .subject-box:nth-child(3) .subject-content-box::before {
-            background: linear-gradient(135deg, 
-                rgba(138, 159, 255, 0.8) 0%, 
-                rgba(164, 113, 222, 0.8) 50%,
-                rgba(138, 159, 255, 0.8) 100%);
-            opacity: 1;
-            animation: glowPulse 3s ease-in-out infinite;
-        }
-        .subjects-row.focus-3 .subject-box:nth-child(4) { left: calc(25% + 7.5px); opacity: 0.4; transform: scale(0.92); filter: brightness(0.7); z-index: 1; }
-
-        /* Focus sur sujet 4 - Sujets 1, 2, 3 à droite, sujet 4 en première position */
-        .subjects-row.focus-4 .subject-box:nth-child(1) { 
-            left: calc(25% + 7.5px); 
-            opacity: 0.4; 
-            transform: scale(0.92); 
-            filter: brightness(0.7); 
-            z-index: 0;
-        }
-        .subjects-row.focus-4 .subject-box:nth-child(2) { 
-            left: calc(50% + 15px); 
-            opacity: 0.4; 
-            transform: scale(0.92); 
-            filter: brightness(0.7); 
-            z-index: 0;
-        }
-        .subjects-row.focus-4 .subject-box:nth-child(3) { 
-            left: calc(75% + 22.5px); 
-            opacity: 0.4; 
-            transform: scale(0.92); 
-            filter: brightness(0.7); 
-            z-index: 0;
-        }
-        .subjects-row.focus-4 .subject-box:nth-child(4) { 
-            left: 0; 
-            transform: scale(1.08); 
-            z-index: 10;
-            opacity: 1;
-            filter: brightness(1);
-        }
-        .subjects-row.focus-4 .subject-box:nth-child(4) .subject-content-box {
-            border: 3px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-        }
-        /* Effet lumineux actif sur le sujet 4 en focus */
-        .subjects-row.focus-4 .subject-box:nth-child(4) .subject-content-box::before {
-            background: linear-gradient(135deg, 
-                rgba(138, 159, 255, 0.8) 0%, 
-                rgba(164, 113, 222, 0.8) 50%,
-                rgba(138, 159, 255, 0.8) 100%);
-            opacity: 1;
-            animation: glowPulse 3s ease-in-out infinite;
-        }
-
-        /* Animation pour l'apparition */
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        .overlay-container {
-            animation: slideUp 0.6s ease-out;
-        }
-
-        /* État vide (masqué) */
         .hidden {
             display: none;
         }
 
-        /* Statut de connexion (petit indicateur) */
         .status {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 8px 15px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
             font-weight: 600;
             z-index: 1000;
+            cursor: pointer;
         }
 
         .status.connected {
-            background: rgba(40, 167, 69, 0.8);
+            background: #34C759;
+            color: white;
         }
 
         .status.disconnected {
-            background: rgba(220, 53, 69, 0.8);
-        }
-
-        /* ============================================ */
-        /* GRAPHIQUE BOURSIER STYLE APPLE HEALTH       */
-        /* ============================================ */
-        
-        .stock-chart-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s ease;
-            padding: 40px 50px;
-        }
-
-        .stock-chart-container.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .chart-title {
-            font-size: 2.5rem;
-            font-weight: 700;
+            background: #FF3B30;
             color: white;
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
-        }
-
-        .chart-period {
-            font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 600;
-        }
-
-        .chart-stats {
-            display: flex;
-            gap: 40px;
-            margin-bottom: 30px;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .stat-label {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.6);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .stat-value.positive {
-            color: #34C759;
-        }
-
-        .stat-value.negative {
-            color: #FF3B30;
-        }
-
-        .chart-canvas-wrapper {
-            position: relative;
-            height: 520px;
-            background: rgba(0, 0, 0, 0.15);
-            border-radius: 20px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .chart-canvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* SVG Chart styles */
-        .chart-grid-line {
-            stroke: rgba(255, 255, 255, 0.1);
-            stroke-width: 1;
-        }
-
-        .chart-axis-label {
-            fill: rgba(255, 255, 255, 0.5);
-            font-size: 12px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        .chart-line {
-            fill: none;
-            stroke: url(#lineGradient);
-            stroke-width: 3;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            filter: drop-shadow(0 4px 8px rgba(52, 199, 89, 0.3));
-        }
-
-        .chart-area {
-            fill: url(#areaGradient);
-            opacity: 0.3;
-        }
-
-        .chart-dot {
-            fill: white;
-            stroke: #34C759;
-            stroke-width: 3;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-        }
-
-        /* Animation pour le graphique */
-        @keyframes drawLine {
-            from {
-                stroke-dashoffset: 2000;
-            }
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
-
-        @keyframes fadeInChart {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .chart-canvas-wrapper {
-            animation: fadeInChart 0.8s ease-out;
         }
     </style>
 </head>
 <body>
-    <!-- Version 3.0 - Graphique 3D : trait 10px, rotation gauche 30s, effet 3D ombres - $(date '+%Y-%m-%d %H:%M:%S') -->
-    <!-- Indicateur de statut (optionnel, cliquez pour masquer) -->
     <div id="status" class="status disconnected">Connexion...</div>
 
-    <!-- Container de l'overlay -->
     <div id="overlay" class="overlay-container hidden">
-        <!-- Header avec titre et sous-titre côte à côte -->
         <div class="header-row">
             <div id="title" class="main-title">TITRE</div>
             <div id="subtitle" class="subtitle-inline">Sous-titre</div>
         </div>
         
-        <!-- Carton avec dégradé -->
         <div class="content-box">
-            <!-- 4 Sujets alignés -->
             <div class="subjects-row">
                 <div class="subject-box">
                     <div id="subject1" class="subject-title">Sujet</div>
@@ -780,7 +293,7 @@
                 </div>
             </div>
 
-            <!-- Graphique boursier (masqué par défaut) -->
+            <!-- Graphique Three.js -->
             <div id="stockChart" class="stock-chart-container">
                 <div class="chart-stats">
                     <div class="stat-item">
@@ -802,34 +315,23 @@
                 </div>
 
                 <div class="chart-canvas-wrapper">
-                    <svg id="chartSvg" class="chart-canvas" viewBox="0 0 1600 450" preserveAspectRatio="xMidYMid meet">
-                        <!-- Dégradés -->
-                        <defs>
-                            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#34C759;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#30D158;stop-opacity:1" />
-                            </linearGradient>
-                            <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#34C759;stop-opacity:0.6" />
-                                <stop offset="100%" style="stop-color:#34C759;stop-opacity:0" />
-                            </linearGradient>
-                        </defs>
-                        
-                        <!-- Grille et axes seront générés par JS -->
-                        <g id="chartGrid"></g>
-                        <g id="chartArea"></g>
-                        <g id="chartLine"></g>
-                        <g id="chartDots"></g>
-                    </svg>
+                    <canvas id="threeCanvas"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Three.js depuis CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <script>
         const WS_URL = 'wss://ecamm-overlay-server.onrender.com';
         let ws = null;
         let reconnectTimeout = null;
+        let threeScene = null;
+        let threeCamera = null;
+        let threeRenderer = null;
+        let chartCurve = null;
 
         function updateStatus(status) {
             const statusEl = document.getElementById('status');
@@ -838,22 +340,15 @@
         }
 
         function updateDisplay(data) {
-            console.log('📊 Mise à jour de l\'affichage:', data);
-
-            // Si les données sont vides, masquer l'overlay
             if (!data || (!data.titre && !data.soustitre)) {
                 document.getElementById('overlay').classList.add('hidden');
                 return;
             }
 
-            // Afficher l'overlay
             document.getElementById('overlay').classList.remove('hidden');
-
-            // Mettre à jour le titre et sous-titre
             document.getElementById('title').textContent = data.titre || 'TITRE';
             document.getElementById('subtitle').textContent = data.soustitre || 'Sous-titre';
 
-            // Mettre à jour les 4 sujets
             const sections = ['p1', 'p2', 'p3', 'p4'];
             sections.forEach((section, index) => {
                 const sectionData = data[section];
@@ -862,13 +357,8 @@
 
                 if (sectionData) {
                     subjectEl.textContent = sectionData.sujet || 'Sujet';
-                    
-                    // Formater le contenu : max 7 lignes, chaque ligne déjà formatée à 18 caractères
                     if (Array.isArray(sectionData.contenu)) {
-                        // Prendre maximum 7 lignes
-                        const lines = sectionData.contenu
-                            .filter(line => line.trim())
-                            .slice(0, 7);
+                        const lines = sectionData.contenu.filter(line => line.trim()).slice(0, 7);
                         contentEl.textContent = lines.join('\n');
                     } else {
                         contentEl.textContent = sectionData.contenu || '';
@@ -880,50 +370,34 @@
             });
         }
 
-        // Gestion du focus avec animation de carrousel
         function focusSubject(index) {
-            console.log('🎠 Rotation du carrousel vers le sujet:', index);
-            
             const subjectsRow = document.querySelector('.subjects-row');
             const stockChart = document.getElementById('stockChart');
-            if (!subjectsRow) return;
 
-            // Retirer toutes les classes focus
-            subjectsRow.classList.remove('focus-0', 'focus-1', 'focus-2', 'focus-3', 'focus-4');
-
-            // Si index est 5, afficher le graphique
             if (index === 5) {
-                console.log('📈 Affichage du graphique boursier');
+                console.log('📈 Affichage du graphique 3D Three.js');
                 subjectsRow.style.opacity = '0';
                 subjectsRow.style.transform = 'scale(0.95)';
                 stockChart.classList.add('active');
-                drawStockChart();
+                initThreeJS();
                 return;
             }
 
-            // Sinon, masquer le graphique et afficher les sujets
             subjectsRow.style.opacity = '1';
             subjectsRow.style.transform = 'scale(1)';
             stockChart.classList.remove('active');
-
-            // Si index est null ou 0, tout afficher normalement
-            if (!index || index < 1 || index > 4) {
-                subjectsRow.classList.add('focus-0');
-                return;
-            }
-
-            // Appliquer la classe de focus correspondante
-            subjectsRow.classList.add(`focus-${index}`);
         }
 
-        // Générer des données MOCK pour le graphique (1 an)
+        // ============================================
+        // THREE.JS - VRAIE 3D
+        // ============================================
+
         function generateMockData() {
             const data = [];
-            const months = ['Nov 24', 'Déc 24', 'Jan 25', 'Fév 25', 'Mars 25', 'Avr 25', 'Mai 25', 'Juin 25', 'Juil 25', 'Août 25', 'Sep 25', 'Oct 25', 'Nov 25'];
+            const months = ['Nov', 'Déc', 'Jan', 'Fév', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov'];
             let value = 40;
             
             for (let i = 0; i < months.length; i++) {
-                // Variation aléatoire mais avec tendance haussière
                 const change = (Math.random() - 0.3) * 4;
                 value = Math.max(30, Math.min(52, value + change));
                 data.push({
@@ -934,134 +408,138 @@
             return data;
         }
 
-        // Dessiner le graphique style Apple Health
-        function drawStockChart() {
+        function initThreeJS() {
+            const canvas = document.getElementById('threeCanvas');
+            const container = canvas.parentElement;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            // Scene
+            threeScene = new THREE.Scene();
+            threeScene.background = null; // Transparent
+
+            // Camera
+            threeCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            threeCamera.position.set(0, 5, 15);
+            threeCamera.lookAt(0, 0, 0);
+
+            // Renderer
+            threeRenderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                alpha: true,
+                antialias: true 
+            });
+            threeRenderer.setSize(width, height);
+            threeRenderer.setPixelRatio(window.devicePixelRatio);
+
+            // Lumières
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            threeScene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 10);
+            threeScene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0x34C759, 1, 50);
+            pointLight.position.set(0, 5, 5);
+            threeScene.add(pointLight);
+
+            // Créer la courbe 3D
+            createChart3D();
+
+            // Animation
+            animate();
+        }
+
+        function createChart3D() {
             const data = generateMockData();
-            const svg = document.getElementById('chartSvg');
-            const width = 1600;
-            const height = 450;
-            const padding = { top: 20, right: 40, bottom: 40, left: 60 };
-            
-            const chartWidth = width - padding.left - padding.right;
-            const chartHeight = height - padding.top - padding.bottom;
-            
-            // Trouver min et max
-            const values = data.map(d => d.value);
-            const minValue = Math.min(...values) - 2;
-            const maxValue = Math.max(...values) + 2;
-            
-            // Échelle
-            const scaleX = chartWidth / (data.length - 1);
-            const scaleY = chartHeight / (maxValue - minValue);
-            
-            // Clear previous chart
-            document.getElementById('chartGrid').innerHTML = '';
-            document.getElementById('chartArea').innerHTML = '';
-            document.getElementById('chartLine').innerHTML = '';
-            document.getElementById('chartDots').innerHTML = '';
-            
-            // Dessiner la grille horizontale
-            const gridGroup = document.getElementById('chartGrid');
-            for (let i = 0; i <= 4; i++) {
-                const y = padding.top + (chartHeight / 4) * i;
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', padding.left);
-                line.setAttribute('y1', y);
-                line.setAttribute('x2', width - padding.right);
-                line.setAttribute('y2', y);
-                line.setAttribute('class', 'chart-grid-line');
-                gridGroup.appendChild(line);
-                
-                // Label de prix
-                const value = maxValue - (maxValue - minValue) * (i / 4);
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', padding.left - 10);
-                text.setAttribute('y', y + 5);
-                text.setAttribute('text-anchor', 'end');
-                text.setAttribute('class', 'chart-axis-label');
-                text.textContent = '€' + value.toFixed(0);
-                gridGroup.appendChild(text);
-            }
-            
-            // Labels de mois (afficher 1 sur 2)
-            for (let i = 0; i < data.length; i += 2) {
-                const x = padding.left + i * scaleX;
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', x);
-                text.setAttribute('y', height - padding.bottom + 25);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('class', 'chart-axis-label');
-                text.textContent = data[i].label;
-                gridGroup.appendChild(text);
-            }
-            
-            // Créer le path de la ligne
-            let pathD = '';
-            let areaD = '';
-            
+            const points = [];
+
+            // Créer les points de la courbe
+            const minValue = Math.min(...data.map(d => d.value)) - 2;
+            const maxValue = Math.max(...data.map(d => d.value)) + 2;
+            const range = maxValue - minValue;
+
             data.forEach((point, i) => {
-                const x = padding.left + i * scaleX;
-                const y = padding.top + chartHeight - (point.value - minValue) * scaleY;
-                
-                if (i === 0) {
-                    pathD += `M ${x} ${y}`;
-                    areaD += `M ${x} ${height - padding.bottom} L ${x} ${y}`;
-                } else {
-                    pathD += ` L ${x} ${y}`;
-                    areaD += ` L ${x} ${y}`;
-                }
+                const x = (i - data.length / 2) * 0.8; // Espacement horizontal
+                const y = ((point.value - minValue) / range) * 8 - 4; // Échelle verticale
+                const z = 0;
+                points.push(new THREE.Vector3(x, y, z));
             });
-            
-            // Fermer l'area
-            const lastX = padding.left + (data.length - 1) * scaleX;
-            areaD += ` L ${lastX} ${height - padding.bottom} Z`;
-            
-            // Dessiner l'area (sous la ligne)
-            const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            area.setAttribute('d', areaD);
-            area.setAttribute('class', 'chart-area');
-            document.getElementById('chartArea').appendChild(area);
-            
-            // Dessiner la ligne
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            line.setAttribute('d', pathD);
-            line.setAttribute('class', 'chart-line');
-            line.style.strokeDasharray = '2000';
-            line.style.strokeDashoffset = '2000';
-            document.getElementById('chartLine').appendChild(line);
-            
-            // Animation de la ligne
-            setTimeout(() => {
-                line.style.transition = 'stroke-dashoffset 2s ease-out';
-                line.style.strokeDashoffset = '0';
-            }, 100);
-            
-            // Dessiner les points (avec animation décalée)
-            const dotsGroup = document.getElementById('chartDots');
+
+            // Créer une courbe lisse (Catmull-Rom)
+            const curve = new THREE.CatmullRomCurve3(points);
+            curve.curveType = 'catmullrom';
+            curve.tension = 0.5;
+
+            // Créer un tube volumétrique le long de la courbe
+            const tubeGeometry = new THREE.TubeGeometry(
+                curve,
+                100,      // segments
+                0.15,     // rayon du tube (épaisseur)
+                16,       // segments radiaux
+                false     // fermé
+            );
+
+            // Matériau vert lumineux avec dégradé
+            const tubeMaterial = new THREE.MeshPhongMaterial({
+                color: 0x34C759,
+                emissive: 0x30D158,
+                emissiveIntensity: 0.3,
+                shininess: 100,
+                specular: 0x44FF99
+            });
+
+            chartCurve = new THREE.Mesh(tubeGeometry, tubeMaterial);
+            threeScene.add(chartCurve);
+
+            // Ajouter une zone sous la courbe (surface)
+            const surfacePoints = [...points];
+            surfacePoints.push(new THREE.Vector3(points[points.length - 1].x, -4, 0));
+            surfacePoints.push(new THREE.Vector3(points[0].x, -4, 0));
+
+            const surfaceShape = new THREE.Shape();
+            surfaceShape.moveTo(surfacePoints[0].x, surfacePoints[0].y);
+            for (let i = 1; i < surfacePoints.length; i++) {
+                surfaceShape.lineTo(surfacePoints[i].x, surfacePoints[i].y);
+            }
+
+            const surfaceGeometry = new THREE.ShapeGeometry(surfaceShape);
+            const surfaceMaterial = new THREE.MeshBasicMaterial({
+                color: 0x34C759,
+                transparent: true,
+                opacity: 0.2,
+                side: THREE.DoubleSide
+            });
+
+            const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
+            threeScene.add(surface);
+
+            // Ajouter des points lumineux
             data.forEach((point, i) => {
-                const x = padding.left + i * scaleX;
-                const y = padding.top + chartHeight - (point.value - minValue) * scaleY;
-                
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', x);
-                circle.setAttribute('cy', y);
-                circle.setAttribute('r', 0);
-                circle.setAttribute('class', 'chart-dot');
-                dotsGroup.appendChild(circle);
-                
-                // Animation des points
-                setTimeout(() => {
-                    circle.style.transition = 'r 0.3s ease-out';
-                    circle.setAttribute('r', 5);
-                }, 2000 + i * 50);
+                const sphereGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+                const sphereMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x34C759,
+                    emissive: 0x34C759,
+                    emissiveIntensity: 0.5
+                });
+                const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                sphere.position.copy(points[i]);
+                threeScene.add(sphere);
             });
-            
+
             // Mettre à jour les stats
+            updateStats(data);
+        }
+
+        function updateStats(data) {
             const currentPrice = data[data.length - 1].value;
             const startPrice = data[0].value;
             const change = currentPrice - startPrice;
             const changePercent = ((change / startPrice) * 100).toFixed(1);
-            
+            const minValue = Math.min(...data.map(d => d.value));
+            const maxValue = Math.max(...data.map(d => d.value));
+
             document.getElementById('currentPrice').textContent = '€' + currentPrice.toFixed(2);
             document.getElementById('currentPrice').className = 'stat-value ' + (change >= 0 ? 'positive' : 'negative');
             
@@ -1072,17 +550,38 @@
             document.getElementById('lowPrice').textContent = '€' + minValue.toFixed(2);
         }
 
+        let rotationProgress = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (chartCurve && threeCamera) {
+                // Rotation progressive vers la gauche (30 secondes)
+                rotationProgress += 0.0003; // Vitesse de rotation
+                const maxRotation = -0.35; // -20° en radians
+                
+                if (rotationProgress < 1) {
+                    // Cubic bezier ease out
+                    const t = rotationProgress;
+                    const eased = 1 - Math.pow(1 - t, 3);
+                    chartCurve.rotation.y = maxRotation * eased;
+                    chartCurve.rotation.x = (5 * Math.PI / 180) * eased; // 5° sur X
+                }
+
+                threeRenderer.render(threeScene, threeCamera);
+            }
+        }
+
+        // ============================================
+        // WEBSOCKET
+        // ============================================
+
         function connect() {
-            console.log('🔌 Connexion au serveur WebSocket...');
-            
             try {
                 ws = new WebSocket(WS_URL);
 
                 ws.onopen = () => {
                     console.log('✅ Connecté au serveur WebSocket');
                     updateStatus('connected');
-                    
-                    // Effacer le timeout de reconnexion
                     if (reconnectTimeout) {
                         clearTimeout(reconnectTimeout);
                         reconnectTimeout = null;
@@ -1092,12 +591,9 @@
                 ws.onmessage = (event) => {
                     try {
                         const message = JSON.parse(event.data);
-                        console.log('📨 Message reçu:', message.type);
-                        
                         if (message.type === 'initial' || message.type === 'update') {
                             updateDisplay(message.data);
                         } else if (message.type === 'focus') {
-                            // Nouveau type de message pour gérer le focus
                             focusSubject(message.subjectIndex);
                         }
                     } catch (error) {
@@ -1113,8 +609,6 @@
                 ws.onclose = () => {
                     console.log('🔌 Connexion fermée - Reconnexion dans 3s...');
                     updateStatus('disconnected');
-                    
-                    // Reconnexion automatique après 3 secondes
                     reconnectTimeout = setTimeout(connect, 3000);
                 };
 
@@ -1125,13 +619,11 @@
             }
         }
 
-        // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Widget démarré');
+            console.log('🚀 Widget Three.js démarré');
             connect();
         });
 
-        // Cliquer pour masquer/afficher le statut
         document.getElementById('status').addEventListener('click', function() {
             this.style.display = this.style.display === 'none' ? 'block' : 'none';
         });
