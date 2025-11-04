@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 6.3 FUSION MANUELLE - Three.js ajouté proprement - 4 nov 2025 09:20 -->
+    <!-- Version 7.0 - Graphique amélioré: titre retiré, axes agrandis, encadré retiré, stats en bas, points retirés, lignes de niveau ajoutées, animation entrée + rotation 20° gauche/1min - 4 nov 2025 11:00 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -540,29 +540,22 @@
         }
 
         .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+            display: none; /* Titre retiré */
         }
 
         .chart-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: white;
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+            display: none;
         }
 
         .chart-period {
-            font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 600;
+            display: none;
         }
 
         .chart-stats {
             display: flex;
             gap: 40px;
-            margin-bottom: 30px;
+            margin-top: 20px; /* Après le graphique */
+            justify-content: center;
         }
 
         .stat-item {
@@ -572,14 +565,14 @@
         }
 
         .stat-label {
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: rgba(255, 255, 255, 0.6);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .stat-value {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
             color: white;
         }
@@ -594,12 +587,13 @@
 
         .chart-canvas-wrapper {
             position: relative;
-            height: 520px;
-            background: rgba(0, 0, 0, 0.15);
-            border-radius: 20px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+            height: 600px; /* Agrandi */
+            background: transparent; /* Encadré retiré */
+            border-radius: 0;
+            padding: 0;
+            backdrop-filter: none;
+            box-shadow: none;
+            perspective: 2000px;
         }
 
         .chart-canvas {
@@ -653,16 +647,30 @@
         @keyframes fadeInChart {
             from {
                 opacity: 0;
-                transform: translateY(20px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+            }
+        }
+
+        @keyframes appleKeynoteRotation {
+            0% {
+                transform: perspective(2000px) rotateY(0deg) rotateX(0deg);
+            }
+            33% {
+                transform: perspective(2000px) rotateY(-12deg) rotateX(2deg);
+            }
+            66% {
+                transform: perspective(2000px) rotateY(-17deg) rotateX(3.5deg);
+            }
+            100% {
+                transform: perspective(2000px) rotateY(-20deg) rotateX(5deg);
             }
         }
 
         .chart-canvas-wrapper {
-            animation: fadeInChart 0.8s ease-out;
+            animation: fadeInChart 1s ease-out, appleKeynoteRotation 60s cubic-bezier(0.25, 0.1, 0.25, 1) 1s forwards;
+            transform-style: preserve-3d;
         }
     </style>
 </head>
@@ -715,6 +723,10 @@
                     <div class="chart-period">1 An</div>
                 </div>
                 
+                <div class="chart-canvas-wrapper">
+                    <canvas id="threeCanvas" style="width: 100%; height: 100%;"></canvas>
+                </div>
+
                 <div class="chart-stats">
                     <div class="stat-item">
                         <div class="stat-label">Cours actuel</div>
@@ -732,10 +744,6 @@
                         <div class="stat-label">Plus bas</div>
                         <div class="stat-value" id="lowPrice">€30.10</div>
                     </div>
-                </div>
-
-                <div class="chart-canvas-wrapper">
-                    <canvas id="threeCanvas" style="width: 100%; height: 100%;"></canvas>
                 </div>
             </div>
         </div>
@@ -924,7 +932,7 @@
             curve.curveType = 'catmullrom';
             curve.tension = 0.5;
 
-            // Créer un tube volumétrique
+            // Créer un tube volumétrique avec effet 3D amélioré
             const tubeGeometry = new THREE.TubeGeometry(
                 curve,
                 200,
@@ -942,6 +950,11 @@
             });
 
             chartCurve = new THREE.Mesh(tubeGeometry, tubeMaterial);
+            
+            // Ajouter ombre portée pour effet 3D
+            chartCurve.castShadow = true;
+            chartCurve.receiveShadow = true;
+            
             threeScene.add(chartCurve);
 
             // Animation initiale : le tube se dessine
@@ -972,20 +985,24 @@
             const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
             threeScene.add(surface);
 
-            // Points lumineux
-            data.forEach((point, i) => {
-                const sphereGeometry = new THREE.SphereGeometry(0.2, 16, 16);
-                const sphereMaterial = new THREE.MeshPhongMaterial({
-                    color: 0x34C759,
-                    emissive: 0x34C759,
-                    emissiveIntensity: 0.7
-                });
-                const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-                sphere.position.copy(points[i]);
-                threeScene.add(sphere);
+            // LIGNES HORIZONTALES DE NIVEAU (grille)
+            const gridMaterial = new THREE.LineBasicMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.15
             });
 
-            // Labels des axes
+            for (let i = 0; i <= 4; i++) {
+                const y = -5 + (10 * i / 4);
+                const gridGeometry = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(-7, y, 0),
+                    new THREE.Vector3(7, y, 0)
+                ]);
+                const gridLine = new THREE.Line(gridGeometry, gridMaterial);
+                threeScene.add(gridLine);
+            }
+
+            // Labels des axes (AGRANDIS)
             addAxisLabels(data, points, minValue, maxValue);
 
             // Stats
@@ -1005,43 +1022,43 @@
         function addAxisLabels(data, points, minValue, maxValue) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
-            canvas.width = 256;
-            canvas.height = 128;
+            canvas.width = 512;
+            canvas.height = 256;
 
-            // Labels des mois
+            // Labels des mois (AGRANDIS)
             data.forEach((point, i) => {
                 if (i % 2 === 0) {
-                    context.clearRect(0, 0, 256, 128);
+                    context.clearRect(0, 0, 512, 256);
                     context.fillStyle = 'white';
-                    context.font = 'Bold 48px Arial';
+                    context.font = 'Bold 70px Arial';
                     context.textAlign = 'center';
-                    context.fillText(point.label, 128, 80);
+                    context.fillText(point.label, 256, 150);
 
                     const texture = new THREE.CanvasTexture(canvas);
                     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
                     const sprite = new THREE.Sprite(spriteMaterial);
-                    sprite.position.set(points[i].x, -6, 0);
-                    sprite.scale.set(1.5, 0.75, 1);
+                    sprite.position.set(points[i].x, -6.5, 0);
+                    sprite.scale.set(2, 1, 1);
                     threeScene.add(sprite);
                 }
             });
 
-            // Labels des prix
+            // Labels des prix (AGRANDIS)
             for (let i = 0; i <= 4; i++) {
                 const value = minValue + (maxValue - minValue) * (i / 4);
                 const y = -5 + (10 * i / 4);
 
-                context.clearRect(0, 0, 256, 128);
+                context.clearRect(0, 0, 512, 256);
                 context.fillStyle = 'white';
-                context.font = 'Bold 48px Arial';
+                context.font = 'Bold 70px Arial';
                 context.textAlign = 'right';
-                context.fillText('€' + value.toFixed(0), 220, 80);
+                context.fillText('€' + value.toFixed(0), 450, 150);
 
                 const texture = new THREE.CanvasTexture(canvas);
                 const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
                 const sprite = new THREE.Sprite(spriteMaterial);
-                sprite.position.set(-7.5, y, 0);
-                sprite.scale.set(1.5, 0.75, 1);
+                sprite.position.set(-8.5, y, 0);
+                sprite.scale.set(2, 1, 1);
                 threeScene.add(sprite);
             }
         }
@@ -1067,18 +1084,8 @@
         function animate() {
             requestAnimationFrame(animate);
 
-            if (chartCurve && threeCamera) {
-                // Rotation progressive vers la gauche
-                rotationProgress += 0.0003;
-                const maxRotation = -0.35; // -20°
-                
-                if (rotationProgress < 1) {
-                    const t = rotationProgress;
-                    const eased = 1 - Math.pow(1 - t, 3);
-                    chartCurve.rotation.y = maxRotation * eased;
-                    chartCurve.rotation.x = (5 * Math.PI / 180) * eased;
-                }
-
+            if (chartCurve && threeCamera && threeRenderer) {
+                // Pas de rotation ici - gérée par CSS
                 threeRenderer.render(threeScene, threeCamera);
             }
         }
