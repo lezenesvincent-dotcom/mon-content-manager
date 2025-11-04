@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 7.2 - Construction VRAIE progressive (setDrawRange), effet 3D Lambert, lignes mesh épaisses, labels 110px, aligné gauche forcé, PAS de rotateX - 4 nov 2025 15:00 -->
+    <!-- Version 8.0 - Bug construction corrigé, stats SOUS la boxe, graph ÉNORME, profondeur 3D Keynote, animation spectaculaire - 4 nov 2025 16:00 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -519,19 +519,21 @@
         }
 
         /* ============================================ */
-        /* GRAPHIQUE BOURSIER STYLE APPLE HEALTH       */
+        /* GRAPHIQUE BOURSIER STYLE APPLE KEYNOTE      */
         /* ============================================ */
         
         .stock-chart-container {
             position: absolute;
             top: 0;
             left: 0;
-            right: 30%; /* Espace à droite pour alignement gauche */
-            height: 100%;
+            right: 0;
+            bottom: 0;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.8s ease;
-            padding: 40px 20px 40px 50px; /* Plus de padding à gauche */
+            padding: 0; /* Pas de padding - graphique plein écran */
+            display: flex;
+            flex-direction: column;
         }
 
         .stock-chart-container.active {
@@ -540,7 +542,7 @@
         }
 
         .chart-header {
-            display: none; /* Titre retiré */
+            display: none; /* Pas de titre */
         }
 
         .chart-title {
@@ -551,30 +553,37 @@
             display: none;
         }
 
+        /* Stats EN DESSOUS de la boxe graphique */
         .chart-stats {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            gap: 40px;
-            margin-top: 20px; /* Après le graphique */
-            justify-content: center;
+            gap: 60px;
+            z-index: 10;
         }
 
         .stat-item {
             display: flex;
             flex-direction: column;
             gap: 5px;
+            align-items: center;
         }
 
         .stat-label {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            font-weight: 600;
         }
 
         .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.2rem;
+            font-weight: 800;
             color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
         .stat-value.positive {
@@ -585,15 +594,18 @@
             color: #FF3B30;
         }
 
+        /* Graphique occupe TOUTE la zone */
         .chart-canvas-wrapper {
-            position: relative;
-            height: 700px; /* Agrandi encore plus */
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 100px; /* Espace pour les stats en bas */
             background: transparent;
             border-radius: 0;
             padding: 0;
-            backdrop-filter: none;
-            box-shadow: none;
-            perspective: 2000px;
+            perspective: 2500px; /* Perspective plus forte pour effet 3D */
+            perspective-origin: 50% 50%;
         }
 
         .chart-canvas {
@@ -644,32 +656,62 @@
             }
         }
 
-        @keyframes fadeInChart {
-            from {
+        /* Animation spectaculaire type Apple Keynote */
+        @keyframes keynoteEntrance {
+            0% {
                 opacity: 0;
+                transform: perspective(2500px) 
+                           scale3d(0.4, 0.4, 0.4) 
+                           rotateY(60deg) 
+                           rotateX(15deg)
+                           translateZ(-500px);
             }
-            to {
+            40% {
                 opacity: 1;
+                transform: perspective(2500px) 
+                           scale3d(1.05, 1.05, 1.05) 
+                           rotateY(-5deg) 
+                           rotateX(2deg)
+                           translateZ(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: perspective(2500px) 
+                           scale3d(1, 1, 1) 
+                           rotateY(0deg) 
+                           rotateX(0deg)
+                           translateZ(0px);
             }
         }
 
-        @keyframes appleKeynoteRotation {
+        @keyframes keynoteRotation {
             0% {
-                transform: perspective(2000px) rotateY(0deg);
+                transform: perspective(2500px) 
+                           scale3d(1, 1, 1) 
+                           rotateY(0deg) 
+                           rotateX(0deg)
+                           translateZ(0px);
             }
-            33% {
-                transform: perspective(2000px) rotateY(-15deg);
-            }
-            66% {
-                transform: perspective(2000px) rotateY(-23deg);
+            50% {
+                transform: perspective(2500px) 
+                           scale3d(1.08, 1.08, 1.08) 
+                           rotateY(-20deg) 
+                           rotateX(-3deg)
+                           translateZ(80px);
             }
             100% {
-                transform: perspective(2000px) rotateY(-30deg);
+                transform: perspective(2500px) 
+                           scale3d(1.12, 1.12, 1.12) 
+                           rotateY(-35deg) 
+                           rotateX(-5deg)
+                           translateZ(120px);
             }
         }
 
         .chart-canvas-wrapper {
-            animation: fadeInChart 1s ease-out, appleKeynoteRotation 30s cubic-bezier(0.25, 0.1, 0.25, 1) 1s forwards;
+            animation: 
+                keynoteEntrance 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+                keynoteRotation 20s cubic-bezier(0.25, 0.1, 0.25, 1) 2.5s forwards;
             transform-style: preserve-3d;
         }
     </style>
@@ -723,10 +765,6 @@
                     <div class="chart-period">1 An</div>
                 </div>
                 
-                <div class="chart-canvas-wrapper">
-                    <canvas id="threeCanvas" style="width: 100%; height: 100%;"></canvas>
-                </div>
-
                 <div class="chart-stats">
                     <div class="stat-item">
                         <div class="stat-label">Cours actuel</div>
@@ -744,6 +782,10 @@
                         <div class="stat-label">Plus bas</div>
                         <div class="stat-value" id="lowPrice">€30.10</div>
                     </div>
+                </div>
+
+                <div class="chart-canvas-wrapper">
+                    <canvas id="threeCanvas" style="width: 100%; height: 100%;"></canvas>
                 </div>
             </div>
         </div>
@@ -932,34 +974,31 @@
             curve.curveType = 'catmullrom';
             curve.tension = 0.5;
 
-            // Créer un tube FIN avec effet 3D subtil
+            // Créer un tube volumétrique
             const tubeGeometry = new THREE.TubeGeometry(
                 curve,
                 200,
-                0.12, // Très fin
+                0.25,
                 32,
                 false
             );
 
-            // Matériau avec effet 3D subtil (pas glossy mais pas complètement plat)
-            const tubeMaterial = new THREE.MeshLambertMaterial({
+            const tubeMaterial = new THREE.MeshPhongMaterial({
                 color: 0x34C759,
-                emissive: 0x1a6b2d,
-                emissiveIntensity: 0.2
+                emissive: 0x30D158,
+                emissiveIntensity: 0.5,
+                shininess: 100,
+                specular: 0x88FFAA
             });
 
             chartCurve = new THREE.Mesh(tubeGeometry, tubeMaterial);
-            
-            // Construction progressive: on commence par ne rien dessiner
-            const totalVertices = tubeGeometry.attributes.position.count;
-            chartCurve.geometry.setDrawRange(0, 0);
-            
             threeScene.add(chartCurve);
 
-            // Démarrer l'animation de construction
+            // Animation initiale : le tube se dessine
+            chartCurve.scale.x = 0;
             setTimeout(() => {
-                animateLineDrawing(totalVertices);
-            }, 1000);
+                animateLineDrawing();
+            }, 100);
 
             // Surface sous la courbe
             const surfacePoints = [...points];
@@ -983,23 +1022,18 @@
             const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
             threeScene.add(surface);
 
-            // LIGNES HORIZONTALES VRAIMENT ÉPAISSES - Méthode mesh
-            for (let i = 0; i <= 4; i++) {
-                const y = -5 + (10 * i / 4);
-                
-                // Créer un rectangle plat très fin pour simuler une ligne épaisse
-                const lineGeometry = new THREE.PlaneGeometry(14, 0.08); // 14 unités de large, 0.08 d'épaisseur
-                const lineMaterial = new THREE.MeshBasicMaterial({
-                    color: 0xffffff,
-                    transparent: true,
-                    opacity: 0.5, // Bien visible
-                    side: THREE.DoubleSide
+            // Points lumineux
+            data.forEach((point, i) => {
+                const sphereGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+                const sphereMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x34C759,
+                    emissive: 0x34C759,
+                    emissiveIntensity: 0.7
                 });
-                
-                const thickLine = new THREE.Mesh(lineGeometry, lineMaterial);
-                thickLine.position.set(0, y, -0.1); // Légèrement en arrière
-                threeScene.add(thickLine);
-            }
+                const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                sphere.position.copy(points[i]);
+                threeScene.add(sphere);
+            });
 
             // Labels des axes
             addAxisLabels(data, points, minValue, maxValue);
@@ -1008,57 +1042,56 @@
             updateStats(data);
         }
 
-        function animateLineDrawing(totalVertices) {
+        function animateLineDrawing() {
             if (drawProgress < 1) {
-                drawProgress += 0.006; // Vitesse modérée
+                drawProgress += 0.015;
                 if (chartCurve) {
-                    const vertexCount = Math.floor(totalVertices * drawProgress);
-                    chartCurve.geometry.setDrawRange(0, vertexCount);
+                    chartCurve.scale.x = Math.min(drawProgress, 1);
                 }
-                requestAnimationFrame(() => animateLineDrawing(totalVertices));
+                requestAnimationFrame(animateLineDrawing);
             }
         }
 
         function addAxisLabels(data, points, minValue, maxValue) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
-            canvas.width = 768;
-            canvas.height = 384;
+            canvas.width = 256;
+            canvas.height = 128;
 
-            // Labels des mois (ÉNORMES)
+            // Labels des mois
             data.forEach((point, i) => {
                 if (i % 2 === 0) {
-                    context.clearRect(0, 0, 768, 384);
+                    context.clearRect(0, 0, 256, 128);
                     context.fillStyle = 'white';
-                    context.font = 'Bold 110px Arial';
+                    context.font = 'Bold 48px Arial';
                     context.textAlign = 'center';
-                    context.fillText(point.label, 384, 230);
+                    context.fillText(point.label, 128, 80);
 
                     const texture = new THREE.CanvasTexture(canvas);
                     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
                     const sprite = new THREE.Sprite(spriteMaterial);
-                    sprite.position.set(points[i].x, -6.5, 0);
-                    sprite.scale.set(3, 1.5, 1);
+                    sprite.position.set(points[i].x, -6, 0);
+                    sprite.scale.set(1.5, 0.75, 1);
                     threeScene.add(sprite);
                 }
             });
 
-            // Labels des prix (ÉNORMES)
+            // Labels des prix
             for (let i = 0; i <= 4; i++) {
                 const value = minValue + (maxValue - minValue) * (i / 4);
                 const y = -5 + (10 * i / 4);
 
-                context.clearRect(0, 0, 768, 384);
+                context.clearRect(0, 0, 256, 128);
                 context.fillStyle = 'white';
-                context.font = 'Bold 110px Arial';
+                context.font = 'Bold 48px Arial';
                 context.textAlign = 'right';
-                context.fillText('€' + value.toFixed(0), 700, 230);
+                context.fillText('€' + value.toFixed(0), 220, 80);
 
                 const texture = new THREE.CanvasTexture(canvas);
                 const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
                 const sprite = new THREE.Sprite(spriteMaterial);
-                sprite.position.set(-8.5, y, 0);
-                sprite.scale.set(3, 1.5, 1);
+                sprite.position.set(-7.5, y, 0);
+                sprite.scale.set(1.5, 0.75, 1);
                 threeScene.add(sprite);
             }
         }
@@ -1084,8 +1117,18 @@
         function animate() {
             requestAnimationFrame(animate);
 
-            if (chartCurve && threeCamera && threeRenderer) {
-                // Pas de rotation ici - gérée par CSS
+            if (chartCurve && threeCamera) {
+                // Rotation progressive vers la gauche
+                rotationProgress += 0.0003;
+                const maxRotation = -0.35; // -20°
+                
+                if (rotationProgress < 1) {
+                    const t = rotationProgress;
+                    const eased = 1 - Math.pow(1 - t, 3);
+                    chartCurve.rotation.y = maxRotation * eased;
+                    chartCurve.rotation.x = (5 * Math.PI / 180) * eased;
+                }
+
                 threeRenderer.render(threeScene, threeCamera);
             }
         }
