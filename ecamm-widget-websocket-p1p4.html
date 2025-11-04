@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
+    <!-- Version 6.1 FUSION CORRIGÉE - Bon P1-P4 + Three.js 3D - 4 nov 2025 09:10 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -848,13 +850,23 @@
         }
 
         // Générer des données MOCK pour le graphique (1 an)
+        // ============================================
+        // THREE.JS - GRAPHIQUE 3D VOLUMÉTRIQUE
+        // ============================================
+
+        let threeScene = null;
+        let threeCamera = null;
+        let threeRenderer = null;
+        let chartCurve = null;
+        let rotationProgress = 0;
+        let drawProgress = 0;
+
         function generateMockData() {
             const data = [];
-            const months = ['Nov 24', 'Déc 24', 'Jan 25', 'Fév 25', 'Mars 25', 'Avr 25', 'Mai 25', 'Juin 25', 'Juil 25', 'Août 25', 'Sep 25', 'Oct 25', 'Nov 25'];
+            const months = ['Nov', 'Déc', 'Jan', 'Fév', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov'];
             let value = 40;
             
             for (let i = 0; i < months.length; i++) {
-                // Variation aléatoire mais avec tendance haussière
                 const change = (Math.random() - 0.3) * 4;
                 value = Math.max(30, Math.min(52, value + change));
                 data.push({
@@ -865,126 +877,230 @@
             return data;
         }
 
-        // Dessiner le graphique style Apple Health
-        function drawStockChart() {
+        function initThreeJS() {
+            if (threeRenderer) return; // Déjà initialisé
+
+            const canvas = document.getElementById('threeCanvas');
+            const container = canvas.parentElement;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            // Scene
+            threeScene = new THREE.Scene();
+            threeScene.background = null;
+
+            // Camera
+            threeCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            threeCamera.position.set(0, 5, 15);
+            threeCamera.lookAt(0, 0, 0);
+
+            // Renderer
+            threeRenderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                alpha: true,
+                antialias: true 
+            });
+            threeRenderer.setSize(width, height);
+            threeRenderer.setPixelRatio(window.devicePixelRatio);
+
+            // Lumières
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            threeScene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 10);
+            threeScene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0x34C759, 1, 50);
+            pointLight.position.set(0, 5, 5);
+            threeScene.add(pointLight);
+
+            // Créer la courbe 3D
+            createChart3D();
+
+            // Animation
+            animate();
+        }
+
+        function createChart3D() {
             const data = generateMockData();
-            const svg = document.getElementById('chartSvg');
-            const width = 1600;
-            const height = 450;
-            const padding = { top: 20, right: 40, bottom: 40, left: 60 };
-            
-            const chartWidth = width - padding.left - padding.right;
-            const chartHeight = height - padding.top - padding.bottom;
-            
-            // Trouver min et max
-            const values = data.map(d => d.value);
-            const minValue = Math.min(...values) - 2;
-            const maxValue = Math.max(...values) + 2;
-            
-            // Échelle
-            const scaleX = chartWidth / (data.length - 1);
-            const scaleY = chartHeight / (maxValue - minValue);
-            
-            // Clear previous chart
-            document.getElementById('chartGrid').innerHTML = '';
-            document.getElementById('chartArea').innerHTML = '';
-            document.getElementById('chartLine').innerHTML = '';
-            document.getElementById('chartDots').innerHTML = '';
-            
-            // Dessiner la grille horizontale
-            const gridGroup = document.getElementById('chartGrid');
-            for (let i = 0; i <= 4; i++) {
-                const y = padding.top + (chartHeight / 4) * i;
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', padding.left);
-                line.setAttribute('y1', y);
-                line.setAttribute('x2', width - padding.right);
-                line.setAttribute('y2', y);
-                line.setAttribute('class', 'chart-grid-line');
-                gridGroup.appendChild(line);
-                
-                // Label de prix
-                const value = maxValue - (maxValue - minValue) * (i / 4);
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', padding.left - 10);
-                text.setAttribute('y', y + 5);
-                text.setAttribute('text-anchor', 'end');
-                text.setAttribute('class', 'chart-axis-label');
-                text.textContent = '€' + value.toFixed(0);
-                gridGroup.appendChild(text);
-            }
-            
-            // Labels de mois (afficher 1 sur 2)
-            for (let i = 0; i < data.length; i += 2) {
-                const x = padding.left + i * scaleX;
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', x);
-                text.setAttribute('y', height - padding.bottom + 25);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('class', 'chart-axis-label');
-                text.textContent = data[i].label;
-                gridGroup.appendChild(text);
-            }
-            
-            // Créer le path de la ligne
-            let pathD = '';
-            let areaD = '';
-            
+            const points = [];
+
+            const minValue = Math.min(...data.map(d => d.value)) - 2;
+            const maxValue = Math.max(...data.map(d => d.value)) + 2;
+            const range = maxValue - minValue;
+
             data.forEach((point, i) => {
-                const x = padding.left + i * scaleX;
-                const y = padding.top + chartHeight - (point.value - minValue) * scaleY;
-                
-                if (i === 0) {
-                    pathD += `M ${x} ${y}`;
-                    areaD += `M ${x} ${height - padding.bottom} L ${x} ${y}`;
-                } else {
-                    pathD += ` L ${x} ${y}`;
-                    areaD += ` L ${x} ${y}`;
+                const x = (i - data.length / 2) * 1;
+                const y = ((point.value - minValue) / range) * 10 - 5;
+                const z = 0;
+                points.push(new THREE.Vector3(x, y, z));
+            });
+
+            // Créer une courbe lisse
+            const curve = new THREE.CatmullRomCurve3(points);
+            curve.curveType = 'catmullrom';
+            curve.tension = 0.5;
+
+            // Créer un tube volumétrique
+            const tubeGeometry = new THREE.TubeGeometry(
+                curve,
+                200,
+                0.25,
+                32,
+                false
+            );
+
+            const tubeMaterial = new THREE.MeshPhongMaterial({
+                color: 0x34C759,
+                emissive: 0x30D158,
+                emissiveIntensity: 0.5,
+                shininess: 100,
+                specular: 0x88FFAA
+            });
+
+            chartCurve = new THREE.Mesh(tubeGeometry, tubeMaterial);
+            threeScene.add(chartCurve);
+
+            // Animation initiale : le tube se dessine
+            chartCurve.scale.x = 0;
+            setTimeout(() => {
+                animateLineDrawing();
+            }, 100);
+
+            // Surface sous la courbe
+            const surfacePoints = [...points];
+            surfacePoints.push(new THREE.Vector3(points[points.length - 1].x, -5, 0));
+            surfacePoints.push(new THREE.Vector3(points[0].x, -5, 0));
+
+            const surfaceShape = new THREE.Shape();
+            surfaceShape.moveTo(surfacePoints[0].x, surfacePoints[0].y);
+            for (let i = 1; i < surfacePoints.length; i++) {
+                surfaceShape.lineTo(surfacePoints[i].x, surfacePoints[i].y);
+            }
+
+            const surfaceGeometry = new THREE.ShapeGeometry(surfaceShape);
+            const surfaceMaterial = new THREE.MeshBasicMaterial({
+                color: 0x34C759,
+                transparent: true,
+                opacity: 0.15,
+                side: THREE.DoubleSide
+            });
+
+            const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
+            threeScene.add(surface);
+
+            // Points lumineux
+            data.forEach((point, i) => {
+                const sphereGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+                const sphereMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x34C759,
+                    emissive: 0x34C759,
+                    emissiveIntensity: 0.7
+                });
+                const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                sphere.position.copy(points[i]);
+                threeScene.add(sphere);
+            });
+
+            // Labels des axes
+            addAxisLabels(data, points, minValue, maxValue);
+
+            // Stats
+            updateStats(data);
+        }
+
+        function animateLineDrawing() {
+            if (drawProgress < 1) {
+                drawProgress += 0.015;
+                if (chartCurve) {
+                    chartCurve.scale.x = Math.min(drawProgress, 1);
+                }
+                requestAnimationFrame(animateLineDrawing);
+            }
+        }
+
+        function addAxisLabels(data, points, minValue, maxValue) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 128;
+
+            // Labels des mois
+            data.forEach((point, i) => {
+                if (i % 2 === 0) {
+                    context.clearRect(0, 0, 256, 128);
+                    context.fillStyle = 'white';
+                    context.font = 'Bold 48px Arial';
+                    context.textAlign = 'center';
+                    context.fillText(point.label, 128, 80);
+
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+                    const sprite = new THREE.Sprite(spriteMaterial);
+                    sprite.position.set(points[i].x, -6, 0);
+                    sprite.scale.set(1.5, 0.75, 1);
+                    threeScene.add(sprite);
                 }
             });
+
+            // Labels des prix
+            for (let i = 0; i <= 4; i++) {
+                const value = minValue + (maxValue - minValue) * (i / 4);
+                const y = -5 + (10 * i / 4);
+
+                context.clearRect(0, 0, 256, 128);
+                context.fillStyle = 'white';
+                context.font = 'Bold 48px Arial';
+                context.textAlign = 'right';
+                context.fillText('€' + value.toFixed(0), 220, 80);
+
+                const texture = new THREE.CanvasTexture(canvas);
+                const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+                const sprite = new THREE.Sprite(spriteMaterial);
+                sprite.position.set(-7.5, y, 0);
+                sprite.scale.set(1.5, 0.75, 1);
+                threeScene.add(sprite);
+            }
+        }
+
+        function updateStats(data) {
+            const currentPrice = data[data.length - 1].value;
+            const startPrice = data[0].value;
+            const change = currentPrice - startPrice;
+            const changePercent = ((change / startPrice) * 100).toFixed(1);
+            const minValue = Math.min(...data.map(d => d.value));
+            const maxValue = Math.max(...data.map(d => d.value));
+
+            document.getElementById('currentPrice').textContent = '€' + currentPrice.toFixed(2);
+            document.getElementById('currentPrice').className = 'stat-value ' + (change >= 0 ? 'positive' : 'negative');
             
-            // Fermer l'area
-            const lastX = padding.left + (data.length - 1) * scaleX;
-            areaD += ` L ${lastX} ${height - padding.bottom} Z`;
+            document.getElementById('priceChange').textContent = (change >= 0 ? '+' : '') + '€' + change.toFixed(2) + ' (' + (change >= 0 ? '+' : '') + changePercent + '%)';
+            document.getElementById('priceChange').className = 'stat-value ' + (change >= 0 ? 'positive' : 'negative');
             
-            // Dessiner l'area (sous la ligne)
-            const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            area.setAttribute('d', areaD);
-            area.setAttribute('class', 'chart-area');
-            document.getElementById('chartArea').appendChild(area);
-            
-            // Dessiner la ligne
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            line.setAttribute('d', pathD);
-            line.setAttribute('class', 'chart-line');
-            line.style.strokeDasharray = '2000';
-            line.style.strokeDashoffset = '2000';
-            document.getElementById('chartLine').appendChild(line);
-            
-            // Animation de la ligne
-            setTimeout(() => {
-                line.style.transition = 'stroke-dashoffset 2s ease-out';
-                line.style.strokeDashoffset = '0';
-            }, 100);
-            
-            // Dessiner les points (avec animation décalée)
-            const dotsGroup = document.getElementById('chartDots');
-            data.forEach((point, i) => {
-                const x = padding.left + i * scaleX;
-                const y = padding.top + chartHeight - (point.value - minValue) * scaleY;
+            document.getElementById('highPrice').textContent = '€' + maxValue.toFixed(2);
+            document.getElementById('lowPrice').textContent = '€' + minValue.toFixed(2);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (chartCurve && threeCamera) {
+                // Rotation progressive vers la gauche
+                rotationProgress += 0.0003;
+                const maxRotation = -0.35; // -20°
                 
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', x);
-                circle.setAttribute('cy', y);
-                circle.setAttribute('r', 0);
-                circle.setAttribute('class', 'chart-dot');
-                dotsGroup.appendChild(circle);
-                
-                // Animation des points
-                setTimeout(() => {
-                    circle.style.transition = 'r 0.3s ease-out';
-                    circle.setAttribute('r', 5);
-                }, 2000 + i * 50);
+                if (rotationProgress < 1) {
+                    const t = rotationProgress;
+                    const eased = 1 - Math.pow(1 - t, 3);
+                    chartCurve.rotation.y = maxRotation * eased;
+                    chartCurve.rotation.x = (5 * Math.PI / 180) * eased;
+                }
+
+                threeRenderer.render(threeScene, threeCamera);
+            }
+        }
+
             });
             
             // Mettre à jour les stats
