@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 8.0 - Bug construction corrigé, stats SOUS la boxe, graph ÉNORME, profondeur 3D Keynote, animation spectaculaire - 4 nov 2025 16:00 -->
+    <!-- Version 9.0 - Style CARRÉ (lignes droites), SANS points, construction 2s puis rotation flottante gauche - 4 nov 2025 16:30 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -656,62 +656,30 @@
             }
         }
 
-        /* Animation spectaculaire type Apple Keynote */
-        @keyframes keynoteEntrance {
-            0% {
+        /* Fade-in simple */
+        @keyframes fadeInChart {
+            from {
                 opacity: 0;
-                transform: perspective(2500px) 
-                           scale3d(0.4, 0.4, 0.4) 
-                           rotateY(60deg) 
-                           rotateX(15deg)
-                           translateZ(-500px);
             }
-            40% {
+            to {
                 opacity: 1;
-                transform: perspective(2500px) 
-                           scale3d(1.05, 1.05, 1.05) 
-                           rotateY(-5deg) 
-                           rotateX(2deg)
-                           translateZ(50px);
-            }
-            100% {
-                opacity: 1;
-                transform: perspective(2500px) 
-                           scale3d(1, 1, 1) 
-                           rotateY(0deg) 
-                           rotateX(0deg)
-                           translateZ(0px);
             }
         }
 
-        @keyframes keynoteRotation {
+        /* Rotation flottante vers la gauche APRÈS construction */
+        @keyframes floatingRotation {
             0% {
-                transform: perspective(2500px) 
-                           scale3d(1, 1, 1) 
-                           rotateY(0deg) 
-                           rotateX(0deg)
-                           translateZ(0px);
-            }
-            50% {
-                transform: perspective(2500px) 
-                           scale3d(1.08, 1.08, 1.08) 
-                           rotateY(-20deg) 
-                           rotateX(-3deg)
-                           translateZ(80px);
+                transform: perspective(2500px) rotateY(0deg) translateZ(0px);
             }
             100% {
-                transform: perspective(2500px) 
-                           scale3d(1.12, 1.12, 1.12) 
-                           rotateY(-35deg) 
-                           rotateX(-5deg)
-                           translateZ(120px);
+                transform: perspective(2500px) rotateY(-30deg) translateZ(100px);
             }
         }
 
         .chart-canvas-wrapper {
             animation: 
-                keynoteEntrance 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-                keynoteRotation 20s cubic-bezier(0.25, 0.1, 0.25, 1) 2.5s forwards;
+                fadeInChart 0.5s ease-out forwards,
+                floatingRotation 20s cubic-bezier(0.25, 0.1, 0.25, 1) 2.5s forwards;
             transform-style: preserve-3d;
         }
     </style>
@@ -969,35 +937,44 @@
                 points.push(new THREE.Vector3(x, y, z));
             });
 
-            // Créer une courbe lisse
-            const curve = new THREE.CatmullRomCurve3(points);
-            curve.curveType = 'catmullrom';
-            curve.tension = 0.5;
+            // Style CARRÉ - Lignes droites connectées (pas de courbe lisse)
+            // On utilise directement les points sans CatmullRom
+            
+            // Créer un tube le long des segments droits
+            const path = new THREE.CurvePath();
+            for (let i = 0; i < points.length - 1; i++) {
+                path.add(new THREE.LineCurve3(points[i], points[i + 1]));
+            }
 
-            // Créer un tube volumétrique
+            // Créer un tube volumétrique ÉPAIS
             const tubeGeometry = new THREE.TubeGeometry(
-                curve,
-                200,
-                0.25,
-                32,
+                path,
+                points.length * 10, // Plus de segments pour smoothness
+                0.35, // Plus épais
+                16,
                 false
             );
 
             const tubeMaterial = new THREE.MeshPhongMaterial({
                 color: 0x34C759,
                 emissive: 0x30D158,
-                emissiveIntensity: 0.5,
+                emissiveIntensity: 0.4,
                 shininess: 100,
                 specular: 0x88FFAA
             });
 
             chartCurve = new THREE.Mesh(tubeGeometry, tubeMaterial);
+            
+            // Construction progressive : masquer au départ
+            const totalVertices = tubeGeometry.attributes.position.count;
+            chartCurve.geometry.setDrawRange(0, 0);
+            
             threeScene.add(chartCurve);
 
-            // Animation initiale : le tube se dessine
-            chartCurve.scale.x = 0;
+            // Animation : construction en 2 secondes
             setTimeout(() => {
-                animateLineDrawing();
+                animateLineDrawing(totalVertices);
+            }, 100);
             }, 100);
 
             // Surface sous la courbe
@@ -1022,18 +999,7 @@
             const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
             threeScene.add(surface);
 
-            // Points lumineux
-            data.forEach((point, i) => {
-                const sphereGeometry = new THREE.SphereGeometry(0.2, 16, 16);
-                const sphereMaterial = new THREE.MeshPhongMaterial({
-                    color: 0x34C759,
-                    emissive: 0x34C759,
-                    emissiveIntensity: 0.7
-                });
-                const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-                sphere.position.copy(points[i]);
-                threeScene.add(sphere);
-            });
+            // POINTS RETIRÉS - Pas de spheres
 
             // Labels des axes
             addAxisLabels(data, points, minValue, maxValue);
@@ -1042,13 +1008,14 @@
             updateStats(data);
         }
 
-        function animateLineDrawing() {
+        function animateLineDrawing(totalVertices) {
             if (drawProgress < 1) {
-                drawProgress += 0.015;
+                drawProgress += 0.025; // 2 secondes (1/0.025 = 40 frames à 60fps ≈ 2s)
                 if (chartCurve) {
-                    chartCurve.scale.x = Math.min(drawProgress, 1);
+                    const vertexCount = Math.floor(totalVertices * drawProgress);
+                    chartCurve.geometry.setDrawRange(0, vertexCount);
                 }
-                requestAnimationFrame(animateLineDrawing);
+                requestAnimationFrame(() => animateLineDrawing(totalVertices));
             }
         }
 
