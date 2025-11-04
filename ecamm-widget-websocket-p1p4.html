@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 6.1 FUSION CORRIGÉE - Bon P1-P4 + Three.js 3D - 4 nov 2025 09:10 -->
+    <!-- Version 6.2 FUSION OK - initThreeJS corrigé - 4 nov 2025 09:15 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -826,11 +826,11 @@
 
             // Si index est 5, afficher le graphique
             if (index === 5) {
-                console.log('📈 Affichage du graphique boursier');
+                console.log('📈 Affichage du graphique 3D Three.js');
                 subjectsRow.style.opacity = '0';
                 subjectsRow.style.transform = 'scale(0.95)';
                 stockChart.classList.add('active');
-                drawStockChart();
+                initThreeJS();
                 return;
             }
 
