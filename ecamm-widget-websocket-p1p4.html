@@ -65,9 +65,9 @@
         /* Carton avec dégradé ANIMÉ LENT à 3 couleurs */
         .content-box {
             background: linear-gradient(135deg, 
-                rgba(102, 126, 234, 0.95) 0%, 
-                rgba(118, 75, 162, 0.95) 50%, 
-                rgba(88, 101, 204, 0.95) 100%);
+                rgba(82, 96, 194, 0.95) 0%, 
+                rgba(98, 55, 142, 0.95) 50%, 
+                rgba(68, 81, 174, 0.95) 100%);
             background-size: 400% 400%;
             animation: gradientShift 35s ease infinite;
             border-radius: 30px;
@@ -901,16 +901,24 @@
             });
             threeRenderer.setSize(width, height);
             threeRenderer.setPixelRatio(window.devicePixelRatio);
+            threeRenderer.shadowMap.enabled = true;
+            threeRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-            // Lumières
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            // Lumières améliorées pour le volume 3D
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
             threeScene.add(ambientLight);
 
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
             directionalLight.position.set(10, 10, 10);
+            directionalLight.castShadow = true;
             threeScene.add(directionalLight);
 
-            const pointLight = new THREE.PointLight(0x34C759, 1, 50);
+            // Lumière latérale pour accentuer la profondeur
+            const sideLight = new THREE.DirectionalLight(0xffffff, 0.4);
+            sideLight.position.set(-10, 5, 5);
+            threeScene.add(sideLight);
+
+            const pointLight = new THREE.PointLight(0x34C759, 1.2, 50);
             pointLight.position.set(0, 5, 5);
             threeScene.add(pointLight);
 
@@ -936,11 +944,12 @@
                 points.push(new THREE.Vector3(x, y, z));
             });
 
-            // LIGNE ÉPAISSE SIMPLE qui marche - Style carré
+            // LIGNE ÉPAISSE SIMPLE avec meilleur rendu
             const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
             const lineMaterial = new THREE.LineBasicMaterial({
                 color: 0x34C759,
-                linewidth: 8 // Épais
+                linewidth: 12, // Plus épais
+                transparent: false
             });
             
             chartCurve = new THREE.Line(lineGeometry, lineMaterial);
@@ -955,7 +964,7 @@
                 animateLineConstruction(points.length);
             }, 100);
 
-            // Surface sous la courbe
+            // FORME VOLUMÉTRIQUE 3D avec ExtrudeGeometry pour profondeur
             const surfacePoints = [...points];
             surfacePoints.push(new THREE.Vector3(points[points.length - 1].x, -5, 0));
             surfacePoints.push(new THREE.Vector3(points[0].x, -5, 0));
@@ -966,16 +975,32 @@
                 surfaceShape.lineTo(surfacePoints[i].x, surfacePoints[i].y);
             }
 
-            const surfaceGeometry = new THREE.ShapeGeometry(surfaceShape);
-            const surfaceMaterial = new THREE.MeshBasicMaterial({
-                color: 0x34C759,
+            // Extrusion pour donner du VOLUME et de la PROFONDEUR
+            const extrudeSettings = {
+                depth: 2.5,          // Profondeur importante
+                bevelEnabled: true,
+                bevelThickness: 0.3,
+                bevelSize: 0.3,
+                bevelSegments: 5
+            };
+
+            const extrudeGeometry = new THREE.ExtrudeGeometry(surfaceShape, extrudeSettings);
+            
+            // Matériau avec ombres pour mettre en valeur le volume
+            const volumeMaterial = new THREE.MeshPhongMaterial({
+                color: 0x888888,      // Gris
                 transparent: true,
-                opacity: 0.15,
-                side: THREE.DoubleSide
+                opacity: 0.25,        // Semi-transparent
+                side: THREE.DoubleSide,
+                shininess: 30,
+                specular: 0x222222
             });
 
-            const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
-            threeScene.add(surface);
+            const volumeShape = new THREE.Mesh(extrudeGeometry, volumeMaterial);
+            volumeShape.position.z = -1.25; // Centrer la profondeur
+            volumeShape.castShadow = true;
+            volumeShape.receiveShadow = true;
+            threeScene.add(volumeShape);
 
             // POINTS RETIRÉS - Pas de spheres
 
