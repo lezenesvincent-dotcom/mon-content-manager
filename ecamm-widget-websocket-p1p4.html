@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 9.0 - Style CARRÉ (lignes droites), SANS points, construction 2s puis rotation flottante gauche - 4 nov 2025 16:30 -->
+    <!-- Version 9.1 - Labels 150px ÉNORMES, Rectangles plats (pas tubes), Construction segment par segment FIABLE - 4 nov 2025 17:00 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -937,43 +937,47 @@
                 points.push(new THREE.Vector3(x, y, z));
             });
 
-            // Style CARRÉ - Lignes droites connectées (pas de courbe lisse)
-            // On utilise directement les points sans CatmullRom
+            // STYLE CARRÉ - Rectangles plats au lieu de tubes ronds
+            const lineSegments = new THREE.Group();
             
-            // Créer un tube le long des segments droits
-            const path = new THREE.CurvePath();
             for (let i = 0; i < points.length - 1; i++) {
-                path.add(new THREE.LineCurve3(points[i], points[i + 1]));
+                const start = points[i];
+                const end = points[i + 1];
+                
+                // Calculer la direction et la longueur
+                const direction = new THREE.Vector3().subVectors(end, start);
+                const length = direction.length();
+                const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+                
+                // Créer un rectangle plat (style Keynote)
+                const segmentGeometry = new THREE.PlaneGeometry(length, 0.5); // Largeur 0.5
+                const segmentMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x34C759,
+                    emissive: 0x30D158,
+                    emissiveIntensity: 0.3,
+                    side: THREE.DoubleSide
+                });
+                
+                const segment = new THREE.Mesh(segmentGeometry, segmentMaterial);
+                
+                // Positionner et orienter le segment
+                segment.position.copy(midpoint);
+                segment.lookAt(end);
+                segment.rotateZ(Math.PI / 2); // Tourner pour être horizontal
+                
+                // Marquer comme invisible au départ
+                segment.visible = false;
+                segment.userData.segmentIndex = i;
+                
+                lineSegments.add(segment);
             }
-
-            // Créer un tube volumétrique ÉPAIS
-            const tubeGeometry = new THREE.TubeGeometry(
-                path,
-                points.length * 10, // Plus de segments pour smoothness
-                0.35, // Plus épais
-                16,
-                false
-            );
-
-            const tubeMaterial = new THREE.MeshPhongMaterial({
-                color: 0x34C759,
-                emissive: 0x30D158,
-                emissiveIntensity: 0.4,
-                shininess: 100,
-                specular: 0x88FFAA
-            });
-
-            chartCurve = new THREE.Mesh(tubeGeometry, tubeMaterial);
             
-            // Construction progressive : masquer au départ
-            const totalVertices = tubeGeometry.attributes.position.count;
-            chartCurve.geometry.setDrawRange(0, 0);
-            
+            chartCurve = lineSegments;
             threeScene.add(chartCurve);
 
-            // Animation : construction en 2 secondes
+            // Animation : construction segment par segment
             setTimeout(() => {
-                animateLineDrawing(totalVertices);
+                animateLineConstruction();
             }, 100);
 
             // Surface sous la courbe
@@ -1007,57 +1011,62 @@
             updateStats(data);
         }
 
-        function animateLineDrawing(totalVertices) {
-            if (drawProgress < 1) {
-                drawProgress += 0.025; // 2 secondes (1/0.025 = 40 frames à 60fps ≈ 2s)
-                if (chartCurve) {
-                    const vertexCount = Math.floor(totalVertices * drawProgress);
-                    chartCurve.geometry.setDrawRange(0, vertexCount);
-                }
-                requestAnimationFrame(() => animateLineDrawing(totalVertices));
+        let segmentIndex = 0;
+        const totalSegments = 12; // Nombre de segments dans la courbe
+
+        function animateLineConstruction() {
+            if (segmentIndex < chartCurve.children.length) {
+                // Afficher le segment actuel
+                chartCurve.children[segmentIndex].visible = true;
+                segmentIndex++;
+                
+                // Continuer toutes les 150ms (2s total pour ~13 segments)
+                setTimeout(() => {
+                    animateLineConstruction();
+                }, 150);
             }
         }
 
         function addAxisLabels(data, points, minValue, maxValue) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
-            canvas.width = 256;
-            canvas.height = 128;
+            canvas.width = 1024;
+            canvas.height = 512;
 
-            // Labels des mois
+            // Labels des mois (ÉNORMES)
             data.forEach((point, i) => {
                 if (i % 2 === 0) {
-                    context.clearRect(0, 0, 256, 128);
+                    context.clearRect(0, 0, 1024, 512);
                     context.fillStyle = 'white';
-                    context.font = 'Bold 48px Arial';
+                    context.font = 'Bold 150px Arial';
                     context.textAlign = 'center';
-                    context.fillText(point.label, 128, 80);
+                    context.fillText(point.label, 512, 300);
 
                     const texture = new THREE.CanvasTexture(canvas);
                     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
                     const sprite = new THREE.Sprite(spriteMaterial);
-                    sprite.position.set(points[i].x, -6, 0);
-                    sprite.scale.set(1.5, 0.75, 1);
+                    sprite.position.set(points[i].x, -6.5, 0);
+                    sprite.scale.set(4, 2, 1);
                     threeScene.add(sprite);
                 }
             });
 
-            // Labels des prix
+            // Labels des prix (ÉNORMES)
             for (let i = 0; i <= 4; i++) {
                 const value = minValue + (maxValue - minValue) * (i / 4);
                 const y = -5 + (10 * i / 4);
 
-                context.clearRect(0, 0, 256, 128);
+                context.clearRect(0, 0, 1024, 512);
                 context.fillStyle = 'white';
-                context.font = 'Bold 48px Arial';
+                context.font = 'Bold 150px Arial';
                 context.textAlign = 'right';
-                context.fillText('€' + value.toFixed(0), 220, 80);
+                context.fillText('€' + value.toFixed(0), 900, 300);
 
                 const texture = new THREE.CanvasTexture(canvas);
                 const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
                 const sprite = new THREE.Sprite(spriteMaterial);
-                sprite.position.set(-7.5, y, 0);
-                sprite.scale.set(1.5, 0.75, 1);
+                sprite.position.set(-9, y, 0);
+                sprite.scale.set(4, 2, 1);
                 threeScene.add(sprite);
             }
         }
