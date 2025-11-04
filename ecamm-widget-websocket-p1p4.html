@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 9.1 - Labels 150px ÉNORMES, Rectangles plats (pas tubes), Construction segment par segment FIABLE - 4 nov 2025 17:00 -->
+    <!-- Version 9.2 - ALIGNEMENT GAUCHE FORCÉ (width: 65%), Labels 150px, Rectangles plats, Construction segment fiable - 4 nov 2025 17:15 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -526,12 +526,12 @@
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
+            width: 65%; /* FORCÉ à 65% à gauche */
+            height: 100%;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.8s ease;
-            padding: 0; /* Pas de padding - graphique plein écran */
+            padding: 0 0 0 50px; /* Padding uniquement à gauche */
             display: flex;
             flex-direction: column;
         }
@@ -553,12 +553,11 @@
             display: none;
         }
 
-        /* Stats EN DESSOUS de la boxe graphique */
+        /* Stats EN DESSOUS de la boxe graphique - ALIGNÉES À GAUCHE */
         .chart-stats {
             position: absolute;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 50px; /* Aligné à gauche comme le graphique */
             display: flex;
             gap: 60px;
             z-index: 10;
