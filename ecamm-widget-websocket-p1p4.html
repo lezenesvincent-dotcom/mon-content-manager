@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 7.1 - Graph agrandi, police agrandie, construction progressive, perspective H uniquement 30°/30s, lignes niveau épaisses, mat, ligne affinée, alignement gauche - 4 nov 2025 11:30 -->
+    <!-- Version 7.2 - Construction VRAIE progressive (setDrawRange), effet 3D Lambert, lignes mesh épaisses, labels 110px, aligné gauche forcé, PAS de rotateX - 4 nov 2025 15:00 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -525,13 +525,13 @@
         .stock-chart-container {
             position: absolute;
             top: 0;
-            left: 0; /* Alignement gauche */
-            width: 70%; /* Largeur réduite pour alignement gauche */
+            left: 0;
+            right: 30%; /* Espace à droite pour alignement gauche */
             height: 100%;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.8s ease;
-            padding: 40px 50px;
+            padding: 40px 20px 40px 50px; /* Plus de padding à gauche */
         }
 
         .stock-chart-container.active {
@@ -932,29 +932,34 @@
             curve.curveType = 'catmullrom';
             curve.tension = 0.5;
 
-            // Créer un tube volumétrique PLUS FIN et MAT
+            // Créer un tube FIN avec effet 3D subtil
             const tubeGeometry = new THREE.TubeGeometry(
                 curve,
                 200,
-                0.15, // Réduit de 0.25 à 0.15
+                0.12, // Très fin
                 32,
                 false
             );
 
-            // Matériau MAT sans effet glossy
-            const tubeMaterial = new THREE.MeshBasicMaterial({
+            // Matériau avec effet 3D subtil (pas glossy mais pas complètement plat)
+            const tubeMaterial = new THREE.MeshLambertMaterial({
                 color: 0x34C759,
-                transparent: false
+                emissive: 0x1a6b2d,
+                emissiveIntensity: 0.2
             });
 
             chartCurve = new THREE.Mesh(tubeGeometry, tubeMaterial);
+            
+            // Construction progressive: on commence par ne rien dessiner
+            const totalVertices = tubeGeometry.attributes.position.count;
+            chartCurve.geometry.setDrawRange(0, 0);
+            
             threeScene.add(chartCurve);
 
-            // Construction progressive de la ligne
-            chartCurve.scale.x = 0;
+            // Démarrer l'animation de construction
             setTimeout(() => {
-                animateLineDrawing();
-            }, 1000); // Démarre après le fade-in
+                animateLineDrawing(totalVertices);
+            }, 1000);
 
             // Surface sous la courbe
             const surfacePoints = [...points];
@@ -978,81 +983,82 @@
             const surface = new THREE.Mesh(surfaceGeometry, surfaceMaterial);
             threeScene.add(surface);
 
-            // LIGNES HORIZONTALES DE NIVEAU ÉPAISSES
-            const gridMaterial = new THREE.LineBasicMaterial({
-                color: 0xffffff,
-                transparent: true,
-                opacity: 0.25, // Plus visible
-                linewidth: 3 // Plus épais (note: peut ne pas fonctionner sur tous les navigateurs)
-            });
-
+            // LIGNES HORIZONTALES VRAIMENT ÉPAISSES - Méthode mesh
             for (let i = 0; i <= 4; i++) {
                 const y = -5 + (10 * i / 4);
-                const gridGeometry = new THREE.BufferGeometry().setFromPoints([
-                    new THREE.Vector3(-7, y, 0),
-                    new THREE.Vector3(7, y, 0)
-                ]);
-                const gridLine = new THREE.Line(gridGeometry, gridMaterial);
-                threeScene.add(gridLine);
+                
+                // Créer un rectangle plat très fin pour simuler une ligne épaisse
+                const lineGeometry = new THREE.PlaneGeometry(14, 0.08); // 14 unités de large, 0.08 d'épaisseur
+                const lineMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.5, // Bien visible
+                    side: THREE.DoubleSide
+                });
+                
+                const thickLine = new THREE.Mesh(lineGeometry, lineMaterial);
+                thickLine.position.set(0, y, -0.1); // Légèrement en arrière
+                threeScene.add(thickLine);
             }
 
-            // Labels des axes (AGRANDIS)
+            // Labels des axes
             addAxisLabels(data, points, minValue, maxValue);
 
             // Stats
             updateStats(data);
         }
 
-        function animateLineDrawing() {
+        function animateLineDrawing(totalVertices) {
             if (drawProgress < 1) {
-                drawProgress += 0.008; // Ralenti pour construction plus visible
+                drawProgress += 0.006; // Vitesse modérée
                 if (chartCurve) {
-                    chartCurve.scale.x = Math.min(drawProgress, 1);
+                    const vertexCount = Math.floor(totalVertices * drawProgress);
+                    chartCurve.geometry.setDrawRange(0, vertexCount);
                 }
-                requestAnimationFrame(animateLineDrawing);
+                requestAnimationFrame(() => animateLineDrawing(totalVertices));
             }
         }
 
         function addAxisLabels(data, points, minValue, maxValue) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
-            canvas.width = 640;
-            canvas.height = 320;
+            canvas.width = 768;
+            canvas.height = 384;
 
-            // Labels des mois (ENCORE PLUS GRANDS)
+            // Labels des mois (ÉNORMES)
             data.forEach((point, i) => {
                 if (i % 2 === 0) {
-                    context.clearRect(0, 0, 640, 320);
+                    context.clearRect(0, 0, 768, 384);
                     context.fillStyle = 'white';
-                    context.font = 'Bold 90px Arial';
+                    context.font = 'Bold 110px Arial';
                     context.textAlign = 'center';
-                    context.fillText(point.label, 320, 190);
+                    context.fillText(point.label, 384, 230);
 
                     const texture = new THREE.CanvasTexture(canvas);
                     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
                     const sprite = new THREE.Sprite(spriteMaterial);
                     sprite.position.set(points[i].x, -6.5, 0);
-                    sprite.scale.set(2.5, 1.25, 1);
+                    sprite.scale.set(3, 1.5, 1);
                     threeScene.add(sprite);
                 }
             });
 
-            // Labels des prix (ENCORE PLUS GRANDS)
+            // Labels des prix (ÉNORMES)
             for (let i = 0; i <= 4; i++) {
                 const value = minValue + (maxValue - minValue) * (i / 4);
                 const y = -5 + (10 * i / 4);
 
-                context.clearRect(0, 0, 640, 320);
+                context.clearRect(0, 0, 768, 384);
                 context.fillStyle = 'white';
-                context.font = 'Bold 90px Arial';
+                context.font = 'Bold 110px Arial';
                 context.textAlign = 'right';
-                context.fillText('€' + value.toFixed(0), 580, 190);
+                context.fillText('€' + value.toFixed(0), 700, 230);
 
                 const texture = new THREE.CanvasTexture(canvas);
                 const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
                 const sprite = new THREE.Sprite(spriteMaterial);
                 sprite.position.set(-8.5, y, 0);
-                sprite.scale.set(2.5, 1.25, 1);
+                sprite.scale.set(3, 1.5, 1);
                 threeScene.add(sprite);
             }
         }
