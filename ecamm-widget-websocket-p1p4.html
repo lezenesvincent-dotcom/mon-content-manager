@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 9.2 - ALIGNEMENT GAUCHE FORCÉ (width: 65%), Labels 150px, Rectangles plats, Construction segment fiable - 4 nov 2025 17:15 -->
+    <!-- Version 9.3 - Ligne simple épaisse (LineBasicMaterial), Caméra décalée gauche, Construction setDrawRange fiable - 4 nov 2025 17:30 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -888,10 +888,10 @@
             threeScene = new THREE.Scene();
             threeScene.background = null;
 
-            // Camera
+            // Camera - Décalée à GAUCHE pour alignement
             threeCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-            threeCamera.position.set(0, 5, 15);
-            threeCamera.lookAt(0, 0, 0);
+            threeCamera.position.set(-4, 5, 15); // Décalé à gauche (-4 au lieu de 0)
+            threeCamera.lookAt(-2, 0, 0); // Regarde aussi à gauche
 
             // Renderer
             threeRenderer = new THREE.WebGLRenderer({ 
@@ -936,47 +936,23 @@
                 points.push(new THREE.Vector3(x, y, z));
             });
 
-            // STYLE CARRÉ - Rectangles plats au lieu de tubes ronds
-            const lineSegments = new THREE.Group();
+            // LIGNE ÉPAISSE SIMPLE qui marche - Style carré
+            const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+            const lineMaterial = new THREE.LineBasicMaterial({
+                color: 0x34C759,
+                linewidth: 8 // Épais
+            });
             
-            for (let i = 0; i < points.length - 1; i++) {
-                const start = points[i];
-                const end = points[i + 1];
-                
-                // Calculer la direction et la longueur
-                const direction = new THREE.Vector3().subVectors(end, start);
-                const length = direction.length();
-                const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-                
-                // Créer un rectangle plat (style Keynote)
-                const segmentGeometry = new THREE.PlaneGeometry(length, 0.5); // Largeur 0.5
-                const segmentMaterial = new THREE.MeshPhongMaterial({
-                    color: 0x34C759,
-                    emissive: 0x30D158,
-                    emissiveIntensity: 0.3,
-                    side: THREE.DoubleSide
-                });
-                
-                const segment = new THREE.Mesh(segmentGeometry, segmentMaterial);
-                
-                // Positionner et orienter le segment
-                segment.position.copy(midpoint);
-                segment.lookAt(end);
-                segment.rotateZ(Math.PI / 2); // Tourner pour être horizontal
-                
-                // Marquer comme invisible au départ
-                segment.visible = false;
-                segment.userData.segmentIndex = i;
-                
-                lineSegments.add(segment);
-            }
+            chartCurve = new THREE.Line(lineGeometry, lineMaterial);
             
-            chartCurve = lineSegments;
+            // Masquer au départ pour construction progressive
+            chartCurve.geometry.setDrawRange(0, 0);
+            
             threeScene.add(chartCurve);
 
-            // Animation : construction segment par segment
+            // Animation : construction progressive
             setTimeout(() => {
-                animateLineConstruction();
+                animateLineConstruction(points.length);
             }, 100);
 
             // Surface sous la courbe
@@ -1010,19 +986,19 @@
             updateStats(data);
         }
 
-        let segmentIndex = 0;
-        const totalSegments = 12; // Nombre de segments dans la courbe
+        let constructionProgress = 0;
 
-        function animateLineConstruction() {
-            if (segmentIndex < chartCurve.children.length) {
-                // Afficher le segment actuel
-                chartCurve.children[segmentIndex].visible = true;
-                segmentIndex++;
+        function animateLineConstruction(totalPoints) {
+            if (constructionProgress < totalPoints) {
+                constructionProgress++;
+                if (chartCurve && chartCurve.geometry) {
+                    chartCurve.geometry.setDrawRange(0, constructionProgress);
+                }
                 
-                // Continuer toutes les 150ms (2s total pour ~13 segments)
+                // 2 secondes pour tout construire
                 setTimeout(() => {
-                    animateLineConstruction();
-                }, 150);
+                    animateLineConstruction(totalPoints);
+                }, 2000 / totalPoints);
             }
         }
 
