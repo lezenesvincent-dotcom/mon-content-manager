@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Management Interface - P1-P4 System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #1a1a2e;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #16213e;
+            border-bottom: 1px solid #0f3460;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 20px;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #8b92a8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            background: #1a1a2e;
+        }
+
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .tab-button.active::after {
+            transform: scaleX(1);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.4s ease-out;
+            background: #1a1a2e;
+            color: #e4e4e4;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e4e4e4;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #0f3460;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #16213e;
+            color: #e4e4e4;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .template-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .template-id {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-width: 150px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .progress-container {
+            display: none;
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 50%, #4facfe 100%);
+            background-size: 200% 100%;
+            animation: progressShine 1.5s ease-in-out infinite;
+            border-radius: 10px;
+            transition: width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.5);
+        }
+
+        @keyframes progressShine {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .success-checkmark {
+            display: none;
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .success-checkmark.show {
+            display: block;
+            animation: scaleInBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes scaleInBounce {
+            0% {
+                transform: scale(0) rotate(-45deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(5deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 4;
+            stroke: #28a745;
+            fill: #d4edda;
+            animation: strokeCircle 0.8s ease-out forwards;
+        }
+
+        @keyframes strokeCircle {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke: #28a745;
+            stroke-width: 4;
+            fill: none;
+            animation: strokeCheck 0.5s 0.8s ease-out forwards;
+        }
+
+        @keyframes strokeCheck {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .field-hint {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .required::after {
+            content: ' *';
+            color: #e74c3c;
+        }
+
+        .char-counter {
+            font-size: 0.85rem;
+            color: #6c757d;
+            text-align: right;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .char-counter.warning {
+            color: #ffa500;
+            font-weight: 600;
+        }
+
+        .char-counter.error {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        .p-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .p-section:hover {
+            border-color: #4facfe;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.1);
+        }
+
+        .p-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .p-section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .p-badge {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .p-description {
+            color: #6c757d;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .line-info {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #495057;
+            font-weight: 600;
+            border: 1px solid #dee2e6;
+        }
+
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10000;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .toast-notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-notification.success {
+            border-left: 4px solid #28a745;
+        }
+
+        .toast-notification.error {
+            border-left: 4px solid #dc3545;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .toast-icon.success {
+            background: #d4edda;
+            color: #28a745;
+        }
+
+        .toast-icon.error {
+            background: #f8d7da;
+            color: #dc3545;
+        }
+
+        .toast-message {
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        /* Responsive : 2 colonnes sur tablette */
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Responsive : 1 colonne sur mobile */
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .content-card {
+            background: linear-gradient(135deg, #7b68ee 0%, #a78bfa 100%);
+            border-radius: 25px;
+            padding: 35px 25px 25px 25px;
+            box-shadow: 0 10px 40px rgba(123, 104, 238, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            aspect-ratio: 1.4 / 1;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(123, 104, 238, 0.4);
+        }
+
+        /* Animation de respiration pour le contenu online */
+        .content-card.online {
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                box-shadow: 0 10px 40px rgba(123, 104, 238, 0.3);
+            }
+            50% {
+                box-shadow: 0 10px 60px rgba(123, 104, 238, 0.6), 0 0 30px rgba(167, 139, 250, 0.5);
+            }
+        }
+
+        /* Fusée au-dessus du titre */
+        .content-card::before {
+            content: '🚀';
+            font-size: 50px;
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .content-card h4 {
+            color: #ffffff;
+            font-size: 2rem;
+            margin-top: 70px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .content-card h5 {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            font-weight: 400;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Supprimer les anciennes classes */
+        .p-preview,
+        .p-preview-label,
+        .p-preview-line {
+            display: none;
+        }
+
+        .content-meta {
+            display: none;
+        }
+
+        .timestamp {
+            display: none;
+        }
+
+        .online-badge {
+            display: none;
+        }
+
+        /* Boutons en bas */
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .btn-edit, .btn-hide, .btn-next {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-edit:hover, .btn-hide:hover, .btn-next:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .btn-next {
+            background: rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-next:hover {
+            background: rgba(76, 175, 80, 0.45);
+        }
+
+        /* Bouton de suppression (croix en haut à droite) - GRIS */
+        .btn-delete-corner {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(150, 150, 150, 0.8);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-delete-corner:hover {
+            background: rgba(100, 100, 100, 0.9);
+            transform: scale(1.05);
+        }
+
+        /* Masquer les anciens boutons */
+        .btn-send {
+            display: none;
+        }
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 165, 0, 0.3);
+        }
+
+        /* Modal Styles - CORRIGÉ POUR AFFICHAGE AU-DESSUS */
+        .modal-overlay {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 999999 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            opacity: 0;
+            pointer-events: none;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1000000 !important;
+            transform: translateY(30px);
+            transition: transform 0.3s ease-out;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        @keyframes slideUpModal {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: #f8f9fa;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #e9ecef;
+            color: #333;
+            transform: rotate(90deg);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .btn-update {
+            flex: 1;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-duplicate {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-duplicate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-cancel {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 15px 30px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #e9ecef;
+            border-color: #4facfe;
+            color: #4facfe;
+        }
+
+        .edit-icon {
+            font-size: 1.2rem;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .timestamp {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b92a8;
+        }
+
+        .empty-state h4 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #e4e4e4;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: #b8c1ec;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 12px 24px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #4facfe;
+            color: #4facfe;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                padding: 15px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 style="text-align: center; width: 100%; font-size: 2.5rem; letter-spacing: 2px;">MANAGE</h1>
+                <div style="display: flex; gap: 10px; position: absolute; right: 30px;">
+                    <a href="content-manager-websocket.html" style="padding: 12px 24px; background: rgba(255,255,255,0.25); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s;">
+                        🚀 Création
+                    </a>
+                    <a href="content-management-p1-p4.html" style="padding: 12px 24px; background: white; color: #7b68ee; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        📝 Manage
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'manage')">Manage</button>
+        </div>
+
+        <div id="create" class="tab-content" style="display: none;">
+            <form id="contentForm">
+                <div class="template-info">
+                    <h3>Overlay Configuration</h3>
+                    <p>Template ID: <span class="template-id">4fLVHu7eHUBPzBuFJ7mXWH</span></p>
+                    <p class="field-hint">8 lines available on overlay (80 characters max per line)</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="title" class="required">Content Title</label>
+                    <input type="text" id="title" name="title" required 
+                           placeholder="Enter a title for this content set">
+                    <div class="field-hint">Main identifier for this content</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="subtitle" class="required">Subtitle</label>
+                    <input type="text" id="subtitle" name="subtitle" required 
+                           placeholder="Enter a subtitle">
+                    <div class="field-hint">Additional description for this content</div>
+                </div>
+
+                <!-- P1 Section: Lines 1-2 -->
+                <div class="p-section">
+                    <div class="p-section-header">
+                        <div class="p-section-title">
+                            <span class="p-badge">P1</span>
+                            <span class="p-description">Lines 1-2 of overlay</span>
+                        </div>
+                        <span class="line-info">📍 Overlay Lines 1-2</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="p1_line1" class="required">Line 1</label>
+                        <textarea id="p1_line1" name="p1_line1" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="First line content (max 80 characters)"></textarea>
+                        <div class="char-counter" id="counter_p1_line1">0 / 80 characters</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p1_line2" class="required">Line 2</label>
+                        <textarea id="p1_line2" name="p1_line2" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Second line content (max 80 characters)"></textarea>
+                        <div class="char-counter" id="counter_p1_line2">0 / 80 characters</div>
+                    </div>
+                </div>
+
+                <!-- P2 Section: Lines 3-4 -->
+                <div class="p-section">
+                    <div class="p-section-header">
+                        <div class="p-section-title">
+                            <span class="p-badge">P2</span>
+                            <span class="p-description">Lines 3-4 of overlay</span>
+                        </div>
+                        <span class="line-info">📍 Overlay Lines 3-4</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="p2_line3" class="required">Line 3</label>
+                        <textarea id="p2_line3" name="p2_line3" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Third line content (max 80 characters)"></textarea>
+                        <div class="char-counter" id="counter_p2_line3">0 / 80 characters</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p2_line4" class="required">Line 4</label>
+                        <textarea id="p2_line4" name="p2_line4" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Fourth line content (max 80 characters)"></textarea>
+                        <div class="char-counter" id="counter_p2_line4">0 / 80 characters</div>
+                    </div>
+                </div>
+
+                <!-- P3 Section: Lines 5-6 -->
+                <div class="p-section">
+                    <div class="p-section-header">
+                        <div class="p-section-title">
+                            <span class="p-badge">P3</span>
+                            <span class="p-description">Lines 5-6 of overlay</span>
+                        </div>
+                        <span class="line-info">📍 Overlay Lines 5-6</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="p3_line5" class="required">Line 5</label>
+                        <textarea id="p3_line5" name="p3_line5" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Fifth line content (max 80 characters)"></textarea>
+                        <div class="char-counter" id="counter_p3_line5">0 / 80 characters</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p3_line6" class="required">Line 6</label>
+                        <textarea id="p3_line6" name="p3_line6" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Sixth line content (max 80 characters)"></textarea>
+                        <div class="char-counter" id="counter_p3_line6">0 / 80 characters</div>
+                    </div>
+                </div>
+
+                <!-- P4 Section: Lines 7-8 -->
+                <div class="p-section">
+                    <div class="p-section-header">
+                        <div class="p-section-title">
+                            <span class="p-badge">P4</span>
+                            <span class="p-description">Lines 7-8 of overlay</span>
+                        </div>
+                        <span class="line-info">📍 Overlay Lines 7-8</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="p4_line7" class="required">Line 7</label>
+                        <textarea id="p4_line7" name="p4_line7" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Seventh line content (max 80 characters)"></textarea>
+                        <div class="char-counter" id="counter_p4_line7">0 / 80 characters</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p4_line8" class="required">Line 8</label>
+                        <textarea id="p4_line8" name="p4_line8" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Eighth line content (max 80 characters)"></textarea>
+                        <div class="char-counter" id="counter_p4_line8">0 / 80 characters</div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    💾 Save Content
+                </button>
+
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+
+                <div class="success-checkmark">
+                    <svg width="100" height="100" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25"/>
+                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    </svg>
+                </div>
+            </form>
+        </div>
+
+        <div id="manage" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px;">
+                <div>
+                    <h3 style="margin: 0 0 5px 0;">Gestion des Overlays</h3>
+                    <p style="margin: 0; color: #8b92a8; font-size: 0.95rem;">Visualisez et envoyez vos contenus à l'overlay</p>
+                </div>
+                <div id="wsStatusIndicator" style="padding: 12px 20px; background: #ffc107; color: #000; border-radius: 10px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.3s ease, color 0.3s ease;">
+                    🔄 Connexion...
+                </div>
+            </div>
+            
+            <div style="background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                <p style="margin: 0; color: #b8c1ec;">💡 <strong>Synchronisation automatique active :</strong> Les données se synchronisent depuis la page "Création" toutes les 3 secondes</p>
+            </div>
+            
+            <!-- Bouton pour vider l'historique -->
+            <div style="margin-bottom: 20px; text-align: right;">
+                <button onclick="clearAllHistory()" class="btn-secondary" style="background: #dc3545; color: white; border-color: #dc3545;">
+                    🗑️ Vider tout l'historique
+                </button>
+            </div>
+            
+            <div id="contentList" class="content-grid">
+                <!-- Content cards will be populated here -->
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                <h4>📭 Aucun contenu disponible</h4>
+                <p>Utilisez la page "🚀 Création" pour créer du contenu.</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">
+                    Le contenu créé dans "Création" apparaîtra ici automatiquement<br>
+                    (synchronisation toutes les 3 secondes)
+                </p>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; border: 1px solid rgba(255, 193, 7, 0.3);">
+                    <p style="font-size: 0.9rem; color: #ffc107;">
+                        💡 <strong>Vérifiez :</strong><br>
+                        • Le serveur WebSocket est-il accessible ?<br>
+                        • Avez-vous créé du contenu dans la page Création ?<br>
+                        • Ouvrez la console (F12) pour voir les logs de connexion
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <h3>Settings & Configuration</h3>
+            
+            <!-- GitHub Gist Sync -->
+            <div style="background: #e3f2fd; padding: 30px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #2196f3;">
+                <h4 style="margin-bottom: 15px; color: #1565c0;">🔄 GitHub Gist Sync (ACTIVÉ)</h4>
+                <p style="color: #1565c0; margin-bottom: 15px; font-weight: 600;">
+                    Synchronisation automatique en temps réel entre tous vos ordinateurs !
+                </p>
+                
+                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; margin-bottom: 15px;">
+                        <strong>✅ Token jamais sur GitHub - 100% sécurisé !</strong>
+                        <p style="margin: 10px 0 0 0; color: #495057;">
+                            Le token est stocké uniquement dans votre navigateur (localStorage).<br>
+                            Il n'est JAMAIS visible sur GitHub → GitHub ne peut pas le révoquer !
+                        </p>
+                    </div>
+                    
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
+                        <strong>📝 Configuration rapide :</strong>
+                        <ol style="margin: 10px 0 0 20px; color: #495057; line-height: 1.8;">
+                            <li><strong>Première utilisation :</strong>
+                                <ul style="margin-left: 20px;">
+                                    <li>Au premier lancement, une popup demande votre token GitHub</li>
+                                    <li>Créez un token sur <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a></li>
+                                    <li>Scope requis : <strong>"gist"</strong> uniquement</li>
+                                    <li>Collez le token dans la popup</li>
+                                    <li>✅ C'est tout ! Le token est sauvegardé localement</li>
+                                </ul>
+                            </li>
+                            <li><strong>Sur vos autres PC :</strong>
+                                <ul style="margin-left: 20px;">
+                                    <li>Ouvrez le site</li>
+                                    <li>Entrez le même token quand demandé</li>
+                                    <li>✅ Synchronisation automatique activée !</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3;">
+                        <strong>✨ Avantages :</strong>
+                        <ul style="margin: 10px 0 0 20px; color: #495057;">
+                            <li><strong>Sync automatique :</strong> Toutes les 60 secondes entre tous les PC</li>
+                            <li><strong>Sécurisé :</strong> Token jamais visible sur GitHub</li>
+                            <li><strong>Simple :</strong> Entrez le token une seule fois par PC</li>
+                            <li><strong>Temps réel :</strong> Créer du contenu sur PC1, il apparaît sur PC2</li>
+                            <li><strong>Gratuit :</strong> GitHub Gist est 100% gratuit</li>
+                        </ul>
+                    </div>
+                    
+                    <div id="gistStatus" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <strong>État actuel :</strong> 
+                        <span id="gistStatusText" style="color: #dc3545; font-weight: 600;">❌ Non configuré</span>
+                    </div>
+                    
+                    <button onclick="promptForToken()" class="btn-primary" style="width: 100%; margin-top: 15px;">
+                        🔑 Configurer / Changer le token
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Embedded Database Info -->
+            <div style="background: #d4edda; padding: 30px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #28a745;">
+                <h4 style="margin-bottom: 15px; color: #155724;">✅ Embedded Shared Database (Méthode manuelle)</h4>
+                <p style="color: #155724; margin-bottom: 15px; font-weight: 600;">
+                    Data is stored directly in the HTML file - No external services needed!
+                </p>
+                
+                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                    
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3; margin-bottom: 15px;">
+                        <strong>🚀 How to share content across machines:</strong>
+                        <ol style="margin: 10px 0 0 20px; color: #495057; line-height: 1.8;">
+                            <li>Create/edit content on any machine</li>
+                            <li>Click the <strong>"📥 EXPORT DATA"</strong> button below</li>
+                            <li>The data will be copied to your clipboard and logged to console</li>
+                            <li>Open the HTML file in a text editor</li>
+                            <li>Find the section: <code>const DEFAULT_CONTENT_STORE = [</code></li>
+                            <li>Paste your data array between the brackets</li>
+                            <li>Save the file and push to GitHub</li>
+                            <li>🎉 All machines loading this page will see the data!</li>
+                        </ol>
+                    </div>
+                    
+                    <button onclick="exportDataToConsole()" class="btn-primary" style="width: 100%; margin-bottom: 15px;">
+                        📥 EXPORT DATA (Copy to Clipboard)
+                    </button>
+                    
+                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
+                        <strong>✅ Synchronisation multi-machines:</strong>
+                        <ul style="margin: 10px 0 0 20px; color: #495057;">
+                            <li><strong>Serveur WebSocket:</strong> Toutes les données sont sur le serveur</li>
+                            <li><strong>Synchronisation automatique:</strong> Rafraîchissement toutes les 5 secondes</li>
+                            <li><strong>Multi-machines:</strong> Accessible depuis tous vos appareils</li>
+                            <li><strong>Historique partagé:</strong> 50 contenus disponibles partout</li>
+                            <li><strong>Temps réel:</strong> Les modifications sont instantanées</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 30px; border-radius: 10px; margin-top: 20px;">
+                <div style="margin-bottom: 20px;">
+                    <p><strong>Main Template ID:</strong> <span class="template-id">4fLVHu7eHUBPzBuFJ7mXWH</span></p>
+                    <p style="margin-top: 10px; color: #6c757d; font-size: 0.9rem;">Main overlay template</p>
+                </div>
+                
+                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #4facfe;">
+                    <h4 style="margin-bottom: 15px;">Overlay Information</h4>
+                    <ul style="list-style: none; padding: 0; color: #495057;">
+                        <li style="padding: 8px 0; border-bottom: 1px solid #f8f9fa;">
+                            <strong>Overlay ID:</strong> <span class="template-id">6598bc8e-c088-43ba-a830-d24222614f4f</span>
+                        </li>
+                        <li style="padding: 8px 0;">
+                            <strong>Lines:</strong> 8 lines (80 characters each)
+                        </li>
+                    </ul>
+                </div>
+
+                <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #28a745;">
+                    <h4 style="margin-bottom: 10px;">Connection Status</h4>
+                    <p style="color: #6c757d; font-size: 0.9rem;">✅ Direct API connection active</p>
+                    <p style="color: #6c757d; font-size: 0.9rem;">✅ 8 lines available (80 chars/line)</p>
+                    <p style="color: #6c757d; font-size: 0.9rem;">✅ Embedded database active</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <span class="edit-icon">✏️</span>
+                    Quick Edit
+                </h2>
+                <button class="modal-close" onclick="closeEditModal()">×</button>
+            </div>
+            
+            <form id="editForm">
+                <input type="hidden" id="editContentId">
+                
+                <div class="form-group">
+                    <label for="editTitle" class="required">Title</label>
+                    <input type="text" id="editTitle" name="title" required 
+                           placeholder="Enter a title">
+                </div>
+
+                <div class="form-group">
+                    <label for="editSubtitle" class="required">Subtitle</label>
+                    <input type="text" id="editSubtitle" name="subtitle" required 
+                           placeholder="Enter a subtitle">
+                </div>
+
+                <!-- P1 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P1</span>
+                        <span class="p-description">Lines 1-2</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP1Line1" class="required">Line 1</label>
+                        <textarea id="editP1Line1" name="p1_line1" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="First line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p1_line1">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP1Line2" class="required">Line 2</label>
+                        <textarea id="editP1Line2" name="p1_line2" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Second line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p1_line2">0 / 80</div>
+                    </div>
+                </div>
+
+                <!-- P2 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P2</span>
+                        <span class="p-description">Lines 3-4</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP2Line3" class="required">Line 3</label>
+                        <textarea id="editP2Line3" name="p2_line3" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Third line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p2_line3">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP2Line4" class="required">Line 4</label>
+                        <textarea id="editP2Line4" name="p2_line4" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Fourth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p2_line4">0 / 80</div>
+                    </div>
+                </div>
+
+                <!-- P3 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P3</span>
+                        <span class="p-description">Lines 5-6</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP3Line5" class="required">Line 5</label>
+                        <textarea id="editP3Line5" name="p3_line5" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Fifth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p3_line5">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP3Line6" class="required">Line 6</label>
+                        <textarea id="editP3Line6" name="p3_line6" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Sixth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p3_line6">0 / 80</div>
+                    </div>
+                </div>
+
+                <!-- P4 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P4</span>
+                        <span class="p-description">Lines 7-8</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP4Line7" class="required">Line 7</label>
+                        <textarea id="editP4Line7" name="p4_line7" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Seventh line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p4_line7">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP4Line8" class="required">Line 8</label>
+                        <textarea id="editP4Line8" name="p4_line8" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Eighth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p4_line8">0 / 80</div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-duplicate" onclick="duplicateContent()">
+                        📋 Duplicate
+                    </button>
+                    <button type="submit" class="btn-update">
+                        💾 Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ===================================================================
+        // GITHUB GIST SYNC - Synchronisation automatique entre machines
+        // ===================================================================
+        // Configuration du Gist GitHub pour la synchronisation
+        const GIST_CONFIG = {
+            enabled: true, // Toujours activé
+            gistId: 'cd535a80f0ecd71bc36ce70522edfd8a', // Votre Gist ID
+            token: '', // NE JAMAIS mettre le token ici - il sera demandé au premier lancement
+            filename: 'content-store-p1p4.json',
+            autoSyncInterval: 60000 // Sync toutes les 60 secondes
+        };
+        
+        // Récupérer le token depuis localStorage
+        function getStoredToken() {
+            return localStorage.getItem('github_gist_token');
+        }
+        
+        // Sauvegarder le token dans localStorage
+        function saveToken(token) {
+            localStorage.setItem('github_gist_token', token);
+            GIST_CONFIG.token = token;
+        }
+        
+        // Demander le token à l'utilisateur
+        function promptForToken() {
+            const token = prompt(
+                '🔑 Configuration de la synchronisation\n\n' +
+                'Pour synchroniser entre vos PC, entrez votre token GitHub:\n\n' +
+                '1. Allez sur: https://github.com/settings/tokens\n' +
+                '2. Créez un token avec le scope "gist"\n' +
+                '3. Collez-le ci-dessous\n\n' +
+                'Le token sera sauvegardé localement (jamais sur GitHub).'
+            );
+            
+            if (token && token.trim()) {
+                saveToken(token.trim());
+                showStatusMessage('✅ Token configuré ! Synchronisation activée.', 'success');
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // Vérifier et initialiser le token
+        function initializeToken() {
+            const storedToken = getStoredToken();
+            
+            if (storedToken) {
+                GIST_CONFIG.token = storedToken;
+                return true;
+            }
+            
+            // Pas de token stocké, demander à l'utilisateur
+            return promptForToken();
+        }
+        
+        // Fonction pour charger les données depuis le Gist
+        async function loadFromGist() {
+            const token = getStoredToken();
+            if (!GIST_CONFIG.enabled || !GIST_CONFIG.gistId || !token) {
+                return null;
+            }
+            
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_CONFIG.gistId}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.error('Failed to load from Gist:', response.status);
+                    return null;
+                }
+                
+                const gist = await response.json();
+                const content = gist.files[GIST_CONFIG.filename]?.content;
+                
+                if (content) {
+                    const data = JSON.parse(content);
+                    console.log('✅ Loaded from GitHub Gist:', data.length, 'items');
+                    return data;
+                }
+            } catch (error) {
+                console.error('Error loading from Gist:', error);
+            }
+            
+            return null;
+        }
+        
+        // Fonction pour sauvegarder les données dans le Gist
+        async function saveToGist(data) {
+            const token = getStoredToken();
+            if (!GIST_CONFIG.enabled || !GIST_CONFIG.gistId || !token) {
+                return false;
+            }
+            
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_CONFIG.gistId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            [GIST_CONFIG.filename]: {
+                                content: JSON.stringify(data, null, 2)
+                            }
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Saved to GitHub Gist');
+                    return true;
+                }
+                
+                console.error('Failed to save to Gist:', response.status);
+            } catch (error) {
+                console.error('Error saving to Gist:', error);
+            }
+            
+            return false;
+        }
+        
+        // ===================================================================
+        // EMBEDDED SHARED DATABASE - Edit this section to share data
+        // ===================================================================
+        // To share new content across all machines:
+        // 1. Create/edit content on any machine
+        // 2. Click "📥 EXPORT DATA" button in Settings tab
+        // 3. Copy the JSON array from the console
+        // 4. Paste it in DEFAULT_CONTENT_STORE below
+        // 5. Push to GitHub
+        // 6. All machines will see the new data!
+        // ===================================================================
+        
+        const DEFAULT_CONTENT_STORE = [
+            // Paste your exported data here
+            // Example:
+            // {
+            //     "id": "1234567890",
+            //     "title": "Example Title",
+            //     "subtitle": "Example Subtitle",
+            //     "p1_line1": "Line 1",
+            //     "p1_line2": "Line 2",
+            //     ...
+            // }
+        ];
+        
+        // ===================================================================
+        
+        let contentStore = [];
+        let syncInterval = null;
+        
+        async function loadSharedData() {
+            console.log('==============================================');
+            console.log('🔄 CHARGEMENT DE L\'HISTORIQUE depuis le serveur WebSocket...');
+            console.log('==============================================');
+            
+            // Charger UNIQUEMENT depuis WebSocket - plus de localStorage ni Gist
+            const history = await loadFromWebSocket();
+            
+            console.log('📦 Historique reçu:', history);
+            
+            if (history && Array.isArray(history) && history.length > 0) {
+                // REMPLACER complètement contentStore (pas de merge)
+                contentStore = history;
+                console.log('✅ Historique chargé depuis serveur:', contentStore.length, 'éléments');
+                showStatusMessage(`✅ Synchronisé: ${contentStore.length} éléments`, 'success');
+                return contentStore;
+            } else {
+                console.log('ℹ️ Aucun historique disponible sur le serveur');
+                contentStore = [];
+                showStatusMessage('ℹ️ Aucun contenu sur le serveur', 'info');
+                return contentStore;
+            }
+        }
+        
+        function saveToLocalStorage() {
+            // ⚠️ DÉSACTIVÉ: Ne plus sauvegarder dans localStorage
+            // Les données viennent UNIQUEMENT du serveur WebSocket
+            console.log('ℹ️ localStorage save disabled - using WebSocket server only');
+        }
+        
+        function startAutoSync() {
+            // ⚠️ DÉSACTIVÉ COMPLÈTEMENT: Plus de refresh auto pour éviter d'écraser les modifications locales
+            console.log('ℹ️ Auto-refresh DISABLED - Load history manually by refreshing the page');
+            
+            // NE PLUS FAIRE DE REFRESH AUTOMATIQUE
+            // Le refresh automatique écrase les modifications locales (édition, suppression)
+            // Les données sont chargées au démarrage uniquement
+        }
+        
+        function stopAutoSync() {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+                syncInterval = null;
+                console.log('⏸️ Auto-sync disabled');
+            }
+        }
+        
+        function exportDataToConsole() {
+            console.log('===================================================================');
+            console.log('📤 COPY THIS DATA TO SHARE ACROSS ALL MACHINES:');
+            console.log('===================================================================');
+            console.log('');
+            console.log('Copy the array below and paste it in DEFAULT_CONTENT_STORE:');
+            console.log('');
+            console.log(JSON.stringify(contentStore, null, 2));
+            console.log('');
+            console.log('===================================================================');
+            console.log('Then push to GitHub to share with all machines!');
+            console.log('===================================================================');
+            
+            // Also copy to clipboard if available
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(JSON.stringify(contentStore, null, 2))
+                    .then(() => {
+                        showStatusMessage('📋 Data copied to clipboard! Paste it in DEFAULT_CONTENT_STORE in the code', 'success');
+                    })
+                    .catch(() => {
+                        showStatusMessage('💡 Data logged to console - check browser console (F12)', 'success');
+                    });
+            } else {
+                showStatusMessage('💡 Data logged to console - check browser console (F12)', 'success');
+            }
+        }
+        
+        // Plus besoin de ces constantes overlays.uno - on utilise maintenant WebSocket
+
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            
+            const tabbuttons = document.getElementsByClassName("tab-button");
+            for (let i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+
+            if (tabName === 'manage') {
+                // Reload shared data when opening Manage tab
+                loadSharedData();
+                displayContentCards();
+            }
+        }
+
+        // L'ancienne fonction sendToOverlay (overlays.uno) a été supprimée - on utilise maintenant WebSocket
+
+        function showStatusMessage(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast-notification ${type}`;
+            
+            const icon = document.createElement('div');
+            icon.className = `toast-icon ${type}`;
+            icon.textContent = type === 'success' ? '✓' : '✕';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'toast-message';
+            messageDiv.textContent = message;
+            
+            toast.appendChild(icon);
+            toast.appendChild(messageDiv);
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 400);
+            }, 4000);
+        }
+
+        // Variable pour stocker l'ID du contenu actuellement affiché
+        let currentOnlineContentId = null;
+
+        async function sendContentToOverlay(contentId) {
+            const content = contentStore.find(item => item.id === contentId);
+            if (!content) {
+                console.error('Content not found:', contentId);
+                showStatusMessage('❌ Contenu introuvable', 'error');
+                return;
+            }
+
+            try {
+                console.log('=== SENDING TO WEBSOCKET ===');
+                console.log('Content:', content);
+                
+                // Envoyer directement au format P1-P4 (déjà dans le bon format)
+                const dataToSend = {
+                    titre: content.title || '',
+                    soustitre: content.subtitle || '',
+                    p1: content.p1 || { sujet: '', contenu: [] },
+                    p2: content.p2 || { sujet: '', contenu: [] },
+                    p3: content.p3 || { sujet: '', contenu: [] },
+                    p4: content.p4 || { sujet: '', contenu: [] }
+                };
+                
+                console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
+                
+                // Envoyer via HTTP POST au serveur
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('=== SENT SUCCESSFULLY ===');
+                console.log('Result:', result);
+                
+                // Marquer ce contenu comme online
+                currentOnlineContentId = contentId;
+                displayContentCards(); // Rafraîchir pour afficher l'animation
+                
+                showStatusMessage(`📤 "${content.title}" envoyé au widget eCamm !`, 'success');
+            } catch (error) {
+                console.error('=== SEND FAILED ===');
+                console.error('Error:', error);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+
+        async function hideOverlay() {
+            try {
+                console.log('=== HIDING OVERLAY ===');
+                
+                // Envoyer un contenu vide
+                const emptyData = {
+                    titre: '',
+                    soustitre: '',
+                    p1: { sujet: '', contenu: ['', ''] },
+                    p2: { sujet: '', contenu: ['', ''] },
+                    p3: { sujet: '', contenu: ['', ''] },
+                    p4: { sujet: '', contenu: ['', ''] }
+                };
+                
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(emptyData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                console.log('=== OVERLAY HIDDEN ===');
+                
+                // Retirer le statut online
+                currentOnlineContentId = null;
+                displayContentCards(); // Rafraîchir pour retirer l'animation
+                
+                showStatusMessage('🙈 Overlay masqué !', 'success');
+            } catch (error) {
+                console.error('=== HIDE FAILED ===');
+                console.error('Error:', error);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+
+        // Gestion du focus - Navigation entre les sujets
+        let currentFocusIndex = 0; // 0 = tous visibles, 1-4 = sujet focalisé
+
+        async function focusNextSubject() {
+            try {
+                // Passer au sujet suivant (1 → 2 → 3 → 4 → 5 (graphique) → 0 → 1 ...)
+                currentFocusIndex = currentFocusIndex + 1;
+                
+                // Si on arrive à 6, revenir à 0 (tout afficher)
+                if (currentFocusIndex > 5) {
+                    currentFocusIndex = 0;
+                }
+                
+                console.log('🎯 Focus sur sujet:', currentFocusIndex);
+                
+                // Envoyer le message de focus via WebSocket
+                const response = await fetch(`${WS_SERVER_URL}/api/focus`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ subjectIndex: currentFocusIndex })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                let focusText;
+                if (currentFocusIndex === 0) {
+                    focusText = 'Tous les sujets';
+                } else if (currentFocusIndex === 5) {
+                    focusText = '📈 Graphique boursier';
+                } else {
+                    focusText = `Sujet ${currentFocusIndex}`;
+                }
+                showStatusMessage(`🎯 Focus: ${focusText}`, 'success');
+                
+            } catch (error) {
+                console.error('=== FOCUS FAILED ===');
+                console.error('Error:', error);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteContent(contentId) {
+            console.log('==============================================');
+            console.log('🗑️ TENTATIVE DE SUPPRESSION');
+            console.log('==============================================');
+            console.log('Content ID:', contentId);
+            console.log('contentStore avant suppression:', contentStore.length, 'éléments');
+            
+            if (!confirm('🗑️ Supprimer ce contenu ?\n\nCette action est définitive.')) {
+                console.log('❌ Suppression annulée par l\'utilisateur');
+                return;
+            }
+
+            try {
+                const deleteUrl = `${WS_SERVER_URL}/api/history/${contentId}`;
+                console.log('🌐 URL de suppression:', deleteUrl);
+                
+                // Supprimer sur le serveur
+                const response = await fetch(deleteUrl, {
+                    method: 'DELETE'
+                });
+
+                console.log('📡 Réponse serveur status:', response.status);
+                console.log('📡 Réponse serveur ok?:', response.ok);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('✅ Réponse serveur complète:', result);
+
+                // Supprimer du store local
+                const lengthBefore = contentStore.length;
+                contentStore = contentStore.filter(item => item.id !== contentId);
+                console.log('📊 contentStore après suppression:', contentStore.length, 'éléments');
+                console.log('📊 Différence:', lengthBefore - contentStore.length, 'élément(s) supprimé(s)');
+                
+                displayContentCards();
+                showStatusMessage('✅ Contenu supprimé', 'success');
+                
+                console.log('==============================================');
+                console.log('✅ SUPPRESSION TERMINÉE');
+                console.log('==============================================');
+            } catch (error) {
+                console.error('==============================================');
+                console.error('❌ ERREUR LORS DE LA SUPPRESSION');
+                console.error('==============================================');
+                console.error('Error:', error);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+
+        // Fonction pour vider TOUT l'historique
+        async function clearAllHistory() {
+            if (!confirm('⚠️ ATTENTION !\n\nVoulez-vous vraiment VIDER TOUT L\'HISTORIQUE ?\n\nCette action supprimera TOUTES les cartes (actuellement : ' + contentStore.length + ' éléments).\n\nCette action est IRRÉVERSIBLE !')) {
+                return;
+            }
+
+            // Double confirmation pour être sûr
+            if (!confirm('🚨 DERNIÈRE CONFIRMATION\n\nÊtes-vous ABSOLUMENT SÛR de vouloir tout supprimer ?\n\nIl n\'y aura AUCUN moyen de récupérer ces données !')) {
+                return;
+            }
+
+            try {
+                showStatusMessage('🔄 Suppression en cours...', 'info');
+                
+                // Supprimer chaque élément un par un
+                const deletePromises = contentStore.map(content => 
+                    fetch(`${WS_SERVER_URL}/api/history/${content.id}`, {
+                        method: 'DELETE'
+                    })
+                );
+
+                await Promise.all(deletePromises);
+                
+                // Vider le store local
+                contentStore = [];
+                
+                // Rafraîchir l'affichage
+                displayContentCards();
+                
+                console.log('✅ TOUT L\'HISTORIQUE A ÉTÉ SUPPRIMÉ');
+                showStatusMessage('✅ Historique complètement vidé !', 'success');
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du vidage:', error);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+
+        function displayContentCards() {
+            console.log('==============================================');
+            console.log('🎨 AFFICHAGE DES CARTES');
+            console.log('==============================================');
+            console.log('📊 contentStore.length:', contentStore.length);
+            console.log('📦 contentStore:', JSON.stringify(contentStore, null, 2));
+            
+            const contentList = document.getElementById('contentList');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (contentStore.length === 0) {
+                console.log('❌ Aucun contenu à afficher (contentStore vide)');
+                contentList.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            console.log('✅ Affichage de', contentStore.length, 'carte(s)');
+            contentList.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            contentList.innerHTML = contentStore.map((content, index) => {
+                console.log(`📝 Carte ${index + 1}:`, content);
+                
+                // Vérifier si ce contenu est actuellement online
+                const isOnline = content.id === currentOnlineContentId;
+                const onlineClass = isOnline ? ' online' : '';
+                
+                return `
+                    <div class="content-card${onlineClass}" onclick="sendContentToOverlay('${content.id}')">
+                        <button class="btn-delete-corner" onclick="event.stopPropagation(); deleteContent('${content.id}')">
+                            ✕
+                        </button>
+                        
+                        <h4>${content.title || 'TITRE'}</h4>
+                        <h5>${content.subtitle || 'SOUS TITRE'}</h5>
+
+                        <div class="card-actions">
+                            <button class="btn-edit" onclick="event.stopPropagation(); openEditModal('${content.id}')">
+                                EDIT
+                            </button>
+                            <button class="btn-next" onclick="event.stopPropagation(); focusNextSubject()">
+                                NEXT ▶
+                            </button>
+                            <button class="btn-hide" onclick="event.stopPropagation(); hideOverlay()">
+                                MASQUER
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Character counters for all text areas
+        // Quick Edit Modal Functions
+        function openEditModal(contentId) {
+            const content = contentStore.find(item => item.id === contentId);
+            if (!content) return;
+
+            // Fill form with existing data
+            document.getElementById('editContentId').value = contentId;
+            document.getElementById('editTitle').value = content.title || '';
+            document.getElementById('editSubtitle').value = content.subtitle || '';
+            document.getElementById('editP1Line1').value = content.p1_line1 || '';
+            document.getElementById('editP1Line2').value = content.p1_line2 || '';
+            document.getElementById('editP2Line3').value = content.p2_line3 || '';
+            document.getElementById('editP2Line4').value = content.p2_line4 || '';
+            document.getElementById('editP3Line5').value = content.p3_line5 || '';
+            document.getElementById('editP3Line6').value = content.p3_line6 || '';
+            document.getElementById('editP4Line7').value = content.p4_line7 || '';
+            document.getElementById('editP4Line8').value = content.p4_line8 || '';
+
+            // Update character counters
+            updateEditCounter('editP1Line1', 'editCounter_p1_line1');
+            updateEditCounter('editP1Line2', 'editCounter_p1_line2');
+            updateEditCounter('editP2Line3', 'editCounter_p2_line3');
+            updateEditCounter('editP2Line4', 'editCounter_p2_line4');
+            updateEditCounter('editP3Line5', 'editCounter_p3_line5');
+            updateEditCounter('editP3Line6', 'editCounter_p3_line6');
+            updateEditCounter('editP4Line7', 'editCounter_p4_line7');
+            updateEditCounter('editP4Line8', 'editCounter_p4_line8');
+
+            // Show modal
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('show');
+            
+            // Reset le formulaire après la transition de fermeture
+            setTimeout(() => {
+                document.getElementById('editForm').reset();
+            }, 300);
+        }
+
+        function updateEditCounter(textareaId, counterId) {
+            const textarea = document.getElementById(textareaId);
+            const counter = document.getElementById(counterId);
+            if (textarea && counter) {
+                const length = textarea.value.length;
+                counter.textContent = `${length} / 80 characters`;
+                counter.classList.remove('warning', 'error');
+                if (length > 70) counter.classList.add('warning');
+                if (length === 80) counter.classList.add('error');
+            }
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('editModal');
+            if (e.target === modal) {
+                closeEditModal();
+            }
+        });
+
+        // Handle edit form submission
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const contentId = document.getElementById('editContentId').value;
+
+            try {
+                // Update in contentStore
+                const contentIndex = contentStore.findIndex(item => item.id === contentId);
+                if (contentIndex !== -1) {
+                    contentStore[contentIndex] = {
+                        ...contentStore[contentIndex],
+                        title: document.getElementById('editTitle').value.trim(),
+                        subtitle: document.getElementById('editSubtitle').value.trim(),
+                        p1_line1: document.getElementById('editP1Line1').value.trim(),
+                        p1_line2: document.getElementById('editP1Line2').value.trim(),
+                        p2_line3: document.getElementById('editP2Line3').value.trim(),
+                        p2_line4: document.getElementById('editP2Line4').value.trim(),
+                        p3_line5: document.getElementById('editP3Line5').value.trim(),
+                        p3_line6: document.getElementById('editP3Line6').value.trim(),
+                        p4_line7: document.getElementById('editP4Line7').value.trim(),
+                        p4_line8: document.getElementById('editP4Line8').value.trim(),
+                        timestamp: new Date().toLocaleString()
+                    };
+                }
+
+                saveToLocalStorage();
+                
+                // Update display
+                displayContentCards();
+                closeEditModal();
+                
+                showStatusMessage(`✨ "${contentStore[contentIndex].title}" updated successfully!`, 'success');
+            } catch (error) {
+                console.error('Update failed:', error);
+                showStatusMessage(`Failed to update: ${error.message}`, 'error');
+            }
+        });
+
+        // Duplicate content function
+        async function duplicateContent() {
+            const contentId = document.getElementById('editContentId').value;
+            const content = contentStore.find(item => item.id === contentId);
+            if (!content) return;
+
+            try {
+                const newContentId = Date.now().toString();
+                const newContent = {
+                    id: newContentId,
+                    title: document.getElementById('editTitle').value.trim() + ' (Copy)',
+                    subtitle: document.getElementById('editSubtitle').value.trim(),
+                    p1_line1: document.getElementById('editP1Line1').value.trim(),
+                    p1_line2: document.getElementById('editP1Line2').value.trim(),
+                    p2_line3: document.getElementById('editP2Line3').value.trim(),
+                    p2_line4: document.getElementById('editP2Line4').value.trim(),
+                    p3_line5: document.getElementById('editP3Line5').value.trim(),
+                    p3_line6: document.getElementById('editP3Line6').value.trim(),
+                    p4_line7: document.getElementById('editP4Line7').value.trim(),
+                    p4_line8: document.getElementById('editP4Line8').value.trim(),
+                    timestamp: new Date().toLocaleString()
+                };
+
+                contentStore.unshift(newContent);
+                saveToLocalStorage();
+
+                displayContentCards();
+                closeEditModal();
+                
+                showStatusMessage(`📋 Content duplicated successfully!`, 'success');
+            } catch (error) {
+                console.error('Duplicate failed:', error);
+                showStatusMessage(`Failed to duplicate: ${error.message}`, 'error');
+            }
+        }
+
+        // Keyboard shortcut: Escape to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('editModal');
+                if (modal.classList.contains('show')) {
+                    closeEditModal();
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load shared data on startup
+            loadSharedData().then(() => {
+                displayContentCards();
+                
+                // Start auto-sync if enabled
+                if (GIST_CONFIG.enabled) {
+                    const hasToken = !!getStoredToken();
+                    if (hasToken) {
+                        startAutoSync();
+                        document.getElementById('gistStatusText').innerHTML = '✅ Activé - Sync automatique toutes les 60 secondes';
+                        document.getElementById('gistStatusText').style.color = '#28a745';
+                    } else {
+                        document.getElementById('gistStatusText').innerHTML = '⚠️ Token non configuré - Entrez votre token pour activer la sync';
+                        document.getElementById('gistStatusText').style.color = '#ffc107';
+                    }
+                } else {
+                    document.getElementById('gistStatusText').innerHTML = '❌ Non configuré - Voir instructions ci-dessus';
+                    document.getElementById('gistStatusText').style.color = '#dc3545';
+                }
+            });
+            
+            // Character counters for all text areas
+            const textareas = [
+                'p1_line1', 'p1_line2',
+                'p2_line3', 'p2_line4',
+                'p3_line5', 'p3_line6',
+                'p4_line7', 'p4_line8'
+            ];
+
+            textareas.forEach(id => {
+                const textarea = document.getElementById(id);
+                const counter = document.getElementById(`counter_${id}`);
+                
+                if (textarea && counter) {
+                    textarea.addEventListener('input', function() {
+                        const length = this.value.length;
+                        counter.textContent = `${length} / 80 characters`;
+                        
+                        counter.classList.remove('warning', 'error');
+                        if (length > 70) {
+                            counter.classList.add('warning');
+                        }
+                        if (length === 80) {
+                            counter.classList.add('error');
+                        }
+                    });
+                }
+            });
+
+            // Character counters for edit modal
+            const editTextareas = [
+                { id: 'editP1Line1', counter: 'editCounter_p1_line1' },
+                { id: 'editP1Line2', counter: 'editCounter_p1_line2' },
+                { id: 'editP2Line3', counter: 'editCounter_p2_line3' },
+                { id: 'editP2Line4', counter: 'editCounter_p2_line4' },
+                { id: 'editP3Line5', counter: 'editCounter_p3_line5' },
+                { id: 'editP3Line6', counter: 'editCounter_p3_line6' },
+                { id: 'editP4Line7', counter: 'editCounter_p4_line7' },
+                { id: 'editP4Line8', counter: 'editCounter_p4_line8' }
+            ];
+
+            editTextareas.forEach(item => {
+                const textarea = document.getElementById(item.id);
+                if (textarea) {
+                    textarea.addEventListener('input', function() {
+                        updateEditCounter(item.id, item.counter);
+                    });
+                }
+            });
+        });
+
+        document.getElementById('contentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('.btn-primary');
+            const progressContainer = this.querySelector('.progress-container');
+            const progressBar = this.querySelector('.progress-bar');
+            const checkmark = this.querySelector('.success-checkmark');
+            
+            checkmark.classList.remove('show');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            
+            setTimeout(() => progressBar.style.width = '50%', 100);
+            
+            try {
+                const contentId = Date.now().toString();
+                const contentData = {
+                    id: contentId,
+                    title: document.getElementById('title').value.trim(),
+                    subtitle: document.getElementById('subtitle').value.trim(),
+                    p1_line1: document.getElementById('p1_line1').value.trim(),
+                    p1_line2: document.getElementById('p1_line2').value.trim(),
+                    p2_line3: document.getElementById('p2_line3').value.trim(),
+                    p2_line4: document.getElementById('p2_line4').value.trim(),
+                    p3_line5: document.getElementById('p3_line5').value.trim(),
+                    p3_line6: document.getElementById('p3_line6').value.trim(),
+                    p4_line7: document.getElementById('p4_line7').value.trim(),
+                    p4_line8: document.getElementById('p4_line8').value.trim(),
+                    timestamp: new Date().toLocaleString()
+                };
+
+                contentStore.unshift(contentData);
+                saveToLocalStorage();
+
+                progressBar.style.width = '100%';
+                await new Promise(resolve => setTimeout(resolve, 400));
+                
+                progressContainer.style.display = 'none';
+                checkmark.classList.add('show');
+                
+                showStatusMessage(`💾 "${contentData.title}" saved! Go to Manage to send it.`, 'success');
+
+                setTimeout(() => {
+                    this.reset();
+                    // Reset all counters
+                    document.querySelectorAll('.char-counter').forEach(counter => {
+                        counter.textContent = '0 / 80 characters';
+                        counter.classList.remove('warning', 'error');
+                    });
+                    checkmark.classList.remove('show');
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                    progressBar.style.width = '0%';
+                }, 2500);
+                
+            } catch (error) {
+                console.error('Form submission error:', error);
+                progressContainer.style.display = 'none';
+                progressBar.style.width = '0%';
+                checkmark.classList.remove('show');
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                
+                showStatusMessage(`Error: ${error.message}`, 'error');
+            }
+        });
+
+        // ========== WEBSOCKET INTEGRATION ==========
+        // Charger les données depuis le serveur WebSocket (depuis "Création")
+        const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
+        
+        async function loadFromWebSocket() {
+            const wsStatusIndicator = document.getElementById('wsStatusIndicator');
+            
+            try {
+                if (wsStatusIndicator) {
+                    wsStatusIndicator.style.background = '#ffc107';
+                    wsStatusIndicator.style.color = '#000';
+                    wsStatusIndicator.textContent = '🔄 Chargement...';
+                }
+                
+                const response = await fetch(`${WS_SERVER_URL}/api/history`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const history = await response.json();
+                console.log('✅ Historique chargé depuis WebSocket:', history.length, 'éléments');
+                console.log('📦 Données brutes du serveur:', history);
+                
+                if (wsStatusIndicator) {
+                    wsStatusIndicator.style.background = '#28a745';
+                    wsStatusIndicator.style.color = '#fff';
+                    wsStatusIndicator.textContent = '✅ Connecté (' + history.length + ')';
+                }
+                
+                // Convertir chaque élément de l'historique
+                const convertedHistory = history.map((data, index) => {
+                    console.log(`🔄 Conversion élément ${index + 1}:`, data);
+                    
+                    // Stocker les données COMPLÈTES au lieu de les aplatir
+                    const converted = {
+                        id: data.id || 'ws-' + Date.now(),
+                        title: data.titre || 'Untitled',
+                        subtitle: data.soustitre || '',
+                        // Garder les données P1-P4 complètes avec sujets et toutes les lignes
+                        p1: data.p1 || { sujet: '', contenu: [] },
+                        p2: data.p2 || { sujet: '', contenu: [] },
+                        p3: data.p3 || { sujet: '', contenu: [] },
+                        p4: data.p4 || { sujet: '', contenu: [] },
+                        timestamp: data.timestamp || new Date().toLocaleString(),
+                        source: data.source || 'websocket'
+                    };
+                    console.log(`✅ Converti:`, converted);
+                    return converted;
+                });
+                
+                console.log('📊 Historique converti final:', convertedHistory);
+                
+                return convertedHistory;
+            } catch (error) {
+                console.error('❌ Erreur chargement WebSocket:', error);
+                
+                if (wsStatusIndicator) {
+                    wsStatusIndicator.style.background = '#dc3545';
+                    wsStatusIndicator.style.color = '#fff';
+                    wsStatusIndicator.textContent = '❌ Serveur inaccessible';
+                }
+                
+                return [];
+            }
+        }
+    </script>
+</body>
+</html>
