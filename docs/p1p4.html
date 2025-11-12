@@ -599,51 +599,49 @@
         }
 
         /* Modal Styles - CORRIGÉ POUR AFFICHAGE AU-DESSUS */
-        .modal-overlay {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(8px);
-            z-index: 9999999 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            opacity: 0;
-            pointer-events: none;
-            display: block !important;
-            overflow-y: scroll !important;
-            padding-top: 0px !important;
-            transition: opacity 0.3s ease-out;
-        }
+      .modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    z-index: 999999 !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-out;
+}
+        
 
         .modal-overlay.show {
             opacity: 1;
             pointer-events: all;
         }
 
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 99999999 !important;
-            transform: translateY(30px);
-            transition: transform 0.3s ease-out;
-            margin: 0 auto !important;
-        }
+       .modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    position: fixed !important;
+    top: 80px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 1000000 !important;
+    transition: all 0.3s ease-out;
+}
+        
 
-        .modal-overlay.show .modal-content {
-            transform: translateY(0);
-        }
+     .modal-overlay.show .modal-content {
+    top: 80px !important;
+}
 
         @keyframes slideUpModal {
             from {
