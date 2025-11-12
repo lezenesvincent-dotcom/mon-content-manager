@@ -1011,6 +1011,142 @@
         </div>
 
         <div id="manage" class="tab-content active">
+            <!-- Quick Edit Modal -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <span class="edit-icon">✏️</span>
+                Quick Edit
+            </h2>
+            <button class="modal-close" onclick="closeEditModal()">×</button>
+        </div>
+        
+        <form id="editForm">
+            <input type="hidden" id="editContentId">
+            
+            <div class="form-group">
+                <label for="editTitle" class="required">Title</label>
+                <input type="text" id="editTitle" name="title" required 
+                       placeholder="Enter a title">
+            </div>
+
+            <div class="form-group">
+                <label for="editSubtitle" class="required">Subtitle</label>
+                <input type="text" id="editSubtitle" name="subtitle" required 
+                       placeholder="Enter a subtitle">
+            </div>
+
+            <!-- P1 Section -->
+            <div class="p-section" style="margin-bottom: 20px;">
+                <div class="p-section-header">
+                    <span class="p-badge">P1</span>
+                    <span class="p-description">Lines 1-2</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editP1Line1" class="required">Line 1</label>
+                    <textarea id="editP1Line1" name="p1_line1" required 
+                              maxlength="80" rows="2"
+                              placeholder="First line (max 80 chars)"></textarea>
+                    <div class="char-counter" id="editCounter_p1_line1">0 / 80</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editP1Line2" class="required">Line 2</label>
+                    <textarea id="editP1Line2" name="p1_line2" required 
+                              maxlength="80" rows="2"
+                              placeholder="Second line (max 80 chars)"></textarea>
+                    <div class="char-counter" id="editCounter_p1_line2">0 / 80</div>
+                </div>
+            </div>
+
+            <!-- P2 Section -->
+            <div class="p-section" style="margin-bottom: 20px;">
+                <div class="p-section-header">
+                    <span class="p-badge">P2</span>
+                    <span class="p-description">Lines 3-4</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editP2Line3" class="required">Line 3</label>
+                    <textarea id="editP2Line3" name="p2_line3" required 
+                              maxlength="80" rows="2"
+                              placeholder="Third line (max 80 chars)"></textarea>
+                    <div class="char-counter" id="editCounter_p2_line3">0 / 80</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editP2Line4" class="required">Line 4</label>
+                    <textarea id="editP2Line4" name="p2_line4" required 
+                              maxlength="80" rows="2"
+                              placeholder="Fourth line (max 80 chars)"></textarea>
+                    <div class="char-counter" id="editCounter_p2_line4">0 / 80</div>
+                </div>
+            </div>
+
+            <!-- P3 Section -->
+            <div class="p-section" style="margin-bottom: 20px;">
+                <div class="p-section-header">
+                    <span class="p-badge">P3</span>
+                    <span class="p-description">Lines 5-6</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editP3Line5" class="required">Line 5</label>
+                    <textarea id="editP3Line5" name="p3_line5" required 
+                              maxlength="80" rows="2"
+                              placeholder="Fifth line (max 80 chars)"></textarea>
+                    <div class="char-counter" id="editCounter_p3_line5">0 / 80</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editP3Line6" class="required">Line 6</label>
+                    <textarea id="editP3Line6" name="p3_line6" required 
+                              maxlength="80" rows="2"
+                              placeholder="Sixth line (max 80 chars)"></textarea>
+                    <div class="char-counter" id="editCounter_p3_line6">0 / 80</div>
+                </div>
+            </div>
+
+            <!-- P4 Section -->
+            <div class="p-section" style="margin-bottom: 20px;">
+                <div class="p-section-header">
+                    <span class="p-badge">P4</span>
+                    <span class="p-description">Lines 7-8</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editP4Line7" class="required">Line 7</label>
+                    <textarea id="editP4Line7" name="p4_line7" required 
+                              maxlength="80" rows="2"
+                              placeholder="Seventh line (max 80 chars)"></textarea>
+                    <div class="char-counter" id="editCounter_p4_line7">0 / 80</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editP4Line8" class="required">Line 8</label>
+                    <textarea id="editP4Line8" name="p4_line8" required 
+                              maxlength="80" rows="2"
+                              placeholder="Eighth line (max 80 chars)"></textarea>
+                    <div class="char-counter" id="editCounter_p4_line8">0 / 80</div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeEditModal()">
+                    Cancel
+                </button>
+                <button type="button" class="btn-duplicate" onclick="duplicateContent()">
+                    📋 Duplicate
+                </button>
+                <button type="submit" class="btn-update">
+                    💾 Update
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px;">
                 <div>
                     <h3 style="margin: 0 0 5px 0;">Gestion des Overlays</h3>
@@ -1185,142 +1321,7 @@
         </div>
     </div>
 
-    <!-- Quick Edit Modal -->
-    <div class="modal-overlay" id="editModal">
-        <div class="modal-content" style="max-width: 800px;">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    <span class="edit-icon">✏️</span>
-                    Quick Edit
-                </h2>
-                <button class="modal-close" onclick="closeEditModal()">×</button>
-            </div>
-            
-            <form id="editForm">
-                <input type="hidden" id="editContentId">
-                
-                <div class="form-group">
-                    <label for="editTitle" class="required">Title</label>
-                    <input type="text" id="editTitle" name="title" required 
-                           placeholder="Enter a title">
-                </div>
-
-                <div class="form-group">
-                    <label for="editSubtitle" class="required">Subtitle</label>
-                    <input type="text" id="editSubtitle" name="subtitle" required 
-                           placeholder="Enter a subtitle">
-                </div>
-
-                <!-- P1 Section -->
-                <div class="p-section" style="margin-bottom: 20px;">
-                    <div class="p-section-header">
-                        <span class="p-badge">P1</span>
-                        <span class="p-description">Lines 1-2</span>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="editP1Line1" class="required">Line 1</label>
-                        <textarea id="editP1Line1" name="p1_line1" required 
-                                  maxlength="80" rows="2"
-                                  placeholder="First line (max 80 chars)"></textarea>
-                        <div class="char-counter" id="editCounter_p1_line1">0 / 80</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="editP1Line2" class="required">Line 2</label>
-                        <textarea id="editP1Line2" name="p1_line2" required 
-                                  maxlength="80" rows="2"
-                                  placeholder="Second line (max 80 chars)"></textarea>
-                        <div class="char-counter" id="editCounter_p1_line2">0 / 80</div>
-                    </div>
-                </div>
-
-                <!-- P2 Section -->
-                <div class="p-section" style="margin-bottom: 20px;">
-                    <div class="p-section-header">
-                        <span class="p-badge">P2</span>
-                        <span class="p-description">Lines 3-4</span>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="editP2Line3" class="required">Line 3</label>
-                        <textarea id="editP2Line3" name="p2_line3" required 
-                                  maxlength="80" rows="2"
-                                  placeholder="Third line (max 80 chars)"></textarea>
-                        <div class="char-counter" id="editCounter_p2_line3">0 / 80</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="editP2Line4" class="required">Line 4</label>
-                        <textarea id="editP2Line4" name="p2_line4" required 
-                                  maxlength="80" rows="2"
-                                  placeholder="Fourth line (max 80 chars)"></textarea>
-                        <div class="char-counter" id="editCounter_p2_line4">0 / 80</div>
-                    </div>
-                </div>
-
-                <!-- P3 Section -->
-                <div class="p-section" style="margin-bottom: 20px;">
-                    <div class="p-section-header">
-                        <span class="p-badge">P3</span>
-                        <span class="p-description">Lines 5-6</span>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="editP3Line5" class="required">Line 5</label>
-                        <textarea id="editP3Line5" name="p3_line5" required 
-                                  maxlength="80" rows="2"
-                                  placeholder="Fifth line (max 80 chars)"></textarea>
-                        <div class="char-counter" id="editCounter_p3_line5">0 / 80</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="editP3Line6" class="required">Line 6</label>
-                        <textarea id="editP3Line6" name="p3_line6" required 
-                                  maxlength="80" rows="2"
-                                  placeholder="Sixth line (max 80 chars)"></textarea>
-                        <div class="char-counter" id="editCounter_p3_line6">0 / 80</div>
-                    </div>
-                </div>
-
-                <!-- P4 Section -->
-                <div class="p-section" style="margin-bottom: 20px;">
-                    <div class="p-section-header">
-                        <span class="p-badge">P4</span>
-                        <span class="p-description">Lines 7-8</span>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="editP4Line7" class="required">Line 7</label>
-                        <textarea id="editP4Line7" name="p4_line7" required 
-                                  maxlength="80" rows="2"
-                                  placeholder="Seventh line (max 80 chars)"></textarea>
-                        <div class="char-counter" id="editCounter_p4_line7">0 / 80</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="editP4Line8" class="required">Line 8</label>
-                        <textarea id="editP4Line8" name="p4_line8" required 
-                                  maxlength="80" rows="2"
-                                  placeholder="Eighth line (max 80 chars)"></textarea>
-                        <div class="char-counter" id="editCounter_p4_line8">0 / 80</div>
-                    </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeEditModal()">
-                        Cancel
-                    </button>
-                    <button type="button" class="btn-duplicate" onclick="duplicateContent()">
-                        📋 Duplicate
-                    </button>
-                    <button type="submit" class="btn-update">
-                        💾 Update
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+   
 
     <script>
         // ===================================================================
