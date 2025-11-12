@@ -614,10 +614,9 @@
             padding: 0 !important;
             opacity: 0;
             pointer-events: none;
-            display: flex !important;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 80px;
+            display: block !important;
+            overflow-y: auto !important;
+            padding-top: 80px !important;
             transition: opacity 0.3s ease-out;
         }
 
@@ -639,8 +638,7 @@
             z-index: 99999999 !important;
             transform: translateY(30px);
             transition: transform 0.3s ease-out;
-            margin-top: 50px !important;
-            align-self: flex-start !important;
+            margin: 0 auto !important;
         }
 
         .modal-overlay.show .modal-content {
