@@ -1906,14 +1906,14 @@
     document.getElementById('editContentId').value = contentId;
     document.getElementById('editTitle').value = content.title || '';
     document.getElementById('editSubtitle').value = content.subtitle || '';
-    document.getElementById('editP1Line1').value = content.p1_line1 || '';
-    document.getElementById('editP1Line2').value = content.p1_line2 || '';
-    document.getElementById('editP2Line3').value = content.p2_line3 || '';
-    document.getElementById('editP2Line4').value = content.p2_line4 || '';
-    document.getElementById('editP3Line5').value = content.p3_line5 || '';
-    document.getElementById('editP3Line6').value = content.p3_line6 || '';
-    document.getElementById('editP4Line7').value = content.p4_line7 || '';
-    document.getElementById('editP4Line8').value = content.p4_line8 || '';
+    document.getElementById('editP1Line1').value = (content.p1?.contenu && content.p1.contenu[0])
+    document.getElementById('editP1Line2').value = (content.p1?.contenu && content.p1.contenu[1])
+    document.getElementById('editP2Line3').value = (content.p2?.contenu && content.p2.contenu[0])
+    document.getElementById('editP2Line4').value = (content.p2?.contenu && content.p2.contenu[1])
+    document.getElementById('editP3Line5').value = (content.p3?.contenu && content.p3.contenu[0])
+    document.getElementById('editP3Line6').value = (content.p3?.contenu && content.p3.contenu[1])
+    document.getElementById('editP4Line7').value = (content.p4?.contenu && content.p4.contenu[0])
+    document.getElementById('editP4Line8').value = (content.p4?.contenu && content.p4.contenu[1])
 
     // Update character counters
     updateEditCounter('editP1Line1', 'editCounter_p1_line1');
