@@ -1988,16 +1988,28 @@
                     };
                 }
 
-                saveToLocalStorage();
-                
-                // Update display
-                displayContentCards();
-                closeEditModal();
-                
-                showStatusMessage(`✨ "${contentStore[contentIndex].title}" updated successfully!`, 'success');
+               // Sauvegarder sur le serveur WebSocket
+            try {
+                const response = await fetch(`${WS_SERVER_URL}/api/history`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(contentStore[contentIndex])
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
             } catch (error) {
-                console.error('Update failed:', error);
-                showStatusMessage(`Failed to update: ${error.message}`, 'error');
+                console.error('Failed to save to server:', error);
+            }
+            
+            // Update display
+            displayContentCards();
+            closeEditModal();
+            
+            showStatusMessage(`✨ "${contentStore[contentIndex].title}" updated successfully!`, 'success');
             }
         });
 
