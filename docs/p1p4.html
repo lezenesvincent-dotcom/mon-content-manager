@@ -600,25 +600,20 @@
 
         /* Modal Styles - CORRIGÉ POUR AFFICHAGE AU-DESSUS */
    .modal-overlay {
-    position: relative !important;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    background: transparent;
-    z-index: 1;
-    height: 0 !important;
-    overflow: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none;
-    transition: all 0.3s ease-out;
-    margin: 0 !important;
-    padding: 0 !important;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
 }
-        
 
- .modal-overlay.show {
-    height: auto !important;
-    opacity: 1 !important;
-    pointer-events: all;
-    margin-bottom: 30px !important;
+.modal-overlay.show {
+    display: flex;
 }
       .modal-content {
     background: white;
