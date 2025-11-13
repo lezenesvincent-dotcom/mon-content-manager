@@ -1013,128 +1013,109 @@
 
         <div id="manage" class="tab-content active">
             <!-- Quick Edit Modal -->
+<!-- Quick Edit Modal -->
 <div class="modal-overlay" id="editModal" style="display: none;">
-    <div class="modal-content" style="max-width: 800px;">
-        <div class="modal-header">
-            <h2 class="modal-title">
+    <div class="modal-content" style="max-width: 1400px; background: #1a1a2e;">
+        <div class="modal-header" style="border-bottom: 2px solid #0f3460;">
+            <h2 class="modal-title" style="color: #e4e4e4;">
                 <span class="edit-icon">✏️</span>
                 Quick Edit
             </h2>
-            <button class="modal-close" onclick="closeEditModal()">×</button>
+            <button class="modal-close" onclick="closeEditModal()" style="background: #16213e; color: #8b92a8;">×</button>
         </div>
         
         <form id="editForm">
             <input type="hidden" id="editContentId">
             
+            <!-- Titre et Sous-titre -->
             <div class="form-group">
-                <label for="editTitle" class="required">Title</label>
-                <input type="text" id="editTitle" name="title" required 
-                       placeholder="Enter a title">
+                <label for="editTitle" style="color: #e4e4e4;">🚀 TITRE</label>
+                <input type="text" id="editTitle" required style="background: #16213e; color: #e4e4e4; border: 2px solid #0f3460;">
             </div>
 
             <div class="form-group">
-                <label for="editSubtitle" class="required">Subtitle</label>
-                <input type="text" id="editSubtitle" name="subtitle" required 
-                       placeholder="Enter a subtitle">
+                <label for="editSubtitle" style="color: #e4e4e4;">📄 Sous-titre</label>
+                <input type="text" id="editSubtitle" required style="background: #16213e; color: #e4e4e4; border: 2px solid #0f3460;">
             </div>
 
-            <!-- P1 Section -->
-            <div class="p-section" style="margin-bottom: 20px;">
-                <div class="p-section-header">
-                    <span class="p-badge">P1</span>
-                    <span class="p-description">Lines 1-2</span>
-                </div>
+            <!-- Grille 4 colonnes P1-P4 -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 25px;">
                 
-                <div class="form-group">
-                    <label for="editP1Line1" class="required">Line 1</label>
-                    <textarea id="editP1Line1" name="p1_line1" required 
-                              maxlength="80" rows="2"
-                              placeholder="First line (max 80 chars)"></textarea>
-                    <div class="char-counter" id="editCounter_p1_line1">0 / 80</div>
+                <!-- P1 -->
+                <div>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 12px; border-radius: 8px 8px 0 0; text-align: center; color: white; font-weight: 700; font-size: 1.2rem;">
+                        P1
+                    </div>
+                    <div style="background: #16213e; padding: 15px; border-radius: 0 0 8px 8px;">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="color: #e4e4e4; font-size: 0.9rem;">Sujet</label>
+                            <input type="text" id="editP1Sujet" maxlength="15" style="background: #0f3460; color: #e4e4e4; border: 1px solid #667eea; padding: 8px; border-radius: 6px; width: 100%;">
+                            <div style="color: #8b92a8; font-size: 0.75rem; text-align: right; margin-top: 3px;">0 / 15</div>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #e4e4e4; font-size: 0.9rem;">Contenu</label>
+                            <textarea id="editP1Contenu" rows="8" style="background: #0f3460; color: #e4e4e4; border: 1px solid #667eea; padding: 8px; border-radius: 6px; width: 100%; resize: vertical; font-family: monospace;"></textarea>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="editP1Line2" class="required">Line 2</label>
-                    <textarea id="editP1Line2" name="p1_line2" required 
-                              maxlength="80" rows="2"
-                              placeholder="Second line (max 80 chars)"></textarea>
-                    <div class="char-counter" id="editCounter_p1_line2">0 / 80</div>
+                <!-- P2 -->
+                <div>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 12px; border-radius: 8px 8px 0 0; text-align: center; color: white; font-weight: 700; font-size: 1.2rem;">
+                        P2
+                    </div>
+                    <div style="background: #16213e; padding: 15px; border-radius: 0 0 8px 8px;">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="color: #e4e4e4; font-size: 0.9rem;">Sujet</label>
+                            <input type="text" id="editP2Sujet" maxlength="15" style="background: #0f3460; color: #e4e4e4; border: 1px solid #667eea; padding: 8px; border-radius: 6px; width: 100%;">
+                            <div style="color: #8b92a8; font-size: 0.75rem; text-align: right; margin-top: 3px;">0 / 15</div>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #e4e4e4; font-size: 0.9rem;">Contenu</label>
+                            <textarea id="editP2Contenu" rows="8" style="background: #0f3460; color: #e4e4e4; border: 1px solid #667eea; padding: 8px; border-radius: 6px; width: 100%; resize: vertical; font-family: monospace;"></textarea>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- P3 -->
+                <div>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 12px; border-radius: 8px 8px 0 0; text-align: center; color: white; font-weight: 700; font-size: 1.2rem;">
+                        P3
+                    </div>
+                    <div style="background: #16213e; padding: 15px; border-radius: 0 0 8px 8px;">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="color: #e4e4e4; font-size: 0.9rem;">Sujet</label>
+                            <input type="text" id="editP3Sujet" maxlength="15" style="background: #0f3460; color: #e4e4e4; border: 1px solid #667eea; padding: 8px; border-radius: 6px; width: 100%;">
+                            <div style="color: #8b92a8; font-size: 0.75rem; text-align: right; margin-top: 3px;">0 / 15</div>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #e4e4e4; font-size: 0.9rem;">Contenu</label>
+                            <textarea id="editP3Contenu" rows="8" style="background: #0f3460; color: #e4e4e4; border: 1px solid #667eea; padding: 8px; border-radius: 6px; width: 100%; resize: vertical; font-family: monospace;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- P4 -->
+                <div>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 12px; border-radius: 8px 8px 0 0; text-align: center; color: white; font-weight: 700; font-size: 1.2rem;">
+                        P4
+                    </div>
+                    <div style="background: #16213e; padding: 15px; border-radius: 0 0 8px 8px;">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="color: #e4e4e4; font-size: 0.9rem;">Sujet</label>
+                            <input type="text" id="editP4Sujet" maxlength="15" style="background: #0f3460; color: #e4e4e4; border: 1px solid #667eea; padding: 8px; border-radius: 6px; width: 100%;">
+                            <div style="color: #8b92a8; font-size: 0.75rem; text-align: right; margin-top: 3px;">0 / 15</div>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #e4e4e4; font-size: 0.9rem;">Contenu</label>
+                            <textarea id="editP4Contenu" rows="8" style="background: #0f3460; color: #e4e4e4; border: 1px solid #667eea; padding: 8px; border-radius: 6px; width: 100%; resize: vertical; font-family: monospace;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- P2 Section -->
-            <div class="p-section" style="margin-bottom: 20px;">
-                <div class="p-section-header">
-                    <span class="p-badge">P2</span>
-                    <span class="p-description">Lines 3-4</span>
-                </div>
-                
-                <div class="form-group">
-                    <label for="editP2Line3" class="required">Line 3</label>
-                    <textarea id="editP2Line3" name="p2_line3" required 
-                              maxlength="80" rows="2"
-                              placeholder="Third line (max 80 chars)"></textarea>
-                    <div class="char-counter" id="editCounter_p2_line3">0 / 80</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="editP2Line4" class="required">Line 4</label>
-                    <textarea id="editP2Line4" name="p2_line4" required 
-                              maxlength="80" rows="2"
-                              placeholder="Fourth line (max 80 chars)"></textarea>
-                    <div class="char-counter" id="editCounter_p2_line4">0 / 80</div>
-                </div>
-            </div>
-
-            <!-- P3 Section -->
-            <div class="p-section" style="margin-bottom: 20px;">
-                <div class="p-section-header">
-                    <span class="p-badge">P3</span>
-                    <span class="p-description">Lines 5-6</span>
-                </div>
-                
-                <div class="form-group">
-                    <label for="editP3Line5" class="required">Line 5</label>
-                    <textarea id="editP3Line5" name="p3_line5" required 
-                              maxlength="80" rows="2"
-                              placeholder="Fifth line (max 80 chars)"></textarea>
-                    <div class="char-counter" id="editCounter_p3_line5">0 / 80</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="editP3Line6" class="required">Line 6</label>
-                    <textarea id="editP3Line6" name="p3_line6" required 
-                              maxlength="80" rows="2"
-                              placeholder="Sixth line (max 80 chars)"></textarea>
-                    <div class="char-counter" id="editCounter_p3_line6">0 / 80</div>
-                </div>
-            </div>
-
-            <!-- P4 Section -->
-            <div class="p-section" style="margin-bottom: 20px;">
-                <div class="p-section-header">
-                    <span class="p-badge">P4</span>
-                    <span class="p-description">Lines 7-8</span>
-                </div>
-                
-                <div class="form-group">
-                    <label for="editP4Line7" class="required">Line 7</label>
-                    <textarea id="editP4Line7" name="p4_line7" required 
-                              maxlength="80" rows="2"
-                              placeholder="Seventh line (max 80 chars)"></textarea>
-                    <div class="char-counter" id="editCounter_p4_line7">0 / 80</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="editP4Line8" class="required">Line 8</label>
-                    <textarea id="editP4Line8" name="p4_line8" required 
-                              maxlength="80" rows="2"
-                              placeholder="Eighth line (max 80 chars)"></textarea>
-                    <div class="char-counter" id="editCounter_p4_line8">0 / 80</div>
-                </div>
-            </div>
-
-            <div class="modal-actions">
+            <div class="modal-actions" style="border-top: 2px solid #0f3460; margin-top: 30px; padding-top: 20px;">
                 <button type="button" class="btn-cancel" onclick="closeEditModal()">
                     Cancel
                 </button>
@@ -1148,48 +1129,6 @@
         </form>
     </div>
 </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px;">
-                <div>
-                    <h3 style="margin: 0 0 5px 0;">Gestion des Overlays</h3>
-                    <p style="margin: 0; color: #8b92a8; font-size: 0.95rem;">Visualisez et envoyez vos contenus à l'overlay</p>
-                </div>
-                <div id="wsStatusIndicator" style="padding: 12px 20px; background: #ffc107; color: #000; border-radius: 10px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.3s ease, color 0.3s ease;">
-                    🔄 Connexion...
-                </div>
-            </div>
-            
-            <div style="background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #667eea;">
-                <p style="margin: 0; color: #b8c1ec;">💡 <strong>Synchronisation automatique active :</strong> Les données se synchronisent depuis la page "Création" toutes les 3 secondes</p>
-            </div>
-            
-            <!-- Bouton pour vider l'historique -->
-            <div style="margin-bottom: 20px; text-align: right;">
-                <button onclick="clearAllHistory()" class="btn-secondary" style="background: #dc3545; color: white; border-color: #dc3545;">
-                    🗑️ Vider tout l'historique
-                </button>
-            </div>
-            
-            <div id="contentList" class="content-grid">
-                <!-- Content cards will be populated here -->
-            </div>
-
-            <div id="emptyState" class="empty-state">
-                <h4>📭 Aucun contenu disponible</h4>
-                <p>Utilisez la page "🚀 Création" pour créer du contenu.</p>
-                <p style="font-size: 0.9rem; margin-top: 10px;">
-                    Le contenu créé dans "Création" apparaîtra ici automatiquement<br>
-                    (synchronisation toutes les 3 secondes)
-                </p>
-                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; border: 1px solid rgba(255, 193, 7, 0.3);">
-                    <p style="font-size: 0.9rem; color: #ffc107;">
-                        💡 <strong>Vérifiez :</strong><br>
-                        • Le serveur WebSocket est-il accessible ?<br>
-                        • Avez-vous créé du contenu dans la page Création ?<br>
-                        • Ouvrez la console (F12) pour voir les logs de connexion
-                    </p>
-                </div>
-            </div>
-        </div>
 
         <div id="settings" class="tab-content">
             <h3>Settings & Configuration</h3>
@@ -1898,7 +1837,7 @@
 
         // Character counters for all text areas
         // Quick Edit Modal Functions
-      function openEditModal(contentId) {
+     function openEditModal(contentId) {
     const content = contentStore.find(item => item.id === contentId);
     if (!content) return;
 
@@ -1906,26 +1845,21 @@
     document.getElementById('editContentId').value = contentId;
     document.getElementById('editTitle').value = content.title || '';
     document.getElementById('editSubtitle').value = content.subtitle || '';
-    document.getElementById('editP1Line1').value = content.p1_line1 || '';
-    document.getElementById('editP1Line2').value = content.p1_line2 || '';
-    document.getElementById('editP2Line3').value = content.p2_line3 || '';
-    document.getElementById('editP2Line4').value = content.p2_line4 || '';
-    document.getElementById('editP3Line5').value = content.p3_line5 || '';
-    document.getElementById('editP3Line6').value = content.p3_line6 || '';
-    document.getElementById('editP4Line7').value = content.p4_line7 || '';
-    document.getElementById('editP4Line8').value = content.p4_line8 || '';
+    
+    // Charger P1-P4 depuis le format serveur
+    document.getElementById('editP1Sujet').value = content.p1?.sujet || '';
+    document.getElementById('editP1Contenu').value = (content.p1?.contenu || []).join('\n');
+    
+    document.getElementById('editP2Sujet').value = content.p2?.sujet || '';
+    document.getElementById('editP2Contenu').value = (content.p2?.contenu || []).join('\n');
+    
+    document.getElementById('editP3Sujet').value = content.p3?.sujet || '';
+    document.getElementById('editP3Contenu').value = (content.p3?.contenu || []).join('\n');
+    
+    document.getElementById('editP4Sujet').value = content.p4?.sujet || '';
+    document.getElementById('editP4Contenu').value = (content.p4?.contenu || []).join('\n');
 
-    // Update character counters
-    updateEditCounter('editP1Line1', 'editCounter_p1_line1');
-    updateEditCounter('editP1Line2', 'editCounter_p1_line2');
-    updateEditCounter('editP2Line3', 'editCounter_p2_line3');
-    updateEditCounter('editP2Line4', 'editCounter_p2_line4');
-    updateEditCounter('editP3Line5', 'editCounter_p3_line5');
-    updateEditCounter('editP3Line6', 'editCounter_p3_line6');
-    updateEditCounter('editP4Line7', 'editCounter_p4_line7');
-    updateEditCounter('editP4Line8', 'editCounter_p4_line8');
-
-    // Show modal avec JavaScript
+    // Show modal
     const modal = document.getElementById('editModal');
     modal.style.display = 'block';
     modal.classList.add('show');
@@ -1942,17 +1876,6 @@
     }, 300);
 }
 
-        function updateEditCounter(textareaId, counterId) {
-            const textarea = document.getElementById(textareaId);
-            const counter = document.getElementById(counterId);
-            if (textarea && counter) {
-                const length = textarea.value.length;
-                counter.textContent = `${length} / 80 characters`;
-                counter.classList.remove('warning', 'error');
-                if (length > 70) counter.classList.add('warning');
-                if (length === 80) counter.classList.add('error');
-            }
-        }
 
         // Close modal when clicking outside
         document.addEventListener('click', function(e) {
