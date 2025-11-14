@@ -1147,10 +1147,14 @@
                     <h3 style="margin: 0 0 5px 0;">Gestion des Overlays</h3>
                     <p style="margin: 0; color: #8b92a8; font-size: 0.95rem;">Visualisez et envoyez vos contenus à l'overlay</p>
                 </div>
-                <div id="wsStatusIndicator" style="padding: 12px 20px; background: #ffc107; color: #000; border-radius: 10px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.3s ease, color 0.3s ease;">
+               <div style="display: flex; gap: 10px; align-items: center;">
+    <button onclick="openCreateModal()" class="btn-primary" style="padding: 12px 24px; font-size: 1rem;">➕ NEW</button>
+    <div id="wsStatusIndicator" style="padding: 12px 20px; background: #ffc107; color: #000; border-radius: 10px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.3s ease, color 0.3s ease;">
                     🔄 Connexion...
                 </div>
+                   </div>
             </div>
+                </div>
             
             <div style="background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #667eea;">
                 <p style="margin: 0; color: #b8c1ec;">💡 <strong>Synchronisation automatique active :</strong> Les données se synchronisent depuis la page "Création" toutes les 3 secondes</p>
@@ -1184,7 +1188,157 @@
                 </div>
             </div>
         </div>
+<!-- Create Modal -->
+<div class="modal-overlay" id="createModal" style="display: none;">
+    <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <span class="edit-icon">➕</span>
+                Créer un nouveau contenu
+            </h2>
+            <button class="modal-close" onclick="closeCreateModal()">×</button>
+        </div>
+        
+        <form id="createModalForm">
+            <div class="template-info">
+                <h3>Overlay Configuration</h3>
+                <p>Template ID: <span class="template-id">4fLVHu7eHUBPzBuFJ7mXWH</span></p>
+                <p class="field-hint">8 lines available on overlay (80 characters max per line)</p>
+            </div>
 
+            <div class="form-group">
+                <label for="createTitle" class="required">Content Title</label>
+                <input type="text" id="createTitle" name="title" required 
+                       placeholder="Enter a title for this content set">
+                <div class="field-hint">Main identifier for this content</div>
+            </div>
+
+            <div class="form-group">
+                <label for="createSubtitle" class="required">Subtitle</label>
+                <input type="text" id="createSubtitle" name="subtitle" required 
+                       placeholder="Enter a subtitle">
+                <div class="field-hint">Additional description for this content</div>
+            </div>
+
+            <!-- P1 Section: Lines 1-2 -->
+            <div class="p-section">
+                <div class="p-section-header">
+                    <div class="p-section-title">
+                        <span class="p-badge">P1</span>
+                        <span class="p-description">Lines 1-2 of overlay</span>
+                    </div>
+                    <span class="line-info">📍 Overlay Lines 1-2</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="createP1Line1" class="required">Line 1</label>
+                    <textarea id="createP1Line1" name="p1_line1" required 
+                              maxlength="80" rows="2"
+                              placeholder="First line content (max 80 characters)"></textarea>
+                    <div class="char-counter" id="createCounter_p1_line1">0 / 80 characters</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="createP1Line2" class="required">Line 2</label>
+                    <textarea id="createP1Line2" name="p1_line2" required 
+                              maxlength="80" rows="2"
+                              placeholder="Second line content (max 80 characters)"></textarea>
+                    <div class="char-counter" id="createCounter_p1_line2">0 / 80 characters</div>
+                </div>
+            </div>
+
+            <!-- P2 Section: Lines 3-4 -->
+            <div class="p-section">
+                <div class="p-section-header">
+                    <div class="p-section-title">
+                        <span class="p-badge">P2</span>
+                        <span class="p-description">Lines 3-4 of overlay</span>
+                    </div>
+                    <span class="line-info">📍 Overlay Lines 3-4</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="createP2Line3" class="required">Line 3</label>
+                    <textarea id="createP2Line3" name="p2_line3" required 
+                              maxlength="80" rows="2"
+                              placeholder="Third line content (max 80 characters)"></textarea>
+                    <div class="char-counter" id="createCounter_p2_line3">0 / 80 characters</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="createP2Line4" class="required">Line 4</label>
+                    <textarea id="createP2Line4" name="p2_line4" required 
+                              maxlength="80" rows="2"
+                              placeholder="Fourth line content (max 80 characters)"></textarea>
+                    <div class="char-counter" id="createCounter_p2_line4">0 / 80 characters</div>
+                </div>
+            </div>
+
+            <!-- P3 Section: Lines 5-6 -->
+            <div class="p-section">
+                <div class="p-section-header">
+                    <div class="p-section-title">
+                        <span class="p-badge">P3</span>
+                        <span class="p-description">Lines 5-6 of overlay</span>
+                    </div>
+                    <span class="line-info">📍 Overlay Lines 5-6</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="createP3Line5" class="required">Line 5</label>
+                    <textarea id="createP3Line5" name="p3_line5" required 
+                              maxlength="80" rows="2"
+                              placeholder="Fifth line content (max 80 characters)"></textarea>
+                    <div class="char-counter" id="createCounter_p3_line5">0 / 80 characters</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="createP3Line6" class="required">Line 6</label>
+                    <textarea id="createP3Line6" name="p3_line6" required 
+                              maxlength="80" rows="2"
+                              placeholder="Sixth line content (max 80 characters)"></textarea>
+                    <div class="char-counter" id="createCounter_p3_line6">0 / 80 characters</div>
+                </div>
+            </div>
+
+            <!-- P4 Section: Lines 7-8 -->
+            <div class="p-section">
+                <div class="p-section-header">
+                    <div class="p-section-title">
+                        <span class="p-badge">P4</span>
+                        <span class="p-description">Lines 7-8 of overlay</span>
+                    </div>
+                    <span class="line-info">📍 Overlay Lines 7-8</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="createP4Line7" class="required">Line 7</label>
+                    <textarea id="createP4Line7" name="p4_line7" required 
+                              maxlength="80" rows="2"
+                              placeholder="Seventh line content (max 80 characters)"></textarea>
+                    <div class="char-counter" id="createCounter_p4_line7">0 / 80 characters</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="createP4Line8" class="required">Line 8</label>
+                    <textarea id="createP4Line8" name="p4_line8" required 
+                              maxlength="80" rows="2"
+                              placeholder="Eighth line content (max 80 characters)"></textarea>
+                    <div class="char-counter" id="createCounter_p4_line8">0 / 80 characters</div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeCreateModal()">
+                    Cancel
+                </button>
+                <button type="submit" class="btn-update">
+                    💾 Create Content
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
         <div id="settings" class="tab-content">
             <h3>Settings & Configuration</h3>
             
@@ -2247,6 +2401,127 @@
                 return [];
             }
         }
+        // Create Modal Functions
+function openCreateModal() {
+    const modal = document.getElementById('createModal');
+    modal.style.display = 'flex';
+    modal.classList.add('show');
+}
+
+function closeCreateModal() {
+    const modal = document.getElementById('createModal');
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+    document.getElementById('createModalForm').reset();
+    
+    // Reset all counters
+    document.querySelectorAll('[id^="createCounter_"]').forEach(counter => {
+        counter.textContent = '0 / 80 characters';
+        counter.classList.remove('warning', 'error');
+    });
+}
+
+// Create modal character counters
+const createTextareas = [
+    { id: 'createP1Line1', counter: 'createCounter_p1_line1' },
+    { id: 'createP1Line2', counter: 'createCounter_p1_line2' },
+    { id: 'createP2Line3', counter: 'createCounter_p2_line3' },
+    { id: 'createP2Line4', counter: 'createCounter_p2_line4' },
+    { id: 'createP3Line5', counter: 'createCounter_p3_line5' },
+    { id: 'createP3Line6', counter: 'createCounter_p3_line6' },
+    { id: 'createP4Line7', counter: 'createCounter_p4_line7' },
+    { id: 'createP4Line8', counter: 'createCounter_p4_line8' }
+];
+
+createTextareas.forEach(item => {
+    setTimeout(() => {
+        const textarea = document.getElementById(item.id);
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                const counter = document.getElementById(item.counter);
+                if (counter) {
+                    const length = this.value.length;
+                    counter.textContent = `${length} / 80 characters`;
+                    counter.classList.remove('warning', 'error');
+                    if (length > 70) counter.classList.add('warning');
+                    if (length === 80) counter.classList.add('error');
+                }
+            });
+        }
+    }, 100);
+});
+
+// Create form submission
+setTimeout(() => {
+    const form = document.getElementById('createModalForm');
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const contentId = Date.now().toString();
+                const contentData = {
+                    id: contentId,
+                    title: document.getElementById('createTitle').value.trim(),
+                    subtitle: document.getElementById('createSubtitle').value.trim(),
+                    p1: {
+                        sujet: '',
+                        contenu: [
+                            document.getElementById('createP1Line1').value.trim(),
+                            document.getElementById('createP1Line2').value.trim()
+                        ]
+                    },
+                    p2: {
+                        sujet: '',
+                        contenu: [
+                            document.getElementById('createP2Line3').value.trim(),
+                            document.getElementById('createP2Line4').value.trim()
+                        ]
+                    },
+                    p3: {
+                        sujet: '',
+                        contenu: [
+                            document.getElementById('createP3Line5').value.trim(),
+                            document.getElementById('createP3Line6').value.trim()
+                        ]
+                    },
+                    p4: {
+                        sujet: '',
+                        contenu: [
+                            document.getElementById('createP4Line7').value.trim(),
+                            document.getElementById('createP4Line8').value.trim()
+                        ]
+                    },
+                    timestamp: new Date().toLocaleString(),
+                    source: 'create-modal'
+                };
+
+                // Send to server
+                const response = await fetch(`${WS_SERVER_URL}/api/history`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(contentData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Add to local store
+                contentStore.unshift(contentData);
+                displayContentCards();
+                closeCreateModal();
+                
+                showStatusMessage(`✨ "${contentData.title}" created successfully!`, 'success');
+            } catch (error) {
+                console.error('Create failed:', error);
+                showStatusMessage(`❌ Failed to create: ${error.message}`, 'error');
+            }
+        });
+    }
+}, 100);
     </script>
 </body>
 </html>
