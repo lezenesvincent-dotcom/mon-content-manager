@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -862,6 +860,17 @@
             .content-grid {
                 grid-template-columns: 1fr;
             }
+        }
+        /* Fond noir pour tous les champs du modal de création */
+        #createModal input[type="text"],
+        #createModal textarea {
+            background: rgba(26, 26, 46, 0.8) !important;
+            color: white !important;
+        }
+
+        #createModal input::placeholder,
+        #createModal textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
         }
     </style>
 </head>
