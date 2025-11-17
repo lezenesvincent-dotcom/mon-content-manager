@@ -2407,7 +2407,7 @@ createTextareas.forEach(item => {
         }
     }, 100);
 });
-        
+
 // Create form submission
 setTimeout(() => {
     const form = document.getElementById('createModalForm');
@@ -2417,32 +2417,37 @@ setTimeout(() => {
             
             try {
                 const contentId = Date.now().toString();
-                
-                // Fonction pour splitter le contenu en lignes
-                function splitContent(text) {
-                    if (!text || text.trim() === '') return [];
-                    return text.split('\n').filter(line => line.trim() !== '').slice(0, 7); // Max 7 lignes
-                }
-                
                 const contentData = {
                     id: contentId,
                     title: document.getElementById('createTitle').value.trim(),
                     subtitle: document.getElementById('createSubtitle').value.trim(),
                     p1: {
-                        sujet: document.getElementById('createP1Sujet').value.trim(),
-                        contenu: splitContent(document.getElementById('createP1Contenu').value)
+                        sujet: '',
+                        contenu: [
+                            document.getElementById('createP1Line1').value.trim(),
+                            document.getElementById('createP1Line2').value.trim()
+                        ]
                     },
                     p2: {
-                        sujet: document.getElementById('createP2Sujet').value.trim(),
-                        contenu: splitContent(document.getElementById('createP2Contenu').value)
+                        sujet: '',
+                        contenu: [
+                            document.getElementById('createP2Line3').value.trim(),
+                            document.getElementById('createP2Line4').value.trim()
+                        ]
                     },
                     p3: {
-                        sujet: document.getElementById('createP3Sujet').value.trim(),
-                        contenu: splitContent(document.getElementById('createP3Contenu').value)
+                        sujet: '',
+                        contenu: [
+                            document.getElementById('createP3Line5').value.trim(),
+                            document.getElementById('createP3Line6').value.trim()
+                        ]
                     },
                     p4: {
-                        sujet: document.getElementById('createP4Sujet').value.trim(),
-                        contenu: splitContent(document.getElementById('createP4Contenu').value)
+                        sujet: '',
+                        contenu: [
+                            document.getElementById('createP4Line7').value.trim(),
+                            document.getElementById('createP4Line8').value.trim()
+                        ]
                     },
                     timestamp: new Date().toLocaleString(),
                     source: 'create-modal'
@@ -2473,8 +2478,6 @@ setTimeout(() => {
             }
         });
     }
-}, 100);
-               
 }, 100);
     </script>
 </body>
