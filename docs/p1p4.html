@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2449,19 +2451,13 @@ function splitContent(text) {
     return text.split('\n').filter(line => line.trim() !== '').slice(0, 7);
 }
 
-// Fonction pour découper le contenu en lignes
-function splitContent(text) {
-    if (!text || text.trim() === '') return [];
-    return text.split('\n').filter(line => line.trim() !== '').slice(0, 7);
-}
-
 const contentData = {
     id: contentId,
-    titre: document.getElementById('createTitle').value.trim(),
-    soustitre: document.getElementById('createSubtitle').value.trim(),
+    title: document.getElementById('createTitle').value.trim(),
+    subtitle: document.getElementById('createSubtitle').value.trim(),
     p1: {
-        sujet: document.getElementById('createP1Sujet').value.trim(),      // ✅ Existe
-        contenu: splitContent(document.getElementById('createP1Contenu').value)  // ✅ Existe
+        sujet: document.getElementById('createP1Sujet').value.trim(),
+        contenu: splitContent(document.getElementById('createP1Contenu').value)
     },
     p2: {
         sujet: document.getElementById('createP2Sujet').value.trim(),
@@ -2479,7 +2475,7 @@ const contentData = {
     source: 'create-modal'
 };
                 // Send to server
-                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
+                const response = await fetch(`${WS_SERVER_URL}/api/history`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -2491,12 +2487,12 @@ const contentData = {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-              const titre = contentData.titre;  // Sauvegarder le titre
-await loadSharedData();
-displayContentCards();
-closeCreateModal();
+                // Add to local store
+                contentStore.unshift(contentData);
+                displayContentCards();
+                closeCreateModal();
                 
-            showStatusMessage(`✨ "${titre}" créé avec succès !`, 'success');
+                showStatusMessage(`✨ "${contentData.title}" created successfully!`, 'success');
             } catch (error) {
                 console.error('Create failed:', error);
                 showStatusMessage(`❌ Failed to create: ${error.message}`, 'error');
@@ -2507,3 +2503,4 @@ closeCreateModal();
     </script>
 </body>
 </html>
+
