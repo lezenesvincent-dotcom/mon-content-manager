@@ -2360,6 +2360,7 @@
         }
         // Create Modal Functions
 function openCreateModal() {
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // ← Scroll vers le haut
     const modal = document.getElementById('createModal');
     modal.style.display = 'flex';
     modal.classList.add('show');
