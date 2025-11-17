@@ -2332,7 +2332,7 @@
                     wsStatusIndicator.textContent = '🔄 Chargement...';
                 }
                 
-                const response = await fetch(`${WS_SERVER_URL}/api/history`);
+                const response = await fetch(`${WS_SERVER_URL}/api/data`);
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
@@ -2479,7 +2479,7 @@ const contentData = {
     source: 'create-modal'
 };
                 // Send to server
-                const response = await fetch(`${WS_SERVER_URL}/api/history`, {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -2491,12 +2491,12 @@ const contentData = {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // Add to local store
-                contentStore.unshift(contentData);
-                displayContentCards();
-                closeCreateModal();
+              const titre = contentData.titre;  // Sauvegarder le titre
+await loadSharedData();
+displayContentCards();
+closeCreateModal();
                 
-                showStatusMessage(`✨ "${contentData.title}" created successfully!`, 'success');
+            showStatusMessage(`✨ "${titre}" créé avec succès !`, 'success');
             } catch (error) {
                 console.error('Create failed:', error);
                 showStatusMessage(`❌ Failed to create: ${error.message}`, 'error');
