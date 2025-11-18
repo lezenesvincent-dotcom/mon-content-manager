@@ -886,7 +886,15 @@
             <button class="tab-button active" onclick="openTab(event, 'manage')">Manage</button>
         </div>
 
-        <div id="create" class="tab-content" style="display: none;">
+        <div class="modal-overlay" id="createPopup" style="display: none;">
+    <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto; background: #1a1a2e;">
+        <div class="modal-header">
+            <h2 class="modal-title" style="color: #e4e4e4;">
+                <span>➕</span>
+                Créer un nouveau contenu
+            </h2>
+            <button class="modal-close" onclick="closeCreatePopup()">×</button>
+        </div>
             <form id="contentForm">
                 <div class="template-info">
                     <h3>Overlay Configuration</h3>
