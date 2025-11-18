@@ -1040,6 +1040,8 @@
                 </div>
             </form>
         </div>
+            </div>
+    </div>
 
         <div id="manage" class="tab-content active">
             <!-- Quick Edit Modal -->
@@ -2411,7 +2413,16 @@ function closeCreateModal() {
         counter.classList.remove('warning', 'error');
     });
 }
+// Fonctions pour le popup Create
+function openCreatePopup() {
+    const popup = document.getElementById('createPopup');
+    popup.classList.add('show');
+}
 
+function closeCreatePopup() {
+    const popup = document.getElementById('createPopup');
+    popup.classList.remove('show');
+}
 // Create modal character counters
 const createTextareas = [
     { id: 'createP1Line1', counter: 'createCounter_p1_line1' },
