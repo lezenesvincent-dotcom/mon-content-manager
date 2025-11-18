@@ -872,9 +872,9 @@
         </div>
                 <h1 style="text-align: center; width: 100%; font-size: 2.5rem; letter-spacing: 2px;">MANAGE</h1>
                 <div style="display: flex; gap: 10px; position: absolute; right: 30px;">
-                    <button onclick="openCreatePopup()" style="padding: 12px 24px; background: rgba(255,255,255,0.25); color: white; border: none; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.3s;">
-    🚀 Création
-</button>
+                    <a href="index.html" style="padding: 12px 24px; background: rgba(255,255,255,0.25); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s;">
+                        🚀 Création
+                    </a>
                     <a href="p1p4.html" style="padding: 12px 24px; background: white; color: #7b68ee; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         📝 Manage
                     </a>
@@ -886,15 +886,7 @@
             <button class="tab-button active" onclick="openTab(event, 'manage')">Manage</button>
         </div>
 
-        <div class="modal-overlay" id="createPopup" style="display: none;">
-    <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto; background: #1a1a2e;">
-        <div class="modal-header">
-            <h2 class="modal-title" style="color: #e4e4e4;">
-                <span>➕</span>
-                Créer un nouveau contenu
-            </h2>
-            <button class="modal-close" onclick="closeCreatePopup()">×</button>
-        </div>
+        <div id="create" class="tab-content" style="display: none;">
             <form id="contentForm">
                 <div class="template-info">
                     <h3>Overlay Configuration</h3>
@@ -1040,8 +1032,6 @@
                 </div>
             </form>
         </div>
-            </div>
-    </div>
 
         <div id="manage" class="tab-content active">
             <!-- Quick Edit Modal -->
@@ -2413,16 +2403,7 @@ function closeCreateModal() {
         counter.classList.remove('warning', 'error');
     });
 }
-// Fonctions pour le popup Create
-function openCreatePopup() {
-    const popup = document.getElementById('createPopup');
-    popup.classList.add('show');
-}
 
-function closeCreatePopup() {
-    const popup = document.getElementById('createPopup');
-    popup.classList.remove('show');
-}
 // Create modal character counters
 const createTextareas = [
     { id: 'createP1Line1', counter: 'createCounter_p1_line1' },
