@@ -1226,7 +1226,7 @@
             <button class="modal-close" onclick="closeCreateModal()">×</button>
         </div>
         
-        <form id="createModalForm">
+        <form id="createModalForm" onsubmit="handleCreateSubmit(event); return false;">
 <div style="background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
                 <h3 style="color: #e4e4e4; margin-bottom: 10px;">🚀 TITRE</h3>
                 <input type="text" id="createTitle" required 
@@ -2198,7 +2198,25 @@
                     document.getElementById('gistStatusText').style.color = '#dc3545';
                 }
             });
-            
+            // Character counters for CREATE MODAL
+['P1', 'P2', 'P3', 'P4'].forEach(p => {
+    const sujetInput = document.getElementById(`create${p}Sujet`);
+    const contenuTextarea = document.getElementById(`create${p}Contenu`);
+    
+    if (sujetInput) {
+        sujetInput.addEventListener('input', function() {
+            const counter = document.getElementById(`createCounter${p}Sujet`);
+            if (counter) counter.textContent = `${this.value.length} / 15`;
+        });
+    }
+    
+    if (contenuTextarea) {
+        contenuTextarea.addEventListener('input', function() {
+            const counter = document.getElementById(`createCounter${p}Contenu`);
+            if (counter) counter.textContent = `${this.value.length} / 500`;
+        });
+    }
+});
             // Character counters for all text areas
             const textareas = [
                 'p1_line1', 'p1_line2',
@@ -2384,6 +2402,59 @@
             }
         }
         // Create Modal Functions
+        // ===== CREATE FORM HANDLER =====
+async function handleCreateSubmit(event) {
+    event.preventDefault();
+    console.log('=== SUBMITTING CREATE FORM ===');
+    
+    try {
+        function splitContent(text) {
+            if (!text || text.trim() === '') return [];
+            return text.split('\n').filter(line => line.trim() !== '').slice(0, 7);
+        }
+
+        const contentId = Date.now().toString();
+        const contentData = {
+            id: contentId,
+            title: document.getElementById('createTitle').value.trim(),
+            subtitle: document.getElementById('createSubtitle').value.trim(),
+            p1: {
+                sujet: document.getElementById('createP1Sujet').value.trim(),
+                contenu: splitContent(document.getElementById('createP1Contenu').value)
+            },
+            p2: {
+                sujet: document.getElementById('createP2Sujet').value.trim(),
+                contenu: splitContent(document.getElementById('createP2Contenu').value)
+            },
+            p3: {
+                sujet: document.getElementById('createP3Sujet').value.trim(),
+                contenu: splitContent(document.getElementById('createP3Contenu').value)
+            },
+            p4: {
+                sujet: document.getElementById('createP4Sujet').value.trim(),
+                contenu: splitContent(document.getElementById('createP4Contenu').value)
+            },
+            timestamp: new Date().toLocaleString()
+        };
+
+        console.log('📦 Data to save:', contentData);
+
+        contentStore.unshift(contentData);
+        saveToLocalStorage();
+
+        displayContentCards();
+        closeCreateModal();
+        
+        showStatusMessage(`💾 "${contentData.title}" saved!`, 'success');
+        
+        console.log('✅ Content saved successfully');
+        
+    } catch (error) {
+        console.error('❌ Save failed:', error);
+        showStatusMessage(`❌ Error: ${error.message}`, 'error');
+    }
+}
+        
 function openCreateModal() {
     window.scrollTo({ top: 0, behavior: 'smooth' }); // ← Scroll vers le haut
     const modal = document.getElementById('createModal');
