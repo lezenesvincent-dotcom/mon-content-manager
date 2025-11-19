@@ -2473,13 +2473,19 @@ const contentData = {
     source: 'create-modal'
 };
                 // Send to server
-                const response = await fetch(`${WS_SERVER_URL}/api/history`, {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(contentData)
-                });
+                    body: JSON.stringify({
+    titre: contentData.title || '',
+    soustitre: contentData.subtitle || '',
+    p1: contentData.p1 || { sujet: '', contenu: [] },
+    p2: contentData.p2 || { sujet: '', contenu: [] },
+    p3: contentData.p3 || { sujet: '', contenu: [] },
+    p4: contentData.p4 || { sujet: '', contenu: [] }
+})
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
