@@ -2442,14 +2442,14 @@ function closeCreateModal() {
 
 // Create modal character counters
 const createTextareas = [
-    { id: 'createP1Line1', counter: 'createCounter_p1_line1' },
-    { id: 'createP1Line2', counter: 'createCounter_p1_line2' },
-    { id: 'createP2Line3', counter: 'createCounter_p2_line3' },
-    { id: 'createP2Line4', counter: 'createCounter_p2_line4' },
-    { id: 'createP3Line5', counter: 'createCounter_p3_line5' },
-    { id: 'createP3Line6', counter: 'createCounter_p3_line6' },
-    { id: 'createP4Line7', counter: 'createCounter_p4_line7' },
-    { id: 'createP4Line8', counter: 'createCounter_p4_line8' }
+    { id: 'createP1Sujet', counter: 'createCounterP1Sujet', max: 15 },
+    { id: 'createP1Contenu', counter: 'createCounterP1Contenu', max: 500 },
+    { id: 'createP2Sujet', counter: 'createCounterP2Sujet', max: 15 },
+    { id: 'createP2Contenu', counter: 'createCounterP2Contenu', max: 500 },
+    { id: 'createP3Sujet', counter: 'createCounterP3Sujet', max: 15 },
+    { id: 'createP3Contenu', counter: 'createCounterP3Contenu', max: 500 },
+    { id: 'createP4Sujet', counter: 'createCounterP4Sujet', max: 15 },
+    { id: 'createP4Contenu', counter: 'createCounterP4Contenu', max: 500 }
 ];
 
 createTextareas.forEach(item => {
@@ -2460,10 +2460,15 @@ createTextareas.forEach(item => {
                 const counter = document.getElementById(item.counter);
                 if (counter) {
                     const length = this.value.length;
-                    counter.textContent = `${length} / 80 characters`;
+                    counter.textContent = `${length} / ${item.max}`;
                     counter.classList.remove('warning', 'error');
-                    if (length > 70) counter.classList.add('warning');
-                    if (length === 80) counter.classList.add('error');
+                    if (item.max === 15) {
+                        if (length > 12) counter.classList.add('warning');
+                        if (length === 15) counter.classList.add('error');
+                    } else {
+                        if (length > 450) counter.classList.add('warning');
+                        if (length === 500) counter.classList.add('error');
+                    }
                 }
             });
         }
