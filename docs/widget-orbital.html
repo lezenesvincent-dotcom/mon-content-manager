@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0">
+    <title>eCamm Overlay - Système Orbital P1-P4</title>
+    <!-- Version 12.0 ORBITAL - Système de particules gravitationnelles - 24 nov 2025 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: transparent;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+        }
+
+        .overlay-container {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1800px;
+            height: 850px;
+            transform-style: preserve-3d;
+            perspective: 2000px;
+        }
+
+        /* ========== HEADER ========== */
+        .header-row {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 5px;
+            padding-left: 50px;
+            height: 70px;
+        }
+
+        .main-title {
+            font-size: 4.2rem;
+            font-weight: 800;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            animation: fallingLeaf 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            transform-style: preserve-3d;
+        }
+
+        .main-subtitle {
+            font-size: 2.8rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.85);
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            animation: fallingLeaf 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s forwards;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes fallingLeaf {
+            0% {
+                opacity: 0;
+                transform: translateY(-300px) rotateX(180deg) rotateZ(-45deg);
+            }
+            60% {
+                transform: translateY(20px) rotateX(20deg) rotateZ(-10deg);
+            }
+            80% {
+                transform: translateY(-5px) rotateX(5deg) rotateZ(-2deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateX(0deg) rotateZ(0deg);
+            }
+        }
+
+        /* ========== SYSTÈME ORBITAL ========== */
+        .orbital-system {
+            position: relative;
+            width: 100%;
+            height: 715px;
+            margin-top: 110px;
+            transform-style: preserve-3d;
+            perspective: 2000px;
+        }
+
+        .orbital-center {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            transform-style: preserve-3d;
+        }
+
+        .subject-box {
+            position: absolute;
+            left: -200px; /* Centrer la box (largeur ~400px) */
+            top: -180px; /* Centrer la box (hauteur ~360px) */
+            width: 400px;
+            min-height: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-style: preserve-3d;
+            transition: all 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+        }
+
+        /* Animation d'entrée feuilles mortes */
+        @keyframes boxFallingLeaf {
+            0% {
+                opacity: 0;
+                transform: translateY(-400px) translateZ(200px) rotateX(180deg) rotateY(90deg) rotateZ(45deg);
+            }
+            70% {
+                transform: translateY(30px) translateZ(50px) rotateX(30deg) rotateY(20deg) rotateZ(10deg);
+            }
+            85% {
+                transform: translateY(-10px) translateZ(20px) rotateX(10deg) rotateY(5deg) rotateZ(2deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) translateZ(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+        }
+
+        .subject-box:nth-child(1) { animation: boxFallingLeaf 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards; }
+        .subject-box:nth-child(2) { animation: boxFallingLeaf 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s forwards; }
+        .subject-box:nth-child(3) { animation: boxFallingLeaf 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.7s forwards; }
+        .subject-box:nth-child(4) { animation: boxFallingLeaf 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.9s forwards; }
+
+        /* POSITION CENTRALE - Box en focus */
+        .orbital-system.focus-1 .subject-box:nth-child(1),
+        .orbital-system.focus-2 .subject-box:nth-child(2),
+        .orbital-system.focus-3 .subject-box:nth-child(3),
+        .orbital-system.focus-4 .subject-box:nth-child(4) {
+            transform: 
+                translateX(0) 
+                translateY(0) 
+                translateZ(150px)
+                scale(1.2);
+            z-index: 100;
+            animation: centerFloat 15s cubic-bezier(0.45, 0.05, 0.55, 0.95) 2s infinite;
+        }
+
+        @keyframes centerFloat {
+            0%, 100% {
+                transform: 
+                    translateX(0) 
+                    translateY(0) 
+                    translateZ(150px)
+                    rotateY(0deg)
+                    scale(1.2);
+            }
+            33% {
+                transform: 
+                    translateX(0) 
+                    translateY(-15px) 
+                    translateZ(160px)
+                    rotateY(3deg)
+                    scale(1.2);
+            }
+            66% {
+                transform: 
+                    translateX(0) 
+                    translateY(15px) 
+                    translateZ(155px)
+                    rotateY(-3deg)
+                    scale(1.2);
+            }
+        }
+
+        /* ORBITES - Les 3 autres boxes gravitent autour */
+        /* FOCUS 1 : P1 au centre, P2/P3/P4 orbitent */
+        .orbital-system.focus-1 .subject-box:nth-child(2) {
+            animation: orbit1 40s linear 2s infinite;
+            z-index: 50;
+        }
+        .orbital-system.focus-1 .subject-box:nth-child(3) {
+            animation: orbit2 40s linear 2s infinite;
+            z-index: 50;
+        }
+        .orbital-system.focus-1 .subject-box:nth-child(4) {
+            animation: orbit3 40s linear 2s infinite;
+            z-index: 50;
+        }
+
+        /* FOCUS 2 : P2 au centre, P1/P3/P4 orbitent */
+        .orbital-system.focus-2 .subject-box:nth-child(1) {
+            animation: orbit1 40s linear 2s infinite;
+            z-index: 50;
+        }
+        .orbital-system.focus-2 .subject-box:nth-child(3) {
+            animation: orbit2 40s linear 2s infinite;
+            z-index: 50;
+        }
+        .orbital-system.focus-2 .subject-box:nth-child(4) {
+            animation: orbit3 40s linear 2s infinite;
+            z-index: 50;
+        }
+
+        /* FOCUS 3 : P3 au centre, P1/P2/P4 orbitent */
+        .orbital-system.focus-3 .subject-box:nth-child(1) {
+            animation: orbit1 40s linear 2s infinite;
+            z-index: 50;
+        }
+        .orbital-system.focus-3 .subject-box:nth-child(2) {
+            animation: orbit2 40s linear 2s infinite;
+            z-index: 50;
+        }
+        .orbital-system.focus-3 .subject-box:nth-child(4) {
+            animation: orbit3 40s linear 2s infinite;
+            z-index: 50;
+        }
+
+        /* FOCUS 4 : P4 au centre, P1/P2/P3 orbitent */
+        .orbital-system.focus-4 .subject-box:nth-child(1) {
+            animation: orbit1 40s linear 2s infinite;
+            z-index: 50;
+        }
+        .orbital-system.focus-4 .subject-box:nth-child(2) {
+            animation: orbit2 40s linear 2s infinite;
+            z-index: 50;
+        }
+        .orbital-system.focus-4 .subject-box:nth-child(3) {
+            animation: orbit3 40s linear 2s infinite;
+            z-index: 50;
+        }
+
+        /* 3 orbites à 120° d'écart */
+        @keyframes orbit1 {
+            0% {
+                transform: 
+                    rotate3d(0, 1, 0, 0deg)
+                    translateX(500px)
+                    translateZ(-20px)
+                    rotate3d(0, 1, 0, 0deg)
+                    scale(0.85);
+            }
+            100% {
+                transform: 
+                    rotate3d(0, 1, 0, 360deg)
+                    translateX(500px)
+                    translateZ(-20px)
+                    rotate3d(0, 1, 0, -360deg)
+                    scale(0.85);
+            }
+        }
+
+        @keyframes orbit2 {
+            0% {
+                transform: 
+                    rotate3d(0, 1, 0, 120deg)
+                    translateX(500px)
+                    translateZ(-20px)
+                    rotate3d(0, 1, 0, -120deg)
+                    scale(0.85);
+            }
+            100% {
+                transform: 
+                    rotate3d(0, 1, 0, 480deg)
+                    translateX(500px)
+                    translateZ(-20px)
+                    rotate3d(0, 1, 0, -480deg)
+                    scale(0.85);
+            }
+        }
+
+        @keyframes orbit3 {
+            0% {
+                transform: 
+                    rotate3d(0, 1, 0, 240deg)
+                    translateX(500px)
+                    translateZ(-20px)
+                    rotate3d(0, 1, 0, -240deg)
+                    scale(0.85);
+            }
+            100% {
+                transform: 
+                    rotate3d(0, 1, 0, 600deg)
+                    translateX(500px)
+                    translateZ(-20px)
+                    rotate3d(0, 1, 0, -600deg)
+                    scale(0.85);
+            }
+        }
+
+        /* ========== CONTENU DES BOXES ========== */
+        .subject-name {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .subject-content-box {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 35px;
+            min-height: 250px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subject-content-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(138, 159, 255, 0.3) 0%, 
+                rgba(164, 113, 222, 0.3) 50%,
+                rgba(138, 159, 255, 0.3) 100%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            border-radius: 18px;
+        }
+
+        .subject-content-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .subject-content-box li {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.95);
+            margin: 15px 0;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .subject-content-box li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: rgba(138, 159, 255, 0.8);
+            font-size: 2rem;
+        }
+
+        /* Glow effect on focused box */
+        .orbital-system.focus-1 .subject-box:nth-child(1) .subject-content-box::before,
+        .orbital-system.focus-2 .subject-box:nth-child(2) .subject-content-box::before,
+        .orbital-system.focus-3 .subject-box:nth-child(3) .subject-content-box::before,
+        .orbital-system.focus-4 .subject-box:nth-child(4) .subject-content-box::before {
+            opacity: 1;
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Status indicator */
+        .status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .status.connected {
+            background: rgba(40, 167, 69, 0.3);
+            color: #28a745;
+            border: 2px solid #28a745;
+        }
+
+        .status.disconnected {
+            background: rgba(220, 53, 69, 0.3);
+            color: #dc3545;
+            border: 2px solid #dc3545;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="status" class="status disconnected">Connexion...</div>
+
+    <div class="overlay-container">
+        <div class="header-row">
+            <div class="main-title" id="mainTitle">Titre Principal</div>
+            <div class="main-subtitle" id="mainSubtitle">Sous-titre</div>
+        </div>
+
+        <div class="orbital-system focus-1" id="orbitalSystem">
+            <div class="orbital-center">
+                <!-- P1 -->
+                <div class="subject-box" data-subject="1">
+                    <div class="subject-name">P1</div>
+                    <div class="subject-content-box">
+                        <ul id="p1-content"></ul>
+                    </div>
+                </div>
+                <!-- P2 -->
+                <div class="subject-box" data-subject="2">
+                    <div class="subject-name">P2</div>
+                    <div class="subject-content-box">
+                        <ul id="p2-content"></ul>
+                    </div>
+                </div>
+                <!-- P3 -->
+                <div class="subject-box" data-subject="3">
+                    <div class="subject-name">P3</div>
+                    <div class="subject-content-box">
+                        <ul id="p3-content"></ul>
+                    </div>
+                </div>
+                <!-- P4 -->
+                <div class="subject-box" data-subject="4">
+                    <div class="subject-name">P4</div>
+                    <div class="subject-content-box">
+                        <ul id="p4-content"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WS_URL = 'wss://ecamm-overlay-server.onrender.com';
+        let ws;
+        let currentFocus = 1;
+
+        function connectWebSocket() {
+            ws = new WebSocket(WS_URL);
+            
+            ws.onopen = () => {
+                console.log('✅ WebSocket connected');
+                document.getElementById('status').textContent = 'Connecté';
+                document.getElementById('status').className = 'status connected';
+                ws.send(JSON.stringify({ type: 'init' }));
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log('📩 Message reçu:', data);
+                
+                if (data.type === 'update') {
+                    updateContent(data);
+                } else if (data.type === 'focus') {
+                    changeFocus(data.focus);
+                }
+            };
+            
+            ws.onclose = () => {
+                console.log('❌ WebSocket disconnected');
+                document.getElementById('status').textContent = 'Déconnecté';
+                document.getElementById('status').className = 'status disconnected';
+                setTimeout(connectWebSocket, 3000);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        function updateContent(data) {
+            // Update title/subtitle
+            if (data.titre) document.getElementById('mainTitle').textContent = data.titre;
+            if (data.soustitre) document.getElementById('mainSubtitle').textContent = data.soustitre;
+            
+            // Update P1-P4
+            ['p1', 'p2', 'p3', 'p4'].forEach(p => {
+                if (data[p] && data[p].contenu) {
+                    const ul = document.getElementById(`${p}-content`);
+                    ul.innerHTML = data[p].contenu.map(line => `<li>${line}</li>`).join('');
+                }
+            });
+        }
+
+        function changeFocus(focus) {
+            currentFocus = focus;
+            const orbitalSystem = document.getElementById('orbitalSystem');
+            orbitalSystem.className = `orbital-system focus-${focus}`;
+            console.log(`🎯 Focus changed to: P${focus}`);
+        }
+
+        // Hide status on click
+        document.getElementById('status').addEventListener('click', function() {
+            this.classList.add('hidden');
+        });
+
+        // Connect on load
+        connectWebSocket();
+    </script>
+</body>
+</html>
