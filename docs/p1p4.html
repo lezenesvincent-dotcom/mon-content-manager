@@ -2353,7 +2353,7 @@
                     wsStatusIndicator.textContent = '🔄 Chargement...';
                 }
                 
-                const response = await fetch(`${WS_SERVER_URL}/api/history`);
+                const response = await fetch(`${WS_SERVER_URL}/api/content`);
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
@@ -2528,4 +2528,3 @@ const contentData = {
     </script>
 </body>
 </html>
-
