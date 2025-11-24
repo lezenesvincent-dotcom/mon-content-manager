@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 9.3 - Ligne simple épaisse (LineBasicMaterial), Caméra décalée gauche, Construction setDrawRange fiable - 4 nov 2025 17:30 -->
+    <!-- Version 10.0 - Animations Keynote-style : rotation 3D subtile + float permanent - 24 nov 2025 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -121,16 +121,43 @@
             transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: absolute;
             left: 0;
-            animation: levitate 6s ease-in-out infinite;
+            animation: keynoteFloat 20s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+            transform-style: preserve-3d;
         }
 
-        /* Animation de lévitation douce */
-        @keyframes levitate {
+        /* Animation 3D subtile inspirée de Keynote - Rotation + Float permanent */
+        @keyframes keynoteFloat {
             0%, 100% {
-                transform: translateY(0px);
+                transform: perspective(1200px) 
+                          rotateX(0deg) 
+                          rotateY(0deg) 
+                          rotateZ(0deg) 
+                          translateY(0px) 
+                          translateZ(0px);
+            }
+            25% {
+                transform: perspective(1200px) 
+                          rotateX(0.5deg) 
+                          rotateY(1deg) 
+                          rotateZ(-0.3deg) 
+                          translateY(-8px) 
+                          translateZ(5px);
             }
             50% {
-                transform: translateY(-15px);
+                transform: perspective(1200px) 
+                          rotateX(0deg) 
+                          rotateY(1.5deg) 
+                          rotateZ(0deg) 
+                          translateY(-12px) 
+                          translateZ(8px);
+            }
+            75% {
+                transform: perspective(1200px) 
+                          rotateX(-0.5deg) 
+                          rotateY(1deg) 
+                          rotateZ(0.3deg) 
+                          translateY(-8px) 
+                          translateZ(5px);
             }
         }
 
@@ -667,18 +694,40 @@
 
         /* Rotation flottante vers la gauche APRÈS construction */
         @keyframes floatingRotation {
-            0% {
-                transform: perspective(2500px) rotateY(0deg) translateZ(0px);
+            0%, 100% {
+                transform: perspective(2500px) 
+                          rotateX(0deg) 
+                          rotateY(0deg) 
+                          rotateZ(0deg)
+                          translateZ(0px);
             }
-            100% {
-                transform: perspective(2500px) rotateY(-30deg) translateZ(100px);
+            25% {
+                transform: perspective(2500px) 
+                          rotateX(1deg) 
+                          rotateY(-8deg) 
+                          rotateZ(-0.5deg)
+                          translateZ(30px);
+            }
+            50% {
+                transform: perspective(2500px) 
+                          rotateX(0deg) 
+                          rotateY(-12deg) 
+                          rotateZ(0deg)
+                          translateZ(50px);
+            }
+            75% {
+                transform: perspective(2500px) 
+                          rotateX(-1deg) 
+                          rotateY(-8deg) 
+                          rotateZ(0.5deg)
+                          translateZ(30px);
             }
         }
 
         .chart-canvas-wrapper {
             animation: 
                 fadeInChart 0.5s ease-out forwards,
-                floatingRotation 20s cubic-bezier(0.25, 0.1, 0.25, 1) 2.5s forwards;
+                floatingRotation 30s cubic-bezier(0.45, 0.05, 0.55, 0.95) 2.5s infinite;
             transform-style: preserve-3d;
         }
     </style>
