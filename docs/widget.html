@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 10.0 - Animations Keynote-style : rotation 3D subtile + float permanent - 24 nov 2025 -->
+    <!-- Version 10.1 - Animations Keynote TEST : rotation 3D VISIBLE + preserve-3d activé - 24 nov 2025 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -28,6 +28,7 @@
             transform: translateX(-50%);
             width: 1800px;
             height: 850px;
+            transform-style: preserve-3d; /* Permettre la 3D dans tout le conteneur */
         }
 
         /* Header avec titre et sous-titre côte à côte */
@@ -110,6 +111,8 @@
             overflow: visible;
             margin-top: 110px;
             transition: opacity 0.8s ease, transform 0.8s ease;
+            transform-style: preserve-3d; /* ESSENTIEL pour que la 3D des enfants fonctionne */
+            perspective: 1200px; /* Perspective globale */
         }
 
         .subject-box {
@@ -121,7 +124,7 @@
             transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: absolute;
             left: 0;
-            animation: keynoteFloat 20s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+            animation: keynoteFloat 8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
             transform-style: preserve-3d;
         }
 
@@ -137,27 +140,27 @@
             }
             25% {
                 transform: perspective(1200px) 
-                          rotateX(0.5deg) 
-                          rotateY(1deg) 
-                          rotateZ(-0.3deg) 
-                          translateY(-8px) 
-                          translateZ(5px);
+                          rotateX(5deg) 
+                          rotateY(10deg) 
+                          rotateZ(-3deg) 
+                          translateY(-30px) 
+                          translateZ(50px);
             }
             50% {
                 transform: perspective(1200px) 
                           rotateX(0deg) 
-                          rotateY(1.5deg) 
+                          rotateY(15deg) 
                           rotateZ(0deg) 
-                          translateY(-12px) 
-                          translateZ(8px);
+                          translateY(-50px) 
+                          translateZ(80px);
             }
             75% {
                 transform: perspective(1200px) 
-                          rotateX(-0.5deg) 
-                          rotateY(1deg) 
-                          rotateZ(0.3deg) 
-                          translateY(-8px) 
-                          translateZ(5px);
+                          rotateX(-5deg) 
+                          rotateY(10deg) 
+                          rotateZ(3deg) 
+                          translateY(-30px) 
+                          translateZ(50px);
             }
         }
 
