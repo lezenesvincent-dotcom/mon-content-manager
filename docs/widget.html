@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 13.9 - Espace agrandi, vignette prime décalée droite (55%), titre décalé gauche - 28 nov 2025 -->
+    <!-- Version 13.10 - Vignette prime à 60%, hauteurs augmentées (850/1000px) - 28 nov 2025 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -69,7 +69,7 @@
             padding: 15px 50px 50px 50px;
             box-shadow: none;
             backdrop-filter: none;
-            height: 900px;
+            height: 1000px;
             position: relative;
             overflow: visible;
         }
@@ -101,7 +101,7 @@
         .subjects-row {
             display: flex;
             gap: 30px;
-            height: 715px;
+            height: 850px;
             position: relative;
             overflow: visible;
             margin-top: 0px;
@@ -417,7 +417,7 @@
 
         /* ===== FOCUS 1 : P1 au centre, P2/P3/P4 orbitent ===== */
         .subjects-row.focus-1 .subject-box:nth-child(1) { 
-            left: 55%; 
+            left: 60%; 
             top: 50%;
             transform: translateX(-50%) translateY(-50%) scale(1.0) translateZ(20px);
             z-index: 100; 
@@ -435,21 +435,21 @@
             animation: glowPulse 3s ease-in-out infinite;
         }
         .subjects-row.focus-1 .subject-box:nth-child(2) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat1 60s linear infinite;
         }
         .subjects-row.focus-1 .subject-box:nth-child(3) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat2 60s linear infinite;
         }
         .subjects-row.focus-1 .subject-box:nth-child(4) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat3 60s linear infinite;
         }
 
         /* ===== FOCUS 2 : P2 au centre, P1/P3/P4 orbitent ===== */
         .subjects-row.focus-2 .subject-box:nth-child(2) { 
-            left: 55%; 
+            left: 60%; 
             top: 50%;
             transform: translateX(-50%) translateY(-50%) scale(1.0) translateZ(20px);
             z-index: 100; 
@@ -467,21 +467,21 @@
             animation: glowPulse 3s ease-in-out infinite;
         }
         .subjects-row.focus-2 .subject-box:nth-child(1) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat1 60s linear infinite;
         }
         .subjects-row.focus-2 .subject-box:nth-child(3) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat2 60s linear infinite;
         }
         .subjects-row.focus-2 .subject-box:nth-child(4) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat3 60s linear infinite;
         }
 
         /* ===== FOCUS 3 : P3 au centre, P1/P2/P4 orbitent ===== */
         .subjects-row.focus-3 .subject-box:nth-child(3) { 
-            left: 55%; 
+            left: 60%; 
             top: 50%;
             transform: translateX(-50%) translateY(-50%) scale(1.0) translateZ(20px);
             z-index: 100; 
@@ -499,21 +499,21 @@
             animation: glowPulse 3s ease-in-out infinite;
         }
         .subjects-row.focus-3 .subject-box:nth-child(1) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat1 60s linear infinite;
         }
         .subjects-row.focus-3 .subject-box:nth-child(2) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat2 60s linear infinite;
         }
         .subjects-row.focus-3 .subject-box:nth-child(4) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat3 60s linear infinite;
         }
 
         /* ===== FOCUS 4 : P4 au centre, P1/P2/P3 orbitent ===== */
         .subjects-row.focus-4 .subject-box:nth-child(4) { 
-            left: 55%; 
+            left: 60%; 
             top: 50%;
             transform: translateX(-50%) translateY(-50%) scale(1.0) translateZ(20px);
             z-index: 100; 
@@ -531,15 +531,15 @@
             animation: glowPulse 3s ease-in-out infinite;
         }
         .subjects-row.focus-4 .subject-box:nth-child(1) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat1 60s linear infinite;
         }
         .subjects-row.focus-4 .subject-box:nth-child(2) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat2 60s linear infinite;
         }
         .subjects-row.focus-4 .subject-box:nth-child(3) { 
-            left: 55%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
+            left: 60%; top: 50%; opacity: 0.7; filter: brightness(0.85); z-index: 10;
             animation: orbitSat3 60s linear infinite;
         }
 
