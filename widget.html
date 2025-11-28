@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 13.0 ORBITAL - Vrai système orbital : box centrale + 3 satellites en rotation 360° - 27 nov 2025 -->
+    <!-- Version 13.2 - Système ORBITAL complet : 1 centre + 3 satellites en rotation 360° (40s) - Démo en focus-1 - 27 nov 2025 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -127,50 +127,90 @@
         }
 
         /* Animation orbitale subtile pour les boxes non-focus */
-        @keyframes orbitalFloat {
+        /* Animation 3D subtile inspirée de Keynote - Rotation + Float permanent */
+        @keyframes keynoteFloat {
             0%, 100% {
-                transform: translateY(0px) rotateY(0deg) rotateX(0deg) rotateZ(0deg) translateZ(0px);
+                transform: perspective(1200px) 
+                          rotateX(0deg) 
+                          rotateY(0deg) 
+                          rotateZ(0deg) 
+                          translateY(0px) 
+                          translateZ(0px);
             }
             25% {
-                transform: translateY(-15px) rotateY(8deg) rotateX(3deg) rotateZ(-1deg) translateZ(30px);
+                transform: perspective(1200px) 
+                          rotateX(5deg) 
+                          rotateY(10deg) 
+                          rotateZ(-3deg) 
+                          translateY(-30px) 
+                          translateZ(50px);
             }
             50% {
-                transform: translateY(-25px) rotateY(12deg) rotateX(0deg) rotateZ(0deg) translateZ(50px);
+                transform: perspective(1200px) 
+                          rotateX(0deg) 
+                          rotateY(15deg) 
+                          rotateZ(0deg) 
+                          translateY(-50px) 
+                          translateZ(80px);
             }
             75% {
-                transform: translateY(-15px) rotateY(8deg) rotateX(-3deg) rotateZ(1deg) translateZ(30px);
-            }
-        }
-        
-        /* Animation pour la box en focus - float subtil */
-        @keyframes focusFloat {
-            0%, 100% {
-                transform: scale(1.05) translateY(0px) rotateY(0deg) translateZ(20px);
-            }
-            25% {
-                transform: scale(1.05) translateY(-10px) rotateY(2deg) translateZ(30px);
-            }
-            50% {
-                transform: scale(1.05) translateY(-15px) rotateY(0deg) translateZ(40px);
-            }
-            75% {
-                transform: scale(1.05) translateY(-10px) rotateY(-2deg) translateZ(30px);
+                transform: perspective(1200px) 
+                          rotateX(-5deg) 
+                          rotateY(10deg) 
+                          rotateZ(3deg) 
+                          translateY(-30px) 
+                          translateZ(50px);
             }
         }
 
-        /* Désactiver la lévitation sur le sujet en focus */
-        .subjects-row.focus-1 .subject-box:nth-child(1),
-        .subjects-row.focus-2 .subject-box:nth-child(2),
-        .subjects-row.focus-3 .subject-box:nth-child(3),
-        .subjects-row.focus-4 .subject-box:nth-child(4) {
-            animation: none;
+        /* Animation d'entrée : Chaque box arrive comme une feuille morte */
+        @keyframes boxFallingLeaf {
+            0% {
+                opacity: 0;
+                transform: translateY(-400px) translateZ(200px) rotateX(180deg) rotateY(90deg) rotateZ(45deg);
+            }
+            70% {
+                transform: translateY(30px) translateZ(50px) rotateX(30deg) rotateY(20deg) rotateZ(10deg);
+            }
+            85% {
+                transform: translateY(-10px) translateZ(20px) rotateX(10deg) rotateY(5deg) rotateZ(2deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) translateZ(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
         }
 
-        /* Animation orbitale avec décalages pour effet naturel */
-        .subject-box:nth-child(1) { animation: orbitalFloat 10s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0s infinite; }
-        .subject-box:nth-child(2) { animation: orbitalFloat 10s cubic-bezier(0.45, 0.05, 0.55, 0.95) 2.5s infinite; }
-        .subject-box:nth-child(3) { animation: orbitalFloat 10s cubic-bezier(0.45, 0.05, 0.55, 0.95) 5s infinite; }
-        .subject-box:nth-child(4) { animation: orbitalFloat 10s cubic-bezier(0.45, 0.05, 0.55, 0.95) 7.5s infinite; }
+        .subject-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: calc((100% - 90px) / 4);
+            flex-shrink: 0;
+            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: absolute;
+            left: 0;
+            transform-style: preserve-3d;
+            opacity: 0;
+        }
+
+        /* Animation d'entrée avec délais échelonnés + float permanent */
+        .subject-box:nth-child(1) {
+            animation: boxFallingLeaf 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards,
+                       keynoteFloat 8s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.7s infinite;
+        }
+        .subject-box:nth-child(2) {
+            animation: boxFallingLeaf 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s forwards,
+                       keynoteFloat 8s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.9s infinite;
+        }
+        .subject-box:nth-child(3) {
+            animation: boxFallingLeaf 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.7s forwards,
+                       keynoteFloat 8s cubic-bezier(0.45, 0.05, 0.55, 0.95) 2.1s infinite;
+        }
+        .subject-box:nth-child(4) {
+            animation: boxFallingLeaf 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.9s forwards,
+                       keynoteFloat 8s cubic-bezier(0.45, 0.05, 0.55, 0.95) 2.3s infinite;
+        }
 
         /* Positions de base pour chaque sujet */
         .subject-box:nth-child(1) { left: 0; }
@@ -398,7 +438,7 @@
             animation: centerPulse 8s ease-in-out infinite;
         }
         .subjects-row.focus-1 .subject-box:nth-child(1) .subject-content-box {
-            border: 3px solid rgba(255, 255, 255, 0.6);
+            border: none;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
         .subjects-row.focus-1 .subject-box:nth-child(1) .subject-content-box::before {
@@ -430,7 +470,7 @@
             animation: centerPulse 8s ease-in-out infinite;
         }
         .subjects-row.focus-2 .subject-box:nth-child(2) .subject-content-box {
-            border: 3px solid rgba(255, 255, 255, 0.6);
+            border: none;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
         .subjects-row.focus-2 .subject-box:nth-child(2) .subject-content-box::before {
@@ -462,7 +502,7 @@
             animation: centerPulse 8s ease-in-out infinite;
         }
         .subjects-row.focus-3 .subject-box:nth-child(3) .subject-content-box {
-            border: 3px solid rgba(255, 255, 255, 0.6);
+            border: none;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
         .subjects-row.focus-3 .subject-box:nth-child(3) .subject-content-box::before {
@@ -494,7 +534,7 @@
             animation: centerPulse 8s ease-in-out infinite;
         }
         .subjects-row.focus-4 .subject-box:nth-child(4) .subject-content-box {
-            border: 3px solid rgba(255, 255, 255, 0.6);
+            border: none;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
         .subjects-row.focus-4 .subject-box:nth-child(4) .subject-content-box::before {
@@ -1229,7 +1269,13 @@
                 }
             };
             updateDisplay(demoData);
-            console.log('📺 Contenu de démo affiché');
+            
+            // Démarrer en mode ORBITAL (focus-1) pour montrer l'effet
+            setTimeout(() => {
+                focusSubject(1);
+            }, 2000);
+            
+            console.log('📺 Contenu de démo affiché + mode orbital activé');
         }
 
         // Initialisation au chargement de la page
