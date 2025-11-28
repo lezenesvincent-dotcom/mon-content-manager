@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 13.10 - Vignette prime à 60%, hauteurs augmentées (850/1000px) - 28 nov 2025 -->
+    <!-- Version 13.11 - Overlay centré verticalement, backface hidden sur subject-box - 28 nov 2025 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -23,11 +23,11 @@
 
         .overlay-container {
             position: absolute;
-            bottom: 20px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             width: 1800px;
-            height: 950px;
+            height: 900px;
         }
 
         /* Header avec titre et sous-titre côte à côte */
@@ -120,6 +120,8 @@
             position: absolute;
             left: 0;
             transform-style: preserve-3d;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
         /* Animation orbitale subtile pour les boxes non-focus */
