@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>eCamm Overlay - WebSocket P1-P4</title>
-    <!-- Version 13.11 - Overlay centré verticalement, backface hidden sur subject-box - 28 nov 2025 -->
+    <!-- Version 13.12 - Backface visible (vignettes à l'envers OK), centré verticalement - 28 nov 2025 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -120,8 +120,6 @@
             position: absolute;
             left: 0;
             transform-style: preserve-3d;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
         }
 
         /* Animation orbitale subtile pour les boxes non-focus */
