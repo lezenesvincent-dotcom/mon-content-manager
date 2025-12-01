@@ -8,12 +8,21 @@
     <meta http-equiv="Expires" content="0">
     <title>Content Management Interface - P1-P4 System</title>
     <style>
-        * {
+       * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* Cacher la scrollbar */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
