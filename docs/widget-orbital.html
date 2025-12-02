@@ -383,11 +383,73 @@ développement
         // Auto-start
         window.addEventListener('load', () => setTimeout(animateIN, 500));
         
-        // Contrôle externe
+        // Contrôle externe via messages
         window.addEventListener('message', e => {
             if (e.data === 'ANIMATE_IN') animateIN();
             else if (e.data === 'NEXT_FOCUS') nextFocus();
         });
+        
+        // Contrôle via page remote (localStorage)
+        const COMMAND_KEY = 'widgetOrbital_command';
+        const REMOTE_STATE_KEY = 'widgetOrbital_remote_v416';
+        
+        window.addEventListener('storage', (e) => {
+            if (e.key === COMMAND_KEY) {
+                try {
+                    const data = JSON.parse(localStorage.getItem(COMMAND_KEY));
+                    if (!data) return;
+                    
+                    // Mettre à jour l'état depuis la remote
+                    if (data.state) {
+                        state.headerX = data.state.headerX;
+                        state.headerY = data.state.headerY;
+                        state.centerX = data.state.centerX;
+                        state.centerY = data.state.centerY;
+                        state.slots = data.state.slots;
+                        state.speedIN = data.state.speedIN;
+                        state.speedNEXT = data.state.speedNEXT;
+                        state.speedLev = data.state.speedLev;
+                        
+                        // Appliquer les changements visuels
+                        document.getElementById('header').style.left = state.headerX + 'px';
+                        document.getElementById('header').style.top = state.headerY + 'px';
+                        document.getElementById('orbitCenter').style.left = state.centerX + '%';
+                        document.getElementById('orbitCenter').style.top = state.centerY + '%';
+                        
+                        // Mettre à jour les positions des cartes (si pas en animation)
+                        if (!isAnimating && levitationEnabled) {
+                            stopLevitation();
+                            for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                                const cardNum = state.cardInSlot[slotIdx];
+                                const el = document.getElementById('p' + cardNum);
+                                el.style.transform = getSlotTransform(slotIdx);
+                            }
+                            setTimeout(startLevitation, 100);
+                        }
+                    }
+                    
+                    // Exécuter les commandes
+                    if (data.command === 'ANIMATE_IN') animateIN();
+                    else if (data.command === 'NEXT_FOCUS') nextFocus();
+                    
+                } catch (err) {
+                    console.error('Error parsing remote command:', err);
+                }
+            }
+        });
+        
+        // Charger l'état initial depuis la remote si disponible
+        try {
+            const remoteState = localStorage.getItem(REMOTE_STATE_KEY);
+            if (remoteState) {
+                const saved = JSON.parse(remoteState);
+                Object.assign(state, saved);
+                document.getElementById('header').style.left = state.headerX + 'px';
+                document.getElementById('header').style.top = state.headerY + 'px';
+                document.getElementById('orbitCenter').style.left = state.centerX + '%';
+                document.getElementById('orbitCenter').style.top = state.centerY + '%';
+            }
+        } catch (e) {}
         
         window.triggerIN = animateIN;
         window.triggerNEXT = nextFocus;
