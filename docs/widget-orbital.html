@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.16</title>
-    <!-- Version 4.16 Production - Auto-start, fade-in lévitation - 1 déc 2025 -->
+    <title>Widget Orbital Production v4.17</title>
+    <!-- Version 4.17 Production - WebSocket connecté à Manage pour contenu dynamique - 1 déc 2025 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -107,39 +107,39 @@
     <div class="preview-zone">
         <div class="overlay-container">
             <div class="header-row" id="header">
-                <span class="main-title">MUSIC</span>
-                <span class="subtitle-inline">En mars 2025</span>
+                <span class="main-title" id="titre">MUSIC</span>
+                <span class="subtitle-inline" id="soustitre">En mars 2025</span>
             </div>
             <div class="subjects-container">
                 <div class="orbit-center" id="orbitCenter">
                     <div class="subject-box" id="p1">
-                        <span class="subject-title">Achat</span>
+                        <span class="subject-title" id="p1-sujet">Achat</span>
                         <div class="subject-content-box">
-                            <div class="subject-content">Révision en hausse
+                            <div class="subject-content" id="p1-contenu">Révision en hausse
 de notre objectif
 de cours</div>
                         </div>
                     </div>
                     <div class="subject-box" id="p2">
-                        <span class="subject-title">Distribution</span>
+                        <span class="subject-title" id="p2-sujet">Distribution</span>
                         <div class="subject-content-box">
-                            <div class="subject-content">Cession à RMC-BFM
+                            <div class="subject-content" id="p2-contenu">Cession à RMC-BFM
 Media avec impact
 positif</div>
                         </div>
                     </div>
                     <div class="subject-box" id="p3">
-                        <span class="subject-title">Performance</span>
+                        <span class="subject-title" id="p3-sujet">Performance</span>
                         <div class="subject-content-box">
-                            <div class="subject-content">Résultats T3
+                            <div class="subject-content" id="p3-contenu">Résultats T3
 au-dessus des
 attentes</div>
                         </div>
                     </div>
                     <div class="subject-box" id="p4">
-                        <span class="subject-title">Stratégie</span>
+                        <span class="subject-title" id="p4-sujet">Stratégie</span>
                         <div class="subject-content-box">
-                            <div class="subject-content">Nouveau plan
+                            <div class="subject-content" id="p4-contenu">Nouveau plan
 développement
 2025</div>
                         </div>
@@ -149,6 +149,11 @@ développement
         </div>
     </div>
     <script>
+        // Configuration WebSocket
+        const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
+        let ws = null;
+        let reconnectInterval = null;
+        
         const state = { 
             headerX: 50, headerY: 80, 
             centerX: 50, centerY: 50,
@@ -163,6 +168,99 @@ développement
             speedNEXT: 2.2,
             speedLev: 25
         };
+        
+        // Fonction pour mettre à jour le contenu
+        function updateContent(data) {
+            if (!data) return;
+            
+            // Titre et sous-titre
+            if (data.titre) {
+                document.getElementById('titre').textContent = data.titre;
+            }
+            if (data.soustitre) {
+                document.getElementById('soustitre').textContent = data.soustitre;
+            }
+            
+            // P1 à P4
+            ['p1', 'p2', 'p3', 'p4'].forEach(key => {
+                if (data[key]) {
+                    const sujetEl = document.getElementById(`${key}-sujet`);
+                    const contenuEl = document.getElementById(`${key}-contenu`);
+                    
+                    if (sujetEl && data[key].sujet) {
+                        sujetEl.textContent = data[key].sujet;
+                    }
+                    
+                    if (contenuEl && data[key].contenu) {
+                        // Joindre les lignes avec des retours à la ligne
+                        contenuEl.textContent = data[key].contenu.join('\n');
+                    }
+                }
+            });
+            
+            console.log('✅ Contenu mis à jour:', data);
+        }
+        
+        // Connexion WebSocket
+        function connectWebSocket() {
+            const wsUrl = WS_SERVER_URL.replace('https://', 'wss://').replace('http://', 'ws://');
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = () => {
+                    console.log('🔗 WebSocket connecté');
+                    if (reconnectInterval) {
+                        clearInterval(reconnectInterval);
+                        reconnectInterval = null;
+                    }
+                    // Demander les données initiales
+                    fetchInitialData();
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('📩 Message reçu:', data);
+                        updateContent(data);
+                    } catch (e) {
+                        console.error('Erreur parsing message:', e);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('❌ Erreur WebSocket:', error);
+                };
+                
+                ws.onclose = () => {
+                    console.log('🔌 WebSocket déconnecté, reconnexion dans 5s...');
+                    ws = null;
+                    if (!reconnectInterval) {
+                        reconnectInterval = setInterval(() => {
+                            console.log('🔄 Tentative de reconnexion...');
+                            connectWebSocket();
+                        }, 5000);
+                    }
+                };
+            } catch (e) {
+                console.error('❌ Erreur création WebSocket:', e);
+            }
+        }
+        
+        // Récupérer les données initiales via HTTP
+        async function fetchInitialData() {
+            try {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📦 Données initiales chargées:', data);
+                    updateContent(data);
+                }
+            } catch (e) {
+                console.error('❌ Erreur chargement données:', e);
+            }
+        }
+
         
         let isAnimating = false, levitateRAF = null, levitatePhases = [0, 1.5, 3, 4.5], levitationEnabled = false;
 
@@ -450,6 +548,9 @@ développement
                 document.getElementById('orbitCenter').style.top = state.centerY + '%';
             }
         } catch (e) {}
+        
+        // Initialiser la connexion WebSocket
+        connectWebSocket();
         
         window.triggerIN = animateIN;
         window.triggerNEXT = nextFocus;
