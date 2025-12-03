@@ -190,6 +190,23 @@ wss.on('connection', (ws) => {
                     }
                 });
             }
+            
+            // Message de type 'control' pour les commandes du joystick
+            if (data.type === 'control') {
+                console.log('🎮 Commande control reçue:', data.command);
+                
+                // Broadcaster à tous les autres clients (widgets)
+                clients.forEach(client => {
+                    if (client !== ws && client.readyState === WebSocket.OPEN) {
+                        client.send(JSON.stringify({
+                            type: 'control',
+                            command: data.command,
+                            state: data.state
+                        }));
+                    }
+                });
+                console.log('📤 Commande diffusée aux widgets');
+            }
 
         } catch (error) {
             console.error('❌ Erreur parsing message:', error);
