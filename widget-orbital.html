@@ -253,12 +253,19 @@ développement
                 const response = await fetch(`${WS_SERVER_URL}/api/data`);
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('📦 Données initiales chargées:', data);
+                    console.log('📦 Données chargées:', data);
                     updateContent(data);
                 }
             } catch (e) {
                 console.error('❌ Erreur chargement données:', e);
             }
+        }
+        
+        // Polling : vérifier les mises à jour toutes les 3 secondes
+        function startPolling() {
+            setInterval(() => {
+                fetchInitialData();
+            }, 3000); // Toutes les 3 secondes
         }
 
         
@@ -551,6 +558,9 @@ développement
         
         // Initialiser la connexion WebSocket
         connectWebSocket();
+        
+        // Démarrer le polling (vérification toutes les 3s)
+        startPolling();
         
         window.triggerIN = animateIN;
         window.triggerNEXT = nextFocus;
