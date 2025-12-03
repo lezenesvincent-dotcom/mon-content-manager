@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            perspective: 1000px;
+        }
+        .center {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 250px;
+            background: #667eea;
+            border-radius: 15px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-family: Arial;
+        }
+        .orbit-center {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-style: preserve-3d;
+        }
+        .satellite {
+            position: absolute;
+            width: 150px;
+            height: 200px;
+            background: #e74c3c;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-family: Arial;
+            animation: orbit 10s linear infinite;
+        }
+        
+        @keyframes orbit {
+            0%   { transform: translateX(300px) translateZ(0px) scale(0.8); opacity: 0.8; }
+            25%  { transform: translateX(0px) translateZ(300px) scale(0.8); opacity: 0; visibility: hidden; }
+            50%  { transform: translateX(-300px) translateZ(0px) scale(0.8); opacity: 0.8; }
+            75%  { transform: translateX(0px) translateZ(-300px) scale(0.8); opacity: 0.6; }
+            100% { transform: translateX(300px) translateZ(0px) scale(0.8); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="center">PRIME</div>
+        <div class="orbit-center">
+            <div class="satellite">SATELLITE</div>
+        </div>
+    </div>
+</body>
+</html>

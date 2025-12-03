@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Controls v4.8</title>
+    <!-- Version 4.16 - Fade-in progressif lévitation (2s), délais réduits 100ms - 1 déc 2025 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .main-container { display: flex; height: 100vh; }
+        .preview-zone {
+            flex: 1;
+            position: relative;
+            background-image: url('bg-widget.png');
+            background-size: cover;
+            background-position: center;
+            overflow: visible;
+        }
+        .overlay-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%; height: 100%;
+            transform-style: preserve-3d;
+            perspective: 1500px;
+        }
+        
+        .header-row {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            left: var(--header-x, 50px);
+            top: var(--header-y, 80px);
+            opacity: 0;
+            transform: translateY(-80px);
+        }
+        .header-row.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+        }
+        .subtitle-inline {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .subjects-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+        .orbit-center {
+            position: absolute;
+            left: var(--orbit-center-x, 50%);
+            top: var(--orbit-center-y, 50%);
+            transform-style: preserve-3d;
+        }
+        
+        .subject-box {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-style: preserve-3d;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+        .subject-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        .subject-content-box {
+            background: linear-gradient(to bottom, rgba(60, 80, 130, 0.98) 0%, rgba(80, 100, 170, 0.98) 100%);
+            border-radius: 18px;
+            padding: 25px 20px;
+            width: 280px;
+            height: 380px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+        .subject-content {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            line-height: 1.4;
+            white-space: pre-line;
+        }
+        
+        .control-panel {
+            width: 320px;
+            background: linear-gradient(180deg, #1e1e3f 0%, #151528 100%);
+            padding: 10px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: #a8b4ff; text-align: center; }
+        .control-section { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 8px; margin-bottom: 6px; }
+        .section-title { font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: #8b9cff; }
+        .joystick { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .joystick-row { display: flex; gap: 2px; }
+        .joystick-btn {
+            width: 32px; height: 26px;
+            background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%);
+            border: none; border-radius: 4px;
+            color: white; font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .joystick-btn:hover { background: linear-gradient(180deg, #5a6578 0%, #3d4758 100%); }
+        .joystick-btn:active { background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); }
+        .value-display {
+            display: flex; justify-content: space-between;
+            padding: 4px 6px; background: rgba(0,0,0,0.3); border-radius: 4px; margin-top: 4px; font-size: 0.7rem;
+        }
+        .value-number { color: #8b9cff; font-family: monospace; font-weight: 600; }
+        .slider-container { margin-top: 4px; }
+        .slider-container label { display: block; font-size: 0.65rem; color: #aaa; margin-bottom: 2px; }
+        .slider-container input[type="range"] { width: 100%; height: 4px; }
+        
+        .action-section { 
+            background: linear-gradient(180deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%); 
+            border: 1px solid rgba(102, 126, 234, 0.3); 
+        }
+        .main-buttons { display: flex; gap: 6px; margin-bottom: 6px; }
+        .in-btn, .next-btn {
+            flex: 1; padding: 10px;
+            border: none; border-radius: 6px;
+            color: white; font-size: 0.9rem; font-weight: 700;
+            cursor: pointer;
+        }
+        .in-btn { background: linear-gradient(180deg, #48bb78 0%, #38a169 100%); }
+        .next-btn { background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); }
+        .in-btn:hover, .next-btn:hover { transform: scale(1.02); }
+        .focus-indicator { text-align: center; font-size: 1.1rem; font-weight: 700; color: #a8b4ff; }
+        
+        .action-buttons { display: flex; gap: 4px; margin-top: 8px; }
+        .action-btn { flex: 1; padding: 6px; border: none; border-radius: 4px; font-size: 0.7rem; font-weight: 600; cursor: pointer; color: white; }
+        .btn-reset { background: #e53e3e; }
+        .btn-save { background: #3182ce; }
+        .btn-copy { background: #48bb78; }
+        .status-bar { margin-top: 6px; padding: 5px; background: rgba(0,0,0,0.3); border-radius: 4px; font-size: 0.6rem; color: #888; text-align: center; }
+        .status-bar.success { background: rgba(72, 187, 120, 0.2); color: #48bb78; }
+        
+        .joysticks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .joystick-compact .section-title { font-size: 0.7rem; margin-bottom: 3px; }
+        .joystick-compact .joystick-btn { width: 26px; height: 22px; font-size: 0.7rem; }
+        .joystick-compact .value-display { font-size: 0.6rem; padding: 2px 4px; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="preview-zone">
+            <div class="overlay-container">
+                <div class="header-row" id="header">
+                    <span class="main-title">MUSIC</span>
+                    <span class="subtitle-inline">En mars 2025</span>
+                </div>
+                <div class="subjects-container">
+                    <div class="orbit-center" id="orbitCenter">
+                        <div class="subject-box" id="p1">
+                            <span class="subject-title">Achat</span>
+                            <div class="subject-content-box">
+                                <div class="subject-content">Révision en hausse
+de notre objectif
+de cours</div>
+                            </div>
+                        </div>
+                        <div class="subject-box" id="p2">
+                            <span class="subject-title">Distribution</span>
+                            <div class="subject-content-box">
+                                <div class="subject-content">Cession à RMC-BFM
+Media avec impact
+positif</div>
+                            </div>
+                        </div>
+                        <div class="subject-box" id="p3">
+                            <span class="subject-title">Performance</span>
+                            <div class="subject-content-box">
+                                <div class="subject-content">Résultats T3
+au-dessus des
+attentes</div>
+                            </div>
+                        </div>
+                        <div class="subject-box" id="p4">
+                            <span class="subject-title">Stratégie</span>
+                            <div class="subject-content-box">
+                                <div class="subject-content">Nouveau plan
+développement
+2025</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-panel">
+            <h1 class="panel-title">🎮 Widget Controls</h1>
+            
+            <div class="control-section action-section">
+                <div class="main-buttons">
+                    <button class="in-btn" onclick="animateIN()">▶ IN</button>
+                    <button class="next-btn" onclick="nextFocus()">⟳ NEXT</button>
+                </div>
+                <div class="focus-indicator">Prime: <span id="focus-num">P1</span></div>
+            </div>
+            
+            <div class="control-section">
+                <h3 class="section-title">⚡ Vitesses</h3>
+                <div class="slider-container">
+                    <label>Speed IN: <span id="speedIN-val">3.5</span>s</label>
+                    <input type="range" min="2" max="7" step="0.1" value="3.5" oninput="updateSpeed('IN', this.value)">
+                </div>
+                <div class="slider-container">
+                    <label>Speed NEXT: <span id="speedNEXT-val">2.2</span>s</label>
+                    <input type="range" min="1.2" max="4" step="0.1" value="2.2" oninput="updateSpeed('NEXT', this.value)">
+                </div>
+                <div class="slider-container">
+                    <label>Lévitation: <span id="speedLev-val">25</span>s</label>
+                    <input type="range" min="10" max="60" step="1" value="25" oninput="updateSpeed('Lev', this.value)">
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h3 class="section-title">🏷️ Titre + Centre</h3>
+                <div style="display:flex; gap:10px;">
+                    <div class="joystick">
+                        <button class="joystick-btn" onclick="moveHeader(0,-10)">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn" onclick="moveHeader(-10,0)">◄</button>
+                            <button class="joystick-btn" onclick="moveHeader(10,0)">►</button>
+                        </div>
+                        <button class="joystick-btn" onclick="moveHeader(0,10)">▼</button>
+                    </div>
+                    <div class="joystick">
+                        <button class="joystick-btn" onclick="moveCenter(0,-2)">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn" onclick="moveCenter(-2,0)">◄</button>
+                            <button class="joystick-btn" onclick="moveCenter(2,0)">►</button>
+                        </div>
+                        <button class="joystick-btn" onclick="moveCenter(0,2)">▼</button>
+                    </div>
+                </div>
+                <div class="value-display">
+                    <span>H:<span id="header-pos">50,80</span></span>
+                    <span>C:<span id="center-pos">50,50</span></span>
+                </div>
+            </div>
+            
+            <div class="joysticks-grid">
+                <div class="control-section joystick-compact">
+                    <h3 class="section-title">⭐ Slot1 (Prime)</h3>
+                    <div class="joystick">
+                        <button class="joystick-btn" onclick="moveSlot(1,0,-10)">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn" onclick="moveSlot(1,-10,0)">◄</button>
+                            <button class="joystick-btn" onclick="moveSlot(1,10,0)">►</button>
+                        </div>
+                        <button class="joystick-btn" onclick="moveSlot(1,0,10)">▼</button>
+                    </div>
+                    <div class="value-display"><span class="value-number" id="slot1-pos">0,0</span></div>
+                </div>
+                <div class="control-section joystick-compact">
+                    <h3 class="section-title">🔷 Slot2</h3>
+                    <div class="joystick">
+                        <button class="joystick-btn" onclick="moveSlot(2,0,-10)">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn" onclick="moveSlot(2,-10,0)">◄</button>
+                            <button class="joystick-btn" onclick="moveSlot(2,10,0)">►</button>
+                        </div>
+                        <button class="joystick-btn" onclick="moveSlot(2,0,10)">▼</button>
+                    </div>
+                    <div class="value-display"><span class="value-number" id="slot2-pos">180,-50</span></div>
+                </div>
+                <div class="control-section joystick-compact">
+                    <h3 class="section-title">🔶 Slot3</h3>
+                    <div class="joystick">
+                        <button class="joystick-btn" onclick="moveSlot(3,0,-10)">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn" onclick="moveSlot(3,-10,0)">◄</button>
+                            <button class="joystick-btn" onclick="moveSlot(3,10,0)">►</button>
+                        </div>
+                        <button class="joystick-btn" onclick="moveSlot(3,0,10)">▼</button>
+                    </div>
+                    <div class="value-display"><span class="value-number" id="slot3-pos">200,40</span></div>
+                </div>
+                <div class="control-section joystick-compact">
+                    <h3 class="section-title">🟣 Slot4</h3>
+                    <div class="joystick">
+                        <button class="joystick-btn" onclick="moveSlot(4,0,-10)">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn" onclick="moveSlot(4,-10,0)">◄</button>
+                            <button class="joystick-btn" onclick="moveSlot(4,10,0)">►</button>
+                        </div>
+                        <button class="joystick-btn" onclick="moveSlot(4,0,10)">▼</button>
+                    </div>
+                    <div class="value-display"><span class="value-number" id="slot4-pos">220,120</span></div>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h3 class="section-title">📐 Scales</h3>
+                <div class="slider-container">
+                    <label>Slot1: <span id="slot1-scale-val">1.05</span></label>
+                    <input type="range" min="0.5" max="1.5" step="0.05" value="1.05" oninput="updateSlotScale(1, this.value)">
+                </div>
+                <div class="slider-container">
+                    <label>Slot2: <span id="slot2-scale-val">0.72</span></label>
+                    <input type="range" min="0.3" max="1.0" step="0.02" value="0.72" oninput="updateSlotScale(2, this.value)">
+                </div>
+                <div class="slider-container">
+                    <label>Slot3: <span id="slot3-scale-val">0.68</span></label>
+                    <input type="range" min="0.3" max="1.0" step="0.02" value="0.68" oninput="updateSlotScale(3, this.value)">
+                </div>
+                <div class="slider-container">
+                    <label>Slot4: <span id="slot4-scale-val">0.64</span></label>
+                    <input type="range" min="0.3" max="1.0" step="0.02" value="0.64" oninput="updateSlotScale(4, this.value)">
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn btn-reset" onclick="resetAll()">🔄 Reset</button>
+                <button class="action-btn btn-save" onclick="saveSettings()">💾 Save</button>
+                <button class="action-btn btn-copy" onclick="copyCSS()">📋 CSS</button>
+            </div>
+            <div class="status-bar" id="status">Prêt - Cliquez IN</div>
+        </div>
+    </div>
+    <script>
+        const STORAGE_KEY = 'widgetControls_v48';
+        
+        // Positions sauvegardées - à ajuster selon tes préférences
+        const defaultState = { 
+            headerX: 50, headerY: 80, 
+            centerX: 50, centerY: 50,
+            slots: [
+                { x: -40, y: 20, scale: 1.0, z: 50 },      // Slot1 Prime - légèrement à gauche
+                { x: 160, y: -60, scale: 0.70, z: -50 },   // Slot2 - haut droite
+                { x: 185, y: 30, scale: 0.66, z: -100 },   // Slot3 - milieu droite
+                { x: 210, y: 110, scale: 0.62, z: -150 }   // Slot4 - bas droite
+            ],
+            cardInSlot: [1, 2, 3, 4],
+            speedIN: 3.5,
+            speedNEXT: 2.2,
+            speedLev: 25
+        };
+        
+        let state = loadSettings();
+        let isAnimating = false;
+        let levitateRAF = null;
+        let levitatePhases = [0, 1.5, 3, 4.5];
+        let levitationEnabled = false;
+
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    return { ...defaultState, ...parsed, slots: parsed.slots || defaultState.slots };
+                }
+            } catch (e) {}
+            return JSON.parse(JSON.stringify(defaultState));
+        }
+
+        function saveSettings() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            updateStatus('💾 Sauvegardé!', true);
+        }
+        
+        function autoSave() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+        function getTransform(x, y, z, scale, rotY = 0, rotX = 0) {
+            return `translateX(-50%) translateY(-50%) translateX(${x}px) translateY(${y}px) translateZ(${z}px) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${scale})`;
+        }
+
+        function getSlotTransform(slotIdx) {
+            const s = state.slots[slotIdx];
+            return getTransform(s.x, s.y, s.z, s.scale, 0, 0);
+        }
+
+        function applyPositions() {
+            document.getElementById('header').style.left = state.headerX + 'px';
+            document.getElementById('header').style.top = state.headerY + 'px';
+            document.getElementById('header-pos').textContent = `${state.headerX},${state.headerY}`;
+            
+            document.getElementById('orbitCenter').style.left = state.centerX + '%';
+            document.getElementById('orbitCenter').style.top = state.centerY + '%';
+            document.getElementById('center-pos').textContent = `${state.centerX},${state.centerY}`;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`slot${i+1}-pos`).textContent = `${state.slots[i].x},${state.slots[i].y}`;
+                document.getElementById(`slot${i+1}-scale-val`).textContent = state.slots[i].scale;
+            }
+            
+            document.getElementById('speedIN-val').textContent = state.speedIN;
+            document.getElementById('speedNEXT-val').textContent = state.speedNEXT;
+            document.getElementById('speedLev-val').textContent = state.speedLev;
+            
+            document.getElementById('focus-num').textContent = 'P' + state.cardInSlot[0];
+        }
+
+        function moveHeader(dx, dy) {
+            state.headerX += dx;
+            state.headerY += dy;
+            applyPositions();
+            autoSave();
+        }
+
+        function moveCenter(dx, dy) {
+            state.centerX += dx;
+            state.centerY += dy;
+            applyPositions();
+            autoSave();
+        }
+
+        function moveSlot(slotNum, dx, dy) {
+            state.slots[slotNum - 1].x += dx;
+            state.slots[slotNum - 1].y += dy;
+            applyPositions();
+            autoSave();
+        }
+
+        function updateSlotScale(slotNum, val) {
+            state.slots[slotNum - 1].scale = parseFloat(val);
+            applyPositions();
+            autoSave();
+        }
+
+        function updateSpeed(type, val) {
+            if (type === 'IN') {
+                state.speedIN = parseFloat(val);
+                document.getElementById('speedIN-val').textContent = val;
+            } else if (type === 'NEXT') {
+                state.speedNEXT = parseFloat(val);
+                document.getElementById('speedNEXT-val').textContent = val;
+            } else {
+                state.speedLev = parseFloat(val);
+                document.getElementById('speedLev-val').textContent = val;
+            }
+            autoSave();
+        }
+
+        function startLevitation() {
+            levitationEnabled = true;
+            if (levitateRAF) cancelAnimationFrame(levitateRAF);
+            
+            let lastTime = performance.now();
+            const startFadeTime = performance.now();
+            const fadeDuration = 2000; // 2 secondes de fade-in
+            
+            function animate(now) {
+                if (!levitationEnabled) return;
+                
+                const delta = (now - lastTime) / 1000;
+                lastTime = now;
+                const speed = 1 / state.speedLev;
+                
+                // Fade-in progressif de l'amplitude (0 à 1 sur 2 secondes)
+                const fadeProgress = Math.min(1, (now - startFadeTime) / fadeDuration);
+                const amplitudeFactor = fadeProgress * fadeProgress; // Easing quadratique
+                
+                for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                    const cardNum = state.cardInSlot[slotIdx];
+                    const el = document.getElementById('p' + cardNum);
+                    if (el.style.opacity !== '1') continue;
+                    
+                    levitatePhases[slotIdx] += delta * speed * Math.PI * 2;
+                    
+                    const s = state.slots[slotIdx];
+                    // Amplitude qui monte progressivement de 0 à la valeur cible
+                    const dx = Math.sin(levitatePhases[slotIdx]) * 4 * amplitudeFactor;
+                    const dy = Math.cos(levitatePhases[slotIdx] * 0.7) * 2.5 * amplitudeFactor;
+                    const ds = 1 + Math.sin(levitatePhases[slotIdx] * 0.5) * 0.008 * amplitudeFactor;
+                    
+                    el.style.transform = getTransform(s.x + dx, s.y + dy, s.z, s.scale * ds, 0, 0);
+                }
+                
+                levitateRAF = requestAnimationFrame(animate);
+            }
+            
+            levitateRAF = requestAnimationFrame(animate);
+        }
+
+        function stopLevitation() {
+            levitationEnabled = false;
+            if (levitateRAF) {
+                cancelAnimationFrame(levitateRAF);
+                levitateRAF = null;
+            }
+        }
+
+        // Animation IN - Vraie chorégraphie avec croisements
+        // Les cartes arrivent du fond, se croisent, passent les unes devant/derrière les autres
+        function animateIN() {
+            if (isAnimating) return;
+            isAnimating = true;
+            stopLevitation();
+            
+            const speed = state.speedIN;
+            const totalFrames = Math.round(60 * speed);
+            
+            // Reset
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById('p' + i);
+                el.style.opacity = '0';
+            }
+            document.getElementById('header').classList.remove('visible');
+            
+            setTimeout(() => {
+                document.getElementById('header').classList.add('visible');
+                
+                let frame = 0;
+                
+                // Points de départ pour chaque carte (positions différentes pour créer la chorégraphie)
+                const startPositions = [
+                    { x: -300, y: 100, z: -2000, rotY: -90 },   // P1 vient de la gauche
+                    { x: 400, y: -150, z: -1800, rotY: 120 },   // P2 vient de la droite haut
+                    { x: 350, y: 200, z: -1600, rotY: 90 },     // P3 vient de la droite bas
+                    { x: 0, y: -200, z: -2200, rotY: 180 }      // P4 vient du haut centre
+                ];
+                
+                function animateFrame() {
+                    frame++;
+                    const progress = frame / totalFrames;
+                    
+                    // Easing très smooth
+                    const eased = 1 - Math.pow(1 - progress, 4);
+                    
+                    // Fade in progressif
+                    const opacity = Math.min(1, progress * 1.8);
+                    
+                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                        const cardNum = state.cardInSlot[slotIdx];
+                        const el = document.getElementById('p' + cardNum);
+                        const target = state.slots[slotIdx];
+                        const start = startPositions[slotIdx];
+                        
+                        // Trajectoire avec croisements
+                        // Chaque carte suit un arc différent
+                        const arcPhase = progress * Math.PI;
+                        
+                        // Décalages pour créer les croisements
+                        let crossX = 0, crossZ = 0;
+                        
+                        if (slotIdx === 0) {
+                            // P1 : arc vers la droite puis revient au centre
+                            crossX = Math.sin(arcPhase) * 150;
+                            crossZ = Math.sin(arcPhase * 2) * 100;
+                        } else if (slotIdx === 1) {
+                            // P2 : passe devant P3 au milieu
+                            crossX = -Math.sin(arcPhase) * 100;
+                            crossZ = Math.sin(arcPhase) * 200; // Monte vers l'avant
+                        } else if (slotIdx === 2) {
+                            // P3 : passe derrière P2
+                            crossX = Math.sin(arcPhase) * 80;
+                            crossZ = -Math.sin(arcPhase) * 150; // Plonge vers l'arrière
+                        } else {
+                            // P4 : arc large par le haut
+                            crossX = Math.sin(arcPhase * 1.5) * 120;
+                            crossZ = Math.sin(arcPhase) * 100;
+                        }
+                        
+                        // Position interpolée avec décalages
+                        const x = start.x + (target.x - start.x) * eased + crossX * (1 - eased);
+                        const y = start.y + (target.y - start.y) * eased;
+                        const z = start.z + (target.z - start.z) * eased + crossZ * (1 - eased);
+                        const scale = 0.15 + (target.scale - 0.15) * eased;
+                        
+                        // Rotation qui diminue progressivement
+                        const rotY = start.rotY * (1 - eased);
+                        const rotX = Math.sin(arcPhase) * 10 * (1 - eased);
+                        
+                        // Z-index dynamique basé sur la position Z
+                        const dynamicZ = Math.round(100 + z / 10);
+                        
+                        el.style.opacity = opacity.toString();
+                        el.style.zIndex = dynamicZ.toString();
+                        el.style.transform = getTransform(x, y, z, scale, rotY, rotX);
+                    }
+                    
+                    if (frame < totalFrames) {
+                        requestAnimationFrame(animateFrame);
+                    } else {
+                        // Positions finales
+                        for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                            const cardNum = state.cardInSlot[slotIdx];
+                            const el = document.getElementById('p' + cardNum);
+                            el.style.opacity = '1';
+                            el.style.zIndex = (100 - slotIdx * 20).toString();
+                            el.style.transform = getSlotTransform(slotIdx);
+                        }
+                        
+                        isAnimating = false;
+                        setTimeout(() => {
+                            startLevitation();
+                            updateStatus('✨ IN terminé', true);
+                        }, 100);
+                    }
+                }
+                
+                requestAnimationFrame(animateFrame);
+            }, 200);
+            
+            updateStatus('▶ Animation IN...');
+        }
+
+        // NEXT - P1 et P2 tournent en sync, rotation 360°
+        function nextFocus() {
+            if (isAnimating) return;
+            isAnimating = true;
+            stopLevitation();
+            
+            const duration = state.speedNEXT;
+            const totalFrames = Math.round(60 * duration);
+            
+            const oldCardInSlot = [...state.cardInSlot];
+            
+            // Rotation des slots
+            state.cardInSlot = [
+                oldCardInSlot[1],
+                oldCardInSlot[2],
+                oldCardInSlot[3],
+                oldCardInSlot[0]
+            ];
+            
+            // Cartes qui dansent
+            const cardOutNum = oldCardInSlot[0]; // Ancien prime -> slot4
+            const cardOut = document.getElementById('p' + cardOutNum);
+            const startOut = { ...state.slots[0] };
+            const endOut = { ...state.slots[3] };
+            
+            const cardInNum = oldCardInSlot[1]; // Slot2 -> nouveau prime
+            const cardIn = document.getElementById('p' + cardInNum);
+            const startIn = { ...state.slots[1] };
+            const endIn = { ...state.slots[0] };
+            
+            // Autres cartes
+            const card3 = document.getElementById('p' + oldCardInSlot[2]);
+            const start3 = { ...state.slots[2] };
+            const end3 = { ...state.slots[1] };
+            
+            const card4 = document.getElementById('p' + oldCardInSlot[3]);
+            const start4 = { ...state.slots[3] };
+            const end4 = { ...state.slots[2] };
+            
+            let frame = 0;
+            
+            function animateFrame() {
+                frame++;
+                const progress = frame / totalFrames;
+                
+                // Easing smooth
+                const eased = progress < 0.5 
+                    ? 4 * progress * progress * progress 
+                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                
+                // Phase pour les effets sinusoïdaux
+                const phase = progress * Math.PI;
+                
+                // ========== CARTE SORTANTE (P1) ==========
+                // Virage large style avion vers la GAUCHE puis rejoint slot4
+                // Passe DERRIÈRE les autres cartes
+                
+                // Virage large : d'abord part vers la gauche, puis courbe vers la droite
+                const outPhase = progress * Math.PI;
+                // Les arcs diminuent avec (1-eased) pour garantir position finale exacte
+                const outArcX = (-Math.sin(outPhase * 0.7) * 280 + Math.pow(progress, 2) * 350) * (1 - eased);
+                const outArcZ = -Math.sin(outPhase) * 1500 * (1 - eased);  // Augmenté à -1500 pour passer EXTRÊMEMENT loin derrière
+                const outArcY = Math.sin(outPhase * 0.5) * 40 * (1 - eased);
+                
+                const outX = startOut.x + (endOut.x - startOut.x) * eased + outArcX;
+                const outY = startOut.y + (endOut.y - startOut.y) * eased + outArcY;
+                const outZ = startOut.z + (endOut.z - startOut.z) * eased + outArcZ;
+                const outScale = startOut.scale + (endOut.scale - startOut.scale) * eased;
+                
+                // Rotation 360° vers la GAUCHE
+                const outRotY = -(progress * 360);
+                const outRotX = Math.sin(outPhase) * 25 * (1 - eased);
+                
+                // Z-index bas pendant tout le trajet
+                cardOut.style.zIndex = '15';
+                cardOut.style.transform = getTransform(outX, outY, outZ, outScale, outRotY, outRotX);
+                
+                // ========== CARTE ENTRANTE (P2) ==========
+                // Part EN MÊME TEMPS que P1, rotation 360° vers la GAUCHE
+                // Passe DEVANT les autres cartes
+                
+                const inPhase = progress * Math.PI;
+                // Les arcs diminuent avec (1-eased) pour garantir position finale exacte
+                const inArcX = -Math.sin(inPhase) * 120 * (1 - eased);
+                const inArcZ = Math.sin(inPhase) * 200 * (1 - eased);
+                const inArcY = Math.sin(inPhase) * 20 * (1 - eased);
+                
+                const inX = startIn.x + (endIn.x - startIn.x) * eased + inArcX;
+                const inY = startIn.y + (endIn.y - startIn.y) * eased + inArcY;
+                const inZ = startIn.z + (endIn.z - startIn.z) * eased + inArcZ;
+                const inScale = startIn.scale + (endIn.scale - startIn.scale) * eased;
+                
+                // Rotation 360° vers la GAUCHE
+                const inRotY = -(progress * 360);
+                const inRotX = -Math.sin(inPhase) * 15 * (1 - eased);
+                
+                // Z-index haut pendant tout le trajet
+                cardIn.style.zIndex = '150';
+                cardIn.style.transform = getTransform(inX, inY, inZ, inScale, inRotY, inRotX);
+                
+                // ========== AUTRES CARTES ==========
+                const x3 = start3.x + (end3.x - start3.x) * eased;
+                const y3 = start3.y + (end3.y - start3.y) * eased;
+                const z3 = start3.z + (end3.z - start3.z) * eased;
+                const scale3 = start3.scale + (end3.scale - start3.scale) * eased;
+                card3.style.zIndex = '30';
+                card3.style.transform = getTransform(x3, y3, z3, scale3, 0, 0);
+                
+                const x4 = start4.x + (end4.x - start4.x) * eased;
+                const y4 = start4.y + (end4.y - start4.y) * eased;
+                const z4 = start4.z + (end4.z - start4.z) * eased;
+                const scale4 = start4.scale + (end4.scale - start4.scale) * eased;
+                card4.style.zIndex = '20';
+                card4.style.transform = getTransform(x4, y4, z4, scale4, 0, 0);
+                
+                if (frame < totalFrames) {
+                    requestAnimationFrame(animateFrame);
+                } else {
+                    // Positions finales IMMÉDIATEMENT (pas de setTimeout)
+                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                        const cardNum = state.cardInSlot[slotIdx];
+                        const el = document.getElementById('p' + cardNum);
+                        el.style.zIndex = (100 - slotIdx * 20).toString();
+                        el.style.transform = getSlotTransform(slotIdx);
+                    }
+                    
+                    applyPositions();
+                    
+                    // Délai minimal avant lévitation (qui démarre en fade-in)
+                    isAnimating = false;
+                    setTimeout(() => {
+                        startLevitation();
+                        updateStatus('⟳ Prime: P' + state.cardInSlot[0], true);
+                    }, 100);
+                }
+            }
+            
+            requestAnimationFrame(animateFrame);
+            autoSave();
+        }
+
+        function resetAll() {
+            stopLevitation();
+            state = JSON.parse(JSON.stringify(defaultState));
+            applyPositions();
+            autoSave();
+            
+            document.getElementById('header').classList.remove('visible');
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById('p' + i);
+                el.style.opacity = '0';
+            }
+            
+            updateStatus('🔄 Reset - Cliquez IN');
+        }
+
+        function copyCSS() {
+            const css = `/* Widget Positions - ${new Date().toLocaleString()} */
+slots: [
+    { x: ${state.slots[0].x}, y: ${state.slots[0].y}, scale: ${state.slots[0].scale}, z: ${state.slots[0].z} },
+    { x: ${state.slots[1].x}, y: ${state.slots[1].y}, scale: ${state.slots[1].scale}, z: ${state.slots[1].z} },
+    { x: ${state.slots[2].x}, y: ${state.slots[2].y}, scale: ${state.slots[2].scale}, z: ${state.slots[2].z} },
+    { x: ${state.slots[3].x}, y: ${state.slots[3].y}, scale: ${state.slots[3].scale}, z: ${state.slots[3].z} }
+]
+Header: ${state.headerX}, ${state.headerY}
+Center: ${state.centerX}%, ${state.centerY}%`;
+            navigator.clipboard.writeText(css).then(() => updateStatus('📋 Positions copiées!', true));
+        }
+
+        function updateStatus(msg, success = false) {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = 'status-bar' + (success ? ' success' : '');
+            if (success) setTimeout(() => { el.textContent = 'Auto-save ON'; el.className = 'status-bar'; }, 2000);
+        }
+
+        applyPositions();
+    </script>
+</body>
+</html>
