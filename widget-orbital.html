@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.22</title>
-    <!-- Version 4.22 Production - WebSocket control support - 3 décembre 2025 15:00 -->
+    <title>Widget Orbital Production v4.23</title>
+    <!-- Version 4.23 Production - Animation NEXT fluide + fix sautes - 3 décembre 2025 16:30 -->
     <!-- FORCE UPDATE: 1733238000 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -586,15 +586,17 @@ développement
                     if (frame < totalFrames) {
                         requestAnimationFrame(animateFrame);
                     } else {
+                        // Fin de l'animation - on garde les dernières positions calculées
+                        // et on ajuste juste l'opacité et z-index
                         for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
                             const cardNum = state.cardInSlot[slotIdx];
                             const el = document.getElementById('p' + cardNum);
                             el.style.opacity = '1';
                             el.style.zIndex = (100 - slotIdx * 20);
-                            el.style.transform = getSlotTransform(slotIdx);
+                            // PAS de reset du transform ici - la lévitation s'en charge
                         }
                         isAnimating = false;
-                        setTimeout(startLevitation, 100);
+                        setTimeout(startLevitation, 50);
                     }
                 }
                 requestAnimationFrame(animateFrame);
@@ -610,12 +612,18 @@ développement
             const totalFrames = Math.round(60 * duration);
             const oldCardInSlot = [...state.cardInSlot];
             
+            // Nouvelle rotation: [1,2,3,4] → [2,3,4,1]
             state.cardInSlot = [oldCardInSlot[1], oldCardInSlot[2], oldCardInSlot[3], oldCardInSlot[0]];
             
+            // Carte qui sort (slot 0 → slot 3, passe par l'arrière)
             const cardOut = document.getElementById('p' + oldCardInSlot[0]);
             const startOut = { ...state.slots[0] }, endOut = { ...state.slots[3] };
+            
+            // Carte qui entre en focus (slot 1 → slot 0)
             const cardIn = document.getElementById('p' + oldCardInSlot[1]);
             const startIn = { ...state.slots[1] }, endIn = { ...state.slots[0] };
+            
+            // Cartes qui glissent
             const card3 = document.getElementById('p' + oldCardInSlot[2]);
             const start3 = { ...state.slots[2] }, end3 = { ...state.slots[1] };
             const card4 = document.getElementById('p' + oldCardInSlot[3]);
@@ -625,27 +633,38 @@ développement
             function animateFrame() {
                 frame++;
                 const progress = frame / totalFrames;
+                // Easing cubique in-out
                 const eased = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-                const outPhase = progress * Math.PI;
                 
-                const outArcX = (-Math.sin(outPhase * 0.7) * 280 + Math.pow(progress, 2) * 350) * (1 - eased);
-                const outArcZ = -Math.sin(outPhase) * 1500 * (1 - eased);
-                const outArcY = Math.sin(outPhase * 0.5) * 40 * (1 - eased);
+                // Phase pour les arcs (0 → π sur toute l'animation)
+                const phase = progress * Math.PI;
                 
-                cardOut.style.zIndex = '15';
+                // === CARTE QUI SORT (fait un arc vers l'arrière-droite) ===
+                // Arc qui atteint son max à mi-animation puis disparaît
+                const outArcX = Math.sin(phase) * 250;  // Part vers la droite
+                const outArcZ = -Math.sin(phase) * 800; // Part vers l'arrière
+                const outArcY = -Math.sin(phase) * 50;  // Monte légèrement
+                // Rotation qui fait un demi-tour (0 → 180 → 0)
+                const outRotY = Math.sin(phase) * 180;
+                const outRotX = Math.sin(phase * 2) * 15;
+                
+                cardOut.style.zIndex = '10';
                 cardOut.style.transform = getTransform(
                     startOut.x + (endOut.x - startOut.x) * eased + outArcX,
                     startOut.y + (endOut.y - startOut.y) * eased + outArcY,
                     startOut.z + (endOut.z - startOut.z) * eased + outArcZ,
                     startOut.scale + (endOut.scale - startOut.scale) * eased,
-                    -(progress * 360),
-                    Math.sin(outPhase) * 25 * (1 - eased)
+                    outRotY,
+                    outRotX
                 );
                 
-                const inPhase = progress * Math.PI;
-                const inArcX = -Math.sin(inPhase) * 120 * (1 - eased);
-                const inArcZ = Math.sin(inPhase) * 200 * (1 - eased);
-                const inArcY = Math.sin(inPhase) * 20 * (1 - eased);
+                // === CARTE QUI ENTRE EN FOCUS (vient de slot 1 vers slot 0) ===
+                const inArcX = -Math.sin(phase) * 80;   // Légère courbe vers la gauche
+                const inArcZ = Math.sin(phase) * 150;   // Vient vers l'avant
+                const inArcY = -Math.sin(phase) * 30;   // Monte légèrement
+                // Rotation subtile
+                const inRotY = Math.sin(phase) * 20;
+                const inRotX = -Math.sin(phase) * 10;
                 
                 cardIn.style.zIndex = '150';
                 cardIn.style.transform = getTransform(
@@ -653,36 +672,50 @@ développement
                     startIn.y + (endIn.y - startIn.y) * eased + inArcY,
                     startIn.z + (endIn.z - startIn.z) * eased + inArcZ,
                     startIn.scale + (endIn.scale - startIn.scale) * eased,
-                    -(progress * 360),
-                    -Math.sin(inPhase) * 15 * (1 - eased)
+                    inRotY,
+                    inRotX
                 );
+                
+                // === CARTE 3 (glisse de slot 2 → slot 1) ===
+                const arc3X = Math.sin(phase) * 40;
+                const arc3Z = Math.sin(phase) * 60;
                 
                 card3.style.zIndex = '30';
                 card3.style.transform = getTransform(
-                    start3.x + (end3.x - start3.x) * eased,
+                    start3.x + (end3.x - start3.x) * eased + arc3X,
                     start3.y + (end3.y - start3.y) * eased,
-                    start3.z + (end3.z - start3.z) * eased,
-                    start3.scale + (end3.scale - start3.scale) * eased, 0, 0
+                    start3.z + (end3.z - start3.z) * eased + arc3Z,
+                    start3.scale + (end3.scale - start3.scale) * eased,
+                    Math.sin(phase) * 10,
+                    0
                 );
+                
+                // === CARTE 4 (glisse de slot 3 → slot 2) ===
+                const arc4X = Math.sin(phase) * 30;
+                const arc4Z = Math.sin(phase) * 40;
                 
                 card4.style.zIndex = '20';
                 card4.style.transform = getTransform(
-                    start4.x + (end4.x - start4.x) * eased,
+                    start4.x + (end4.x - start4.x) * eased + arc4X,
                     start4.y + (end4.y - start4.y) * eased,
-                    start4.z + (end4.z - start4.z) * eased,
-                    start4.scale + (end4.scale - start4.scale) * eased, 0, 0
+                    start4.z + (end4.z - start4.z) * eased + arc4Z,
+                    start4.scale + (end4.scale - start4.scale) * eased,
+                    Math.sin(phase) * 8,
+                    0
                 );
                 
                 if (frame < totalFrames) {
                     requestAnimationFrame(animateFrame);
                 } else {
+                    // Fin de l'animation - on garde les dernières positions calculées
+                    // et on ajuste juste les z-index
                     for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
                         const el = document.getElementById('p' + state.cardInSlot[slotIdx]);
                         el.style.zIndex = (100 - slotIdx * 20);
-                        el.style.transform = getSlotTransform(slotIdx);
+                        // PAS de reset du transform ici - la lévitation s'en charge
                     }
                     isAnimating = false;
-                    setTimeout(startLevitation, 100);
+                    setTimeout(startLevitation, 50);
                 }
             }
             requestAnimationFrame(animateFrame);
