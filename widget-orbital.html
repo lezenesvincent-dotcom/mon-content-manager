@@ -3,119 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.17</title>
-    <!-- Version 4.17 Production - WebSocket connecté à Manage pour contenu dynamique - 2 décembre 2025 14:45 -->
+    <title>Widget Orbital Production v4.18</title>
+    <!-- Version 4.18 Production - FIX: updateContent gère maintenant {type, data} - 3 décembre 2025 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: transparent;
+            color: white;
+            min-height: 100vh;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
-        .overlay-container {
-            position: relative;
+        .preview-zone {
             width: 100vw;
             height: 100vh;
+            position: relative;
+            overflow: visible;
         }
+        .overlay-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%; height: 100%;
+            transform-style: preserve-3d;
+            perspective: 1500px;
+        }
+        
         .header-row {
             position: absolute;
             display: flex;
-            align-items: baseline;
-            gap: 15px;
-            font-weight: 700;
-            color: white;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            align-items: center;
+            gap: 30px;
+            left: var(--header-x, 50px);
+            top: var(--header-y, 80px);
+            opacity: 0;
+            transform: translateY(-80px);
+        }
+        .header-row.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 1.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .main-title {
-            font-size: 48px;
-            letter-spacing: 2px;
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
         }
         .subtitle-inline {
-            font-size: 20px;
-            font-weight: 400;
-            opacity: 0.9;
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
         }
+        
         .subjects-container {
-            position: relative;
+            position: absolute;
             width: 100%;
             height: 100%;
+            transform-style: preserve-3d;
         }
         .orbit-center {
             position: absolute;
-            width: 0;
-            height: 0;
+            left: var(--orbit-center-x, 50%);
+            top: var(--orbit-center-y, 50%);
+            transform-style: preserve-3d;
         }
+        
         .subject-box {
             position: absolute;
-            background: linear-gradient(135deg, rgba(102,126,234,0.95), rgba(118,75,162,0.95));
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            color: white;
-            min-width: 280px;
-            max-width: 320px;
-            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-style: preserve-3d;
+            opacity: 0;
+            will-change: transform, opacity;
         }
         .subject-title {
-            display: block;
-            font-size: 22px;
+            font-size: 1.2rem;
             font-weight: 700;
             margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 2px solid rgba(255,255,255,0.3);
-            padding-bottom: 8px;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
         }
         .subject-content-box {
-            margin-top: 12px;
+            background: linear-gradient(to bottom, rgba(60, 80, 130, 0.98) 0%, rgba(80, 100, 170, 0.98) 100%);
+            border-radius: 18px;
+            padding: 25px 20px;
+            width: 280px;
+            height: 380px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
         }
         .subject-content {
-            font-size: 16px;
-            line-height: 1.6;
-            font-weight: 400;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            line-height: 1.4;
             white-space: pre-line;
         }
     </style>
 </head>
 <body>
-    <div class="overlay-container">
-        <div class="header-row" id="header">
-            <span class="main-title" id="titre">MUSIC</span>
-            <span class="subtitle-inline" id="soustitre">En mars 2025</span>
-        </div>
-        <div class="subjects-container">
-            <div class="orbit-center" id="orbitCenter">
-                <div class="subject-box" id="p1">
-                    <span class="subject-title" id="p1-sujet">Achat</span>
-                    <div class="subject-content-box">
-                        <div class="subject-content" id="p1-contenu">Révision en hausse
+    <div class="preview-zone">
+        <div class="overlay-container">
+            <div class="header-row" id="header">
+                <span class="main-title" id="titre">MUSIC</span>
+                <span class="subtitle-inline" id="soustitre">En mars 2025</span>
+            </div>
+            <div class="subjects-container">
+                <div class="orbit-center" id="orbitCenter">
+                    <div class="subject-box" id="p1">
+                        <span class="subject-title" id="p1-sujet">Achat</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p1-contenu">Révision en hausse
 de notre objectif
 de cours</div>
+                        </div>
                     </div>
-                </div>
-                <div class="subject-box" id="p2">
-                    <span class="subject-title" id="p2-sujet">Distribution</span>
-                    <div class="subject-content-box">
-                        <div class="subject-content" id="p2-contenu">Cession à RMC-BFM
+                    <div class="subject-box" id="p2">
+                        <span class="subject-title" id="p2-sujet">Distribution</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p2-contenu">Cession à RMC-BFM
 Media avec impact
 positif</div>
+                        </div>
                     </div>
-                </div>
-                <div class="subject-box" id="p3">
-                    <span class="subject-title" id="p3-sujet">Performance</span>
-                    <div class="subject-content-box">
-                        <div class="subject-content" id="p3-contenu">Résultats T3
+                    <div class="subject-box" id="p3">
+                        <span class="subject-title" id="p3-sujet">Performance</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p3-contenu">Résultats T3
 au-dessus des
 attentes</div>
+                        </div>
                     </div>
-                </div>
-                <div class="subject-box" id="p4">
-                    <span class="subject-title" id="p4-sujet">Stratégie</span>
-                    <div class="subject-content-box">
-                        <div class="subject-content" id="p4-contenu">Nouveau plan
+                    <div class="subject-box" id="p4">
+                        <span class="subject-title" id="p4-sujet">Stratégie</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p4-contenu">Nouveau plan
 développement
 2025</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -145,6 +172,12 @@ développement
         // Fonction pour mettre à jour le contenu
         function updateContent(data) {
             if (!data) return;
+            
+            // ⚡ CORRECTION v4.18 : Si le serveur envoie {type: "update", data: {...}}, extraire juste data
+            if (data.type && data.data) {
+                console.log('📦 Extraction de data.data depuis message enveloppé');
+                data = data.data;
+            }
             
             // Titre et sous-titre
             if (data.titre) {
@@ -241,105 +274,188 @@ développement
             }, 3000); // Toutes les 3 secondes
         }
 
-        const getTransform = (x, y, z, scale, rotY = 0, rotX = 0) => 
-            `translate(-50%, -50%) translate3d(${x}%, ${y}%, ${z}px) scale(${scale}) rotateY(${rotY}deg) rotateX(${rotX}deg)`;
         
-        const getSlotTransform = (slotIdx) => {
-            const slot = state.slots[slotIdx];
-            return getTransform(slot.x, slot.y, slot.z, slot.scale);
-        };
+        let isAnimating = false, levitateRAF = null, levitatePhases = [0, 1.5, 3, 4.5], levitationEnabled = false;
 
-        let isAnimating = false;
-        let levitationEnabled = false;
-        let levitationRAF = null;
+        function getTransform(x, y, z, scale, rotY = 0, rotX = 0) {
+            return `translateX(-50%) translateY(-50%) translateX(${x}px) translateY(${y}px) translateZ(${z}px) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${scale})`;
+        }
 
-        function stopLevitation() {
-            levitationEnabled = false;
-            if (levitationRAF) {
-                cancelAnimationFrame(levitationRAF);
-                levitationRAF = null;
-            }
+        function getSlotTransform(slotIdx) {
+            const s = state.slots[slotIdx];
+            return getTransform(s.x, s.y, s.z, s.scale, 0, 0);
         }
 
         function startLevitation() {
-            if (levitationEnabled) return;
             levitationEnabled = true;
-            const speed = state.speedLev;
-            let phase = 0;
+            if (levitateRAF) cancelAnimationFrame(levitateRAF);
+            
+            let lastTime = performance.now();
             const startFadeTime = performance.now();
             const fadeDuration = 2000;
             
             function animate(now) {
                 if (!levitationEnabled) return;
                 
+                const delta = (now - lastTime) / 1000;
+                lastTime = now;
+                const speed = 1 / state.speedLev;
+                
                 const fadeProgress = Math.min(1, (now - startFadeTime) / fadeDuration);
                 const amplitudeFactor = fadeProgress * fadeProgress;
-                
-                phase += 0.02 * (speed / 25);
-                const dx = Math.sin(phase) * 4 * amplitudeFactor;
-                const dy = Math.cos(phase * 0.7) * 2.5 * amplitudeFactor;
-                const ds = 1 + Math.sin(phase * 0.5) * 0.008 * amplitudeFactor;
                 
                 for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
                     const cardNum = state.cardInSlot[slotIdx];
                     const el = document.getElementById('p' + cardNum);
-                    const slot = state.slots[slotIdx];
-                    el.style.transform = getTransform(
-                        slot.x + dx, slot.y + dy, slot.z, slot.scale * ds
-                    );
+                    if (el.style.opacity !== '1') continue;
+                    
+                    levitatePhases[slotIdx] += delta * speed * Math.PI * 2;
+                    
+                    const s = state.slots[slotIdx];
+                    const dx = Math.sin(levitatePhases[slotIdx]) * 4 * amplitudeFactor;
+                    const dy = Math.cos(levitatePhases[slotIdx] * 0.7) * 2.5 * amplitudeFactor;
+                    const ds = 1 + Math.sin(levitatePhases[slotIdx] * 0.5) * 0.008 * amplitudeFactor;
+                    
+                    el.style.transform = getTransform(s.x + dx, s.y + dy, s.z, s.scale * ds, 0, 0);
                 }
-                levitationRAF = requestAnimationFrame(animate);
+                
+                levitateRAF = requestAnimationFrame(animate);
             }
-            levitationRAF = requestAnimationFrame(animate);
+            
+            levitateRAF = requestAnimationFrame(animate);
+        }
+
+        function stopLevitation() {
+            levitationEnabled = false;
+            if (levitateRAF) {
+                cancelAnimationFrame(levitateRAF);
+                levitateRAF = null;
+            }
         }
 
         function animateIN() {
             if (isAnimating) return;
             isAnimating = true;
             stopLevitation();
+            
+            const speed = state.speedIN;
+            const totalFrames = Math.round(60 * speed);
+            
+            for (let i = 1; i <= 4; i++) document.getElementById('p' + i).style.opacity = '0';
+            document.getElementById('header').classList.remove('visible');
+            
+            setTimeout(() => {
+                document.getElementById('header').classList.add('visible');
+                
+                let frame = 0;
+                const startPositions = [
+                    { x: -300, y: 100, z: -2000, rotY: -90 },
+                    { x: 400, y: -150, z: -1800, rotY: 120 },
+                    { x: 350, y: 200, z: -1600, rotY: 90 },
+                    { x: 0, y: -200, z: -2200, rotY: 180 }
+                ];
+                
+                function animateFrame() {
+                    frame++;
+                    const progress = frame / totalFrames;
+                    const eased = 1 - Math.pow(1 - progress, 4);
+                    const opacity = Math.min(1, progress * 1.8);
+                    
+                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                        const cardNum = state.cardInSlot[slotIdx];
+                        const el = document.getElementById('p' + cardNum);
+                        const target = state.slots[slotIdx];
+                        const start = startPositions[slotIdx];
+                        const arcPhase = progress * Math.PI;
+                        
+                        let crossX = 0, crossZ = 0;
+                        if (slotIdx === 0) { crossX = Math.sin(arcPhase) * 150; crossZ = Math.sin(arcPhase * 2) * 100; }
+                        else if (slotIdx === 1) { crossX = -Math.sin(arcPhase) * 100; crossZ = Math.sin(arcPhase) * 200; }
+                        else if (slotIdx === 2) { crossX = Math.sin(arcPhase) * 80; crossZ = -Math.sin(arcPhase) * 150; }
+                        else { crossX = Math.sin(arcPhase * 1.5) * 120; crossZ = Math.sin(arcPhase) * 100; }
+                        
+                        const x = start.x + (target.x - start.x) * eased + crossX * (1 - eased);
+                        const y = start.y + (target.y - start.y) * eased;
+                        const z = start.z + (target.z - start.z) * eased + crossZ * (1 - eased);
+                        const scale = 0.15 + (target.scale - 0.15) * eased;
+                        const rotY = start.rotY * (1 - eased);
+                        const rotX = Math.sin(arcPhase) * 10 * (1 - eased);
+                        
+                        el.style.opacity = opacity;
+                        el.style.zIndex = Math.round(100 + z / 10);
+                        el.style.transform = getTransform(x, y, z, scale, rotY, rotX);
+                    }
+                    
+                    if (frame < totalFrames) {
+                        requestAnimationFrame(animateFrame);
+                    } else {
+                        for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                            const cardNum = state.cardInSlot[slotIdx];
+                            const el = document.getElementById('p' + cardNum);
+                            el.style.opacity = '1';
+                            el.style.zIndex = (100 - slotIdx * 20);
+                            el.style.transform = getSlotTransform(slotIdx);
+                        }
+                        isAnimating = false;
+                        setTimeout(startLevitation, 100);
+                    }
+                }
+                requestAnimationFrame(animateFrame);
+            }, 200);
+        }
 
-            const totalFrames = Math.round(60 * state.speedIN);
+        function nextFocus() {
+            if (isAnimating) return;
+            isAnimating = true;
+            stopLevitation();
+            
+            const duration = state.speedNEXT;
+            const totalFrames = Math.round(60 * duration);
+            const oldCardInSlot = [...state.cardInSlot];
+            
+            state.cardInSlot = [oldCardInSlot[1], oldCardInSlot[2], oldCardInSlot[3], oldCardInSlot[0]];
+            
+            const cardOut = document.getElementById('p' + oldCardInSlot[0]);
+            const startOut = { ...state.slots[0] }, endOut = { ...state.slots[3] };
+            const cardIn = document.getElementById('p' + oldCardInSlot[1]);
+            const startIn = { ...state.slots[1] }, endIn = { ...state.slots[0] };
+            const card3 = document.getElementById('p' + oldCardInSlot[2]);
+            const start3 = { ...state.slots[2] }, end3 = { ...state.slots[1] };
+            const card4 = document.getElementById('p' + oldCardInSlot[3]);
+            const start4 = { ...state.slots[3] }, end4 = { ...state.slots[2] };
+            
             let frame = 0;
-
-            const card1 = document.getElementById('p' + state.cardInSlot[0]);
-            const card2 = document.getElementById('p' + state.cardInSlot[1]);
-            const card3 = document.getElementById('p' + state.cardInSlot[2]);
-            const card4 = document.getElementById('p' + state.cardInSlot[3]);
-
-            const startIn = { x: 0, y: -150, z: -2000, scale: 0.3 };
-            const endIn = state.slots[0];
-            const start2 = { ...state.slots[1], z: -500 };
-            const end2 = state.slots[1];
-            const start3 = { ...state.slots[2] };
-            const end3 = state.slots[2];
-            const start4 = { ...state.slots[3] };
-            const end4 = state.slots[3];
-
             function animateFrame() {
                 frame++;
                 const progress = frame / totalFrames;
-                const eased = 1 - Math.pow(1 - progress, 3);
-                const inPhase = progress * Math.PI * 2;
+                const eased = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                const outPhase = progress * Math.PI;
                 
-                const inArcX = Math.cos(inPhase) * 40 * (1 - eased);
-                const inArcY = Math.sin(inPhase) * 30 * (1 - eased);
-                const inArcZ = -Math.sin(inPhase) * 300 * (1 - eased);
+                const outArcX = (-Math.sin(outPhase * 0.7) * 280 + Math.pow(progress, 2) * 350) * (1 - eased);
+                const outArcZ = -Math.sin(outPhase) * 1500 * (1 - eased);
+                const outArcY = Math.sin(outPhase * 0.5) * 40 * (1 - eased);
                 
-                card1.style.zIndex = '200';
-                card1.style.transform = getTransform(
+                cardOut.style.zIndex = '15';
+                cardOut.style.transform = getTransform(
+                    startOut.x + (endOut.x - startOut.x) * eased + outArcX,
+                    startOut.y + (endOut.y - startOut.y) * eased + outArcY,
+                    startOut.z + (endOut.z - startOut.z) * eased + outArcZ,
+                    startOut.scale + (endOut.scale - startOut.scale) * eased,
+                    -(progress * 360),
+                    Math.sin(outPhase) * 25 * (1 - eased)
+                );
+                
+                const inPhase = progress * Math.PI;
+                const inArcX = -Math.sin(inPhase) * 120 * (1 - eased);
+                const inArcZ = Math.sin(inPhase) * 200 * (1 - eased);
+                const inArcY = Math.sin(inPhase) * 20 * (1 - eased);
+                
+                cardIn.style.zIndex = '150';
+                cardIn.style.transform = getTransform(
                     startIn.x + (endIn.x - startIn.x) * eased + inArcX,
                     startIn.y + (endIn.y - startIn.y) * eased + inArcY,
                     startIn.z + (endIn.z - startIn.z) * eased + inArcZ,
                     startIn.scale + (endIn.scale - startIn.scale) * eased,
-                    0, 0
-                );
-                
-                card2.style.zIndex = '80';
-                card2.style.transform = getTransform(
-                    start2.x + (end2.x - start2.x) * eased,
-                    start2.y + (end2.y - start2.y) * eased,
-                    start2.z + (end2.z - start2.z) * eased,
-                    start2.scale + (end2.scale - start2.scale) * eased,
                     -(progress * 360),
                     -Math.sin(inPhase) * 15 * (1 - eased)
                 );
@@ -368,113 +484,27 @@ développement
                         el.style.zIndex = (100 - slotIdx * 20);
                         el.style.transform = getSlotTransform(slotIdx);
                     }
-                    setTimeout(() => {
-                        isAnimating = false;
-                        startLevitation();
-                    }, 100);
+                    isAnimating = false;
+                    setTimeout(startLevitation, 100);
                 }
             }
-            animateFrame();
+            requestAnimationFrame(animateFrame);
         }
 
-        function nextFocus() {
-            if (isAnimating) return;
-            isAnimating = true;
-            stopLevitation();
-
-            const totalFrames = Math.round(60 * state.speedNEXT);
-            let frame = 0;
-
-            const card1 = document.getElementById('p' + state.cardInSlot[0]);
-            const card2 = document.getElementById('p' + state.cardInSlot[1]);
-            const card3 = document.getElementById('p' + state.cardInSlot[2]);
-            const card4 = document.getElementById('p' + state.cardInSlot[3]);
-
-            const start1 = { ...state.slots[0] };
-            const end1 = { x: 160, y: -120, z: -1500, scale: 0.5 };
-            const start2 = { ...state.slots[1] };
-            const end2 = { ...state.slots[0] };
-            const start3 = { ...state.slots[2] };
-            const end3 = { ...state.slots[1] };
-            const start4 = { ...state.slots[3] };
-            const end4 = { ...state.slots[2] };
-
-            const tempCardInSlot = [...state.cardInSlot];
-            state.cardInSlot = [
-                tempCardInSlot[1],
-                tempCardInSlot[2],
-                tempCardInSlot[3],
-                tempCardInSlot[0]
-            ];
-
-            function animateFrame() {
-                frame++;
-                const progress = frame / totalFrames;
-                const eased = 1 - Math.pow(1 - progress, 3);
-                
-                card1.style.zIndex = '10';
-                card1.style.transform = getTransform(
-                    start1.x + (end1.x - start1.x) * eased,
-                    start1.y + (end1.y - start1.y) * eased,
-                    start1.z + (end1.z - start1.z) * eased,
-                    start1.scale + (end1.scale - start1.scale) * eased,
-                    -(progress * 360), 0
-                );
-                
-                card2.style.zIndex = '100';
-                card2.style.transform = getTransform(
-                    start2.x + (end2.x - start2.x) * eased,
-                    start2.y + (end2.y - start2.y) * eased,
-                    start2.z + (end2.z - start2.z) * eased,
-                    start2.scale + (end2.scale - start2.scale) * eased,
-                    -(progress * 360), 0
-                );
-                
-                card3.style.zIndex = '80';
-                card3.style.transform = getTransform(
-                    start3.x + (end3.x - start3.x) * eased,
-                    start3.y + (end3.y - start3.y) * eased,
-                    start3.z + (end3.z - start3.z) * eased,
-                    start3.scale + (end3.scale - start3.scale) * eased, 0, 0
-                );
-                
-                card4.style.zIndex = '60';
-                card4.style.transform = getTransform(
-                    start4.x + (end4.x - start4.x) * eased,
-                    start4.y + (end4.y - start4.y) * eased,
-                    start4.z + (end4.z - start4.z) * eased,
-                    start4.scale + (end4.scale - start4.scale) * eased, 0, 0
-                );
-                
-                if (frame < totalFrames) {
-                    requestAnimationFrame(animateFrame);
-                } else {
-                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
-                        const el = document.getElementById('p' + state.cardInSlot[slotIdx]);
-                        el.style.zIndex = (100 - slotIdx * 20);
-                        el.style.transform = getSlotTransform(slotIdx);
-                    }
-                    setTimeout(() => {
-                        isAnimating = false;
-                        startLevitation();
-                    }, 100);
-                }
-            }
-            animateFrame();
-        }
-
+        // Auto-start
+        window.addEventListener('load', () => setTimeout(animateIN, 500));
+        
+        // Contrôle externe via messages
+        window.addEventListener('message', e => {
+            if (e.data === 'ANIMATE_IN') animateIN();
+            else if (e.data === 'NEXT_FOCUS') nextFocus();
+        });
+        
         // Contrôle via page remote (localStorage)
         const COMMAND_KEY = 'widgetOrbital_command';
         const REMOTE_STATE_KEY = 'widgetOrbital_remote_v416';
         
         window.addEventListener('storage', (e) => {
-            // Trigger immédiat depuis p1p4.html
-            if (e.key === 'widget_update_trigger') {
-                console.log('🔔 Mise à jour détectée depuis Manage !');
-                fetchInitialData(); // Recharger immédiatement
-                return;
-            }
-            
             if (e.key === COMMAND_KEY) {
                 try {
                     const data = JSON.parse(localStorage.getItem(COMMAND_KEY));
@@ -510,34 +540,16 @@ développement
                     }
                     
                     // Exécuter les commandes
-                    if (data.command === 'ANIMATE_IN') {
-                        animateIN();
-                    } else if (data.command === 'NEXT_FOCUS') {
-                        nextFocus();
-                    }
-                } catch (e) {
-                    console.error('Erreur lecture commande:', e);
+                    if (data.command === 'ANIMATE_IN') animateIN();
+                    else if (data.command === 'NEXT_FOCUS') nextFocus();
+                    
+                } catch (err) {
+                    console.error('Error parsing remote command:', err);
                 }
             }
         });
-
-        // Initialisation
-        document.getElementById('header').style.left = state.headerX + 'px';
-        document.getElementById('header').style.top = state.headerY + 'px';
-        document.getElementById('orbitCenter').style.left = state.centerX + '%';
-        document.getElementById('orbitCenter').style.top = state.centerY + '%';
-
-        for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
-            const cardNum = state.cardInSlot[slotIdx];
-            const el = document.getElementById('p' + cardNum);
-            el.style.transform = getSlotTransform(slotIdx);
-            el.style.zIndex = (100 - slotIdx * 20);
-        }
-
-        setTimeout(() => {
-            animateIN();
-        }, 500);
-
+        
+        // Charger l'état initial depuis la remote si disponible
         try {
             const remoteState = localStorage.getItem(REMOTE_STATE_KEY);
             if (remoteState) {
