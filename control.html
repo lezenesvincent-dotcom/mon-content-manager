@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control - Widget Orbital</title>
+    <!-- Version 4.16 Control Page - 2 décembre 2025 14:45 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #1e1e3f 0%, #151528 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+        }
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #a8b4ff;
+        }
+        .header p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .main-controls {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .control-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #8b9cff;
+            text-align: center;
+        }
+        
+        .action-section {
+            background: linear-gradient(180deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .main-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn-in {
+            background: linear-gradient(180deg, #48bb78 0%, #38a169 100%);
+        }
+        
+        .btn-next {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .joystick {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .joystick-row {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .joystick-btn {
+            width: 50px;
+            height: 45px;
+            background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .joystick-btn:hover {
+            background: linear-gradient(180deg, #5a6578 0%, #3d4758 100%);
+        }
+        
+        .joystick-btn:active {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            transform: scale(0.95);
+        }
+        
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .value-number {
+            color: #8b9cff;
+            font-family: monospace;
+            font-weight: 600;
+        }
+        
+        .slider-container {
+            margin-top: 10px;
+        }
+        
+        .slider-container label {
+            display: block;
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 6px;
+        }
+        
+        .status-bar {
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #888;
+            text-align: center;
+        }
+        
+        .status-bar.success {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+        }
+        
+        .status-bar.connected {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+        }
+        
+        .connection-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #48bb78;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎮 Control - Widget Orbital</h1>
+        <p>Contrôlez l'overlay eCamm en temps réel</p>
+        <div id="connectionStatus" class="status-bar connected">
+            <span class="connection-status"></span>
+            Connecté - Les modifications sont synchronisées en temps réel
+        </div>
+    </div>
+    
+    <div class="main-controls">
+        <!-- Actions -->
+        <div class="control-section action-section">
+            <h3 class="section-title">🎬 Actions</h3>
+            <div class="main-buttons">
+                <button class="btn btn-in" onclick="triggerIN()">▶ IN</button>
+                <button class="btn btn-next" onclick="triggerNEXT()">⟳ NEXT</button>
+            </div>
+            <div class="slider-container">
+                <label>Speed IN: <span id="speedIN-val">3.5</span>s</label>
+                <input type="range" min="1.5" max="6" step="0.1" value="3.5" oninput="updateSpeed('IN', this.value)">
+            </div>
+            <div class="slider-container">
+                <label>Speed NEXT: <span id="speedNEXT-val">2.2</span>s</label>
+                <input type="range" min="1.0" max="4" step="0.1" value="2.2" oninput="updateSpeed('NEXT', this.value)">
+            </div>
+            <div class="slider-container">
+                <label>Lévitation: <span id="speedLev-val">25</span>s</label>
+                <input type="range" min="10" max="60" step="1" value="25" oninput="updateSpeed('Lev', this.value)">
+            </div>
+        </div>
+        
+        <!-- Titre et Centre -->
+        <div class="control-section">
+            <h3 class="section-title">🏷️ Position Titre</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveHeader(0,-10)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveHeader(-10,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveHeader(10,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveHeader(0,10)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>X: <span class="value-number" id="header-x">50</span></span>
+                <span>Y: <span class="value-number" id="header-y">80</span></span>
+            </div>
+            
+            <h3 class="section-title" style="margin-top: 20px;">🎯 Position Centre</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveCenter(0,-2)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveCenter(-2,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveCenter(2,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveCenter(0,2)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>X: <span class="value-number" id="center-x">50</span>%</span>
+                <span>Y: <span class="value-number" id="center-y">50</span>%</span>
+            </div>
+        </div>
+        
+        <!-- Slot 1 -->
+        <div class="control-section">
+            <h3 class="section-title">⭐ Slot 1 (Prime)</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveSlot(1,0,-10)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveSlot(1,-10,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveSlot(1,10,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveSlot(1,0,10)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>Pos: <span class="value-number" id="slot1-pos">-40, 20</span></span>
+            </div>
+            <div class="slider-container">
+                <label>Scale: <span id="slot1-scale">1.00</span></label>
+                <input type="range" min="0.5" max="1.5" step="0.05" value="1.0" oninput="updateSlotScale(1, this.value)">
+            </div>
+        </div>
+        
+        <!-- Slot 2 -->
+        <div class="control-section">
+            <h3 class="section-title">🔷 Slot 2</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveSlot(2,0,-10)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveSlot(2,-10,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveSlot(2,10,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveSlot(2,0,10)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>Pos: <span class="value-number" id="slot2-pos">160, -60</span></span>
+            </div>
+            <div class="slider-container">
+                <label>Scale: <span id="slot2-scale">0.70</span></label>
+                <input type="range" min="0.3" max="1.0" step="0.02" value="0.70" oninput="updateSlotScale(2, this.value)">
+            </div>
+        </div>
+        
+        <!-- Slot 3 -->
+        <div class="control-section">
+            <h3 class="section-title">🔶 Slot 3</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveSlot(3,0,-10)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveSlot(3,-10,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveSlot(3,10,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveSlot(3,0,10)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>Pos: <span class="value-number" id="slot3-pos">185, 30</span></span>
+            </div>
+            <div class="slider-container">
+                <label>Scale: <span id="slot3-scale">0.66</span></label>
+                <input type="range" min="0.3" max="1.0" step="0.02" value="0.66" oninput="updateSlotScale(3, this.value)">
+            </div>
+        </div>
+        
+        <!-- Slot 4 -->
+        <div class="control-section">
+            <h3 class="section-title">🟣 Slot 4</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveSlot(4,0,-10)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveSlot(4,-10,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveSlot(4,10,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveSlot(4,0,10)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>Pos: <span class="value-number" id="slot4-pos">210, 110</span></span>
+            </div>
+            <div class="slider-container">
+                <label>Scale: <span id="slot4-scale">0.62</span></label>
+                <input type="range" min="0.3" max="1.0" step="0.02" value="0.62" oninput="updateSlotScale(4, this.value)">
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const STORAGE_KEY = 'widgetOrbital_remote_v416';
+        const COMMAND_KEY = 'widgetOrbital_command';
+        
+        let state = {
+            headerX: 50, headerY: 80,
+            centerX: 50, centerY: 50,
+            slots: [
+                { x: -40, y: 20, scale: 1.0, z: 50 },
+                { x: 160, y: -60, scale: 0.70, z: -50 },
+                { x: 185, y: 30, scale: 0.66, z: -100 },
+                { x: 210, y: 110, scale: 0.62, z: -150 }
+            ],
+            speedIN: 3.5,
+            speedNEXT: 2.2,
+            speedLev: 25
+        };
+        
+        // Charger l'état sauvegardé
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    state = JSON.parse(saved);
+                    updateUI();
+                }
+            } catch (e) {}
+        }
+        
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+        
+        function sendCommand(command) {
+            localStorage.setItem(COMMAND_KEY, JSON.stringify({
+                command,
+                state,
+                timestamp: Date.now()
+            }));
+            window.dispatchEvent(new Event('storage'));
+        }
+        
+        function updateUI() {
+            document.getElementById('header-x').textContent = state.headerX;
+            document.getElementById('header-y').textContent = state.headerY;
+            document.getElementById('center-x').textContent = state.centerX;
+            document.getElementById('center-y').textContent = state.centerY;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`slot${i+1}-pos`).textContent = `${state.slots[i].x}, ${state.slots[i].y}`;
+                document.getElementById(`slot${i+1}-scale`).textContent = state.slots[i].scale.toFixed(2);
+            }
+            
+            document.getElementById('speedIN-val').textContent = state.speedIN;
+            document.getElementById('speedNEXT-val').textContent = state.speedNEXT;
+            document.getElementById('speedLev-val').textContent = state.speedLev;
+        }
+        
+        function triggerIN() {
+            sendCommand('ANIMATE_IN');
+        }
+        
+        function triggerNEXT() {
+            sendCommand('NEXT_FOCUS');
+        }
+        
+        function moveHeader(dx, dy) {
+            state.headerX += dx;
+            state.headerY += dy;
+            updateUI();
+            saveState();
+            sendCommand('UPDATE_STATE');
+        }
+        
+        function moveCenter(dx, dy) {
+            state.centerX += dx;
+            state.centerY += dy;
+            updateUI();
+            saveState();
+            sendCommand('UPDATE_STATE');
+        }
+        
+        function moveSlot(slotNum, dx, dy) {
+            state.slots[slotNum - 1].x += dx;
+            state.slots[slotNum - 1].y += dy;
+            updateUI();
+            saveState();
+            sendCommand('UPDATE_STATE');
+        }
+        
+        function updateSlotScale(slotNum, val) {
+            state.slots[slotNum - 1].scale = parseFloat(val);
+            updateUI();
+            saveState();
+            sendCommand('UPDATE_STATE');
+        }
+        
+        function updateSpeed(type, val) {
+            if (type === 'IN') state.speedIN = parseFloat(val);
+            else if (type === 'NEXT') state.speedNEXT = parseFloat(val);
+            else state.speedLev = parseFloat(val);
+            updateUI();
+            saveState();
+            sendCommand('UPDATE_STATE');
+        }
+        
+        loadState();
+    </script>
+</body>
+</html>

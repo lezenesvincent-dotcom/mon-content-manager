@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Content Management Interface - P1-P4 System</title>
     <style>
         * {
@@ -906,6 +903,7 @@
 
         <div class="tabs">
             <button class="tab-button active" onclick="openTab(event, 'manage')">Manage</button>
+            <button class="tab-button" onclick="window.open('control.html', '_blank')" style="margin-left: auto;">🎮 CONTROL</button>
         </div>
 
         <div id="create" class="tab-content" style="display: none;">
@@ -1790,7 +1788,7 @@
                 console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
                 
                 // Envoyer via HTTP POST au serveur
-                const response = await fetch(`${WS_SERVER_URL}/api/update`, {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1832,7 +1830,7 @@
                     p4: { sujet: '', contenu: ['', ''] }
                 };
                 
-                const response = await fetch(`${WS_SERVER_URL}/api/update`, {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -2356,7 +2354,7 @@
                     wsStatusIndicator.textContent = '🔄 Chargement...';
                 }
                 
-                const response = await fetch(`${WS_SERVER_URL}/history`);
+                const response = await fetch(`${WS_SERVER_URL}/api/history`);
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
@@ -2497,7 +2495,7 @@ const contentData = {
     source: 'create-modal'
 };
                 // Send to server
-                const response = await fetch(`${WS_SERVER_URL}/api/update`, {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
