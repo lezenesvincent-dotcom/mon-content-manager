@@ -32,6 +32,9 @@ let graphSettings = {
 // Liste des clients connectés
 let clients = new Set();
 
+// Historique des contenus P1-P4
+let contentHistory = [];
+
 // WebSocket
 wss.on('connection', (ws) => {
     console.log('✅ Nouveau client connecté');
@@ -95,6 +98,53 @@ app.get('/', (req, res) => {
 // API REST pour récupérer les paramètres
 app.get('/api/settings', (req, res) => {
     res.json(graphSettings);
+});
+
+// Récupérer l'historique
+app.get('/api/history', (req, res) => {
+    console.log('📤 GET /api/history -', contentHistory.length, 'éléments');
+    res.json(contentHistory);
+});
+
+// Ajouter un contenu
+app.post('/api/update', (req, res) => {
+    const data = req.body;
+    console.log('📥 POST /api/update:', data.titre || 'Sans titre');
+    
+    const historyItem = {
+        id: data.id || 'content-' + Date.now(),
+        titre: data.titre || '',
+        soustitre: data.soustitre || '',
+        p1: data.p1 || { sujet: '', contenu: [] },
+        p2: data.p2 || { sujet: '', contenu: [] },
+        p3: data.p3 || { sujet: '', contenu: [] },
+        p4: data.p4 || { sujet: '', contenu: [] },
+        timestamp: new Date().toISOString()
+    };
+    
+    contentHistory.unshift(historyItem);
+    
+    if (contentHistory.length > 100) {
+        contentHistory = contentHistory.slice(0, 100);
+    }
+    
+    res.json({ success: true, id: historyItem.id });
+});
+
+// Supprimer un contenu
+app.delete('/api/history/:id', (req, res) => {
+    const contentId = req.params.id;
+    console.log('🗑️ DELETE:', contentId);
+    
+    const lengthBefore = contentHistory.length;
+    contentHistory = contentHistory.filter(item => item.id !== contentId);
+    
+    if (contentHistory.length < lengthBefore) {
+        console.log('✅ Supprimé, reste:', contentHistory.length);
+        res.json({ success: true, remaining: contentHistory.length });
+    } else {
+        res.status(404).json({ success: false, message: 'Non trouvé' });
+    }
 });
 
 // Démarrer le serveur
