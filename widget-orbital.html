@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Widget Orbital Production v4.18</title>
-    <!-- Version 4.18 Production - FIX: updateContent gère maintenant {type, data} - 3 décembre 2025 -->
+    <!-- Version 4.18 Production - FIX: gestion messages WebSocket type/data/focus comme widget.html - 3 décembre 2025 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -173,9 +173,8 @@ développement
         function updateContent(data) {
             if (!data) return;
             
-            // ⚡ CORRECTION v4.18 : Si le serveur envoie {type: "update", data: {...}}, extraire juste data
+            // Sécurité : si les données arrivent enveloppées, les extraire
             if (data.type && data.data) {
-                console.log('📦 Extraction de data.data depuis message enveloppé');
                 data = data.data;
             }
             
@@ -226,9 +225,20 @@ développement
                 
                 ws.onmessage = (event) => {
                     try {
-                        const data = JSON.parse(event.data);
-                        console.log('📩 Message reçu:', data);
-                        updateContent(data);
+                        const message = JSON.parse(event.data);
+                        console.log('📩 Message reçu:', message.type || 'raw');
+                        
+                        // Gérer les différents types de messages (comme widget.html)
+                        if (message.type === 'initial' || message.type === 'update') {
+                            updateContent(message.data);
+                        } else if (message.type === 'focus') {
+                            // Déclencher la navigation NEXT
+                            console.log('🎯 Focus reçu:', message.subjectIndex);
+                            nextFocus();
+                        } else {
+                            // Message brut sans type (fallback)
+                            updateContent(message);
+                        }
                     } catch (e) {
                         console.error('Erreur parsing message:', e);
                     }
