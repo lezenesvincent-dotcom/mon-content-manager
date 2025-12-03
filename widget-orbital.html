@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.18</title>
-    <!-- Version 4.18 Production - FIX: gestion messages WebSocket type/data/focus comme widget.html - 3 décembre 2025 -->
+    <title>Widget Orbital Production v4.19</title>
+    <!-- Version 4.19 Production - WebSocket identique à widget.html qui fonctionne - 3 décembre 2025 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -149,10 +149,10 @@ développement
         </div>
     </div>
     <script>
-        // Configuration WebSocket
-        const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
+        // Configuration WebSocket (identique à widget.html)
+        const WS_URL = 'wss://ecamm-overlay-server.onrender.com';
         let ws = null;
-        let reconnectInterval = null;
+        let reconnectTimeout = null;
         
         const state = { 
             headerX: 50, headerY: 80, 
@@ -172,11 +172,6 @@ développement
         // Fonction pour mettre à jour le contenu
         function updateContent(data) {
             if (!data) return;
-            
-            // Sécurité : si les données arrivent enveloppées, les extraire
-            if (data.type && data.data) {
-                data = data.data;
-            }
             
             // Titre et sous-titre
             if (data.titre) {
@@ -206,82 +201,53 @@ développement
             console.log('✅ Contenu mis à jour:', data);
         }
         
-        // Connexion WebSocket
-        function connectWebSocket() {
-            const wsUrl = WS_SERVER_URL.replace('https://', 'wss://').replace('http://', 'ws://');
+        // Connexion WebSocket (identique à widget.html)
+        function connect() {
+            console.log('🔌 Connexion au serveur WebSocket...');
             
             try {
-                ws = new WebSocket(wsUrl);
-                
+                ws = new WebSocket(WS_URL);
+
                 ws.onopen = () => {
-                    console.log('🔗 WebSocket connecté');
-                    if (reconnectInterval) {
-                        clearInterval(reconnectInterval);
-                        reconnectInterval = null;
+                    console.log('✅ Connecté au serveur WebSocket');
+                    
+                    if (reconnectTimeout) {
+                        clearTimeout(reconnectTimeout);
+                        reconnectTimeout = null;
                     }
-                    // Demander les données initiales
-                    fetchInitialData();
                 };
-                
+
                 ws.onmessage = (event) => {
                     try {
                         const message = JSON.parse(event.data);
-                        console.log('📩 Message reçu:', message.type || 'raw');
+                        console.log('📨 Message reçu:', message.type);
                         
-                        // Gérer les différents types de messages (comme widget.html)
                         if (message.type === 'initial' || message.type === 'update') {
                             updateContent(message.data);
                         } else if (message.type === 'focus') {
-                            // Déclencher la navigation NEXT
+                            // Déclencher NEXT sur focus
                             console.log('🎯 Focus reçu:', message.subjectIndex);
                             nextFocus();
-                        } else {
-                            // Message brut sans type (fallback)
-                            updateContent(message);
                         }
-                    } catch (e) {
-                        console.error('Erreur parsing message:', e);
+                    } catch (error) {
+                        console.error('❌ Erreur parsing message:', error);
                     }
                 };
-                
+
                 ws.onerror = (error) => {
                     console.error('❌ Erreur WebSocket:', error);
                 };
-                
+
                 ws.onclose = () => {
-                    console.log('🔌 WebSocket déconnecté, reconnexion dans 5s...');
-                    ws = null;
-                    if (!reconnectInterval) {
-                        reconnectInterval = setInterval(() => {
-                            console.log('🔄 Tentative de reconnexion...');
-                            connectWebSocket();
-                        }, 5000);
-                    }
+                    console.log('🔌 Connexion fermée - Reconnexion dans 3s...');
+                    
+                    reconnectTimeout = setTimeout(connect, 3000);
                 };
-            } catch (e) {
-                console.error('❌ Erreur création WebSocket:', e);
+
+            } catch (error) {
+                console.error('❌ Erreur de connexion:', error);
+                reconnectTimeout = setTimeout(connect, 3000);
             }
-        }
-        
-        // Récupérer les données initiales via HTTP
-        async function fetchInitialData() {
-            try {
-                const response = await fetch(`${WS_SERVER_URL}/api/data`);
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('📦 Données chargées:', data);
-                    updateContent(data);
-                }
-            } catch (e) {
-                console.error('❌ Erreur chargement données:', e);
-            }
-        }
-        
-        // Polling : vérifier les mises à jour toutes les 3 secondes
-        function startPolling() {
-            setInterval(() => {
-                fetchInitialData();
-            }, 3000); // Toutes les 3 secondes
         }
 
         
@@ -573,10 +539,7 @@ développement
         } catch (e) {}
         
         // Initialiser la connexion WebSocket
-        connectWebSocket();
-        
-        // Démarrer le polling (vérification toutes les 3s)
-        startPolling();
+        connect();
         
         window.triggerIN = animateIN;
         window.triggerNEXT = nextFocus;
