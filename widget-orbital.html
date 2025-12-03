@@ -138,3 +138,426 @@ développement
             ],
             cardInSlot: [1, 2, 3, 4],
             speedIN: 3.5,
+            speedNEXT: 2.2,
+            speedLev: 25
+        };
+        
+        // Fonction pour mettre à jour le contenu
+        function updateContent(data) {
+            if (!data) return;
+            
+            // Titre et sous-titre
+            if (data.titre) {
+                document.getElementById('titre').textContent = data.titre;
+            }
+            if (data.soustitre) {
+                document.getElementById('soustitre').textContent = data.soustitre;
+            }
+            
+            // P1 à P4
+            ['p1', 'p2', 'p3', 'p4'].forEach(key => {
+                if (data[key]) {
+                    const sujetEl = document.getElementById(`${key}-sujet`);
+                    const contenuEl = document.getElementById(`${key}-contenu`);
+                    
+                    if (sujetEl && data[key].sujet) {
+                        sujetEl.textContent = data[key].sujet;
+                    }
+                    
+                    if (contenuEl && data[key].contenu) {
+                        // Joindre les lignes avec des retours à la ligne
+                        contenuEl.textContent = data[key].contenu.join('\n');
+                    }
+                }
+            });
+            
+            console.log('✅ Contenu mis à jour:', data);
+        }
+        
+        // Connexion WebSocket
+        function connectWebSocket() {
+            const wsUrl = WS_SERVER_URL.replace('https://', 'wss://').replace('http://', 'ws://');
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = () => {
+                    console.log('🔗 WebSocket connecté');
+                    if (reconnectInterval) {
+                        clearInterval(reconnectInterval);
+                        reconnectInterval = null;
+                    }
+                    // Demander les données initiales
+                    fetchInitialData();
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('📩 Message reçu:', data);
+                        updateContent(data);
+                    } catch (e) {
+                        console.error('Erreur parsing message:', e);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('❌ Erreur WebSocket:', error);
+                };
+                
+                ws.onclose = () => {
+                    console.log('🔌 WebSocket déconnecté, reconnexion dans 5s...');
+                    ws = null;
+                    if (!reconnectInterval) {
+                        reconnectInterval = setInterval(() => {
+                            console.log('🔄 Tentative de reconnexion...');
+                            connectWebSocket();
+                        }, 5000);
+                    }
+                };
+            } catch (e) {
+                console.error('❌ Erreur création WebSocket:', e);
+            }
+        }
+        
+        // Récupérer les données initiales via HTTP
+        async function fetchInitialData() {
+            try {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📦 Données chargées:', data);
+                    updateContent(data);
+                }
+            } catch (e) {
+                console.error('❌ Erreur chargement données:', e);
+            }
+        }
+        
+        // Polling : vérifier les mises à jour toutes les 3 secondes
+        function startPolling() {
+            setInterval(() => {
+                fetchInitialData();
+            }, 3000); // Toutes les 3 secondes
+        }
+
+        const getTransform = (x, y, z, scale, rotY = 0, rotX = 0) => 
+            `translate(-50%, -50%) translate3d(${x}%, ${y}%, ${z}px) scale(${scale}) rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+        
+        const getSlotTransform = (slotIdx) => {
+            const slot = state.slots[slotIdx];
+            return getTransform(slot.x, slot.y, slot.z, slot.scale);
+        };
+
+        let isAnimating = false;
+        let levitationEnabled = false;
+        let levitationRAF = null;
+
+        function stopLevitation() {
+            levitationEnabled = false;
+            if (levitationRAF) {
+                cancelAnimationFrame(levitationRAF);
+                levitationRAF = null;
+            }
+        }
+
+        function startLevitation() {
+            if (levitationEnabled) return;
+            levitationEnabled = true;
+            const speed = state.speedLev;
+            let phase = 0;
+            const startFadeTime = performance.now();
+            const fadeDuration = 2000;
+            
+            function animate(now) {
+                if (!levitationEnabled) return;
+                
+                const fadeProgress = Math.min(1, (now - startFadeTime) / fadeDuration);
+                const amplitudeFactor = fadeProgress * fadeProgress;
+                
+                phase += 0.02 * (speed / 25);
+                const dx = Math.sin(phase) * 4 * amplitudeFactor;
+                const dy = Math.cos(phase * 0.7) * 2.5 * amplitudeFactor;
+                const ds = 1 + Math.sin(phase * 0.5) * 0.008 * amplitudeFactor;
+                
+                for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                    const cardNum = state.cardInSlot[slotIdx];
+                    const el = document.getElementById('p' + cardNum);
+                    const slot = state.slots[slotIdx];
+                    el.style.transform = getTransform(
+                        slot.x + dx, slot.y + dy, slot.z, slot.scale * ds
+                    );
+                }
+                levitationRAF = requestAnimationFrame(animate);
+            }
+            levitationRAF = requestAnimationFrame(animate);
+        }
+
+        function animateIN() {
+            if (isAnimating) return;
+            isAnimating = true;
+            stopLevitation();
+
+            const totalFrames = Math.round(60 * state.speedIN);
+            let frame = 0;
+
+            const card1 = document.getElementById('p' + state.cardInSlot[0]);
+            const card2 = document.getElementById('p' + state.cardInSlot[1]);
+            const card3 = document.getElementById('p' + state.cardInSlot[2]);
+            const card4 = document.getElementById('p' + state.cardInSlot[3]);
+
+            const startIn = { x: 0, y: -150, z: -2000, scale: 0.3 };
+            const endIn = state.slots[0];
+            const start2 = { ...state.slots[1], z: -500 };
+            const end2 = state.slots[1];
+            const start3 = { ...state.slots[2] };
+            const end3 = state.slots[2];
+            const start4 = { ...state.slots[3] };
+            const end4 = state.slots[3];
+
+            function animateFrame() {
+                frame++;
+                const progress = frame / totalFrames;
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const inPhase = progress * Math.PI * 2;
+                
+                const inArcX = Math.cos(inPhase) * 40 * (1 - eased);
+                const inArcY = Math.sin(inPhase) * 30 * (1 - eased);
+                const inArcZ = -Math.sin(inPhase) * 300 * (1 - eased);
+                
+                card1.style.zIndex = '200';
+                card1.style.transform = getTransform(
+                    startIn.x + (endIn.x - startIn.x) * eased + inArcX,
+                    startIn.y + (endIn.y - startIn.y) * eased + inArcY,
+                    startIn.z + (endIn.z - startIn.z) * eased + inArcZ,
+                    startIn.scale + (endIn.scale - startIn.scale) * eased,
+                    0, 0
+                );
+                
+                card2.style.zIndex = '80';
+                card2.style.transform = getTransform(
+                    start2.x + (end2.x - start2.x) * eased,
+                    start2.y + (end2.y - start2.y) * eased,
+                    start2.z + (end2.z - start2.z) * eased,
+                    start2.scale + (end2.scale - start2.scale) * eased,
+                    -(progress * 360),
+                    -Math.sin(inPhase) * 15 * (1 - eased)
+                );
+                
+                card3.style.zIndex = '30';
+                card3.style.transform = getTransform(
+                    start3.x + (end3.x - start3.x) * eased,
+                    start3.y + (end3.y - start3.y) * eased,
+                    start3.z + (end3.z - start3.z) * eased,
+                    start3.scale + (end3.scale - start3.scale) * eased, 0, 0
+                );
+                
+                card4.style.zIndex = '20';
+                card4.style.transform = getTransform(
+                    start4.x + (end4.x - start4.x) * eased,
+                    start4.y + (end4.y - start4.y) * eased,
+                    start4.z + (end4.z - start4.z) * eased,
+                    start4.scale + (end4.scale - start4.scale) * eased, 0, 0
+                );
+                
+                if (frame < totalFrames) {
+                    requestAnimationFrame(animateFrame);
+                } else {
+                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                        const el = document.getElementById('p' + state.cardInSlot[slotIdx]);
+                        el.style.zIndex = (100 - slotIdx * 20);
+                        el.style.transform = getSlotTransform(slotIdx);
+                    }
+                    setTimeout(() => {
+                        isAnimating = false;
+                        startLevitation();
+                    }, 100);
+                }
+            }
+            animateFrame();
+        }
+
+        function nextFocus() {
+            if (isAnimating) return;
+            isAnimating = true;
+            stopLevitation();
+
+            const totalFrames = Math.round(60 * state.speedNEXT);
+            let frame = 0;
+
+            const card1 = document.getElementById('p' + state.cardInSlot[0]);
+            const card2 = document.getElementById('p' + state.cardInSlot[1]);
+            const card3 = document.getElementById('p' + state.cardInSlot[2]);
+            const card4 = document.getElementById('p' + state.cardInSlot[3]);
+
+            const start1 = { ...state.slots[0] };
+            const end1 = { x: 160, y: -120, z: -1500, scale: 0.5 };
+            const start2 = { ...state.slots[1] };
+            const end2 = { ...state.slots[0] };
+            const start3 = { ...state.slots[2] };
+            const end3 = { ...state.slots[1] };
+            const start4 = { ...state.slots[3] };
+            const end4 = { ...state.slots[2] };
+
+            const tempCardInSlot = [...state.cardInSlot];
+            state.cardInSlot = [
+                tempCardInSlot[1],
+                tempCardInSlot[2],
+                tempCardInSlot[3],
+                tempCardInSlot[0]
+            ];
+
+            function animateFrame() {
+                frame++;
+                const progress = frame / totalFrames;
+                const eased = 1 - Math.pow(1 - progress, 3);
+                
+                card1.style.zIndex = '10';
+                card1.style.transform = getTransform(
+                    start1.x + (end1.x - start1.x) * eased,
+                    start1.y + (end1.y - start1.y) * eased,
+                    start1.z + (end1.z - start1.z) * eased,
+                    start1.scale + (end1.scale - start1.scale) * eased,
+                    -(progress * 360), 0
+                );
+                
+                card2.style.zIndex = '100';
+                card2.style.transform = getTransform(
+                    start2.x + (end2.x - start2.x) * eased,
+                    start2.y + (end2.y - start2.y) * eased,
+                    start2.z + (end2.z - start2.z) * eased,
+                    start2.scale + (end2.scale - start2.scale) * eased,
+                    -(progress * 360), 0
+                );
+                
+                card3.style.zIndex = '80';
+                card3.style.transform = getTransform(
+                    start3.x + (end3.x - start3.x) * eased,
+                    start3.y + (end3.y - start3.y) * eased,
+                    start3.z + (end3.z - start3.z) * eased,
+                    start3.scale + (end3.scale - start3.scale) * eased, 0, 0
+                );
+                
+                card4.style.zIndex = '60';
+                card4.style.transform = getTransform(
+                    start4.x + (end4.x - start4.x) * eased,
+                    start4.y + (end4.y - start4.y) * eased,
+                    start4.z + (end4.z - start4.z) * eased,
+                    start4.scale + (end4.scale - start4.scale) * eased, 0, 0
+                );
+                
+                if (frame < totalFrames) {
+                    requestAnimationFrame(animateFrame);
+                } else {
+                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                        const el = document.getElementById('p' + state.cardInSlot[slotIdx]);
+                        el.style.zIndex = (100 - slotIdx * 20);
+                        el.style.transform = getSlotTransform(slotIdx);
+                    }
+                    setTimeout(() => {
+                        isAnimating = false;
+                        startLevitation();
+                    }, 100);
+                }
+            }
+            animateFrame();
+        }
+
+        // Contrôle via page remote (localStorage)
+        const COMMAND_KEY = 'widgetOrbital_command';
+        const REMOTE_STATE_KEY = 'widgetOrbital_remote_v416';
+        
+        window.addEventListener('storage', (e) => {
+            // Trigger immédiat depuis p1p4.html
+            if (e.key === 'widget_update_trigger') {
+                console.log('🔔 Mise à jour détectée depuis Manage !');
+                fetchInitialData(); // Recharger immédiatement
+                return;
+            }
+            
+            if (e.key === COMMAND_KEY) {
+                try {
+                    const data = JSON.parse(localStorage.getItem(COMMAND_KEY));
+                    if (!data) return;
+                    
+                    // Mettre à jour l'état depuis la remote
+                    if (data.state) {
+                        state.headerX = data.state.headerX;
+                        state.headerY = data.state.headerY;
+                        state.centerX = data.state.centerX;
+                        state.centerY = data.state.centerY;
+                        state.slots = data.state.slots;
+                        state.speedIN = data.state.speedIN;
+                        state.speedNEXT = data.state.speedNEXT;
+                        state.speedLev = data.state.speedLev;
+                        
+                        // Appliquer les changements visuels
+                        document.getElementById('header').style.left = state.headerX + 'px';
+                        document.getElementById('header').style.top = state.headerY + 'px';
+                        document.getElementById('orbitCenter').style.left = state.centerX + '%';
+                        document.getElementById('orbitCenter').style.top = state.centerY + '%';
+                        
+                        // Mettre à jour les positions des cartes (si pas en animation)
+                        if (!isAnimating && levitationEnabled) {
+                            stopLevitation();
+                            for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                                const cardNum = state.cardInSlot[slotIdx];
+                                const el = document.getElementById('p' + cardNum);
+                                el.style.transform = getSlotTransform(slotIdx);
+                            }
+                            setTimeout(startLevitation, 100);
+                        }
+                    }
+                    
+                    // Exécuter les commandes
+                    if (data.command === 'ANIMATE_IN') {
+                        animateIN();
+                    } else if (data.command === 'NEXT_FOCUS') {
+                        nextFocus();
+                    }
+                } catch (e) {
+                    console.error('Erreur lecture commande:', e);
+                }
+            }
+        });
+
+        // Initialisation
+        document.getElementById('header').style.left = state.headerX + 'px';
+        document.getElementById('header').style.top = state.headerY + 'px';
+        document.getElementById('orbitCenter').style.left = state.centerX + '%';
+        document.getElementById('orbitCenter').style.top = state.centerY + '%';
+
+        for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+            const cardNum = state.cardInSlot[slotIdx];
+            const el = document.getElementById('p' + cardNum);
+            el.style.transform = getSlotTransform(slotIdx);
+            el.style.zIndex = (100 - slotIdx * 20);
+        }
+
+        setTimeout(() => {
+            animateIN();
+        }, 500);
+
+        try {
+            const remoteState = localStorage.getItem(REMOTE_STATE_KEY);
+            if (remoteState) {
+                const saved = JSON.parse(remoteState);
+                Object.assign(state, saved);
+                document.getElementById('header').style.left = state.headerX + 'px';
+                document.getElementById('header').style.top = state.headerY + 'px';
+                document.getElementById('orbitCenter').style.left = state.centerX + '%';
+                document.getElementById('orbitCenter').style.top = state.centerY + '%';
+            }
+        } catch (e) {}
+        
+        // Initialiser la connexion WebSocket
+        connectWebSocket();
+        
+        // Démarrer le polling (vérification toutes les 3s)
+        startPolling();
+        
+        window.triggerIN = animateIN;
+        window.triggerNEXT = nextFocus;
+    </script>
+</body>
+</html>
