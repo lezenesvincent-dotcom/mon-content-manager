@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control - Widget Orbital</title>
-    <!-- Version 4.22 Control Page - WebSocket - 3 décembre 2025 15:00 -->
+    <!-- Version 4.26 Control Page - Auto-sync state on connect - 3 décembre 2025 17:30 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -377,6 +377,12 @@
                     clearTimeout(reconnectTimeout);
                     reconnectTimeout = null;
                 }
+                
+                // Envoyer l'état actuel au widget dès la connexion
+                setTimeout(() => {
+                    sendControlCommand('SYNC_STATE');
+                    console.log('📤 État synchronisé au démarrage');
+                }, 500);
             };
             
             ws.onmessage = (event) => {
