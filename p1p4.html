@@ -972,6 +972,36 @@
 body {
     padding-bottom: 100px;
 }
+        /* Checkbox de sélection */
+.card-checkbox {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 26px;
+    height: 26px;
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.card-checkbox:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+.card-checkbox.checked {
+    background: #ff6b35;
+    border-color: #ff6b35;
+}
     </style>
 </head>
 <body>
