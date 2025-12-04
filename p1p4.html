@@ -1898,6 +1898,15 @@ body {
         // Variable pour stocker l'ID du contenu actuellement affiché
         let currentOnlineContentId = null;
         let currentSelectedContentId = null;
+        function selectContent(contentId) {
+    currentSelectedContentId = contentId;
+    const content = contentStore.find(item => item.id === contentId);
+    const nameDisplay = document.getElementById('selectedContentName');
+    if (nameDisplay && content) {
+        nameDisplay.textContent = content.title || 'Sans titre';
+    }
+    displayContentCards();
+}
 let selectedCards = [];
 
 function toggleSelection(contentId) {
