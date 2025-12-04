@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.24</title>
-    <!-- Version 4.24 Production - Auto-start désactivé - 3 décembre 2025 17:00 -->
-    <!-- FORCE UPDATE: 1733240000 -->
+    <title>Widget Orbital Production v4.25</title>
+    <!-- Version 4.25 Production - Fix levitation pendant animation - 3 décembre 2025 17:15 -->
+    <!-- FORCE UPDATE: 1733241000 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -484,6 +484,7 @@ développement
         }
 
         function startLevitation() {
+            if (isAnimating) return; // Ne pas démarrer si animation en cours
             levitationEnabled = true;
             if (levitateRAF) cancelAnimationFrame(levitateRAF);
             
