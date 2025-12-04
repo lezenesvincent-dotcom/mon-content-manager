@@ -2157,18 +2157,6 @@ function editSelectedContent() {
                         
                         <h4>${content.title || 'TITRE'}</h4>
                         <h5>${content.subtitle || 'SOUS TITRE'}</h5>
-
-                        <div class="card-actions">
-                            <button class="btn-edit" onclick="event.stopPropagation(); openEditModal('${content.id}')">
-                                EDIT
-                            </button>
-                            <button class="btn-next" onclick="event.stopPropagation(); focusNextSubject()">
-                                NEXT ▶
-                            </button>
-                            <button class="btn-hide" onclick="event.stopPropagation(); hideOverlay()">
-                                MASQUER
-                            </button>
-                        </div>
                     </div>
                 `;
             }).join('');
