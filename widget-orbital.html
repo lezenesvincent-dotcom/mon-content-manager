@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.28</title>
-    <!-- Version 4.28 Production - P2 rotation gauche + HIDE command - 3 décembre 2025 18:00 -->
-    <!-- FORCE UPDATE: 1733244000 -->
+    <title>Widget Orbital Production v4.29</title>
+    <!-- Version 4.29 Production - San Francisco + Font controls - 3 décembre 2025 18:20 -->
+    <!-- FORCE UPDATE: 1733245000 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -46,15 +46,18 @@
             transition: all 1.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .main-title {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             font-size: 3.5rem;
-            font-weight: 800;
+            font-weight: 700;
             color: white;
             text-transform: uppercase;
             letter-spacing: 4px;
             text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
         }
         .subtitle-inline {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             font-size: 1.5rem;
+            font-weight: 300;
             color: rgba(255, 255, 255, 0.7);
         }
         
@@ -81,7 +84,8 @@
             will-change: transform, opacity;
         }
         .subject-title {
-            font-size: 1.2rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-size: var(--font-sujet, 1.2rem);
             font-weight: 700;
             margin-bottom: 12px;
             color: white;
@@ -96,7 +100,8 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
         }
         .subject-content {
-            font-size: 1.1rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-size: var(--font-contenu, 1.1rem);
             font-weight: 600;
             color: white;
             line-height: 1.4;
@@ -348,7 +353,9 @@ développement
             cardInSlot: [1, 2, 3, 4],
             speedIN: 3.5,
             speedNEXT: 2.2,
-            speedLev: 25
+            speedLev: 25,
+            fontSujet: 1.2,
+            fontContenu: 1.1
         };
         
         // Fonction pour mettre à jour le contenu
@@ -424,6 +431,16 @@ développement
                                 state.speedIN = message.state.speedIN;
                                 state.speedNEXT = message.state.speedNEXT;
                                 state.speedLev = message.state.speedLev;
+                                
+                                // Mettre à jour les tailles de police
+                                if (message.state.fontSujet !== undefined) {
+                                    state.fontSujet = message.state.fontSujet;
+                                    document.documentElement.style.setProperty('--font-sujet', state.fontSujet + 'rem');
+                                }
+                                if (message.state.fontContenu !== undefined) {
+                                    state.fontContenu = message.state.fontContenu;
+                                    document.documentElement.style.setProperty('--font-contenu', state.fontContenu + 'rem');
+                                }
                                 
                                 // Appliquer les changements visuels
                                 document.getElementById('header').style.left = state.headerX + 'px';

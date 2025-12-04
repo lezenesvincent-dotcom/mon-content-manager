@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control - Widget Orbital</title>
-    <!-- Version 4.26 Control Page - Auto-sync state on connect - 3 décembre 2025 17:30 -->
+    <!-- Version 4.28 Control Page - MASQUER + Font controls - 3 décembre 2025 18:15 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -87,6 +87,54 @@
         
         .btn-next {
             background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-hide {
+            background: linear-gradient(180deg, #e53e3e 0%, #c53030 100%);
+        }
+        
+        .font-control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .font-control:last-child {
+            border-bottom: none;
+        }
+        
+        .font-control label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .font-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .font-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .font-btn:hover {
+            background: linear-gradient(180deg, #5a6578 0%, #3d4758 100%);
+        }
+        
+        .font-btn:active {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            transform: scale(0.95);
         }
         
         .joystick {
@@ -216,6 +264,7 @@
             <div class="main-buttons">
                 <button class="btn btn-in" onclick="triggerIN()">▶ IN</button>
                 <button class="btn btn-next" onclick="triggerNEXT()">⟳ NEXT</button>
+                <button class="btn btn-hide" onclick="triggerHIDE()">🙈 MASQUER</button>
             </div>
             <div class="slider-container">
                 <label>Speed IN: <span id="speedIN-val">3.5</span>s</label>
@@ -228,6 +277,25 @@
             <div class="slider-container">
                 <label>Lévitation: <span id="speedLev-val">25</span>s</label>
                 <input type="range" min="10" max="60" step="1" value="25" oninput="updateSpeed('Lev', this.value)">
+            </div>
+        </div>
+        
+        <!-- Typographie -->
+        <div class="control-section">
+            <h3 class="section-title">🔤 Typographie</h3>
+            <div class="font-control">
+                <label>Taille Sujet: <span class="value-number" id="fontSujet-val">1.2</span>rem</label>
+                <div class="font-buttons">
+                    <button class="font-btn" onclick="adjustFont('sujet', -0.1)">−</button>
+                    <button class="font-btn" onclick="adjustFont('sujet', 0.1)">+</button>
+                </div>
+            </div>
+            <div class="font-control">
+                <label>Taille Contenu: <span class="value-number" id="fontContenu-val">1.1</span>rem</label>
+                <div class="font-buttons">
+                    <button class="font-btn" onclick="adjustFont('contenu', -0.1)">−</button>
+                    <button class="font-btn" onclick="adjustFont('contenu', 0.1)">+</button>
+                </div>
             </div>
         </div>
         
@@ -362,7 +430,9 @@
             ],
             speedIN: 3.5,
             speedNEXT: 2.2,
-            speedLev: 25
+            speedLev: 25,
+            fontSujet: 1.2,
+            fontContenu: 1.1
         };
         
         function connect() {
@@ -470,6 +540,23 @@
         
         function triggerNEXT() {
             sendControlCommand('NEXT_FOCUS');
+        }
+        
+        function triggerHIDE() {
+            sendControlCommand('HIDE');
+        }
+        
+        function adjustFont(type, delta) {
+            if (type === 'sujet') {
+                state.fontSujet = Math.max(0.8, Math.min(2.5, state.fontSujet + delta));
+                state.fontSujet = Math.round(state.fontSujet * 10) / 10;
+                document.getElementById('fontSujet-val').textContent = state.fontSujet.toFixed(1);
+            } else if (type === 'contenu') {
+                state.fontContenu = Math.max(0.8, Math.min(2.5, state.fontContenu + delta));
+                state.fontContenu = Math.round(state.fontContenu * 10) / 10;
+                document.getElementById('fontContenu-val').textContent = state.fontContenu.toFixed(1);
+            }
+            sendControlCommand('UPDATE_STATE');
         }
         
         function moveHeader(dx, dy) {
