@@ -881,6 +881,97 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* Barre de contrôle fixe en bas */
+.control-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 20px 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    border-top: 2px solid #667eea;
+}
+
+.control-bar-btn {
+    padding: 15px 40px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.control-bar-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.control-bar-btn:active {
+    transform: translateY(0);
+}
+
+.btn-in {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.btn-in:hover {
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+}
+
+.btn-next {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-next:hover {
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-clear {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: #000;
+}
+
+.btn-clear:hover {
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+}
+
+.btn-control-edit {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+}
+
+.btn-control-edit:hover {
+    box-shadow: 0 8px 25px rgba(23, 162, 184, 0.4);
+}
+
+.control-bar-info {
+    color: #b8c1ec;
+    font-size: 0.95rem;
+    margin-right: 20px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.control-bar-info strong {
+    color: #fff;
+}
+
+/* Ajouter du padding en bas pour pas que la barre cache le contenu */
+body {
+    padding-bottom: 100px;
+}
     </style>
 </head>
 <body>
@@ -1773,6 +1864,33 @@
 
         // Variable pour stocker l'ID du contenu actuellement affiché
         let currentOnlineContentId = null;
+        let currentSelectedContentId = null;
+
+function selectContent(contentId) {
+    currentSelectedContentId = contentId;
+    const content = contentStore.find(item => item.id === contentId);
+    const nameDisplay = document.getElementById('selectedContentName');
+    if (nameDisplay && content) {
+        nameDisplay.textContent = content.title || 'Sans titre';
+    }
+    displayContentCards();
+}
+
+function sendSelectedContent() {
+    if (!currentSelectedContentId) {
+        showStatusMessage('⚠️ Sélectionnez d\'abord un contenu', 'error');
+        return;
+    }
+    sendContentToOverlay(currentSelectedContentId);
+}
+
+function editSelectedContent() {
+    if (!currentSelectedContentId) {
+        showStatusMessage('⚠️ Sélectionnez d\'abord un contenu', 'error');
+        return;
+    }
+    openEditModal(currentSelectedContentId);
+}
 
         async function sendContentToOverlay(contentId) {
             const content = contentStore.find(item => item.id === contentId);
@@ -2032,7 +2150,7 @@
                 const onlineClass = isOnline ? ' online' : '';
                 
                 return `
-                    <div class="content-card${onlineClass}" onclick="sendContentToOverlay('${content.id}')">
+                   <div class="content-card${onlineClass}${content.id === currentSelectedContentId ? ' selected' : ''}" onclick="selectContent('${content.id}')">
                         <button class="btn-delete-corner" onclick="event.stopPropagation(); deleteContent('${content.id}')">
                             ✕
                         </button>
@@ -2542,6 +2660,24 @@ const contentData = {
     }
 }, 100);
     </script>
+    <!-- Barre de contrôle fixe -->
+<div class="control-bar">
+    <div class="control-bar-info">
+        Sélectionné : <strong id="selectedContentName">Aucun</strong>
+    </div>
+    <button class="control-bar-btn btn-in" onclick="sendSelectedContent()">
+        ▶ IN
+    </button>
+    <button class="control-bar-btn btn-next" onclick="focusNextSubject()">
+        ⏭ NEXT
+    </button>
+    <button class="control-bar-btn btn-clear" onclick="hideOverlay()">
+        ✖ CLEAR
+    </button>
+    <button class="control-bar-btn btn-control-edit" onclick="editSelectedContent()">
+        ✏ EDIT
+    </button>
+</div>
 </body>
 </html>
 
