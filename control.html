@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control - Widget Orbital</title>
-    <!-- Version 4.28 Control Page - MASQUER + Font controls - 3 décembre 2025 18:15 -->
+    <!-- Version 4.30 Control Page - Persistance localStorage - 3 décembre 2025 18:30 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -518,21 +518,6 @@
         // ============================================
         // UI FUNCTIONS
         // ============================================
-        function updateUI() {
-            document.getElementById('header-x').textContent = state.headerX;
-            document.getElementById('header-y').textContent = state.headerY;
-            document.getElementById('center-x').textContent = state.centerX;
-            document.getElementById('center-y').textContent = state.centerY;
-            
-            for (let i = 0; i < 4; i++) {
-                document.getElementById(`slot${i+1}-pos`).textContent = `${state.slots[i].x}, ${state.slots[i].y}`;
-                document.getElementById(`slot${i+1}-scale`).textContent = state.slots[i].scale.toFixed(2);
-            }
-            
-            document.getElementById('speedIN-val').textContent = state.speedIN;
-            document.getElementById('speedNEXT-val').textContent = state.speedNEXT;
-            document.getElementById('speedLev-val').textContent = state.speedLev;
-        }
         
         function triggerIN() {
             sendControlCommand('ANIMATE_IN');
@@ -556,33 +541,38 @@
                 state.fontContenu = Math.round(state.fontContenu * 10) / 10;
                 document.getElementById('fontContenu-val').textContent = state.fontContenu.toFixed(1);
             }
+            saveState();
             sendControlCommand('UPDATE_STATE');
         }
         
         function moveHeader(dx, dy) {
             state.headerX += dx;
             state.headerY += dy;
-            updateUI();
+            refreshUI();
+            saveState();
             sendControlCommand('UPDATE_STATE');
         }
         
         function moveCenter(dx, dy) {
             state.centerX += dx;
             state.centerY += dy;
-            updateUI();
+            refreshUI();
+            saveState();
             sendControlCommand('UPDATE_STATE');
         }
         
         function moveSlot(slotNum, dx, dy) {
             state.slots[slotNum - 1].x += dx;
             state.slots[slotNum - 1].y += dy;
-            updateUI();
+            refreshUI();
+            saveState();
             sendControlCommand('UPDATE_STATE');
         }
         
         function updateSlotScale(slotNum, val) {
             state.slots[slotNum - 1].scale = parseFloat(val);
-            updateUI();
+            refreshUI();
+            saveState();
             sendControlCommand('UPDATE_STATE');
         }
         
@@ -590,15 +580,70 @@
             if (type === 'IN') state.speedIN = parseFloat(val);
             else if (type === 'NEXT') state.speedNEXT = parseFloat(val);
             else state.speedLev = parseFloat(val);
-            updateUI();
+            refreshUI();
+            saveState();
             sendControlCommand('UPDATE_STATE');
         }
         
         // ============================================
         // INIT
         // ============================================
+        
+        // Charger l'état sauvegardé
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('controlState_v429');
+                if (saved) {
+                    const s = JSON.parse(saved);
+                    Object.assign(state, s);
+                    console.log('✅ État chargé depuis localStorage');
+                }
+            } catch (e) {
+                console.error('Erreur chargement état:', e);
+            }
+        }
+        
+        // Sauvegarder l'état
+        function saveState() {
+            try {
+                localStorage.setItem('controlState_v429', JSON.stringify(state));
+            } catch (e) {
+                console.error('Erreur sauvegarde état:', e);
+            }
+        }
+        
+        // Mettre à jour l'affichage UI avec les valeurs de state
+        function refreshUI() {
+            document.getElementById('header-x').textContent = state.headerX;
+            document.getElementById('header-y').textContent = state.headerY;
+            document.getElementById('center-x').textContent = state.centerX;
+            document.getElementById('center-y').textContent = state.centerY;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`slot${i+1}-pos`).textContent = `${state.slots[i].x}, ${state.slots[i].y}`;
+                document.getElementById(`slot${i+1}-scale`).textContent = state.slots[i].scale.toFixed(2);
+            }
+            
+            document.getElementById('speedIN-val').textContent = state.speedIN;
+            document.getElementById('speedNEXT-val').textContent = state.speedNEXT;
+            document.getElementById('speedLev-val').textContent = state.speedLev;
+            document.getElementById('fontSujet-val').textContent = state.fontSujet.toFixed(1);
+            document.getElementById('fontContenu-val').textContent = state.fontContenu.toFixed(1);
+            
+            // Mettre à jour les sliders aussi
+            document.querySelector('input[oninput*="updateSpeed(\'IN\'"]').value = state.speedIN;
+            document.querySelector('input[oninput*="updateSpeed(\'NEXT\'"]').value = state.speedNEXT;
+            document.querySelector('input[oninput*="updateSpeed(\'Lev\'"]').value = state.speedLev;
+            
+            for (let i = 1; i <= 4; i++) {
+                const scaleSlider = document.querySelector(`input[oninput*="updateSlotScale(${i}"]`);
+                if (scaleSlider) scaleSlider.value = state.slots[i-1].scale;
+            }
+        }
+        
+        loadState();
         connect();
-        updateUI();
+        refreshUI();
     </script>
 </body>
 </html>

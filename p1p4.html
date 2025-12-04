@@ -1854,7 +1854,14 @@
                 currentOnlineContentId = contentId;
                 displayContentCards(); // Rafraîchir pour afficher l'animation
                 
-                showStatusMessage(`📤 "${content.title}" envoyé au widget eCamm !`, 'success');
+                // Déclencher l'animation IN via WebSocket
+                setTimeout(() => {
+                    if (sendControlCommand('ANIMATE_IN')) {
+                        console.log('🎬 Animation IN déclenchée');
+                    }
+                }, 300); // Petit délai pour laisser le contenu arriver
+                
+                showStatusMessage(`📤 "${content.title}" envoyé + animation IN !`, 'success');
             } catch (error) {
                 console.error('=== SEND FAILED ===');
                 console.error('Error:', error);
