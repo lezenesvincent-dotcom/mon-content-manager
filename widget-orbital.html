@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.23</title>
-    <!-- Version 4.23 Production - Animation NEXT fluide + fix sautes - 3 décembre 2025 16:30 -->
-    <!-- FORCE UPDATE: 1733238000 -->
+    <title>Widget Orbital Production v4.24</title>
+    <!-- Version 4.24 Production - Auto-start désactivé - 3 décembre 2025 17:00 -->
+    <!-- FORCE UPDATE: 1733240000 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -721,8 +721,8 @@ développement
             requestAnimationFrame(animateFrame);
         }
 
-        // Auto-start
-        window.addEventListener('load', () => setTimeout(animateIN, 500));
+        // Auto-start désactivé - contrôle via control.html
+        // window.addEventListener('load', () => setTimeout(animateIN, 500));
         
         // Contrôle externe via messages
         window.addEventListener('message', e => {
