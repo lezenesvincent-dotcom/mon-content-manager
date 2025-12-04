@@ -1294,11 +1294,14 @@ body {
             
             
             <!-- Bouton pour vider l'historique -->
-            <div style="margin-bottom: 20px; text-align: right;">
-                <button onclick="clearAllHistory()" class="btn-secondary" style="background: #dc3545; color: white; border-color: #dc3545;">
-                    🗑️ Vider tout l'historique
-                </button>
-            </div>
+          <div style="margin-bottom: 20px; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+    <button id="deleteSelectionBtn" onclick="deleteSelectedCards()" class="btn-secondary" style="background: #ff6b35; color: white; border-color: #ff6b35; display: none;">
+        🗑️ Supprimer la sélection (<span id="selectionCount">0</span>)
+    </button>
+    <button onclick="clearAllHistory()" class="btn-secondary" style="background: #dc3545; color: white; border-color: #dc3545;">
+        🗑️ Vider tout l'historique
+    </button>
+</div>
             
             <div id="contentList" class="content-grid">
                 <!-- Content cards will be populated here -->
@@ -1904,18 +1907,45 @@ function toggleSelection(contentId) {
     } else {
         selectedCards.splice(index, 1);
     }
-    displayContentCards();
-}
-function selectContent(contentId) {
-    currentSelectedContentId = contentId;
-    const content = contentStore.find(item => item.id === contentId);
-    const nameDisplay = document.getElementById('selectedContentName');
-    if (nameDisplay && content) {
-        nameDisplay.textContent = content.title || 'Sans titre';
-    }
+    updateDeleteSelectionButton();
     displayContentCards();
 }
 
+function updateDeleteSelectionButton() {
+    const btn = document.getElementById('deleteSelectionBtn');
+    const count = document.getElementById('selectionCount');
+    if (btn && count) {
+        count.textContent = selectedCards.length;
+        btn.style.display = selectedCards.length > 0 ? 'inline-block' : 'none';
+    }
+}
+
+async function deleteSelectedCards() {
+    if (selectedCards.length === 0) return;
+    
+    if (!confirm(`🗑️ Supprimer ${selectedCards.length} contenu(s) sélectionné(s) ?\n\nCette action est définitive.`)) {
+        return;
+    }
+
+    try {
+        showStatusMessage('🔄 Suppression en cours...', 'info');
+        
+        for (const contentId of selectedCards) {
+            await fetch(`${WS_SERVER_URL}/api/history/${contentId}`, {
+                method: 'DELETE'
+            });
+            contentStore = contentStore.filter(item => item.id !== contentId);
+        }
+        
+        selectedCards = [];
+        updateDeleteSelectionButton();
+        displayContentCards();
+        showStatusMessage('✅ Sélection supprimée !', 'success');
+    } catch (error) {
+        console.error('❌ Erreur:', error);
+        showStatusMessage('❌ Erreur: ' + error.message, 'error');
+    }
+}
 function sendSelectedContent() {
     if (!currentSelectedContentId) {
         showStatusMessage('⚠️ Sélectionnez d\'abord un contenu', 'error');
