@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.27</title>
-    <!-- Version 4.27 Production - P2 rotation 2 tours gauche - 3 décembre 2025 17:45 -->
-    <!-- FORCE UPDATE: 1733243000 -->
+    <title>Widget Orbital Production v4.28</title>
+    <!-- Version 4.28 Production - P2 rotation gauche + HIDE command - 3 décembre 2025 18:00 -->
+    <!-- FORCE UPDATE: 1733244000 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -448,6 +448,11 @@ développement
                                 animateIN();
                             } else if (message.command === 'NEXT_FOCUS') {
                                 nextFocus();
+                            } else if (message.command === 'HIDE') {
+                                hideCards();
+                            } else if (message.command === 'SYNC_STATE') {
+                                // Synchronisation d'état depuis control.html - déjà appliqué ci-dessus
+                                console.log('🔄 État synchronisé depuis control.html');
                             }
                         }
                     } catch (error) {
@@ -724,6 +729,23 @@ développement
 
         // Auto-start désactivé - contrôle via control.html
         // window.addEventListener('load', () => setTimeout(animateIN, 500));
+        
+        // Fonction pour cacher les cartes (MASQUER)
+        function hideCards() {
+            console.log('🙈 Masquage des cartes');
+            stopLevitation();
+            
+            // Cacher le header
+            document.getElementById('header').classList.remove('visible');
+            
+            // Cacher toutes les cartes avec animation
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById('p' + i);
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                el.style.opacity = '0';
+                el.style.transform = getTransform(0, 0, -500, 0.5, 0, 0);
+            }
+        }
         
         // Contrôle externe via messages
         window.addEventListener('message', e => {

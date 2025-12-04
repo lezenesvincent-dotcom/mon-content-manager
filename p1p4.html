@@ -1633,6 +1633,52 @@
         let contentStore = [];
         let syncInterval = null;
         
+        // ============================================
+        // WEBSOCKET CONTROL CONNECTION (pour NEXT/MASQUER)
+        // ============================================
+        const WS_CONTROL_URL = 'wss://ecamm-overlay-server.onrender.com';
+        let controlWs = null;
+        let controlReconnectTimeout = null;
+        
+        function connectControlWebSocket() {
+            console.log('🎮 Connexion WebSocket Control...');
+            controlWs = new WebSocket(WS_CONTROL_URL);
+            
+            controlWs.onopen = () => {
+                console.log('✅ WebSocket Control connecté');
+                if (controlReconnectTimeout) {
+                    clearTimeout(controlReconnectTimeout);
+                    controlReconnectTimeout = null;
+                }
+            };
+            
+            controlWs.onclose = () => {
+                console.log('🔌 WebSocket Control déconnecté - Reconnexion dans 3s...');
+                controlReconnectTimeout = setTimeout(connectControlWebSocket, 3000);
+            };
+            
+            controlWs.onerror = (error) => {
+                console.error('❌ Erreur WebSocket Control:', error);
+            };
+        }
+        
+        function sendControlCommand(command) {
+            if (controlWs && controlWs.readyState === WebSocket.OPEN) {
+                controlWs.send(JSON.stringify({
+                    type: 'control',
+                    command: command
+                }));
+                console.log('📤 Commande Control envoyée:', command);
+                return true;
+            } else {
+                console.warn('⚠️ WebSocket Control non connecté');
+                return false;
+            }
+        }
+        
+        // Démarrer la connexion WebSocket Control au chargement
+        connectControlWebSocket();
+        
         async function loadSharedData() {
             console.log('==============================================');
             console.log('🔄 CHARGEMENT DE L\'HISTORIQUE depuis le serveur WebSocket...');
@@ -1818,37 +1864,41 @@
 
         async function hideOverlay() {
             try {
-                console.log('=== HIDING OVERLAY ===');
+                console.log('🙈 MASQUER via WebSocket');
                 
-                // Envoyer un contenu vide
-                const emptyData = {
-                    titre: '',
-                    soustitre: '',
-                    p1: { sujet: '', contenu: ['', ''] },
-                    p2: { sujet: '', contenu: ['', ''] },
-                    p3: { sujet: '', contenu: ['', ''] },
-                    p4: { sujet: '', contenu: ['', ''] }
-                };
-                
-                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(emptyData)
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                // Envoyer la commande HIDE via WebSocket
+                if (sendControlCommand('HIDE')) {
+                    // Retirer le statut online
+                    currentOnlineContentId = null;
+                    displayContentCards();
+                    showStatusMessage('🙈 Overlay masqué !', 'success');
+                } else {
+                    // Fallback: envoyer contenu vide via API REST
+                    const emptyData = {
+                        titre: '',
+                        soustitre: '',
+                        p1: { sujet: '', contenu: ['', ''] },
+                        p2: { sujet: '', contenu: ['', ''] },
+                        p3: { sujet: '', contenu: ['', ''] },
+                        p4: { sujet: '', contenu: ['', ''] }
+                    };
+                    
+                    const response = await fetch(`${WS_SERVER_URL}/api/data`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(emptyData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    currentOnlineContentId = null;
+                    displayContentCards();
+                    showStatusMessage('🙈 Overlay masqué (fallback) !', 'success');
                 }
-                
-                console.log('=== OVERLAY HIDDEN ===');
-                
-                // Retirer le statut online
-                currentOnlineContentId = null;
-                displayContentCards(); // Rafraîchir pour retirer l'animation
-                
-                showStatusMessage('🙈 Overlay masqué !', 'success');
             } catch (error) {
                 console.error('=== HIDE FAILED ===');
                 console.error('Error:', error);
@@ -1861,38 +1911,26 @@
 
         async function focusNextSubject() {
             try {
-                // Passer au sujet suivant (1 → 2 → 3 → 4 → 5 (graphique) → 0 → 1 ...)
-                currentFocusIndex = currentFocusIndex + 1;
+                console.log('🎯 NEXT Focus via WebSocket');
                 
-                // Si on arrive à 6, revenir à 0 (tout afficher)
-                if (currentFocusIndex > 5) {
-                    currentFocusIndex = 0;
-                }
-                
-                console.log('🎯 Focus sur sujet:', currentFocusIndex);
-                
-                // Envoyer le message de focus via WebSocket
-                const response = await fetch(`${WS_SERVER_URL}/api/focus`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ subjectIndex: currentFocusIndex })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                let focusText;
-                if (currentFocusIndex === 0) {
-                    focusText = 'Tous les sujets';
-                } else if (currentFocusIndex === 5) {
-                    focusText = '📈 Graphique boursier';
+                // Envoyer la commande NEXT_FOCUS via WebSocket
+                if (sendControlCommand('NEXT_FOCUS')) {
+                    showStatusMessage('⏭ Animation NEXT déclenchée !', 'success');
                 } else {
-                    focusText = `Sujet ${currentFocusIndex}`;
+                    // Fallback: essayer via API REST
+                    const response = await fetch(`${WS_SERVER_URL}/api/focus`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ subjectIndex: 1 })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    showStatusMessage('⏭ Animation NEXT déclenchée (fallback)', 'success');
                 }
-                showStatusMessage(`🎯 Focus: ${focusText}`, 'success');
                 
             } catch (error) {
                 console.error('=== FOCUS FAILED ===');
