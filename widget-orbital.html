@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.26</title>
-    <!-- Version 4.26 Production - Fix rotation P2 + auto-sync - 3 décembre 2025 17:30 -->
-    <!-- FORCE UPDATE: 1733242000 -->
+    <title>Widget Orbital Production v4.27</title>
+    <!-- Version 4.27 Production - P2 rotation 2 tours gauche - 3 décembre 2025 17:45 -->
+    <!-- FORCE UPDATE: 1733243000 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -663,8 +663,8 @@ développement
                 const inArcX = -Math.sin(phase) * 80;   // Légère courbe vers la gauche
                 const inArcZ = Math.sin(phase) * 150;   // Vient vers l'avant
                 const inArcY = -Math.sin(phase) * 30;   // Monte légèrement
-                // Rotation visible: part de -180° et arrive à 0°
-                const inRotY = -180 * (1 - eased);
+                // Rotation: 2 tours vers la gauche (-720°), reste de face au début et à la fin
+                const inRotY = -eased * 720;  // 0° → -720° (2 tours complets vers la gauche)
                 const inRotX = -Math.sin(phase) * 10;
                 
                 cardIn.style.zIndex = '150';
