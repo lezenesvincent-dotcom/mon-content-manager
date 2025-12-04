@@ -2180,10 +2180,13 @@ function editSelectedContent() {
                 const onlineClass = isOnline ? ' online' : '';
                 
                 return `
-                   <div class="content-card${onlineClass}${content.id === currentSelectedContentId ? ' selected' : ''}" onclick="selectContent('${content.id}')">
-                        <button class="btn-delete-corner" onclick="event.stopPropagation(); deleteContent('${content.id}')">
-                            ✕
-                        </button>
+                  <div class="content-card${onlineClass}${content.id === currentSelectedContentId ? ' selected' : ''}" onclick="selectContent('${content.id}')">
+    <div class="card-checkbox ${selectedCards.includes(content.id) ? 'checked' : ''}" onclick="event.stopPropagation(); toggleSelection('${content.id}');">
+        ${selectedCards.includes(content.id) ? '✓' : ''}
+    </div>
+    <button class="btn-delete-corner" onclick="event.stopPropagation(); deleteContent('${content.id}')">
+        ✕
+    </button>
                         
                         <h4>${content.title || 'TITRE'}</h4>
                         <h5>${content.subtitle || 'SOUS TITRE'}</h5>
