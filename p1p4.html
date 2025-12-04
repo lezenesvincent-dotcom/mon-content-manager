@@ -453,7 +453,7 @@
             position: relative;
             overflow: hidden;
             cursor: pointer;
-            aspect-ratio: 1.4 / 1;
+            min-height: 140px;
         }
 
         .content-card:hover {
@@ -478,17 +478,17 @@
         /* Fusée au-dessus du titre */
         .content-card::before {
             content: '🚀';
-            font-size: 50px;
-            position: absolute;
-            top: 25px;
+             font-size: 35px;
+             position: absolute;
+             top: 15px;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .content-card h4 {
             color: #ffffff;
-            font-size: 2rem;
-            margin-top: 70px;
+            font-size: 1.4rem;
+            margin-top: 50px;
             margin-bottom: 10px;
             font-weight: 700;
             text-align: center;
