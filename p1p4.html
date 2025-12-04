@@ -467,39 +467,38 @@
         }
 .content-card.selected {
     position: relative;
-    z-index: 1;
+    overflow: visible;
 }
 
 .content-card.selected::before {
     content: '';
     position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    background: conic-gradient(from 0deg, #667eea, #764ba2, #00f2fe, #667eea);
-    border-radius: 24px;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 23px;
+    background: conic-gradient(
+        from var(--angle, 0deg),
+        transparent 0deg,
+        transparent 270deg,
+        #667eea 270deg,
+        #00f2fe 360deg
+    );
     z-index: -1;
-    filter: blur(8px);
-    animation: spin 2s linear infinite;
+    animation: rotateGlow 2s linear infinite;
 }
 
-@keyframes spin {
-    100% {
-        transform: rotate(360deg);
-    }
+@keyframes rotateGlow {
+    0% { --angle: 0deg; }
+    100% { --angle: 360deg; }
 }
 
-        
-        @keyframes breathe {
-            0%, 100% {
-                box-shadow: 0 10px 40px rgba(123, 104, 238, 0.3);
-            }
-            50% {
-                box-shadow: 0 10px 60px rgba(123, 104, 238, 0.6), 0 0 30px rgba(167, 139, 250, 0.5);
-            }
-        }
-
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
         /* Fusée au-dessus du titre */
         .content-card::before {
             content: '🚀';
