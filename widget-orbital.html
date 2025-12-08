@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.33</title>
-    <!-- Version 4.33 Production - Labels axes + lignes horizontales - 8 décembre 2025 -->
-    <!-- FORCE UPDATE: 1733672000 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>Widget Orbital Production v4.34</title>
+    <!-- Version 4.34 Production - Graphique via iframe graph-embed.html - 8 décembre 2025 -->
+    <!-- FORCE UPDATE: 1733675000 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -17,7 +16,7 @@
             overflow: hidden;
         }
         
-        /* Graphique 3D */
+        /* Graphique 3D (iframe) */
         #graphContainer {
             position: absolute;
             top: 0;
@@ -34,49 +33,12 @@
             opacity: 1;
             pointer-events: auto;
         }
-        #graphCanvas {
+        #graphFrame {
             width: 100%;
             height: 100%;
-            display: block;
+            border: none;
+            background: transparent;
         }
-        #graphStats {
-            position: absolute;
-            top: 20px;
-            left: 40px;
-            display: flex;
-            gap: 50px;
-            opacity: 0;
-            transform: translateY(-30px);
-            transition: all 0.6s ease;
-            z-index: 10;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px 30px;
-            border-radius: 10px;
-        }
-        #graphStats.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .graph-stat {
-            display: flex;
-            flex-direction: column;
-        }
-        .graph-stat-label {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 4px;
-        }
-        .graph-stat-value {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: white;
-        }
-        .graph-stat-value.positive { color: #4ade80; }
-        .graph-stat-value.negative { color: #f87171; }
-        .graph-stat-value.valuation { color: #ff4444; }
         
         .preview-zone {
             width: 100vw;
@@ -261,31 +223,9 @@
     </style>
 </head>
 <body>
-    <!-- Conteneur du graphique 3D -->
+    <!-- Conteneur du graphique 3D (iframe vers graph-embed.html) -->
     <div id="graphContainer">
-        <div id="graphStats">
-            <div class="graph-stat">
-                <span class="graph-stat-label">Cours</span>
-                <span class="graph-stat-value" id="statCours">€0.00</span>
-            </div>
-            <div class="graph-stat">
-                <span class="graph-stat-label">Variation</span>
-                <span class="graph-stat-value positive" id="statVariation">+€0.00</span>
-            </div>
-            <div class="graph-stat">
-                <span class="graph-stat-label">Plus haut</span>
-                <span class="graph-stat-value" id="statHaut">€0.00</span>
-            </div>
-            <div class="graph-stat">
-                <span class="graph-stat-label">Plus bas</span>
-                <span class="graph-stat-value" id="statBas">€0.00</span>
-            </div>
-            <div class="graph-stat">
-                <span class="graph-stat-label">Notre valorisation</span>
-                <span class="graph-stat-value valuation" id="statValo">€48.50</span>
-            </div>
-        </div>
-        <canvas id="graphCanvas"></canvas>
+        <iframe id="graphFrame" src="" frameborder="0" allowtransparency="true"></iframe>
     </div>
     
     <div class="preview-zone">
@@ -558,34 +498,23 @@ développement
                             } else if (message.command === 'HIDE') {
                                 hideCards();
                             } else if (message.command === 'SHOW_GRAPH') {
-                                console.log('📈 SHOW_GRAPH reçu, symbol:', message.symbol);
-                                try {
-                                    showGraph(message.symbol || '');
-                                } catch (e) {
-                                    console.error('❌ Erreur showGraph:', e);
-                                }
+                                console.log('📈 SHOW_GRAPH reçu');
+                                showGraph();
                             } else if (message.command === 'HIDE_GRAPH') {
                                 hideGraph();
                             } else if (message.command === 'UPDATE_GRAPH_STATE') {
-                                // Mettre à jour les paramètres du graphique
-                                if (message.state) {
-                                    graphState.valorisation = message.state.graphValo || graphState.valorisation;
-                                    graphState.rotationY = message.state.graphRotY || graphState.rotationY;
-                                    graphState.graphX = message.state.graphX || graphState.graphX;
-                                    graphState.graphY = message.state.graphY || graphState.graphY;
-                                    graphState.cameraZ = message.state.graphZoom || graphState.cameraZ;
-                                    
-                                    // Appliquer si graphique visible
-                                    if (graphVisible && chartMesh) {
-                                        chartMesh.position.set(graphState.graphX, graphState.graphY, graphState.graphZ);
-                                        if (threeCamera) {
-                                            threeCamera.position.z = graphState.cameraZ;
-                                        }
+                                // Transférer les paramètres au graphique via postMessage
+                                if (message.state && graphVisible) {
+                                    const frame = document.getElementById('graphFrame');
+                                    if (frame && frame.contentWindow) {
+                                        frame.contentWindow.postMessage({ 
+                                            command: 'UPDATE_STATE', 
+                                            state: message.state 
+                                        }, '*');
                                     }
-                                    console.log('📈 État graphique mis à jour:', graphState);
+                                    console.log('📈 État graphique transféré');
                                 }
                             } else if (message.command === 'SYNC_STATE') {
-                                // Synchronisation d'état depuis control.html - déjà appliqué ci-dessus
                                 console.log('🔄 État synchronisé depuis control.html');
                             }
                         }
@@ -1038,613 +967,55 @@ développement
         
         // Charger l'état sauvegardé
         loadState();
-        
+
         // ============================================
-        // GRAPHIQUE 3D - THREE.JS + ALPHA VANTAGE
+        // GRAPHIQUE 3D (via iframe graph-embed.html)
         // ============================================
         
-        const ALPHA_VANTAGE_KEY = 'demo'; // Remplacer par vraie clé: https://www.alphavantage.co/support/#api-key
-        
-        // Mapping des noms vers symboles Yahoo/Alpha Vantage
-        const STOCK_SYMBOLS = {
-            'REXEL': 'RXL.PA',
-            'AIRBUS': 'AIR.PA',
-            'AIRBUS SE': 'AIR.PA',
-            'ORANGE': 'ORA.PA',
-            'TOTALENERGIES': 'TTE.PA',
-            'TOTAL': 'TTE.PA',
-            'SANOFI': 'SAN.PA',
-            'BNP': 'BNP.PA',
-            'BNP PARIBAS': 'BNP.PA',
-            'LVMH': 'MC.PA',
-            'LOREAL': 'OR.PA',
-            "L'OREAL": 'OR.PA',
-            'SCHNEIDER': 'SU.PA',
-            'DANONE': 'BN.PA',
-            'ENGIE': 'ENGI.PA',
-            'VINCI': 'DG.PA',
-            'CAPGEMINI': 'CAP.PA',
-            'CARREFOUR': 'CA.PA',
-            'RENAULT': 'RNO.PA',
-            'PEUGEOT': 'STLAP.PA',
-            'STELLANTIS': 'STLAP.PA',
-            'VIVENDI': 'VIV.PA',
-            'BOUYGUES': 'EN.PA',
-            'SAINT-GOBAIN': 'SGO.PA',
-            'MICHELIN': 'ML.PA',
-            'SOCIETE GENERALE': 'GLE.PA',
-            'CREDIT AGRICOLE': 'ACA.PA',
-            'KERING': 'KER.PA',
-            'HERMES': 'RMS.PA',
-            'THALES': 'HO.PA',
-            'SAFRAN': 'SAF.PA',
-            'DASSAULT': 'AM.PA',
-            'LEGRAND': 'LR.PA',
-            'PUBLICIS': 'PUB.PA',
-            'VEOLIA': 'VIE.PA',
-            'ALSTOM': 'ALO.PA',
-            'TELEPERFORMANCE': 'TEP.PA',
-            'WORLDLINE': 'WLN.PA',
-            'EUROFINS': 'ERF.PA',
-            'PERNOD RICARD': 'RI.PA',
-            'ESSILOR': 'EL.PA',
-            'AXA': 'CS.PA',
-            'SIKA': 'SIKA.SW',
-            // Actions US
-            'APPLE': 'AAPL',
-            'MICROSOFT': 'MSFT',
-            'GOOGLE': 'GOOGL',
-            'AMAZON': 'AMZN',
-            'META': 'META',
-            'TESLA': 'TSLA',
-            'NVIDIA': 'NVDA'
-        };
-        
-        let threeScene, threeCamera, threeRenderer, chartMesh, valuationBar;
-        let graphAnimationId = null;
         let graphVisible = false;
-        let stockData = [];
-        let constructionProgress = 0;
-        let barConstructionProgress = 0;
-        let graphStartTime = null;
+        const graphFrame = document.getElementById('graphFrame');
         
-        // Paramètres du graphique (contrôlables depuis control.html)
-        let graphState = {
-            cameraX: 0, cameraY: 5, cameraZ: 32,
-            graphX: 0, graphY: -2, graphZ: 0,
-            rotationY: -15,
-            valorisation: 48.50
-        };
-        
-        function getStockSymbol(name) {
-            const upperName = name.toUpperCase().trim();
-            return STOCK_SYMBOLS[upperName] || upperName;
-        }
-        
-        async function fetchStockData(symbol) {
-            console.log('📊 Chargement données pour:', symbol);
+        function showGraph() {
+            console.log('📈 Affichage graphique');
             
-            try {
-                // Alpha Vantage TIME_SERIES_DAILY
-                const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=compact&apikey=${ALPHA_VANTAGE_KEY}`;
-                const response = await fetch(url);
-                const json = await response.json();
-                
-                if (json['Time Series (Daily)']) {
-                    const timeSeries = json['Time Series (Daily)'];
-                    const data = [];
-                    
-                    Object.keys(timeSeries).sort().slice(-100).forEach(date => {
-                        data.push({
-                            date: date,
-                            value: parseFloat(timeSeries[date]['4. close'])
-                        });
-                    });
-                    
-                    console.log('✅ Données chargées:', data.length, 'points');
-                    return data;
-                } else if (json['Note']) {
-                    console.warn('⚠️ Limite API atteinte, utilisation données simulées');
-                    return generateMockStockData();
-                } else {
-                    console.warn('⚠️ Pas de données, utilisation simulation');
-                    return generateMockStockData();
+            // Cacher les cartes P1-P4
+            hideCards();
+            
+            // Charger le graphique dans l'iframe
+            if (!graphFrame.src || graphFrame.src === '' || graphFrame.src === 'about:blank') {
+                graphFrame.src = 'graph-embed.html';
+            }
+            
+            // Afficher le container
+            document.getElementById('graphContainer').classList.add('visible');
+            
+            // Envoyer commande SHOW au graphique
+            setTimeout(() => {
+                if (graphFrame.contentWindow) {
+                    graphFrame.contentWindow.postMessage({ command: 'SHOW_GRAPH' }, '*');
                 }
-            } catch (error) {
-                console.error('❌ Erreur fetch:', error);
-                return generateMockStockData();
-            }
-        }
-        
-        function generateMockStockData() {
-            const data = [];
-            let value = 35 + Math.random() * 15;
+            }, 500);
             
-            // 800 points = ~3 ans de trading days
-            const numPoints = 800;
-            const startDate = new Date();
-            startDate.setFullYear(startDate.getFullYear() - 3);
-            
-            for (let i = 0; i < numPoints; i++) {
-                // Tendance haussière légère + volatilité
-                const trend = 0.015; // Tendance haussière
-                const volatility = (Math.random() - 0.5) * 3;
-                value += trend + volatility;
-                value = Math.max(25, Math.min(70, value));
-                
-                const date = new Date(startDate);
-                date.setDate(startDate.getDate() + i);
-                
-                data.push({
-                    date: date.toISOString().split('T')[0],
-                    value: value
-                });
-            }
-            return data;
-        }
-        
-        function initThreeGraph() {
-            const canvas = document.getElementById('graphCanvas');
-            const container = document.getElementById('graphContainer');
-            
-            const width = container.clientWidth || window.innerWidth;
-            const height = container.clientHeight || window.innerHeight;
-            
-            console.log('📐 Initialisation Three.js:', width, 'x', height);
-            
-            threeScene = new THREE.Scene();
-            threeScene.background = null;
-            
-            threeCamera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
-            threeCamera.position.set(0, 5, 32);
-            threeCamera.lookAt(0, 0, 0);
-            
-            threeRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-            threeRenderer.setSize(width, height);
-            threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
-            threeRenderer.toneMappingExposure = 1.0;
-            
-            // Lumières améliorées
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-            threeScene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-            directionalLight.position.set(5, 10, 7);
-            threeScene.add(directionalLight);
-            
-            // Créer l'ombre au sol
-            createShadow();
-            
-            // Créer les lignes horizontales
-            createHorizontalLines();
-            
-            console.log('✅ Three.js initialisé');
-        }
-        
-        let shadowMesh = null;
-        let horizontalLines = [];
-        
-        function createShadow() {
-            // Ombre style Keynote avec dégradé radial
-            const shadowCanvas = document.createElement('canvas');
-            shadowCanvas.width = 512;
-            shadowCanvas.height = 512;
-            const ctx = shadowCanvas.getContext('2d');
-            
-            // Dégradé radial noir vers transparent
-            const gradient = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
-            gradient.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
-            gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.3)');
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 512, 512);
-            
-            const shadowTexture = new THREE.CanvasTexture(shadowCanvas);
-            const shadowGeometry = new THREE.PlaneGeometry(40, 40);
-            const shadowMaterial = new THREE.MeshBasicMaterial({
-                map: shadowTexture,
-                transparent: true,
-                opacity: 0.5,
-                depthWrite: false
-            });
-            
-            shadowMesh = new THREE.Mesh(shadowGeometry, shadowMaterial);
-            shadowMesh.rotation.x = -Math.PI / 2;
-            shadowMesh.position.set(0, -7.5, 2);
-            shadowMesh.renderOrder = -1;
-            threeScene.add(shadowMesh);
-        }
-        
-        function createHorizontalLines() {
-            // Supprimer anciennes lignes
-            horizontalLines.forEach(line => {
-                threeScene.remove(line);
-                if (line.geometry) line.geometry.dispose();
-                if (line.material) line.material.dispose();
-            });
-            horizontalLines = [];
-            
-            const lineMaterial = new THREE.LineBasicMaterial({ 
-                color: 0xffffff, 
-                transparent: true, 
-                opacity: 0.25
-            });
-            
-            // 6 lignes horizontales bien espacées
-            for (let i = 0; i < 6; i++) {
-                const y = -6 + i * 2.4; // De -6 à +6
-                const points = [
-                    new THREE.Vector3(-22, y, 6),
-                    new THREE.Vector3(22, y, 6)
-                ];
-                const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                const line = new THREE.Line(geometry, lineMaterial);
-                horizontalLines.push(line);
-                threeScene.add(line);
-            }
-        }
-        
-        // Variables pour les labels
-        let yearLabelsSprites = [];
-        let priceLabelsSprites = [];
-        
-        function createAxisLabels(data, minVal, maxVal) {
-            // Supprimer anciens labels
-            yearLabelsSprites.forEach(sprite => threeScene.remove(sprite));
-            priceLabelsSprites.forEach(sprite => threeScene.remove(sprite));
-            yearLabelsSprites = [];
-            priceLabelsSprites = [];
-            
-            // Créer les labels d'années (abscisses)
-            const years = [];
-            const yearsSet = new Set();
-            data.forEach(d => {
-                const year = d.date.substring(0, 4);
-                if (!yearsSet.has(year)) {
-                    yearsSet.add(year);
-                    years.push({ year, index: data.indexOf(d) });
-                }
-            });
-            
-            // Afficher max 5 années
-            const step = Math.ceil(years.length / 5);
-            years.filter((_, i) => i % step === 0).forEach(({ year, index }) => {
-                const x = (index / (data.length - 1)) * 35 - 17.5;
-                const sprite = createTextSprite(year, 0.8);
-                sprite.position.set(x, -7.5, 6);
-                yearLabelsSprites.push(sprite);
-                threeScene.add(sprite);
-            });
-            
-            // Créer les labels de prix (ordonnées)
-            const priceStep = (maxVal - minVal) / 5;
-            for (let i = 0; i <= 5; i++) {
-                const price = minVal + (i * priceStep);
-                const y = -6 + (i * 2.4);
-                const sprite = createTextSprite('€' + price.toFixed(0), 0.7);
-                sprite.position.set(-20, y, 6);
-                priceLabelsSprites.push(sprite);
-                threeScene.add(sprite);
-            }
-        }
-        
-        function createTextSprite(text, scale = 1) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 256;
-            canvas.height = 64;
-            const ctx = canvas.getContext('2d');
-            
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-            ctx.font = 'bold 32px -apple-system, BlinkMacSystemFont, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(text, 128, 32);
-            
-            const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ 
-                map: texture, 
-                transparent: true,
-                depthTest: false
-            });
-            const sprite = new THREE.Sprite(material);
-            sprite.scale.set(4 * scale, 1 * scale, 1);
-            
-            return sprite;
-        }
-        
-        function createChartMesh(data) {
-            if (!data || data.length < 2) return;
-            
-            // Supprimer ancien mesh
-            if (chartMesh) {
-                threeScene.remove(chartMesh);
-                chartMesh.geometry.dispose();
-                if (chartMesh.material.dispose) chartMesh.material.dispose();
-            }
-            if (valuationBar) {
-                threeScene.remove(valuationBar);
-            }
-            
-            const minVal = Math.min(...data.map(d => d.value)) - 2;
-            const maxVal = Math.max(...data.map(d => d.value)) + 2;
-            const range = maxVal - minVal || 1;
-            
-            // Dimensions du graphique
-            const graphWidth = 35;
-            const graphHeight = 12;
-            const graphDepth = 4;
-            
-            const shape = new THREE.Shape();
-            
-            // Point de départ en bas à gauche
-            shape.moveTo(-graphWidth/2, -6);
-            
-            // Tracer la courbe des prix
-            data.forEach((d, i) => {
-                const x = (i / (data.length - 1)) * graphWidth - graphWidth/2;
-                const y = ((d.value - minVal) / range) * graphHeight - 6;
-                shape.lineTo(x, y);
-            });
-            
-            // Fermer la forme
-            shape.lineTo(graphWidth/2, -6);
-            shape.lineTo(-graphWidth/2, -6);
-            
-            const extrudeSettings = {
-                steps: 1,
-                depth: graphDepth,
-                bevelEnabled: false
-            };
-            
-            const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-            geometry.computeVertexNormals();
-            
-            // Créer le dégradé de couleurs par vertex
-            const positions = geometry.getAttribute('position');
-            const colors = [];
-            
-            const colorTop = new THREE.Color(0xffa500);    // Orange vif
-            const colorMiddle = new THREE.Color(0xff8c42); // Orange moyen
-            const colorBottom = new THREE.Color(0xffb380); // Orange clair
-            
-            for (let i = 0; i < positions.count; i++) {
-                const y = positions.getY(i);
-                const t = Math.max(0, Math.min(1, (y + 6) / graphHeight));
-                
-                let color;
-                if (t > 0.5) {
-                    color = new THREE.Color().lerpColors(colorMiddle, colorTop, (t - 0.5) * 2);
-                } else {
-                    color = new THREE.Color().lerpColors(colorBottom, colorMiddle, t * 2);
-                }
-                colors.push(color.r, color.g, color.b);
-            }
-            
-            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-            
-            // Matériau avec vertex colors
-            const material = new THREE.MeshStandardMaterial({
-                vertexColors: true,
-                metalness: 0.2,
-                roughness: 0.6
-            });
-            
-            chartMesh = new THREE.Mesh(geometry, material);
-            chartMesh.position.set(0, 0, 0);
-            chartMesh.rotation.y = -0.15; // Légère rotation
-            chartMesh.scale.y = 0.01; // Commence petit pour animation
-            
-            threeScene.add(chartMesh);
-            
-            // Barre de valorisation rouge
-            createValuationBar(minVal, maxVal, range, graphHeight);
-            
-            // Labels d'axes (années et prix)
-            createAxisLabels(data, minVal, maxVal);
-            
-            console.log('✅ Mesh graphique créé');
-        }
-        
-        function createValuationBar(minVal, maxVal, range, graphHeight) {
-            // Calculer la position Y de la barre selon la valorisation
-            const valoNormalized = (graphState.valorisation - minVal) / range;
-            const valoY = valoNormalized * graphHeight - 6; // Même référence que le graphique
-            
-            // Dimensions de la barre (plus fine et bien proportionnée)
-            const barGeometry = new THREE.BoxGeometry(38, 0.35, 7);
-            const barMaterial = new THREE.MeshStandardMaterial({
-                color: 0xcc0000,
-                emissive: 0xcc0000,
-                emissiveIntensity: 1.5,
-                metalness: 0.4,
-                roughness: 0.3
-            });
-            
-            valuationBar = new THREE.Mesh(barGeometry, barMaterial);
-            valuationBar.position.set(0, valoY, 2); // Légèrement devant le graphique
-            valuationBar.rotation.y = -0.15; // Même rotation que le graphique
-            valuationBar.scale.set(0.01, 0.01, 0.01); // Commence petit pour animation
-            
-            threeScene.add(valuationBar);
-        }
-        
-        function updateGraphStats(data) {
-            if (!data || data.length < 2) return;
-            
-            const current = data[data.length - 1].value;
-            const first = data[0].value;
-            const variation = current - first;
-            const highest = Math.max(...data.map(d => d.value));
-            const lowest = Math.min(...data.map(d => d.value));
-            
-            document.getElementById('statCours').textContent = `€${current.toFixed(2)}`;
-            
-            const variationEl = document.getElementById('statVariation');
-            variationEl.textContent = `${variation >= 0 ? '+' : ''}€${variation.toFixed(2)}`;
-            variationEl.className = `graph-stat-value ${variation >= 0 ? 'positive' : 'negative'}`;
-            
-            document.getElementById('statHaut').textContent = `€${highest.toFixed(2)}`;
-            document.getElementById('statBas').textContent = `€${lowest.toFixed(2)}`;
-            document.getElementById('statValo').textContent = `€${graphState.valorisation.toFixed(2)}`;
-        }
-        
-        function animateGraph() {
-            graphAnimationId = requestAnimationFrame(animateGraph);
-            
-            if (!graphStartTime) graphStartTime = Date.now();
-            const elapsed = (Date.now() - graphStartTime) / 1000;
-            
-            // Animation de construction du graphique (2 secondes)
-            if (constructionProgress < 1) {
-                constructionProgress += 0.016 / 2;
-                constructionProgress = Math.min(1, constructionProgress);
-                
-                const eased = constructionProgress < 0.5
-                    ? 2 * constructionProgress * constructionProgress
-                    : 1 - Math.pow(-2 * constructionProgress + 2, 2) / 2;
-                
-                if (chartMesh) {
-                    chartMesh.scale.y = 0.01 + (eased * 0.99);
-                }
-            }
-            
-            // Barre rouge (après 2.5s)
-            if (barConstructionProgress < 1 && elapsed > 2.5) {
-                barConstructionProgress += 0.016 / 1;
-                barConstructionProgress = Math.min(1, barConstructionProgress);
-                
-                const eased = barConstructionProgress < 0.5
-                    ? 2 * barConstructionProgress * barConstructionProgress
-                    : 1 - Math.pow(-2 * barConstructionProgress + 2, 2) / 2;
-                
-                if (valuationBar) {
-                    const scale = 0.01 + (eased * 0.99);
-                    valuationBar.scale.set(scale, scale, scale);
-                }
-            }
-            
-            // Rotation progressive puis oscillation lente
-            if (threeScene) {
-                if (elapsed < 2) {
-                    // Phase 1 : rotation initiale (2 secondes)
-                    const t = elapsed / 2;
-                    const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-                    threeScene.rotation.y = eased * -0.15;
-                } else if (elapsed < 15) {
-                    // Phase 2 : rotation continue lente
-                    const continuousElapsed = elapsed - 2;
-                    threeScene.rotation.y = -0.15 + (continuousElapsed * 0.02);
-                } else {
-                    // Phase 3 : oscillation gauche-droite
-                    const oscillationStart = elapsed - 15;
-                    const oscillationProgress = (oscillationStart % 40) / 40;
-                    const maxAngle = 0.35; // ~20°
-                    const easedProgress = Math.sin(oscillationProgress * Math.PI * 2);
-                    const centerRotation = -0.15 + (13 * 0.02);
-                    threeScene.rotation.y = centerRotation + (easedProgress * maxAngle / 2);
-                }
-            }
-            
-            // Respiration barre rouge
-            if (valuationBar && barConstructionProgress >= 1) {
-                const breathe = 1 + Math.sin(elapsed * 1.5) * 0.15;
-                valuationBar.material.emissiveIntensity = 1.5 * breathe;
-            }
-            
-            if (threeRenderer && threeScene && threeCamera) {
-                threeRenderer.render(threeScene, threeCamera);
-            }
-        }
-        
-        async function showGraph(symbolName) {
-            console.log('📈 showGraph() appelé avec:', symbolName);
-            
-            try {
-                // Si pas de symbole fourni, utiliser le titre actuellement affiché
-                if (!symbolName || symbolName.trim() === '') {
-                    const titreElement = document.getElementById('titre');
-                    if (titreElement) {
-                        symbolName = titreElement.textContent.trim();
-                        console.log('📈 Symbole extrait du titre:', symbolName);
-                    }
-                }
-                
-                // Cacher les cartes P1-P4 avec animation
-                hideCards();
-                console.log('✅ Cards cachées');
-                
-                // Afficher le conteneur AVANT d'initialiser Three.js
-                // (sinon le container a une taille de 0)
-                const container = document.getElementById('graphContainer');
-                container.classList.add('visible');
-                console.log('✅ Container visible');
-                
-                // Petit délai pour que le CSS soit appliqué
-                await new Promise(r => setTimeout(r, 100));
-                
-                // Initialiser Three.js si nécessaire
-                if (!threeScene) {
-                    initThreeGraph();
-                    console.log('✅ Three.js initialisé');
-                }
-                
-                // Reset animations
-                constructionProgress = 0;
-                barConstructionProgress = 0;
-                graphStartTime = null;
-                
-                // Charger les données
-                const symbol = getStockSymbol(symbolName);
-                console.log('📊 Symbol résolu:', symbolName, '→', symbol);
-                
-                stockData = await fetchStockData(symbol);
-                console.log('📊 Données chargées:', stockData.length, 'points');
-                
-                // Créer le graphique
-                createChartMesh(stockData);
-                updateGraphStats(stockData);
-                console.log('✅ Mesh créé');
-                
-                setTimeout(() => {
-                    document.getElementById('graphStats').classList.add('visible');
-                }, 300);
-                
-                // Démarrer l'animation
-                if (graphAnimationId) cancelAnimationFrame(graphAnimationId);
-                animateGraph();
-                console.log('✅ Animation démarrée');
-                
-                graphVisible = true;
-            } catch (error) {
-                console.error('❌ Erreur dans showGraph:', error);
-            }
+            graphVisible = true;
         }
         
         function hideGraph() {
             console.log('📈 Masquage graphique');
             
-            document.getElementById('graphStats').classList.remove('visible');
             document.getElementById('graphContainer').classList.remove('visible');
             
-            if (graphAnimationId) {
-                cancelAnimationFrame(graphAnimationId);
-                graphAnimationId = null;
+            // Envoyer commande HIDE au graphique
+            if (graphFrame.contentWindow) {
+                graphFrame.contentWindow.postMessage({ command: 'HIDE_GRAPH' }, '*');
             }
             
             graphVisible = false;
         }
         
-        // Resize handler
-        window.addEventListener('resize', () => {
-            if (threeCamera && threeRenderer) {
-                const container = document.getElementById('graphContainer');
-                const width = container.clientWidth || window.innerWidth;
-                const height = container.clientHeight || window.innerHeight;
-                
-                threeCamera.aspect = width / height;
-                threeCamera.updateProjectionMatrix();
-                threeRenderer.setSize(width, height);
+        // Écouter les messages du graphique
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'GRAPH_READY') {
+                console.log('✅ Graphique prêt');
             }
         });
     </script>
