@@ -2699,6 +2699,12 @@ setTimeout(() => {
     if (form) {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
+
+             // Limite de 10 contenus max
+        if (contentStore.length >= 10) {
+            showStatusMessage('⚠️ Limite atteinte ! Maximum 10 contenus. Supprimez-en pour en créer de nouveaux.', 'error');
+            return;
+        }
             
             try {
                 const contentId = Date.now().toString();
