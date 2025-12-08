@@ -467,10 +467,9 @@
         }
 .content-card.selected {
     box-shadow: 
-        0 0 0 5px #667eea,
-        0 0 30px rgba(102, 126, 234, 0.8),
-        0 0 60px rgba(102, 126, 234, 0.6),
-        0 0 80px rgba(102, 126, 234, 0.4) !important;
+        0 0 0 3px #667eea,
+        0 0 20px rgba(102, 126, 234, 0.6),
+        0 0 40px rgba(102, 126, 234, 0.4) !important;
 }
         /* Fusée au-dessus du titre */
         .content-card::before {
@@ -932,6 +931,15 @@
 
 .btn-next:hover {
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-valo {
+    background: linear-gradient(135deg, #f6ad55 0%, #dd6b20 100%);
+    color: white;
+}
+
+.btn-valo:hover {
+    box-shadow: 0 8px 25px rgba(246, 173, 85, 0.4);
 }
 
 .btn-clear {
@@ -1748,13 +1756,14 @@ body {
             };
         }
         
-        function sendControlCommand(command) {
+        function sendControlCommand(command, data = {}) {
             if (controlWs && controlWs.readyState === WebSocket.OPEN) {
                 controlWs.send(JSON.stringify({
                     type: 'control',
-                    command: command
+                    command: command,
+                    ...data
                 }));
-                console.log('📤 Commande Control envoyée:', command);
+                console.log('📤 Commande Control envoyée:', command, data);
                 return true;
             } else {
                 console.warn('⚠️ WebSocket Control non connecté');
@@ -2068,6 +2077,33 @@ function editSelectedContent() {
                 }
             } catch (error) {
                 console.error('=== HIDE FAILED ===');
+                console.error('Error:', error);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+
+        // Afficher le graphique de valorisation
+        async function showGraph() {
+            try {
+                console.log('📈 SHOW GRAPH via WebSocket');
+                
+                // Récupérer le titre du contenu sélectionné pour extraire le symbole
+                const selectedContent = contentStore.find(item => item.id === currentOnlineContentId);
+                let stockSymbol = '';
+                
+                if (selectedContent && selectedContent.title) {
+                    // Extraire le symbole du titre (ex: "REXEL", "AIRBUS SE", "ORANGE")
+                    stockSymbol = selectedContent.title.toUpperCase().trim();
+                }
+                
+                // Envoyer la commande SHOW_GRAPH via WebSocket avec le symbole
+                if (sendControlCommand('SHOW_GRAPH', { symbol: stockSymbol })) {
+                    showStatusMessage(`📈 Graphique ${stockSymbol || 'affiché'} !`, 'success');
+                } else {
+                    showStatusMessage('❌ WebSocket non connecté', 'error');
+                }
+            } catch (error) {
+                console.error('=== SHOW_GRAPH FAILED ===');
                 console.error('Error:', error);
                 showStatusMessage('❌ Erreur: ' + error.message, 'error');
             }
@@ -2738,6 +2774,9 @@ const contentData = {
     </button>
     <button class="control-bar-btn btn-next" onclick="focusNextSubject()">
         ⏭ NEXT
+    </button>
+    <button class="control-bar-btn btn-valo" onclick="showGraph()">
+        📈 VALO
     </button>
     <button class="control-bar-btn btn-clear" onclick="hideOverlay()">
         ✖ CLEAR

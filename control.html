@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control - Widget Orbital</title>
-    <!-- Version 4.30 Control Page - Persistance localStorage - 3 décembre 2025 18:30 -->
+    <!-- Version 4.31 Control Page - Graph 3D controls - 8 décembre 2025 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -91,6 +91,15 @@
         
         .btn-hide {
             background: linear-gradient(180deg, #e53e3e 0%, #c53030 100%);
+        }
+        
+        .btn-valo {
+            background: linear-gradient(180deg, #f6ad55 0%, #dd6b20 100%);
+        }
+        
+        .graph-section {
+            background: linear-gradient(180deg, rgba(246, 173, 85, 0.2) 0%, rgba(221, 107, 32, 0.2) 100%);
+            border: 1px solid rgba(246, 173, 85, 0.3);
         }
         
         .font-control {
@@ -264,6 +273,7 @@
             <div class="main-buttons">
                 <button class="btn btn-in" onclick="triggerIN()">▶ IN</button>
                 <button class="btn btn-next" onclick="triggerNEXT()">⟳ NEXT</button>
+                <button class="btn btn-valo" onclick="triggerVALO()">📈 VALO</button>
                 <button class="btn btn-hide" onclick="triggerHIDE()">🙈 MASQUER</button>
             </div>
             <div class="slider-container">
@@ -296,6 +306,36 @@
                     <button class="font-btn" onclick="adjustFont('contenu', -0.1)">−</button>
                     <button class="font-btn" onclick="adjustFont('contenu', 0.1)">+</button>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Contrôles Graphique 3D -->
+        <div class="control-section graph-section">
+            <h3 class="section-title">📈 Graphique 3D</h3>
+            <div class="slider-container">
+                <label>Valorisation: <span id="graphValo-val">48.50</span>€</label>
+                <input type="range" min="20" max="80" step="0.5" value="48.5" oninput="updateGraphValo(this.value)">
+            </div>
+            <div class="slider-container">
+                <label>Rotation Y: <span id="graphRotY-val">-15</span>°</label>
+                <input type="range" min="-45" max="45" step="1" value="-15" oninput="updateGraphRotation(this.value)">
+            </div>
+            <div class="joystick" style="margin-top: 15px;">
+                <span style="font-size: 0.8rem; color: #888; margin-bottom: 8px; display: block;">Position Graphique</span>
+                <button class="joystick-btn" onclick="moveGraph(0,-1)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveGraph(-1,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveGraph(1,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveGraph(0,1)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>X: <span class="value-number" id="graph-x">0</span></span>
+                <span>Y: <span class="value-number" id="graph-y">-2</span></span>
+            </div>
+            <div class="slider-container">
+                <label>Zoom: <span id="graphZoom-val">32</span></label>
+                <input type="range" min="15" max="60" step="1" value="32" oninput="updateGraphZoom(this.value)">
             </div>
         </div>
         
@@ -432,7 +472,13 @@
             speedNEXT: 2.2,
             speedLev: 25,
             fontSujet: 1.2,
-            fontContenu: 1.1
+            fontContenu: 1.1,
+            // Paramètres graphique 3D
+            graphValo: 48.5,
+            graphRotY: -15,
+            graphX: 0,
+            graphY: -2,
+            graphZoom: 32
         };
         
         function connect() {
@@ -531,6 +577,40 @@
             sendControlCommand('HIDE');
         }
         
+        function triggerVALO() {
+            sendControlCommand('SHOW_GRAPH');
+        }
+        
+        function updateGraphValo(val) {
+            state.graphValo = parseFloat(val);
+            document.getElementById('graphValo-val').textContent = state.graphValo.toFixed(2);
+            saveState();
+            sendControlCommand('UPDATE_GRAPH_STATE');
+        }
+        
+        function updateGraphRotation(val) {
+            state.graphRotY = parseFloat(val);
+            document.getElementById('graphRotY-val').textContent = state.graphRotY;
+            saveState();
+            sendControlCommand('UPDATE_GRAPH_STATE');
+        }
+        
+        function moveGraph(dx, dy) {
+            state.graphX += dx;
+            state.graphY += dy;
+            document.getElementById('graph-x').textContent = state.graphX;
+            document.getElementById('graph-y').textContent = state.graphY;
+            saveState();
+            sendControlCommand('UPDATE_GRAPH_STATE');
+        }
+        
+        function updateGraphZoom(val) {
+            state.graphZoom = parseFloat(val);
+            document.getElementById('graphZoom-val').textContent = state.graphZoom;
+            saveState();
+            sendControlCommand('UPDATE_GRAPH_STATE');
+        }
+        
         function adjustFont(type, delta) {
             if (type === 'sujet') {
                 state.fontSujet = Math.max(0.8, Math.min(2.5, state.fontSujet + delta));
@@ -592,7 +672,7 @@
         // Charger l'état sauvegardé
         function loadState() {
             try {
-                const saved = localStorage.getItem('controlState_v429');
+                const saved = localStorage.getItem('controlState_v430');
                 if (saved) {
                     const s = JSON.parse(saved);
                     Object.assign(state, s);
@@ -606,7 +686,7 @@
         // Sauvegarder l'état
         function saveState() {
             try {
-                localStorage.setItem('controlState_v429', JSON.stringify(state));
+                localStorage.setItem('controlState_v430', JSON.stringify(state));
             } catch (e) {
                 console.error('Erreur sauvegarde état:', e);
             }
@@ -639,6 +719,21 @@
                 const scaleSlider = document.querySelector(`input[oninput*="updateSlotScale(${i}"]`);
                 if (scaleSlider) scaleSlider.value = state.slots[i-1].scale;
             }
+            
+            // Graphique 3D
+            document.getElementById('graphValo-val').textContent = (state.graphValo || 48.5).toFixed(2);
+            document.getElementById('graphRotY-val').textContent = state.graphRotY || -15;
+            document.getElementById('graph-x').textContent = state.graphX || 0;
+            document.getElementById('graph-y').textContent = state.graphY || -2;
+            document.getElementById('graphZoom-val').textContent = state.graphZoom || 32;
+            
+            // Sliders graphique
+            const valoSlider = document.querySelector('input[oninput*="updateGraphValo"]');
+            if (valoSlider) valoSlider.value = state.graphValo || 48.5;
+            const rotSlider = document.querySelector('input[oninput*="updateGraphRotation"]');
+            if (rotSlider) rotSlider.value = state.graphRotY || -15;
+            const zoomSlider = document.querySelector('input[oninput*="updateGraphZoom"]');
+            if (zoomSlider) zoomSlider.value = state.graphZoom || 32;
         }
         
         loadState();
