@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.30</title>
-    <!-- Version 4.30 Production - Graphique 3D + Alpha Vantage - 8 décembre 2025 -->
-    <!-- FORCE UPDATE: 1733660000 -->
+    <title>Widget Orbital Production v4.31</title>
+    <!-- Version 4.31 Production - Fix graphique 3D + Debug logs - 8 décembre 2025 -->
+    <!-- FORCE UPDATE: 1733665000 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,6 +28,7 @@
             pointer-events: none;
             transition: opacity 0.8s ease;
             z-index: 100;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         #graphContainer.visible {
             opacity: 1;
@@ -36,6 +37,7 @@
         #graphCanvas {
             width: 100%;
             height: 100%;
+            display: block;
         }
         #graphStats {
             position: absolute;
@@ -549,7 +551,12 @@ développement
                             } else if (message.command === 'HIDE') {
                                 hideCards();
                             } else if (message.command === 'SHOW_GRAPH') {
-                                showGraph(message.symbol || '');
+                                console.log('📈 SHOW_GRAPH reçu, symbol:', message.symbol);
+                                try {
+                                    showGraph(message.symbol || '');
+                                } catch (e) {
+                                    console.error('❌ Erreur showGraph:', e);
+                                }
                             } else if (message.command === 'HIDE_GRAPH') {
                                 hideGraph();
                             } else if (message.command === 'UPDATE_GRAPH_STATE') {
@@ -1161,15 +1168,21 @@ développement
             const canvas = document.getElementById('graphCanvas');
             const container = document.getElementById('graphContainer');
             
+            // Utiliser la taille du container (ou window si pas disponible)
+            const width = container.clientWidth || window.innerWidth;
+            const height = container.clientHeight || window.innerHeight;
+            
+            console.log('📐 Initialisation Three.js:', width, 'x', height);
+            
             threeScene = new THREE.Scene();
             threeScene.background = null;
             
-            threeCamera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+            threeCamera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
             threeCamera.position.set(graphState.cameraX, graphState.cameraY, graphState.cameraZ);
             threeCamera.lookAt(0, 0, 0);
             
             threeRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-            threeRenderer.setSize(window.innerWidth, window.innerHeight);
+            threeRenderer.setSize(width, height);
             threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             
             // Lumières
@@ -1346,40 +1359,67 @@ développement
         }
         
         async function showGraph(symbolName) {
-            console.log('📈 Affichage graphique pour:', symbolName);
+            console.log('📈 showGraph() appelé avec:', symbolName);
             
-            // Cacher les cartes P1-P4 avec animation
-            hideCards();
-            
-            // Initialiser Three.js si nécessaire
-            if (!threeScene) {
-                initThreeGraph();
+            try {
+                // Si pas de symbole fourni, utiliser le titre actuellement affiché
+                if (!symbolName || symbolName.trim() === '') {
+                    const titreElement = document.getElementById('titre');
+                    if (titreElement) {
+                        symbolName = titreElement.textContent.trim();
+                        console.log('📈 Symbole extrait du titre:', symbolName);
+                    }
+                }
+                
+                // Cacher les cartes P1-P4 avec animation
+                hideCards();
+                console.log('✅ Cards cachées');
+                
+                // Afficher le conteneur AVANT d'initialiser Three.js
+                // (sinon le container a une taille de 0)
+                const container = document.getElementById('graphContainer');
+                container.classList.add('visible');
+                console.log('✅ Container visible');
+                
+                // Petit délai pour que le CSS soit appliqué
+                await new Promise(r => setTimeout(r, 100));
+                
+                // Initialiser Three.js si nécessaire
+                if (!threeScene) {
+                    initThreeGraph();
+                    console.log('✅ Three.js initialisé');
+                }
+                
+                // Reset animations
+                constructionProgress = 0;
+                barConstructionProgress = 0;
+                graphStartTime = null;
+                
+                // Charger les données
+                const symbol = getStockSymbol(symbolName);
+                console.log('📊 Symbol résolu:', symbolName, '→', symbol);
+                
+                stockData = await fetchStockData(symbol);
+                console.log('📊 Données chargées:', stockData.length, 'points');
+                
+                // Créer le graphique
+                createChartMesh(stockData);
+                updateGraphStats(stockData);
+                console.log('✅ Mesh créé');
+                
+                setTimeout(() => {
+                    document.getElementById('graphStats').classList.add('visible');
+                }, 300);
+                
+                // Démarrer l'animation
+                if (graphAnimationId) cancelAnimationFrame(graphAnimationId);
+                animateGraph();
+                console.log('✅ Animation démarrée');
+                
+                graphVisible = true;
+            } catch (error) {
+                console.error('❌ Erreur dans showGraph:', error);
             }
-            
-            // Reset animations
-            constructionProgress = 0;
-            barConstructionProgress = 0;
-            graphStartTime = null;
-            
-            // Charger les données
-            const symbol = getStockSymbol(symbolName);
-            stockData = await fetchStockData(symbol);
-            
-            // Créer le graphique
-            createChartMesh(stockData);
-            updateGraphStats(stockData);
-            
-            // Afficher le conteneur
-            document.getElementById('graphContainer').classList.add('visible');
-            setTimeout(() => {
-                document.getElementById('graphStats').classList.add('visible');
-            }, 300);
-            
-            // Démarrer l'animation
-            if (graphAnimationId) cancelAnimationFrame(graphAnimationId);
-            animateGraph();
-            
-            graphVisible = true;
         }
         
         function hideGraph() {
@@ -1399,9 +1439,13 @@ développement
         // Resize handler
         window.addEventListener('resize', () => {
             if (threeCamera && threeRenderer) {
-                threeCamera.aspect = window.innerWidth / window.innerHeight;
+                const container = document.getElementById('graphContainer');
+                const width = container.clientWidth || window.innerWidth;
+                const height = container.clientHeight || window.innerHeight;
+                
+                threeCamera.aspect = width / height;
                 threeCamera.updateProjectionMatrix();
-                threeRenderer.setSize(window.innerWidth, window.innerHeight);
+                threeRenderer.setSize(width, height);
             }
         });
     </script>

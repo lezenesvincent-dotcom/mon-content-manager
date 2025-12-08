@@ -467,10 +467,9 @@
         }
 .content-card.selected {
     box-shadow: 
-        0 0 0 5px #667eea,
-        0 0 30px rgba(102, 126, 234, 0.8),
-        0 0 60px rgba(102, 126, 234, 0.6),
-        0 0 80px rgba(102, 126, 234, 0.4) !important;
+        0 0 0 3px #667eea,
+        0 0 20px rgba(102, 126, 234, 0.6),
+        0 0 40px rgba(102, 126, 234, 0.4) !important;
 }
         /* Fusée au-dessus du titre */
         .content-card::before {
@@ -885,26 +884,26 @@
     left: 0;
     right: 0;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 50px 60px;
+    padding: 20px 40px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 30px;
+    gap: 20px;
     box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.4);
     z-index: 9999;
     border-top: 2px solid #667eea;
 }
 
 .control-bar-btn {
-    padding: 35px 70px;
+    padding: 15px 40px;
     border: none;
-    border-radius: 16px;
-    font-size: 1.6rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
 }
 
 .control-bar-btn:hover {
@@ -917,12 +916,12 @@
 }
 
 .btn-in {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     color: white;
 }
 
 .btn-in:hover {
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
 }
 
 .btn-next {
@@ -944,22 +943,23 @@
 }
 
 .btn-clear {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: #000;
 }
 
 .btn-clear:hover {
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
 }
 
 .btn-control-edit {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
     color: white;
 }
 
 .btn-control-edit:hover {
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 25px rgba(23, 162, 184, 0.4);
 }
+
 .control-bar-info {
     color: #b8c1ec;
     font-size: 0.95rem;
@@ -975,7 +975,7 @@
 
 /* Ajouter du padding en bas pour pas que la barre cache le contenu */
 body {
-    padding-bottom: 200px;
+    padding-bottom: 100px;
 }
         /* Checkbox de sélection */
 .card-checkbox {
@@ -2003,7 +2003,7 @@ function editSelectedContent() {
                 console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
                 
                 // Envoyer via HTTP POST au serveur
-               const response = await fetch(`${WS_SERVER_URL}/api/content`, {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -2699,12 +2699,6 @@ setTimeout(() => {
     if (form) {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-
-             // Limite de 10 contenus max
-        if (contentStore.length >= 10) {
-            showStatusMessage('⚠️ Limite atteinte ! Maximum 10 contenus. Supprimez-en pour en créer de nouveaux.', 'error');
-            return;
-        }
             
             try {
                 const contentId = Date.now().toString();
@@ -2772,6 +2766,9 @@ const contentData = {
     </script>
     <!-- Barre de contrôle fixe -->
 <div class="control-bar">
+    <div class="control-bar-info">
+        Sélectionné : <strong id="selectedContentName">Aucun</strong>
+    </div>
     <button class="control-bar-btn btn-in" onclick="sendSelectedContent()">
         ▶ IN
     </button>
@@ -2787,9 +2784,6 @@ const contentData = {
     <button class="control-bar-btn btn-control-edit" onclick="editSelectedContent()">
         ✏ EDIT
     </button>
-     <div class="control-bar-info">
-        Sélectionné : <strong id="selectedContentName">Aucun</strong>
-    </div>
 </div>
 </body>
 </html>
