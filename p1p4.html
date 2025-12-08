@@ -2003,7 +2003,7 @@ function editSelectedContent() {
                 console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
                 
                 // Envoyer via HTTP POST au serveur
-                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
+                const response = await fetch(`${WS_SERVER_URL}/api/content`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
