@@ -481,6 +481,91 @@
             graphZoom: 32
         };
         
+        // ============================================
+        // GITHUB GIST SYNC (cross-device)
+        // ============================================
+        const GIST_CONFIG = {
+            enabled: true,
+            gistId: 'd527404ddcc9b09e8efbdd8e4cef588e', // Même Gist que p1p4
+            filename: 'control-settings.json'
+        };
+        
+        let gistSaveTimeout = null;
+        
+        function getStoredToken() {
+            return localStorage.getItem('github_gist_token');
+        }
+        
+        async function loadFromGist() {
+            const token = getStoredToken();
+            if (!GIST_CONFIG.enabled || !GIST_CONFIG.gistId || !token) {
+                return null;
+            }
+            
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_CONFIG.gistId}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.error('Failed to load from Gist:', response.status);
+                    return null;
+                }
+                
+                const gist = await response.json();
+                const content = gist.files[GIST_CONFIG.filename]?.content;
+                
+                if (content) {
+                    const data = JSON.parse(content);
+                    console.log('✅ Control settings loaded from GitHub Gist');
+                    return data;
+                }
+            } catch (error) {
+                console.error('Error loading from Gist:', error);
+            }
+            
+            return null;
+        }
+        
+        async function saveToGist(data) {
+            const token = getStoredToken();
+            if (!GIST_CONFIG.enabled || !GIST_CONFIG.gistId || !token) {
+                return false;
+            }
+            
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_CONFIG.gistId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            [GIST_CONFIG.filename]: {
+                                content: JSON.stringify(data, null, 2)
+                            }
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Control settings saved to GitHub Gist');
+                    return true;
+                }
+                
+                console.error('Failed to save to Gist:', response.status);
+            } catch (error) {
+                console.error('Error saving to Gist:', error);
+            }
+            
+            return false;
+        }
+        
         function connect() {
             console.log('🔌 Connexion WebSocket...');
             ws = new WebSocket(WS_URL);
@@ -669,24 +754,71 @@
         // INIT
         // ============================================
         
-        // Charger l'état sauvegardé
-        function loadState() {
+        // Appliquer les données chargées au state
+        function applyLoadedState(s) {
+            Object.keys(s).forEach(key => {
+                if (key === 'slots' && Array.isArray(s.slots)) {
+                    s.slots.forEach((slot, i) => {
+                        if (state.slots[i]) Object.assign(state.slots[i], slot);
+                    });
+                } else if (state.hasOwnProperty(key)) {
+                    state[key] = s[key];
+                }
+            });
+        }
+        
+        // Charger l'état (Gist prioritaire, localStorage fallback)
+        async function loadState() {
             try {
-                const saved = localStorage.getItem('controlState_v430');
+                // 1. Essayer de charger depuis Gist (cross-device)
+                const gistData = await loadFromGist();
+                if (gistData) {
+                    applyLoadedState(gistData);
+                    localStorage.setItem('controlState', JSON.stringify(state));
+                    console.log('✅ État chargé depuis GitHub Gist (cross-device)');
+                    return;
+                }
+                
+                // 2. Fallback: localStorage
+                let saved = localStorage.getItem('controlState');
+                
+                // 3. Migration : chercher anciennes clés versionnées
+                if (!saved) {
+                    const oldKeys = ['controlState_v430', 'controlState_v429', 'controlState_v428', 'controlState_v427', 'controlState_v426'];
+                    for (const key of oldKeys) {
+                        const oldData = localStorage.getItem(key);
+                        if (oldData) {
+                            saved = oldData;
+                            console.log('🔄 Migration depuis', key);
+                            localStorage.removeItem(key);
+                            break;
+                        }
+                    }
+                }
+                
                 if (saved) {
                     const s = JSON.parse(saved);
-                    Object.assign(state, s);
+                    applyLoadedState(s);
                     console.log('✅ État chargé depuis localStorage');
+                    // Syncer vers Gist pour cross-device
+                    saveToGist(state);
                 }
             } catch (e) {
                 console.error('Erreur chargement état:', e);
             }
         }
         
-        // Sauvegarder l'état
+        // Sauvegarder l'état (localStorage immédiat + Gist différé)
         function saveState() {
             try {
-                localStorage.setItem('controlState_v430', JSON.stringify(state));
+                // Sauvegarde locale immédiate
+                localStorage.setItem('controlState', JSON.stringify(state));
+                
+                // Sauvegarde Gist différée (debounce 2s pour éviter trop d'appels)
+                if (gistSaveTimeout) clearTimeout(gistSaveTimeout);
+                gistSaveTimeout = setTimeout(() => {
+                    saveToGist(state);
+                }, 2000);
             } catch (e) {
                 console.error('Erreur sauvegarde état:', e);
             }
@@ -736,9 +868,15 @@
             if (zoomSlider) zoomSlider.value = state.graphZoom || 32;
         }
         
-        loadState();
-        connect();
-        refreshUI();
+        // Initialisation async
+        async function init() {
+            await loadState();
+            connect();
+            refreshUI();
+            console.log('🚀 Control initialisé');
+        }
+        
+        init();
     </script>
 </body>
 </html>
