@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.31</title>
-    <!-- Version 4.31 Production - Fix graphique 3D + Debug logs - 8 décembre 2025 -->
-    <!-- FORCE UPDATE: 1733665000 -->
+    <title>Widget Orbital Production v4.32</title>
+    <!-- Version 4.32 Production - Graphique 3D amélioré - 8 décembre 2025 -->
+    <!-- FORCE UPDATE: 1733670000 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,10 +44,14 @@
             top: 20px;
             left: 40px;
             display: flex;
-            gap: 40px;
+            gap: 50px;
             opacity: 0;
             transform: translateY(-30px);
             transition: all 0.6s ease;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px 30px;
+            border-radius: 10px;
         }
         #graphStats.visible {
             opacity: 1;
@@ -58,18 +62,21 @@
             flex-direction: column;
         }
         .graph-stat-label {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.7);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
             margin-bottom: 4px;
         }
         .graph-stat-value {
-            font-size: 2.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            font-size: 2.2rem;
             font-weight: 700;
             color: white;
         }
         .graph-stat-value.positive { color: #4ade80; }
         .graph-stat-value.negative { color: #f87171; }
-        .graph-stat-value.valuation { color: #ff6b6b; }
+        .graph-stat-value.valuation { color: #ff4444; }
         
         .preview-zone {
             width: 100vw;
@@ -263,7 +270,7 @@
             </div>
             <div class="graph-stat">
                 <span class="graph-stat-label">Variation</span>
-                <span class="graph-stat-value" id="statVariation">+€0.00</span>
+                <span class="graph-stat-value positive" id="statVariation">+€0.00</span>
             </div>
             <div class="graph-stat">
                 <span class="graph-stat-label">Plus haut</span>
@@ -275,7 +282,7 @@
             </div>
             <div class="graph-stat">
                 <span class="graph-stat-label">Notre valorisation</span>
-                <span class="graph-stat-value valuation" id="statValo">€0.00</span>
+                <span class="graph-stat-value valuation" id="statValo">€48.50</span>
             </div>
         </div>
         <canvas id="graphCanvas"></canvas>
@@ -1168,7 +1175,6 @@ développement
             const canvas = document.getElementById('graphCanvas');
             const container = document.getElementById('graphContainer');
             
-            // Utiliser la taille du container (ou window si pas disponible)
             const width = container.clientWidth || window.innerWidth;
             const height = container.clientHeight || window.innerHeight;
             
@@ -1178,22 +1184,85 @@ développement
             threeScene.background = null;
             
             threeCamera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
-            threeCamera.position.set(graphState.cameraX, graphState.cameraY, graphState.cameraZ);
+            threeCamera.position.set(0, 5, 32);
             threeCamera.lookAt(0, 0, 0);
             
             threeRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
             threeRenderer.setSize(width, height);
             threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+            threeRenderer.toneMappingExposure = 1.0;
             
-            // Lumières
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            // Lumières améliorées
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
             threeScene.add(ambientLight);
             
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
             directionalLight.position.set(5, 10, 7);
             threeScene.add(directionalLight);
             
+            // Créer l'ombre au sol
+            createShadow();
+            
+            // Créer les lignes horizontales
+            createHorizontalLines();
+            
             console.log('✅ Three.js initialisé');
+        }
+        
+        let shadowMesh = null;
+        let horizontalLines = [];
+        
+        function createShadow() {
+            // Ombre style Keynote avec dégradé radial
+            const shadowCanvas = document.createElement('canvas');
+            shadowCanvas.width = 512;
+            shadowCanvas.height = 512;
+            const ctx = shadowCanvas.getContext('2d');
+            
+            // Dégradé radial noir vers transparent
+            const gradient = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
+            gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.3)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 512, 512);
+            
+            const shadowTexture = new THREE.CanvasTexture(shadowCanvas);
+            const shadowGeometry = new THREE.PlaneGeometry(40, 40);
+            const shadowMaterial = new THREE.MeshBasicMaterial({
+                map: shadowTexture,
+                transparent: true,
+                opacity: 0.5,
+                depthWrite: false
+            });
+            
+            shadowMesh = new THREE.Mesh(shadowGeometry, shadowMaterial);
+            shadowMesh.rotation.x = -Math.PI / 2;
+            shadowMesh.position.set(0, -7.5, 2);
+            shadowMesh.renderOrder = -1;
+            threeScene.add(shadowMesh);
+        }
+        
+        function createHorizontalLines() {
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0xffffff, 
+                transparent: true, 
+                opacity: 0.15 
+            });
+            
+            // 5 lignes horizontales
+            for (let i = 0; i < 5; i++) {
+                const y = -5 + i * 2.5; // De -5 à +5
+                const points = [
+                    new THREE.Vector3(-20, y, 5),
+                    new THREE.Vector3(20, y, 5)
+                ];
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(geometry, lineMaterial);
+                horizontalLines.push(line);
+                threeScene.add(line);
+            }
         }
         
         function createChartMesh(data) {
@@ -1203,86 +1272,108 @@ développement
             if (chartMesh) {
                 threeScene.remove(chartMesh);
                 chartMesh.geometry.dispose();
-                chartMesh.material.dispose();
+                if (chartMesh.material.dispose) chartMesh.material.dispose();
             }
             if (valuationBar) {
                 threeScene.remove(valuationBar);
             }
             
-            const minVal = Math.min(...data.map(d => d.value));
-            const maxVal = Math.max(...data.map(d => d.value));
+            const minVal = Math.min(...data.map(d => d.value)) - 2;
+            const maxVal = Math.max(...data.map(d => d.value)) + 2;
             const range = maxVal - minVal || 1;
             
-            // Créer la géométrie du graphique
-            const width = 30;
-            const height = 12;
-            const depth = 4;
+            // Dimensions du graphique
+            const graphWidth = 35;
+            const graphHeight = 12;
+            const graphDepth = 4;
             
             const shape = new THREE.Shape();
             
             // Point de départ en bas à gauche
-            shape.moveTo(-width/2, 0);
+            shape.moveTo(-graphWidth/2, -6);
             
             // Tracer la courbe des prix
             data.forEach((d, i) => {
-                const x = (i / (data.length - 1)) * width - width/2;
-                const y = ((d.value - minVal) / range) * height;
-                if (i === 0) shape.lineTo(x, y);
-                else shape.lineTo(x, y);
+                const x = (i / (data.length - 1)) * graphWidth - graphWidth/2;
+                const y = ((d.value - minVal) / range) * graphHeight - 6;
+                shape.lineTo(x, y);
             });
             
             // Fermer la forme
-            shape.lineTo(width/2, 0);
-            shape.lineTo(-width/2, 0);
+            shape.lineTo(graphWidth/2, -6);
+            shape.lineTo(-graphWidth/2, -6);
             
             const extrudeSettings = {
                 steps: 1,
-                depth: depth,
-                bevelEnabled: true,
-                bevelThickness: 0.3,
-                bevelSize: 0.2,
-                bevelSegments: 3
+                depth: graphDepth,
+                bevelEnabled: false
             };
             
             const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            geometry.computeVertexNormals();
             
-            // Matériau dégradé orange
+            // Créer le dégradé de couleurs par vertex
+            const positions = geometry.getAttribute('position');
+            const colors = [];
+            
+            const colorTop = new THREE.Color(0xffa500);    // Orange vif
+            const colorMiddle = new THREE.Color(0xff8c42); // Orange moyen
+            const colorBottom = new THREE.Color(0xffb380); // Orange clair
+            
+            for (let i = 0; i < positions.count; i++) {
+                const y = positions.getY(i);
+                const t = Math.max(0, Math.min(1, (y + 6) / graphHeight));
+                
+                let color;
+                if (t > 0.5) {
+                    color = new THREE.Color().lerpColors(colorMiddle, colorTop, (t - 0.5) * 2);
+                } else {
+                    color = new THREE.Color().lerpColors(colorBottom, colorMiddle, t * 2);
+                }
+                colors.push(color.r, color.g, color.b);
+            }
+            
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            
+            // Matériau avec vertex colors
             const material = new THREE.MeshStandardMaterial({
-                color: 0xffa500,
-                metalness: 0.3,
-                roughness: 0.5,
-                transparent: true,
-                opacity: 0.95
+                vertexColors: true,
+                metalness: 0.2,
+                roughness: 0.6
             });
             
             chartMesh = new THREE.Mesh(geometry, material);
-            chartMesh.position.set(graphState.graphX, graphState.graphY, graphState.graphZ);
-            chartMesh.rotation.y = (graphState.rotationY * Math.PI) / 180;
+            chartMesh.position.set(0, 0, 0);
+            chartMesh.rotation.y = -0.15; // Légère rotation
             chartMesh.scale.y = 0.01; // Commence petit pour animation
             
             threeScene.add(chartMesh);
             
             // Barre de valorisation rouge
-            createValuationBar(minVal, maxVal, range, height);
+            createValuationBar(minVal, maxVal, range, graphHeight);
             
             console.log('✅ Mesh graphique créé');
         }
         
-        function createValuationBar(minVal, maxVal, range, height) {
-            const valoY = ((graphState.valorisation - minVal) / range) * height;
+        function createValuationBar(minVal, maxVal, range, graphHeight) {
+            // Calculer la position Y de la barre selon la valorisation
+            const valoNormalized = (graphState.valorisation - minVal) / range;
+            const valoY = valoNormalized * graphHeight - 6; // Même référence que le graphique
             
-            const barGeometry = new THREE.BoxGeometry(32, 0.4, 6);
+            // Dimensions de la barre (plus fine et bien proportionnée)
+            const barGeometry = new THREE.BoxGeometry(38, 0.35, 7);
             const barMaterial = new THREE.MeshStandardMaterial({
                 color: 0xcc0000,
                 emissive: 0xcc0000,
-                emissiveIntensity: 1.2,
-                metalness: 0.5,
+                emissiveIntensity: 1.5,
+                metalness: 0.4,
                 roughness: 0.3
             });
             
             valuationBar = new THREE.Mesh(barGeometry, barMaterial);
-            valuationBar.position.set(graphState.graphX, graphState.graphY + valoY, graphState.graphZ + 2);
-            valuationBar.scale.set(0.01, 0.01, 0.01);
+            valuationBar.position.set(0, valoY, 2); // Légèrement devant le graphique
+            valuationBar.rotation.y = -0.15; // Même rotation que le graphique
+            valuationBar.scale.set(0.01, 0.01, 0.01); // Commence petit pour animation
             
             threeScene.add(valuationBar);
         }
@@ -1313,7 +1404,7 @@ développement
             if (!graphStartTime) graphStartTime = Date.now();
             const elapsed = (Date.now() - graphStartTime) / 1000;
             
-            // Animation de construction (2 secondes)
+            // Animation de construction du graphique (2 secondes)
             if (constructionProgress < 1) {
                 constructionProgress += 0.016 / 2;
                 constructionProgress = Math.min(1, constructionProgress);
@@ -1327,8 +1418,8 @@ développement
                 }
             }
             
-            // Barre rouge (après 2s)
-            if (barConstructionProgress < 1 && elapsed > 2) {
+            // Barre rouge (après 2.5s)
+            if (barConstructionProgress < 1 && elapsed > 2.5) {
                 barConstructionProgress += 0.016 / 1;
                 barConstructionProgress = Math.min(1, barConstructionProgress);
                 
@@ -1342,15 +1433,32 @@ développement
                 }
             }
             
-            // Rotation lente
-            if (threeScene && elapsed > 1) {
-                threeScene.rotation.y = (graphState.rotationY * Math.PI / 180) + Math.sin(elapsed * 0.1) * 0.05;
+            // Rotation progressive puis oscillation lente
+            if (threeScene) {
+                if (elapsed < 2) {
+                    // Phase 1 : rotation initiale (2 secondes)
+                    const t = elapsed / 2;
+                    const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+                    threeScene.rotation.y = eased * -0.15;
+                } else if (elapsed < 15) {
+                    // Phase 2 : rotation continue lente
+                    const continuousElapsed = elapsed - 2;
+                    threeScene.rotation.y = -0.15 + (continuousElapsed * 0.02);
+                } else {
+                    // Phase 3 : oscillation gauche-droite
+                    const oscillationStart = elapsed - 15;
+                    const oscillationProgress = (oscillationStart % 40) / 40;
+                    const maxAngle = 0.35; // ~20°
+                    const easedProgress = Math.sin(oscillationProgress * Math.PI * 2);
+                    const centerRotation = -0.15 + (13 * 0.02);
+                    threeScene.rotation.y = centerRotation + (easedProgress * maxAngle / 2);
+                }
             }
             
             // Respiration barre rouge
             if (valuationBar && barConstructionProgress >= 1) {
                 const breathe = 1 + Math.sin(elapsed * 1.5) * 0.15;
-                valuationBar.material.emissiveIntensity = 1.2 * breathe;
+                valuationBar.material.emissiveIntensity = 1.5 * breathe;
             }
             
             if (threeRenderer && threeScene && threeCamera) {
