@@ -967,11 +967,14 @@
         // Fonction pour envoyer les commandes de contrôle du graphique
         function graphControl(action, value = null) {
             if (ws && ws.readyState === WebSocket.OPEN) {
+                // Utiliser state pour transmettre les données (le serveur transmet toujours state)
                 const msg = {
                     type: 'control',
                     command: 'GRAPH_CONTROL',
-                    graphAction: action,
-                    graphValue: value
+                    state: {
+                        graphAction: action,
+                        graphValue: value
+                    }
                 };
                 ws.send(JSON.stringify(msg));
                 console.log('📤 Commande graphique:', action, value);
@@ -986,9 +989,11 @@
                 const msg = {
                     type: 'control',
                     command: 'GRAPH_CONTROL',
-                    graphAction: action,
-                    graphParam: param,
-                    graphValue: value
+                    state: {
+                        graphAction: action,
+                        graphParam: param,
+                        graphValue: value
+                    }
                 };
                 ws.send(JSON.stringify(msg));
                 console.log('📤 Commande graphique:', action, param, value);

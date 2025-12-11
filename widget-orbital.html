@@ -503,18 +503,18 @@ développement
                             } else if (message.command === 'HIDE_GRAPH') {
                                 hideGraph();
                             } else if (message.command === 'GRAPH_CONTROL') {
-                                // Transférer les commandes de contrôle au graphique (toujours, même si pas visible)
+                                // Transférer les commandes de contrôle au graphique
                                 const frame = document.getElementById('graphFrame');
-                                if (frame && frame.contentWindow) {
+                                if (frame && frame.contentWindow && message.state) {
                                     frame.contentWindow.postMessage({
                                         command: 'GRAPH_CONTROL',
-                                        action: message.graphAction,
-                                        value: message.graphValue,
-                                        param: message.graphParam
+                                        action: message.state.graphAction,
+                                        value: message.state.graphValue,
+                                        param: message.state.graphParam
                                     }, '*');
-                                    console.log('📈 Commande graphique transférée:', message.graphAction);
+                                    console.log('📈 Commande graphique transférée:', message.state.graphAction);
                                 } else {
-                                    console.warn('⚠️ iframe graphique non trouvée');
+                                    console.warn('⚠️ iframe ou state manquant');
                                 }
                             } else if (message.command === 'UPDATE_GRAPH_STATE') {
                                 // Transférer les paramètres au graphique via postMessage
