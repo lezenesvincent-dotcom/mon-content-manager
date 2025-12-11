@@ -967,12 +967,13 @@
         // Fonction pour envoyer les commandes de contrôle du graphique
         function graphControl(action, value = null) {
             if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
+                const msg = {
                     type: 'control',
                     command: 'GRAPH_CONTROL',
-                    action: action,
-                    value: value
-                }));
+                    graphAction: action,
+                    graphValue: value
+                };
+                ws.send(JSON.stringify(msg));
                 console.log('📤 Commande graphique:', action, value);
             } else {
                 console.warn('⚠️ WebSocket non connecté');
@@ -982,13 +983,14 @@
         // Fonction pour les commandes avec paramètre supplémentaire
         function graphControlParam(action, param, value) {
             if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
+                const msg = {
                     type: 'control',
                     command: 'GRAPH_CONTROL',
-                    action: action,
-                    param: param,
-                    value: value
-                }));
+                    graphAction: action,
+                    graphParam: param,
+                    graphValue: value
+                };
+                ws.send(JSON.stringify(msg));
                 console.log('📤 Commande graphique:', action, param, value);
             } else {
                 console.warn('⚠️ WebSocket non connecté');
