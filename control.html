@@ -630,7 +630,61 @@
                 </div>
             </div>
             
-            <!-- Ligne 5: Actions -->
+            <!-- Ligne 5: Couleurs / Dégradé -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px;">
+                
+                <!-- Opacités -->
+                <div class="graph-control-group">
+                    <span class="control-label">🎨 Opacités</span>
+                    <div style="width: 100%; padding: 5px;">
+                        <label style="font-size: 0.65rem; color: #aaa;">Dégradé: <span id="gradientOpacity">100</span>%</label>
+                        <input type="range" min="0" max="100" value="100" style="width: 100%;" oninput="graphControlSlider('gradientOpacity', this.value)">
+                    </div>
+                    <div style="width: 100%; padding: 5px;">
+                        <label style="font-size: 0.65rem; color: #aaa;">Chapeau: <span id="capOpacity">100</span>%</label>
+                        <input type="range" min="0" max="100" value="100" style="width: 100%;" oninput="graphControlSlider('capOpacity', this.value)">
+                    </div>
+                </div>
+                
+                <!-- Couleurs -->
+                <div class="graph-control-group">
+                    <span class="control-label">🎨 Couleurs</span>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; width: 100%; padding: 5px;">
+                        <div style="text-align: center;">
+                            <label style="font-size: 0.6rem; color: #aaa;">Haut</label>
+                            <input type="color" value="#ffa500" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('top', this.value)">
+                        </div>
+                        <div style="text-align: center;">
+                            <label style="font-size: 0.6rem; color: #aaa;">Bas</label>
+                            <input type="color" value="#ffb380" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('bottom', this.value)">
+                        </div>
+                        <div style="text-align: center;">
+                            <label style="font-size: 0.6rem; color: #aaa;">Face</label>
+                            <input type="color" value="#CCCCCC" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('cap', this.value)">
+                        </div>
+                        <div style="text-align: center;">
+                            <label style="font-size: 0.6rem; color: #aaa;">Barre</label>
+                            <input type="color" value="#CC0000" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('barre', this.value)">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Transitions -->
+                <div class="graph-control-group">
+                    <span class="control-label">🎨 Transitions</span>
+                    <div style="width: 100%; padding: 5px;">
+                        <label style="font-size: 0.65rem; color: #aaa;">Zone couleur: <span id="transitionZone">50</span>%</label>
+                        <input type="range" min="0" max="100" value="50" style="width: 100%;" oninput="graphControlSlider('transitionZone', this.value)">
+                    </div>
+                    <div style="width: 100%; padding: 5px;">
+                        <label style="font-size: 0.65rem; color: #aaa;">Zone opacité: <span id="opacityZone">50</span>%</label>
+                        <input type="range" min="0" max="100" value="50" style="width: 100%;" oninput="graphControlSlider('opacityZone', this.value)">
+                    </div>
+                    <button class="reset-mini" onclick="graphControl('resetGradient')">Reset</button>
+                </div>
+            </div>
+            
+            <!-- Ligne 6: Actions -->
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
                 <button class="btn" style="background: linear-gradient(180deg, #48bb78 0%, #38a169 100%); padding: 10px 25px;" onclick="graphControl('applySettings')">✓ Appliquer</button>
                 <button class="btn" style="background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); padding: 10px 25px;" onclick="graphControl('reloadAnimation')">🔄 Rafraîchir</button>
@@ -999,6 +1053,45 @@
                 console.log('📤 Commande graphique:', action, param, value);
             } else {
                 console.warn('⚠️ WebSocket non connecté');
+            }
+        }
+        
+        // Fonction pour les sliders (opacité, transitions)
+        function graphControlSlider(slider, value) {
+            // Mettre à jour l'affichage local
+            const span = document.getElementById(slider);
+            if (span) span.textContent = value;
+            
+            // Envoyer la commande
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const msg = {
+                    type: 'control',
+                    command: 'GRAPH_CONTROL',
+                    state: {
+                        graphAction: 'setSlider',
+                        graphParam: slider,
+                        graphValue: parseInt(value)
+                    }
+                };
+                ws.send(JSON.stringify(msg));
+                console.log('📤 Slider graphique:', slider, value);
+            }
+        }
+        
+        // Fonction pour les color pickers
+        function graphControlColor(target, color) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const msg = {
+                    type: 'control',
+                    command: 'GRAPH_CONTROL',
+                    state: {
+                        graphAction: 'setGradientColor',
+                        graphParam: target,
+                        graphValue: color
+                    }
+                };
+                ws.send(JSON.stringify(msg));
+                console.log('📤 Couleur graphique:', target, color);
             }
         }
         

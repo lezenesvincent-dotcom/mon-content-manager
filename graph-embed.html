@@ -3216,14 +3216,39 @@ Description: Version intégrée dans widget-orbital.html via iframe
                     if (action === 'adjustLinesExtension') adjustLinesExtension(value);
                     if (action === 'resetLines') resetLines();
                     
-                    // Dégradé
+                    // Dégradé et couleurs
                     if (action === 'setGradientColor') {
-                        if (data.target === 'top') gradientColors.top = value;
-                        if (data.target === 'bottom') gradientColors.bottom = value;
-                        if (data.target === 'cap') topFaceColor = value;
-                        if (data.target === 'barre') barreRougeColor = value;
+                        const target = data.param;
+                        if (target === 'top') gradientColors.top = value;
+                        if (target === 'bottom') gradientColors.bottom = value;
+                        if (target === 'cap') topFaceColor = value;
+                        if (target === 'barre') barreRougeColor = value;
                         updateGradientColors();
                     }
+                    
+                    // Sliders (opacité, transitions)
+                    if (action === 'setSlider') {
+                        const slider = data.param;
+                        const val = value / 100; // Convertir 0-100 en 0-1
+                        
+                        if (slider === 'gradientOpacity') {
+                            gradientOpacity = val;
+                            updateGradientColors();
+                        }
+                        if (slider === 'capOpacity') {
+                            topCapOpacity = val;
+                            updateGradientColors();
+                        }
+                        if (slider === 'transitionZone') {
+                            gradientTransition = val;
+                            updateGradientColors();
+                        }
+                        if (slider === 'opacityZone') {
+                            opacityTransition = val;
+                            updateGradientColors();
+                        }
+                    }
+                    
                     if (action === 'resetGradient') resetGradient();
                     
                     // Appliquer / Sauvegarder
