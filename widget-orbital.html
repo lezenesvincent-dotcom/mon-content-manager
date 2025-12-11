@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Orbital Production v4.29</title>
-    <!-- Version 4.29 Production - San Francisco + Font controls - 3 décembre 2025 18:20 -->
-    <!-- FORCE UPDATE: 1733245000 -->
+    <title>Widget Orbital Production v4.35</title>
+    <!-- Version 4.35 Production - Fix graphique iframe - 8 décembre 2025 -->
+    <!-- FORCE UPDATE: 1733676000 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -15,6 +15,30 @@
             min-height: 100vh;
             overflow: hidden;
         }
+        
+        /* Graphique 3D (iframe) */
+        #graphContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            z-index: 100;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        #graphContainer.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #graphFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
         .preview-zone {
             width: 100vw;
             height: 100vh;
@@ -198,6 +222,11 @@
     </style>
 </head>
 <body>
+    <!-- Conteneur du graphique 3D (iframe vers graph-embed.html) -->
+    <div id="graphContainer">
+        <iframe id="graphFrame" src="" frameborder="0" allowtransparency="true"></iframe>
+    </div>
+    
     <div class="preview-zone">
         <div class="overlay-container">
             <div class="header-row" id="header">
@@ -467,8 +496,25 @@ développement
                                 nextFocus();
                             } else if (message.command === 'HIDE') {
                                 hideCards();
+                                hideGraph(); // Aussi cacher le graphique
+                            } else if (message.command === 'SHOW_GRAPH') {
+                                console.log('📈 SHOW_GRAPH reçu');
+                                showGraph();
+                            } else if (message.command === 'HIDE_GRAPH') {
+                                hideGraph();
+                            } else if (message.command === 'UPDATE_GRAPH_STATE') {
+                                // Transférer les paramètres au graphique via postMessage
+                                if (message.state && graphVisible) {
+                                    const frame = document.getElementById('graphFrame');
+                                    if (frame && frame.contentWindow) {
+                                        frame.contentWindow.postMessage({ 
+                                            command: 'UPDATE_STATE', 
+                                            state: message.state 
+                                        }, '*');
+                                    }
+                                    console.log('📈 État graphique transféré');
+                                }
                             } else if (message.command === 'SYNC_STATE') {
-                                // Synchronisation d'état depuis control.html - déjà appliqué ci-dessus
                                 console.log('🔄 État synchronisé depuis control.html');
                             }
                         }
@@ -921,6 +967,62 @@ développement
         
         // Charger l'état sauvegardé
         loadState();
+
+        // ============================================
+        // GRAPHIQUE 3D (via iframe graph-embed.html)
+        // ============================================
+        
+        let graphVisible = false;
+        
+        function showGraph() {
+            console.log('📈 Affichage graphique');
+            
+            // Cacher les cartes P1-P4
+            hideCards();
+            
+            const graphFrame = document.getElementById('graphFrame');
+            
+            // Charger le graphique dans l'iframe si pas déjà chargé
+            if (!graphFrame.src || graphFrame.src === '' || graphFrame.src === window.location.href || graphFrame.src.endsWith('/')) {
+                console.log('📈 Chargement graph-embed.html');
+                graphFrame.src = 'graph-embed.html';
+            }
+            
+            // Afficher le container
+            document.getElementById('graphContainer').classList.add('visible');
+            
+            // Envoyer commande SHOW au graphique après chargement
+            setTimeout(() => {
+                if (graphFrame.contentWindow) {
+                    graphFrame.contentWindow.postMessage({ command: 'SHOW_GRAPH' }, '*');
+                }
+            }, 1000);
+            
+            graphVisible = true;
+        }
+        
+        function hideGraph() {
+            console.log('📈 Masquage graphique');
+            
+            const container = document.getElementById('graphContainer');
+            const graphFrame = document.getElementById('graphFrame');
+            
+            container.classList.remove('visible');
+            
+            // Envoyer commande HIDE au graphique
+            if (graphFrame && graphFrame.contentWindow) {
+                graphFrame.contentWindow.postMessage({ command: 'HIDE_GRAPH' }, '*');
+            }
+            
+            graphVisible = false;
+        }
+        
+        // Écouter les messages du graphique
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'GRAPH_READY') {
+                console.log('✅ Graphique prêt');
+            }
+        });
     </script>
 </body>
 </html>
