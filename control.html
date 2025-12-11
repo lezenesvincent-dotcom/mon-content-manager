@@ -97,9 +97,76 @@
             background: linear-gradient(180deg, #f6ad55 0%, #dd6b20 100%);
         }
         
+        .btn-manage {
+            background: linear-gradient(180deg, #9f7aea 0%, #805ad5 100%);
+        }
+        
         .graph-section {
             background: linear-gradient(180deg, rgba(246, 173, 85, 0.2) 0%, rgba(221, 107, 32, 0.2) 100%);
             border: 1px solid rgba(246, 173, 85, 0.3);
+        }
+        
+        .graph-control-group {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .graph-control-group .control-label {
+            font-size: 0.75rem;
+            color: #f6ad55;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .joystick.mini {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .joystick-btn.mini {
+            width: 28px;
+            height: 28px;
+            font-size: 0.8rem;
+            padding: 0;
+            background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .joystick-btn.mini:hover {
+            background: linear-gradient(180deg, #5a6578 0%, #3d4758 100%);
+            transform: scale(1.1);
+        }
+        
+        .joystick-btn.mini:active {
+            transform: scale(0.95);
+        }
+        
+        .reset-mini {
+            margin-top: 5px;
+            padding: 3px 10px;
+            font-size: 0.65rem;
+            background: rgba(255, 100, 100, 0.5);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .reset-mini:hover {
+            background: rgba(255, 100, 100, 0.7);
         }
         
         .font-control {
@@ -275,6 +342,7 @@
                 <button class="btn btn-next" onclick="triggerNEXT()">⟳ NEXT</button>
                 <button class="btn btn-valo" onclick="triggerVALO()">📈 VALO</button>
                 <button class="btn btn-hide" onclick="triggerHIDE()">🙈 MASQUER</button>
+                <button class="btn btn-manage" onclick="window.open('p1p4.html', '_blank')">📝 MANAGE</button>
             </div>
             <div class="slider-container">
                 <label>Speed IN: <span id="speedIN-val">3.5</span>s</label>
@@ -309,33 +377,263 @@
             </div>
         </div>
         
-        <!-- Contrôles Graphique 3D -->
-        <div class="control-section graph-section">
-            <h3 class="section-title">📈 Graphique 3D</h3>
-            <div class="slider-container">
-                <label>Valorisation: <span id="graphValo-val">48.50</span>€</label>
-                <input type="range" min="20" max="80" step="0.5" value="48.5" oninput="updateGraphValo(this.value)">
-            </div>
-            <div class="slider-container">
-                <label>Rotation Y: <span id="graphRotY-val">-15</span>°</label>
-                <input type="range" min="-45" max="45" step="1" value="-15" oninput="updateGraphRotation(this.value)">
-            </div>
-            <div class="joystick" style="margin-top: 15px;">
-                <span style="font-size: 0.8rem; color: #888; margin-bottom: 8px; display: block;">Position Graphique</span>
-                <button class="joystick-btn" onclick="moveGraph(0,-1)">▲</button>
-                <div class="joystick-row">
-                    <button class="joystick-btn" onclick="moveGraph(-1,0)">◄</button>
-                    <button class="joystick-btn" onclick="moveGraph(1,0)">►</button>
+        <!-- Contrôles Graphique 3D - Section Complète -->
+        <div class="control-section graph-section" style="grid-column: span 2;">
+            <h3 class="section-title">📈 Graphique 3D - Contrôles Complets</h3>
+            
+            <!-- Ligne 1: Caméra + Angle + Graphique XY -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px;">
+                
+                <!-- Position Caméra -->
+                <div class="graph-control-group">
+                    <span class="control-label">📹 Caméra Pos</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveCamera', 'up')">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('moveCamera', 'left')">◄</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveCamera', 'center')">●</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveCamera', 'right')">►</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('moveCamera', 'down')">▼</button>
+                    </div>
+                    <button class="reset-mini" onclick="graphControl('resetCamera')">Reset</button>
                 </div>
-                <button class="joystick-btn" onclick="moveGraph(0,1)">▼</button>
+                
+                <!-- Rotation Scène -->
+                <div class="graph-control-group">
+                    <span class="control-label">🔄 Rotation</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('rotateScene', 'up')">🔼</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('rotateScene', 'left')">◀️</button>
+                            <button class="joystick-btn mini" onclick="graphControl('rotateScene', 'center')">⭕</button>
+                            <button class="joystick-btn mini" onclick="graphControl('rotateScene', 'right')">▶️</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('rotateScene', 'down')">🔽</button>
+                    </div>
+                </div>
+                
+                <!-- Angle Caméra -->
+                <div class="graph-control-group">
+                    <span class="control-label">🎯 Angle</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('rotateCamera', 'up')">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('rotateCamera', 'left')">◀</button>
+                            <button class="joystick-btn mini" onclick="graphControl('rotateCamera', 'center')">●</button>
+                            <button class="joystick-btn mini" onclick="graphControl('rotateCamera', 'right')">▶</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('rotateCamera', 'down')">▼</button>
+                    </div>
+                    <button class="reset-mini" onclick="graphControl('resetCameraAngle')">Reset</button>
+                </div>
+                
+                <!-- Graphique XY -->
+                <div class="graph-control-group">
+                    <span class="control-label">📊 Graph XY</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveGraph', 'up')">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('moveGraph', 'left')">◄</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveGraph', 'center')">●</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveGraph', 'right')">►</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('moveGraph', 'down')">▼</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px;">
+                        <button class="joystick-btn mini" onclick="graphControl('adjustGraphWidth', 'decrease')">−</button>
+                        <button class="joystick-btn mini" onclick="graphControl('adjustGraphWidth', 'increase')">+</button>
+                    </div>
+                    <button class="reset-mini" onclick="graphControl('resetGraph')">Reset</button>
+                </div>
             </div>
-            <div class="value-display">
-                <span>X: <span class="value-number" id="graph-x">0</span></span>
-                <span>Y: <span class="value-number" id="graph-y">-2</span></span>
+            
+            <!-- Ligne 2: Profondeur Z + Lumière -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px;">
+                
+                <!-- Profondeur Graph Z -->
+                <div class="graph-control-group">
+                    <span class="control-label">📊 Prof Z</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveGraph', 'forward')">⬆️</button>
+                        <button class="joystick-btn mini" onclick="graphControl('moveGraph', 'center')">●</button>
+                        <button class="joystick-btn mini" onclick="graphControl('moveGraph', 'backward')">⬇️</button>
+                    </div>
+                </div>
+                
+                <!-- Lumière Position -->
+                <div class="graph-control-group">
+                    <span class="control-label">💡 Lumière</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveLight', 'up')">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('moveLight', 'left')">◄</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveLight', 'center')">●</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveLight', 'right')">►</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('moveLight', 'down')">▼</button>
+                    </div>
+                    <button class="reset-mini" onclick="graphControl('resetLight')">Reset</button>
+                </div>
+                
+                <!-- Intensité Lumière -->
+                <div class="graph-control-group">
+                    <span class="control-label">🔆 Intensité</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('adjustIntensity', 'up')">☀️</button>
+                        <button class="joystick-btn mini" onclick="graphControl('adjustIntensity', 'center')">●</button>
+                        <button class="joystick-btn mini" onclick="graphControl('adjustIntensity', 'down')">🌙</button>
+                    </div>
+                </div>
+                
+                <!-- Lumière Z -->
+                <div class="graph-control-group">
+                    <span class="control-label">💡 Lum Z</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveLight', 'forward')">⬆️</button>
+                        <button class="joystick-btn mini" onclick="graphControl('moveLight', 'center')">●</button>
+                        <button class="joystick-btn mini" onclick="graphControl('moveLight', 'backward')">⬇️</button>
+                    </div>
+                </div>
             </div>
-            <div class="slider-container">
-                <label>Zoom: <span id="graphZoom-val">32</span></label>
-                <input type="range" min="15" max="60" step="1" value="32" oninput="updateGraphZoom(this.value)">
+            
+            <!-- Ligne 3: Labels + Barre Rouge -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px;">
+                
+                <!-- Labels X (années) -->
+                <div class="graph-control-group">
+                    <span class="control-label">🏷️ Labels X</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveLabels_Annees', 'up')">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('moveLabels_Annees', 'left')">◄</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveLabels_Annees', 'right')">►</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('moveLabels_Annees', 'down')">▼</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px;">
+                        <button class="joystick-btn mini" onclick="graphControl('adjustFontSizeX', 'decrease')">A-</button>
+                        <button class="joystick-btn mini" onclick="graphControl('adjustFontSizeX', 'increase')">A+</button>
+                    </div>
+                </div>
+                
+                <!-- Labels Y (prix) -->
+                <div class="graph-control-group">
+                    <span class="control-label">🏷️ Labels Y</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveLabels_Prix', 'up')">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('moveLabels_Prix', 'left')">◄</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveLabels_Prix', 'right')">►</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('moveLabels_Prix', 'down')">▼</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px;">
+                        <button class="joystick-btn mini" onclick="graphControl('adjustFontSizeY', 'decrease')">A-</button>
+                        <button class="joystick-btn mini" onclick="graphControl('adjustFontSizeY', 'increase')">A+</button>
+                    </div>
+                    <button class="reset-mini" onclick="graphControl('resetLabels')">Reset</button>
+                </div>
+                
+                <!-- Barre Rouge XY -->
+                <div class="graph-control-group">
+                    <span class="control-label">🔴 Barre XY</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveBarreRouge', 'up')">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('moveBarreRouge', 'left')">◄</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveBarreRouge', 'center')">●</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveBarreRouge', 'right')">►</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('moveBarreRouge', 'down')">▼</button>
+                    </div>
+                    <button class="reset-mini" onclick="graphControl('resetBarreRouge')">Reset</button>
+                </div>
+                
+                <!-- Barre Rouge Taille/Intensité -->
+                <div class="graph-control-group">
+                    <span class="control-label">🔴 Barre +</span>
+                    <div class="joystick-row">
+                        <button class="joystick-btn mini" onclick="graphControl('adjustBarreRougeSize', 'width_decrease')">W-</button>
+                        <button class="joystick-btn mini" onclick="graphControl('adjustBarreRougeSize', 'width_increase')">W+</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px;">
+                        <button class="joystick-btn mini" onclick="graphControl('adjustBarreRougeSize', 'height_decrease')">H-</button>
+                        <button class="joystick-btn mini" onclick="graphControl('adjustBarreRougeSize', 'height_increase')">H+</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px;">
+                        <button class="joystick-btn mini" onclick="graphControl('adjustBarreRougeIntensity', 'decrease')">💡-</button>
+                        <button class="joystick-btn mini" onclick="graphControl('adjustBarreRougeIntensity', 'increase')">💡+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ligne 4: Ombres + Lignes -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px;">
+                
+                <!-- Ombre Graphique -->
+                <div class="graph-control-group">
+                    <span class="control-label">🌑 Ombre Graph</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControlParam('adjustGraphShadow', 'size', 'increase')">+</button>
+                        <button class="joystick-btn mini" onclick="graphControlParam('adjustGraphShadow', 'size', 'decrease')">−</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px;">
+                        <button class="joystick-btn mini" onclick="graphControlParam('adjustGraphShadow', 'distance', 'decrease')">📍-</button>
+                        <button class="joystick-btn mini" onclick="graphControlParam('adjustGraphShadow', 'distance', 'increase')">📍+</button>
+                    </div>
+                </div>
+                
+                <!-- Ombre Graph Position -->
+                <div class="graph-control-group">
+                    <span class="control-label">🌑 Ombre Pos</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveGraphShadow', 'up')">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('moveGraphShadow', 'left')">◄</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveGraphShadow', 'right')">►</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('moveGraphShadow', 'down')">▼</button>
+                    </div>
+                </div>
+                
+                <!-- Ombre Barre -->
+                <div class="graph-control-group">
+                    <span class="control-label">🌑 Ombre Barre</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveBarreShadow', 'up')">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('moveBarreShadow', 'left')">◄</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveBarreShadow', 'right')">►</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('moveBarreShadow', 'down')">▼</button>
+                    </div>
+                    <button class="reset-mini" onclick="graphControl('resetShadows')">Reset</button>
+                </div>
+                
+                <!-- Lignes Horizontales -->
+                <div class="graph-control-group">
+                    <span class="control-label">📏 Lignes</span>
+                    <div class="joystick mini">
+                        <button class="joystick-btn mini" onclick="graphControl('moveLines', 'up')">▲</button>
+                        <div class="joystick-row">
+                            <button class="joystick-btn mini" onclick="graphControl('moveLines', 'left')">◄</button>
+                            <button class="joystick-btn mini" onclick="graphControl('moveLines', 'right')">►</button>
+                        </div>
+                        <button class="joystick-btn mini" onclick="graphControl('moveLines', 'down')">▼</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px;">
+                        <button class="joystick-btn mini" onclick="graphControl('adjustLinesExtension', 'decrease')">←</button>
+                        <button class="joystick-btn mini" onclick="graphControl('adjustLinesExtension', 'increase')">→</button>
+                    </div>
+                    <button class="reset-mini" onclick="graphControl('resetLines')">Reset</button>
+                </div>
+            </div>
+            
+            <!-- Ligne 5: Actions -->
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <button class="btn" style="background: linear-gradient(180deg, #48bb78 0%, #38a169 100%); padding: 10px 25px;" onclick="graphControl('applySettings')">✓ Appliquer</button>
+                <button class="btn" style="background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); padding: 10px 25px;" onclick="graphControl('reloadAnimation')">🔄 Rafraîchir</button>
             </div>
         </div>
         
@@ -664,6 +962,37 @@
         
         function triggerVALO() {
             sendControlCommand('SHOW_GRAPH');
+        }
+        
+        // Fonction pour envoyer les commandes de contrôle du graphique
+        function graphControl(action, value = null) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'control',
+                    command: 'GRAPH_CONTROL',
+                    action: action,
+                    value: value
+                }));
+                console.log('📤 Commande graphique:', action, value);
+            } else {
+                console.warn('⚠️ WebSocket non connecté');
+            }
+        }
+        
+        // Fonction pour les commandes avec paramètre supplémentaire
+        function graphControlParam(action, param, value) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'control',
+                    command: 'GRAPH_CONTROL',
+                    action: action,
+                    param: param,
+                    value: value
+                }));
+                console.log('📤 Commande graphique:', action, param, value);
+            } else {
+                console.warn('⚠️ WebSocket non connecté');
+            }
         }
         
         function updateGraphValo(val) {

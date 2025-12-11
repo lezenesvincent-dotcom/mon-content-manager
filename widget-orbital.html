@@ -502,6 +502,13 @@ développement
                                 showGraph();
                             } else if (message.command === 'HIDE_GRAPH') {
                                 hideGraph();
+                            } else if (message.command === 'GRAPH_CONTROL') {
+                                // Transférer les commandes de contrôle au graphique
+                                const frame = document.getElementById('graphFrame');
+                                if (frame && frame.contentWindow) {
+                                    frame.contentWindow.postMessage(message, '*');
+                                    console.log('📈 Commande graphique transférée:', message.action);
+                                }
                             } else if (message.command === 'UPDATE_GRAPH_STATE') {
                                 // Transférer les paramètres au graphique via postMessage
                                 if (message.state && graphVisible) {
