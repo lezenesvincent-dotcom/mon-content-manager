@@ -2343,7 +2343,7 @@ function editSelectedContent() {
         });
 
         // Handle edit form submission
-      document.getElementById('editForm').addEventListener('submit', async function(e) {
+       document.getElementById('editForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const contentId = document.getElementById('editContentId').value;
@@ -2356,8 +2356,8 @@ function editSelectedContent() {
     try {
         const contentIndex = contentStore.findIndex(item => item.id === contentId);
         if (contentIndex !== -1) {
-            const updatedContent = {
-                id: contentId,
+            contentStore[contentIndex] = {
+                ...contentStore[contentIndex],
                 title: document.getElementById('editTitle').value.trim(),
                 subtitle: document.getElementById('editSubtitle').value.trim(),
                 p1: {
@@ -2378,42 +2378,10 @@ function editSelectedContent() {
                 },
                 timestamp: new Date().toLocaleString()
             };
-
-            // 1. Supprimer l'ancien sur le serveur
-            await fetch(`${WS_SERVER_URL}/api/history/${contentId}`, {
-                method: 'DELETE'
-            });
-
-            // 2. Créer le nouveau sur le serveur
-            await fetch(`${WS_SERVER_URL}/api/data`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id: contentId,
-                    titre: updatedContent.title,
-                    soustitre: updatedContent.subtitle,
-                    p1: updatedContent.p1,
-                    p2: updatedContent.p2,
-                    p3: updatedContent.p3,
-                    p4: updatedContent.p4
-                })
-            });
-
-            // 3. Mettre à jour localement
-            contentStore[contentIndex] = updatedContent;
         }
 
         displayContentCards();
         closeEditModal();
-        
-        showStatusMessage(`✨ Contenu mis à jour !`, 'success');
-    } catch (error) {
-        console.error('Update failed:', error);
-        showStatusMessage(`❌ Erreur: ${error.message}`, 'error');
-    }
-});
         
         showStatusMessage(`✨ "${contentStore[contentIndex].title}" updated successfully!`, 'success');
     } catch (error) {
@@ -2421,6 +2389,7 @@ function editSelectedContent() {
         showStatusMessage(`Failed to update: ${error.message}`, 'error');
     }
 });
+
         // Duplicate content function
         async function duplicateContent() {
             const contentId = document.getElementById('editContentId').value;
@@ -2818,4 +2787,3 @@ const contentData = {
 </div>
 </body>
 </html>
-
