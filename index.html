@@ -10,143 +10,141 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: white;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
-        
+
         .container {
-            max-width: 900px;
+            max-width: 800px;
             width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
-        
+
         h1 {
-            font-size: 3rem;
+            color: #333;
+            font-size: 42px;
+            margin-bottom: 15px;
             text-align: center;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-        
+
         .subtitle {
+            color: #666;
+            font-size: 18px;
             text-align: center;
-            color: rgba(255,255,255,0.7);
             margin-bottom: 50px;
-            font-size: 1.2rem;
         }
-        
-        .cards {
+
+        .tools-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
+            gap: 30px;
             margin-bottom: 40px;
         }
-        
-        .card {
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
+
+        .tool-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
             padding: 30px;
-            text-decoration: none;
             color: white;
+            text-decoration: none;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255,255,255,0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            background: rgba(255,255,255,0.15);
-            border-color: rgba(255,255,255,0.3);
+
+        .tool-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
-        
-        .card-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
+
+        .tool-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
         }
-        
-        .card-title {
-            font-size: 1.5rem;
+
+        .tool-title {
+            font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
         }
-        
-        .card-desc {
-            color: rgba(255,255,255,0.7);
-            font-size: 0.95rem;
+
+        .tool-description {
+            font-size: 14px;
+            opacity: 0.9;
             line-height: 1.5;
         }
-        
-        .card-badge {
-            margin-top: 15px;
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.3);
             padding: 5px 15px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 12px;
+            margin-top: 15px;
             font-weight: bold;
-            text-transform: uppercase;
         }
-        
-        .badge-primary {
-            background: linear-gradient(90deg, #48bb78, #38a169);
+
+        .info-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
         }
-        
-        .badge-secondary {
-            background: linear-gradient(90deg, #667eea, #764ba2);
-        }
-        
-        .badge-orange {
-            background: linear-gradient(90deg, #f6ad55, #dd6b20);
-        }
-        
-        .info-box {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 25px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .info-box h3 {
-            margin-bottom: 15px;
+
+        .info-section h3 {
             color: #667eea;
-        }
-        
-        .info-box p {
-            color: rgba(255,255,255,0.8);
-            line-height: 1.6;
             margin-bottom: 10px;
+            font-size: 18px;
         }
-        
-        .info-box strong {
-            color: #48bb78;
+
+        .info-section p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
         }
-        
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            color: rgba(255,255,255,0.5);
-            font-size: 0.9rem;
-        }
-        
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        
+
         .server-status {
-            margin-top: 10px;
-            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -154,40 +152,47 @@
     <div class="container">
         <h1>🎥 Content Manager</h1>
         <p class="subtitle">Gérez vos overlays eCamm Live</p>
-        
-        <div class="cards">
-            <a href="control.html" class="card">
-                <span class="card-icon">🎛️</span>
-                <span class="card-title">Control</span>
-                <span class="card-desc">Panneau de contrôle pour gérer les animations et positions en temps réel</span>
-                <span class="card-badge badge-primary">RECOMMANDÉ</span>
+
+        <div class="tools-grid">
+            <a href="content-manager-websocket.html" class="tool-card">
+                <div class="tool-icon">🚀</div>
+                <div class="tool-title">Création</div>
+                <div class="tool-description">
+                    Gestion en temps réel avec mise à jour instantanée de vos overlays eCamm Live
+                </div>
+                <span class="badge">TEMPS RÉEL</span>
             </a>
-            
-            <a href="p1p4.html" class="card">
-                <span class="card-icon">📝</span>
-                <span class="card-title">Manage</span>
-                <span class="card-desc">Créer et gérer le contenu des 4 cartes P1-P4 avec sauvegarde cloud</span>
-                <span class="card-badge badge-secondary">CONTENU</span>
-            </a>
-            
-            <a href="widget-orbital.html" class="card">
-                <span class="card-icon">🎬</span>
-                <span class="card-title">Widget</span>
-                <span class="card-desc">Overlay à intégrer dans eCamm Live (source navigateur)</span>
-                <span class="card-badge badge-orange">OVERLAY</span>
+
+            <a href="p1p4.html" class="tool-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="tool-icon">📝</div>
+                <div class="tool-title">Manage</div>
+                <div class="tool-description">
+                    Ancien gestionnaire de contenu avec gestion de 4 pages
+                </div>
+                <span class="badge">LEGACY</span>
             </a>
         </div>
-        
-        <div class="info-box">
-            <h3>ℹ️ Comment utiliser ?</h3>
-            <p><strong>1. Widget :</strong> Ajoutez widget-orbital.html comme source navigateur dans eCamm Live</p>
-            <p><strong>2. Manage :</strong> Créez votre contenu (titres, sujets, textes) pour les 4 cartes</p>
-            <p><strong>3. Control :</strong> Contrôlez les animations IN, NEXT, VALO, MASQUER en direct</p>
+
+        <div class="info-section">
+            <h3>ℹ️ Quelle version utiliser ?</h3>
+            <p>
+                <strong>Création (recommandé) :</strong> Utilisez cette version pour des mises à jour en temps réel de vos overlays. Parfait pour les streams en direct !
+            </p>
+            <br>
+            <p>
+                <strong>Manage :</strong> L'ancienne version avec gestion de 4 pages séparées. Utile si vous avez besoin de la structure originale.
+            </p>
         </div>
-        
+
+        <div class="server-status">
+            <div class="status-dot"></div>
+            <span style="color: #2e7d32; font-weight: bold;">
+                Serveur WebSocket : https://ecamm-overlay-server.onrender.com
+            </span>
+        </div>
+
         <div class="footer">
-            <p>Serveur WebSocket : <a href="https://ecamm-overlay-server.onrender.com" target="_blank">ecamm-overlay-server.onrender.com</a></p>
-            <p class="server-status">Made with ❤️ for eCamm Live streaming</p>
+            Made with ❤️ for eCamm Live streaming
         </div>
     </div>
 </body>
