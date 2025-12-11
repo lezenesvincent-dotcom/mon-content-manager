@@ -2343,7 +2343,7 @@ function editSelectedContent() {
         });
 
         // Handle edit form submission
-       document.getElementById('editForm').addEventListener('submit', async function(e) {
+      document.getElementById('editForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const contentId = document.getElementById('editContentId').value;
@@ -2356,7 +2356,7 @@ function editSelectedContent() {
     try {
         const contentIndex = contentStore.findIndex(item => item.id === contentId);
         if (contentIndex !== -1) {
-            contentStore[contentIndex] = {
+            const updatedContent = {
                 ...contentStore[contentIndex],
                 title: document.getElementById('editTitle').value.trim(),
                 subtitle: document.getElementById('editSubtitle').value.trim(),
@@ -2378,6 +2378,29 @@ function editSelectedContent() {
                 },
                 timestamp: new Date().toLocaleString()
             };
+
+            // Sauvegarder sur le serveur
+            const response = await fetch(`${WS_SERVER_URL}/api/history/${contentId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    titre: updatedContent.title,
+                    soustitre: updatedContent.subtitle,
+                    p1: updatedContent.p1,
+                    p2: updatedContent.p2,
+                    p3: updatedContent.p3,
+                    p4: updatedContent.p4
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Mettre à jour localement
+            contentStore[contentIndex] = updatedContent;
         }
 
         displayContentCards();
@@ -2389,7 +2412,6 @@ function editSelectedContent() {
         showStatusMessage(`Failed to update: ${error.message}`, 'error');
     }
 });
-
         // Duplicate content function
         async function duplicateContent() {
             const contentId = document.getElementById('editContentId').value;
