@@ -1966,7 +1966,12 @@ async function deleteSelectedCards() {
 }
 function sendSelectedContent() {
     if (!currentSelectedContentId) {
-        showStatusMessage('⚠️ Sélectionnez d\'abord un contenu', 'error');
+        // Si aucun contenu sélectionné, prendre le premier de la liste
+        if (contentStore.length > 0) {
+            selectContent(contentStore[0].id);
+        } else {
+            showStatusMessage('⚠️ Aucun contenu disponible', 'error');
+        }
         return;
     }
     sendContentToOverlay(currentSelectedContentId);
