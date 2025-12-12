@@ -466,11 +466,47 @@
             animation: breathe 3s ease-in-out infinite;
         }
 .content-card.selected {
+    position: relative;
     box-shadow: 
-        0 0 0 5px #667eea,
-        0 0 30px rgba(102, 126, 234, 0.8),
-        0 0 60px rgba(102, 126, 234, 0.6),
-        0 0 80px rgba(102, 126, 234, 0.4) !important;
+        0 0 30px rgba(102, 126, 234, 0.6),
+        0 0 60px rgba(102, 126, 234, 0.4) !important;
+}
+
+.content-card.selected::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 29px;
+    background: conic-gradient(
+        from var(--angle, 0deg),
+        transparent 0deg,
+        transparent 60deg,
+        #667eea 120deg,
+        #a78bfa 180deg,
+        #667eea 240deg,
+        transparent 300deg,
+        transparent 360deg
+    );
+    z-index: -1;
+    animation: rotateGlow 3s linear infinite;
+}
+
+@keyframes rotateGlow {
+    from {
+        --angle: 0deg;
+    }
+    to {
+        --angle: 360deg;
+    }
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
 }
         /* Fusée au-dessus du titre */
         .content-card::before {
