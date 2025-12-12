@@ -477,14 +477,14 @@ développement
                                 document.getElementById('orbitCenter').style.left = state.centerX + '%';
                                 document.getElementById('orbitCenter').style.top = state.centerY + '%';
                                 
-                                // Mettre à jour les positions des cartes
-                                if (!isAnimating && levitationEnabled) {
-                                    stopLevitation();
-                                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
-                                        const cardNum = state.cardInSlot[slotIdx];
-                                        const el = document.getElementById('p' + cardNum);
-                                        el.style.transform = getSlotTransform(slotIdx);
-                                    }
+                                // Mettre à jour les positions des cartes (toujours)
+                                stopLevitation();
+                                for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                                    const cardNum = state.cardInSlot[slotIdx];
+                                    const el = document.getElementById('p' + cardNum);
+                                    if (el) el.style.transform = getSlotTransform(slotIdx);
+                                }
+                                if (levitationEnabled) {
                                     setTimeout(startLevitation, 100);
                                 }
                             }

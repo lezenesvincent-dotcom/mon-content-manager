@@ -987,12 +987,14 @@
         // ============================================
         function sendControlCommand(command, data = {}) {
             if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
+                const msg = {
                     type: 'control',
                     command: command,
                     state: state,
                     ...data
-                }));
+                };
+                console.log('📤 Envoi complet:', JSON.stringify(msg));
+                ws.send(JSON.stringify(msg));
                 console.log('📤 Commande envoyée:', command);
             } else {
                 console.warn('⚠️ WebSocket non connecté');

@@ -1669,10 +1669,7 @@ Description: Version intégrée dans widget-orbital.html via iframe
         }
 
         function updateGradientColors() {
-            const topInput = document.getElementById('colorTop');
-            const bottomInput = document.getElementById('colorBottom');
-            gradientColors.top = topInput.value.toUpperCase();
-            gradientColors.bottom = bottomInput.value.toUpperCase();
+            // Utiliser les variables directement (pas les inputs DOM)
             updateGradient();
         }
 
@@ -3225,11 +3222,22 @@ Description: Version intégrée dans widget-orbital.html via iframe
                     // Dégradé et couleurs
                     if (action === 'setGradientColor') {
                         const target = data.param;
-                        if (target === 'top') gradientColors.top = value;
-                        if (target === 'bottom') gradientColors.bottom = value;
-                        if (target === 'cap') topFaceColor = value;
-                        if (target === 'barre') barreRougeColor = value;
-                        updateGradientColors();
+                        if (target === 'top') {
+                            gradientColors.top = value;
+                            updateGradientColors();
+                        }
+                        if (target === 'bottom') {
+                            gradientColors.bottom = value;
+                            updateGradientColors();
+                        }
+                        if (target === 'cap') {
+                            topFaceColor = value;
+                            updateTopFaceColor();
+                        }
+                        if (target === 'barre') {
+                            barreRougeColor = value;
+                            updateBarreRouge();
+                        }
                     }
                     
                     // Sliders (opacité, transitions)
