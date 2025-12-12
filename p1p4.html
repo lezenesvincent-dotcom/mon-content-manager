@@ -916,7 +916,14 @@
 .control-bar-btn:active {
     transform: translateY(0);
 }
+.btn-control {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+}
 
+.btn-control:hover {
+    box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+}
 .btn-in {
     background: linear-gradient(135deg, #f6ad55 0%, #dd6b20 100%);
     color: white;
@@ -2927,6 +2934,9 @@ document.getElementById('virtualKeyboard').addEventListener('click', function(e)
 <div class="control-bar">
     <div style="flex: 1;"></div>
     <div style="display: flex; gap: 30px;">
+        <button class="control-bar-btn btn-control" onclick="window.open('control.html', '_blank')">
+    🎮 CONTROL
+</button>
         <button class="control-bar-btn btn-in" onclick="sendSelectedContent()">
             ▶ IN
         </button>
