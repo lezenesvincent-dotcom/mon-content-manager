@@ -691,6 +691,117 @@
             </div>
         </div>
         
+        <!-- Titre et Centre -->
+        <div class="control-section">
+            <h3 class="section-title">🏷️ Position Titre</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveHeader(0,-10)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveHeader(-10,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveHeader(10,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveHeader(0,10)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>X: <span class="value-number" id="header-x">50</span></span>
+                <span>Y: <span class="value-number" id="header-y">80</span></span>
+            </div>
+            
+            <h3 class="section-title" style="margin-top: 20px;">🎯 Position Centre</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveCenter(0,-2)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveCenter(-2,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveCenter(2,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveCenter(0,2)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>X: <span class="value-number" id="center-x">50</span>%</span>
+                <span>Y: <span class="value-number" id="center-y">50</span>%</span>
+            </div>
+        </div>
+        
+        <!-- Slot 1 -->
+        <div class="control-section">
+            <h3 class="section-title">⭐ Slot 1 (Prime)</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveSlot(1,0,-10)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveSlot(1,-10,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveSlot(1,10,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveSlot(1,0,10)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>Pos: <span class="value-number" id="slot1-pos">-40, 20</span></span>
+            </div>
+            <div class="slider-container">
+                <label>Scale: <span id="slot1-scale">1.00</span></label>
+                <input type="range" min="0.5" max="1.5" step="0.05" value="1.0" oninput="updateSlotScale(1, this.value)">
+            </div>
+        </div>
+        
+        <!-- Slot 2 -->
+        <div class="control-section">
+            <h3 class="section-title">🔷 Slot 2</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveSlot(2,0,-10)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveSlot(2,-10,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveSlot(2,10,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveSlot(2,0,10)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>Pos: <span class="value-number" id="slot2-pos">160, -60</span></span>
+            </div>
+            <div class="slider-container">
+                <label>Scale: <span id="slot2-scale">0.70</span></label>
+                <input type="range" min="0.3" max="1.0" step="0.02" value="0.70" oninput="updateSlotScale(2, this.value)">
+            </div>
+        </div>
+        
+        <!-- Slot 3 -->
+        <div class="control-section">
+            <h3 class="section-title">🔶 Slot 3</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveSlot(3,0,-10)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveSlot(3,-10,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveSlot(3,10,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveSlot(3,0,10)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>Pos: <span class="value-number" id="slot3-pos">185, 30</span></span>
+            </div>
+            <div class="slider-container">
+                <label>Scale: <span id="slot3-scale">0.66</span></label>
+                <input type="range" min="0.3" max="1.0" step="0.02" value="0.66" oninput="updateSlotScale(3, this.value)">
+            </div>
+        </div>
+        
+        <!-- Slot 4 -->
+        <div class="control-section">
+            <h3 class="section-title">🟣 Slot 4</h3>
+            <div class="joystick">
+                <button class="joystick-btn" onclick="moveSlot(4,0,-10)">▲</button>
+                <div class="joystick-row">
+                    <button class="joystick-btn" onclick="moveSlot(4,-10,0)">◄</button>
+                    <button class="joystick-btn" onclick="moveSlot(4,10,0)">►</button>
+                </div>
+                <button class="joystick-btn" onclick="moveSlot(4,0,10)">▼</button>
+            </div>
+            <div class="value-display">
+                <span>Pos: <span class="value-number" id="slot4-pos">210, 110</span></span>
+            </div>
+            <div class="slider-container">
+                <label>Scale: <span id="slot4-scale">0.62</span></label>
+                <input type="range" min="0.3" max="1.0" step="0.02" value="0.62" oninput="updateSlotScale(4, this.value)">
+            </div>
+        </div>
+        
     </div>
     
     <script>
