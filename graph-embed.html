@@ -3200,7 +3200,13 @@ Description: Version intégrée dans widget-orbital.html via iframe
                     
                     // Barre Rouge
                     if (action === 'moveBarreRouge') moveBarreRouge(value);
-                    if (action === 'adjustBarreRougeSize') adjustBarreRougeSize(value);
+                    if (action === 'adjustBarreRougeSize') {
+                        // Parse 'width_decrease' -> dimension='width', direction='decrease'
+                        const parts = value.split('_');
+                        if (parts.length === 2) {
+                            adjustBarreRougeSize(parts[0], parts[1]);
+                        }
+                    }
                     if (action === 'adjustBarreRougeIntensity') adjustBarreRougeIntensity(value);
                     if (action === 'resetBarreRouge') resetBarreRouge();
                     
@@ -3212,9 +3218,9 @@ Description: Version intégrée dans widget-orbital.html via iframe
                     if (action === 'resetShadows') { resetGraphShadow(); resetBarreShadow(); }
                     
                     // Lignes horizontales
-                    if (action === 'moveLines') moveLines(value);
+                    if (action === 'moveLines') moveLinesHorizontales(value);
                     if (action === 'adjustLinesExtension') adjustLinesExtension(value);
-                    if (action === 'resetLines') resetLines();
+                    if (action === 'resetLines') resetLinesHorizontales();
                     
                     // Dégradé et couleurs
                     if (action === 'setGradientColor') {
