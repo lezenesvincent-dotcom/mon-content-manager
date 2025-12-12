@@ -2092,6 +2092,8 @@ function editSelectedContent() {
         return;
     }
     openEditModal(currentSelectedContentId);
+    // Cacher la barre de contrôle
+    document.querySelector('.control-bar').style.display = 'none';
 }
 
         async function sendContentToOverlay(contentId) {
@@ -2436,6 +2438,8 @@ function editSelectedContent() {
     setTimeout(() => {
         document.getElementById('editForm').reset();
     }, 300);
+           // Remettre la barre de contrôle
+    document.querySelector('.control-bar').style.display = 'flex';
 }
 
         function updateEditCounter(textareaId, counterId) {
