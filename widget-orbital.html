@@ -450,13 +450,13 @@ développement
                             // Commandes du joystick control.html
                             console.log('🎮 Commande control reçue:', message.command);
                             
-                            if (message.state) {
-                                // Mettre à jour l'état
+                            // Mettre à jour l'état SEULEMENT si les valeurs existent
+                            if (message.state && message.state.headerX !== undefined) {
                                 state.headerX = message.state.headerX;
                                 state.headerY = message.state.headerY;
                                 state.centerX = message.state.centerX;
                                 state.centerY = message.state.centerY;
-                                state.slots = message.state.slots;
+                                if (message.state.slots) state.slots = message.state.slots;
                                 state.speedIN = message.state.speedIN;
                                 state.speedNEXT = message.state.speedNEXT;
                                 state.speedLev = message.state.speedLev;
