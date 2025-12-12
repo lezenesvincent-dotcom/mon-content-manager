@@ -2094,6 +2094,9 @@ function editSelectedContent() {
     openEditModal(currentSelectedContentId);
     // Cacher la barre de contrôle
     document.querySelector('.control-bar').style.display = 'none';
+    // Agrandir le modal et réduire le padding
+    document.querySelector('#editModal .modal-content').style.maxHeight = '95vh';
+    document.querySelector('#editModal .modal-content').style.paddingBottom = '40px';
 }
 
         async function sendContentToOverlay(contentId) {
@@ -2440,6 +2443,9 @@ function editSelectedContent() {
     }, 300);
            // Remettre la barre de contrôle
     document.querySelector('.control-bar').style.display = 'flex';
+           // Remettre la taille originale
+    document.querySelector('#editModal .modal-content').style.maxHeight = '85vh';
+    document.querySelector('#editModal .modal-content').style.paddingBottom = '220px';
 }
 
         function updateEditCounter(textareaId, counterId) {
