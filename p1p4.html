@@ -897,7 +897,7 @@
 }
 
 .control-bar-btn {
-    padding: 50px 80px;
+    padding: 60px 100px;
     border: none;
     border-radius: 16px;
     font-size: 2rem;
@@ -2772,23 +2772,28 @@ const contentData = {
     </script>
     <!-- Barre de contrôle fixe -->
 <div class="control-bar">
-   <button class="control-bar-btn btn-control-edit" onclick="editSelectedContent()" style="margin-left: auto;">
-    ✏ EDIT
-</button>
-    <button class="control-bar-btn btn-in" onclick="sendSelectedContent()">
-        ▶ IN
-    </button>
-    <button class="control-bar-btn btn-next" onclick="focusNextSubject()">
-        ⏭ NEXT
-    </button>
-    <button class="control-bar-btn btn-valo" onclick="showGraph()">
-        📈 VALO
-    </button>
-    <button class="control-bar-btn btn-clear" onclick="hideOverlay()">
-        ✖ CLEAR
-    </button>
-    <div class="control-bar-info">
-        Sélectionné : <strong id="selectedContentName">Aucun</strong>
+    <div style="flex: 1;"></div>
+    <div style="display: flex; gap: 30px;">
+        <button class="control-bar-btn btn-in" onclick="sendSelectedContent()">
+            ▶ IN
+        </button>
+        <button class="control-bar-btn btn-next" onclick="focusNextSubject()">
+            ⏭ NEXT
+        </button>
+        <button class="control-bar-btn btn-valo" onclick="showGraph()">
+            📈 VALO
+        </button>
+        <button class="control-bar-btn btn-clear" onclick="hideOverlay()">
+            ✖ CLEAR
+        </button>
+    </div>
+    <div style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 20px;">
+        <button class="control-bar-btn btn-control-edit" onclick="editSelectedContent()">
+            ✏ EDIT
+        </button>
+        <div class="control-bar-info">
+            Sélectionné : <strong id="selectedContentName">Aucun</strong>
+        </div>
     </div>
 </div>
 </body>
