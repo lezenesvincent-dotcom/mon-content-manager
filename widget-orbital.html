@@ -477,16 +477,16 @@ développement
                                 document.getElementById('orbitCenter').style.left = state.centerX + '%';
                                 document.getElementById('orbitCenter').style.top = state.centerY + '%';
                                 
-                                // Mettre à jour les positions des cartes (toujours)
-                                stopLevitation();
+                                // Mettre à jour les positions des cartes (toujours, même si cachées)
                                 for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
                                     const cardNum = state.cardInSlot[slotIdx];
                                     const el = document.getElementById('p' + cardNum);
-                                    if (el) el.style.transform = getSlotTransform(slotIdx);
+                                    if (el) {
+                                        const s = state.slots[slotIdx];
+                                        el.style.transform = getTransform(s.x, s.y, s.z, s.scale, 0, 0);
+                                    }
                                 }
-                                if (levitationEnabled) {
-                                    setTimeout(startLevitation, 100);
-                                }
+                                console.log('✅ Positions mises à jour');
                             }
                             
                             // Exécuter les commandes

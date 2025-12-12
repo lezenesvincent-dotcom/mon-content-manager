@@ -638,11 +638,11 @@
                     <span class="control-label">🎨 Opacités</span>
                     <div style="width: 100%; padding: 5px;">
                         <label style="font-size: 0.65rem; color: #aaa;">Dégradé: <span id="gradientOpacity">100</span>%</label>
-                        <input type="range" min="0" max="100" value="100" style="width: 100%;" oninput="graphControlSlider('gradientOpacity', this.value)">
+                        <input type="range" id="slider-gradientOpacity" min="0" max="100" value="100" style="width: 100%;" oninput="graphControlSlider('gradientOpacity', this.value)">
                     </div>
                     <div style="width: 100%; padding: 5px;">
                         <label style="font-size: 0.65rem; color: #aaa;">Chapeau: <span id="capOpacity">100</span>%</label>
-                        <input type="range" min="0" max="100" value="100" style="width: 100%;" oninput="graphControlSlider('capOpacity', this.value)">
+                        <input type="range" id="slider-capOpacity" min="0" max="100" value="100" style="width: 100%;" oninput="graphControlSlider('capOpacity', this.value)">
                     </div>
                 </div>
                 
@@ -652,19 +652,19 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; width: 100%; padding: 5px;">
                         <div style="text-align: center;">
                             <label style="font-size: 0.6rem; color: #aaa;">Haut</label>
-                            <input type="color" value="#ffa500" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('top', this.value)">
+                            <input type="color" id="color-top" value="#ffa500" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('top', this.value)">
                         </div>
                         <div style="text-align: center;">
                             <label style="font-size: 0.6rem; color: #aaa;">Bas</label>
-                            <input type="color" value="#ffb380" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('bottom', this.value)">
+                            <input type="color" id="color-bottom" value="#ffb380" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('bottom', this.value)">
                         </div>
                         <div style="text-align: center;">
                             <label style="font-size: 0.6rem; color: #aaa;">Face</label>
-                            <input type="color" value="#CCCCCC" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('cap', this.value)">
+                            <input type="color" id="color-cap" value="#CCCCCC" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('cap', this.value)">
                         </div>
                         <div style="text-align: center;">
                             <label style="font-size: 0.6rem; color: #aaa;">Barre</label>
-                            <input type="color" value="#CC0000" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('barre', this.value)">
+                            <input type="color" id="color-barre" value="#CC0000" style="width: 100%; height: 25px; cursor: pointer;" onchange="graphControlColor('barre', this.value)">
                         </div>
                     </div>
                 </div>
@@ -674,11 +674,11 @@
                     <span class="control-label">🎨 Transitions</span>
                     <div style="width: 100%; padding: 5px;">
                         <label style="font-size: 0.65rem; color: #aaa;">Zone couleur: <span id="transitionZone">50</span>%</label>
-                        <input type="range" min="0" max="100" value="50" style="width: 100%;" oninput="graphControlSlider('transitionZone', this.value)">
+                        <input type="range" id="slider-transitionZone" min="0" max="100" value="50" style="width: 100%;" oninput="graphControlSlider('transitionZone', this.value)">
                     </div>
                     <div style="width: 100%; padding: 5px;">
                         <label style="font-size: 0.65rem; color: #aaa;">Zone opacité: <span id="opacityZone">50</span>%</label>
-                        <input type="range" min="0" max="100" value="50" style="width: 100%;" oninput="graphControlSlider('opacityZone', this.value)">
+                        <input type="range" id="slider-opacityZone" min="0" max="100" value="50" style="width: 100%;" oninput="graphControlSlider('opacityZone', this.value)">
                     </div>
                     <button class="reset-mini" onclick="graphControl('resetGradient')">Reset</button>
                 </div>
@@ -831,7 +831,20 @@
             graphRotY: -15,
             graphX: 0,
             graphY: -2,
-            graphZoom: 32
+            graphZoom: 32,
+            // Couleurs graphique
+            graphColors: {
+                top: '#ffa500',
+                bottom: '#ffb380',
+                cap: '#CCCCCC',
+                barre: '#CC0000'
+            },
+            graphOpacity: {
+                gradient: 100,
+                cap: 100,
+                transitionZone: 50,
+                opacityZone: 50
+            }
         };
         
         // ============================================
@@ -993,7 +1006,6 @@
                     state: state,
                     ...data
                 };
-                console.log('📤 Envoi complet:', JSON.stringify(msg));
                 ws.send(JSON.stringify(msg));
                 console.log('📤 Commande envoyée:', command);
             } else {
@@ -1065,6 +1077,13 @@
             const span = document.getElementById(slider);
             if (span) span.textContent = value;
             
+            // Sauvegarder dans state
+            if (slider === 'gradientOpacity') state.graphOpacity.gradient = parseInt(value);
+            if (slider === 'capOpacity') state.graphOpacity.cap = parseInt(value);
+            if (slider === 'transitionZone') state.graphOpacity.transitionZone = parseInt(value);
+            if (slider === 'opacityZone') state.graphOpacity.opacityZone = parseInt(value);
+            saveState();
+            
             // Envoyer la commande
             if (ws && ws.readyState === WebSocket.OPEN) {
                 const msg = {
@@ -1083,6 +1102,12 @@
         
         // Fonction pour les color pickers
         function graphControlColor(target, color) {
+            // Sauvegarder dans state
+            if (state.graphColors) {
+                state.graphColors[target] = color;
+                saveState();
+            }
+            
             if (ws && ws.readyState === WebSocket.OPEN) {
                 const msg = {
                     type: 'control',
@@ -1298,6 +1323,35 @@
             if (rotSlider) rotSlider.value = state.graphRotY || -15;
             const zoomSlider = document.querySelector('input[oninput*="updateGraphZoom"]');
             if (zoomSlider) zoomSlider.value = state.graphZoom || 32;
+            
+            // Couleurs graphique
+            if (state.graphColors) {
+                const colorTop = document.getElementById('color-top');
+                const colorBottom = document.getElementById('color-bottom');
+                const colorCap = document.getElementById('color-cap');
+                const colorBarre = document.getElementById('color-barre');
+                if (colorTop) colorTop.value = state.graphColors.top || '#ffa500';
+                if (colorBottom) colorBottom.value = state.graphColors.bottom || '#ffb380';
+                if (colorCap) colorCap.value = state.graphColors.cap || '#CCCCCC';
+                if (colorBarre) colorBarre.value = state.graphColors.barre || '#CC0000';
+            }
+            
+            // Opacités graphique
+            if (state.graphOpacity) {
+                document.getElementById('gradientOpacity').textContent = state.graphOpacity.gradient || 100;
+                document.getElementById('capOpacity').textContent = state.graphOpacity.cap || 100;
+                document.getElementById('transitionZone').textContent = state.graphOpacity.transitionZone || 50;
+                document.getElementById('opacityZone').textContent = state.graphOpacity.opacityZone || 50;
+                
+                const sliderGradient = document.getElementById('slider-gradientOpacity');
+                const sliderCap = document.getElementById('slider-capOpacity');
+                const sliderTransition = document.getElementById('slider-transitionZone');
+                const sliderOpacity = document.getElementById('slider-opacityZone');
+                if (sliderGradient) sliderGradient.value = state.graphOpacity.gradient || 100;
+                if (sliderCap) sliderCap.value = state.graphOpacity.cap || 100;
+                if (sliderTransition) sliderTransition.value = state.graphOpacity.transitionZone || 50;
+                if (sliderOpacity) sliderOpacity.value = state.graphOpacity.opacityZone || 50;
+            }
         }
         
         // Initialisation async
@@ -1306,6 +1360,35 @@
             connect();
             refreshUI();
             console.log('🚀 Control initialisé');
+            
+            // Attendre la connexion WebSocket puis synchroniser les couleurs
+            setTimeout(syncGraphColors, 2000);
+        }
+        
+        // Synchroniser les couleurs vers le graphique
+        function syncGraphColors() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                console.log('⏳ WebSocket pas encore prêt, retry dans 1s');
+                setTimeout(syncGraphColors, 1000);
+                return;
+            }
+            
+            // Envoyer les couleurs
+            if (state.graphColors) {
+                for (const [target, color] of Object.entries(state.graphColors)) {
+                    graphControlColor(target, color);
+                }
+            }
+            
+            // Envoyer les opacités
+            if (state.graphOpacity) {
+                graphControlSlider('gradientOpacity', state.graphOpacity.gradient || 100);
+                graphControlSlider('capOpacity', state.graphOpacity.cap || 100);
+                graphControlSlider('transitionZone', state.graphOpacity.transitionZone || 50);
+                graphControlSlider('opacityZone', state.graphOpacity.opacityZone || 50);
+            }
+            
+            console.log('🎨 Couleurs synchronisées vers graphique');
         }
         
         // Alias pour compatibilité
