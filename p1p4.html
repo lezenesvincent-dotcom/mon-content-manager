@@ -2755,7 +2755,7 @@ function editSelectedContent() {
         const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw8Z5gkaEEOAz--d47bBVLbUr4zoQiHy-bOluadKOGW_xp-BEN7EiAmn2zpRFxWhUTf0Q/exec';
         
-        async function loadFromWebSocket() {
+      async function loadFromWebSocket() {
     const wsStatusIndicator = document.getElementById('wsStatusIndicator');
     
     try {
@@ -2765,9 +2765,32 @@ const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw8Z5gkaEEOAz
             wsStatusIndicator.textContent = '🔄 Chargement...';
         }
         
-        // Charger depuis Google Sheet
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAll`);
-        const history = await response.json();
+        // Utiliser JSONP pour éviter CORS
+        const history = await new Promise((resolve, reject) => {
+            const callbackName = 'jsonpCallback_' + Date.now();
+            
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                document.head.removeChild(script);
+                resolve(data);
+            };
+            
+            const script = document.createElement('script');
+            script.src = `${GOOGLE_SCRIPT_URL}?action=getAll&callback=${callbackName}`;
+            script.onerror = () => {
+                delete window[callbackName];
+                reject(new Error('Failed to load'));
+            };
+            document.head.appendChild(script);
+            
+            // Timeout après 10 secondes
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    delete window[callbackName];
+                    reject(new Error('Timeout'));
+                }
+            }, 10000);
+        });
         
         console.log('✅ Historique chargé depuis Google Sheet:', history.length, 'éléments');
         
@@ -2778,7 +2801,7 @@ const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw8Z5gkaEEOAz
         }
         
         // Convertir le format Google Sheet vers le format p1p4
-        const convertedHistory = history.map((data, index) => {
+        const convertedHistory = history.map((data) => {
             return {
                 id: data.id || 'gs-' + Date.now(),
                 title: data.titre || 'Untitled',
