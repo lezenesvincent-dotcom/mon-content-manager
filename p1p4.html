@@ -2296,24 +2296,22 @@ function editSelectedContent() {
             }
 
             try {
-                const deleteUrl = `${WS_SERVER_URL}/api/history/${contentId}`;
-                console.log('🌐 URL de suppression:', deleteUrl);
+                console.log('🌐 Suppression sur Google Sheet...');
                 
-                // Supprimer sur le serveur
-                const response = await fetch(deleteUrl, {
-                    method: 'DELETE'
+                // Supprimer sur Google Sheet
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        id: contentId
+                    })
                 });
 
-                console.log('📡 Réponse serveur status:', response.status);
-                console.log('📡 Réponse serveur ok?:', response.ok);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                console.log('✅ Réponse serveur complète:', result);
-
+                console.log('✅ Suppression envoyée à Google Sheet');
                 // Supprimer du store local
                 const lengthBefore = contentStore.length;
                 contentStore = contentStore.filter(item => item.id !== contentId);
@@ -2351,14 +2349,20 @@ function editSelectedContent() {
             try {
                 showStatusMessage('🔄 Suppression en cours...', 'info');
                 
-                // Supprimer chaque élément un par un
-                const deletePromises = contentStore.map(content => 
-                    fetch(`${WS_SERVER_URL}/api/history/${content.id}`, {
-                        method: 'DELETE'
-                    })
-                );
-
-                await Promise.all(deletePromises);
+             // Supprimer chaque élément un par un sur Google Sheet
+                for (const content of contentStore) {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'delete',
+                            id: content.id
+                        })
+                    });
+                }
                 
                 // Vider le store local
                 contentStore = [];
@@ -2499,7 +2503,7 @@ function editSelectedContent() {
         return text.split('\n').filter(line => line.trim() !== '').slice(0, 7);
     }
 
-    try {
+   try {
         const contentIndex = contentStore.findIndex(item => item.id === contentId);
         if (contentIndex !== -1) {
             contentStore[contentIndex] = {
@@ -2524,6 +2528,29 @@ function editSelectedContent() {
                 },
                 timestamp: new Date().toLocaleString()
             };
+            
+            // Sauvegarder sur Google Sheet
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'update',
+                    id: contentId,
+                    titre: contentStore[contentIndex].title,
+                    soustitre: contentStore[contentIndex].subtitle,
+                    p1_sujet: contentStore[contentIndex].p1?.sujet || '',
+                    p1_contenu: contentStore[contentIndex].p1?.contenu?.join('\n') || '',
+                    p2_sujet: contentStore[contentIndex].p2?.sujet || '',
+                    p2_contenu: contentStore[contentIndex].p2?.contenu?.join('\n') || '',
+                    p3_sujet: contentStore[contentIndex].p3?.sujet || '',
+                    p3_contenu: contentStore[contentIndex].p3?.contenu?.join('\n') || '',
+                    p4_sujet: contentStore[contentIndex].p4?.sujet || '',
+                    p4_contenu: contentStore[contentIndex].p4?.contenu?.join('\n') || ''
+                })
+            });
         }
 
         displayContentCards();
@@ -2726,68 +2753,70 @@ function editSelectedContent() {
         // ========== WEBSOCKET INTEGRATION ==========
         // Charger les données depuis le serveur WebSocket (depuis "Création")
         const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw8Z5gkaEEOAz--d47bBVLbUr4zoQiHy-bOluadKOGW_xp-BEN7EiAmn2zpRFxWhUTf0Q/exec';
         
         async function loadFromWebSocket() {
-            const wsStatusIndicator = document.getElementById('wsStatusIndicator');
-            
-            try {
-                if (wsStatusIndicator) {
-                    wsStatusIndicator.style.background = '#ffc107';
-                    wsStatusIndicator.style.color = '#000';
-                    wsStatusIndicator.textContent = '🔄 Chargement...';
-                }
-                
-                const response = await fetch(`${WS_SERVER_URL}/api/history`);
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const history = await response.json();
-                console.log('✅ Historique chargé depuis WebSocket:', history.length, 'éléments');
-                console.log('📦 Données brutes du serveur:', history);
-                
-                if (wsStatusIndicator) {
-                    wsStatusIndicator.style.background = '#28a745';
-                    wsStatusIndicator.style.color = '#fff';
-                    wsStatusIndicator.textContent = '✅ Connecté (' + history.length + ')';
-                }
-                
-                // Convertir chaque élément de l'historique
-                const convertedHistory = history.map((data, index) => {
-                    console.log(`🔄 Conversion élément ${index + 1}:`, data);
-                    
-                    // Stocker les données COMPLÈTES au lieu de les aplatir
-                    const converted = {
-                        id: data.id || 'ws-' + Date.now(),
-                        title: data.titre || 'Untitled',
-                        subtitle: data.soustitre || '',
-                        // Garder les données P1-P4 complètes avec sujets et toutes les lignes
-                        p1: data.p1 || { sujet: '', contenu: [] },
-                        p2: data.p2 || { sujet: '', contenu: [] },
-                        p3: data.p3 || { sujet: '', contenu: [] },
-                        p4: data.p4 || { sujet: '', contenu: [] },
-                        timestamp: data.timestamp || new Date().toLocaleString(),
-                        source: data.source || 'websocket'
-                    };
-                    console.log(`✅ Converti:`, converted);
-                    return converted;
-                });
-                
-                console.log('📊 Historique converti final:', convertedHistory);
-                
-                return convertedHistory;
-            } catch (error) {
-                console.error('❌ Erreur chargement WebSocket:', error);
-                
-                if (wsStatusIndicator) {
-                    wsStatusIndicator.style.background = '#dc3545';
-                    wsStatusIndicator.style.color = '#fff';
-                    wsStatusIndicator.textContent = '❌ Serveur inaccessible';
-                }
-                
-                return [];
-            }
+    const wsStatusIndicator = document.getElementById('wsStatusIndicator');
+    
+    try {
+        if (wsStatusIndicator) {
+            wsStatusIndicator.style.background = '#ffc107';
+            wsStatusIndicator.style.color = '#000';
+            wsStatusIndicator.textContent = '🔄 Chargement...';
         }
+        
+        // Charger depuis Google Sheet
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAll`);
+        const history = await response.json();
+        
+        console.log('✅ Historique chargé depuis Google Sheet:', history.length, 'éléments');
+        
+        if (wsStatusIndicator) {
+            wsStatusIndicator.style.background = '#28a745';
+            wsStatusIndicator.style.color = '#fff';
+            wsStatusIndicator.textContent = '✅ Connecté (' + history.length + ')';
+        }
+        
+        // Convertir le format Google Sheet vers le format p1p4
+        const convertedHistory = history.map((data, index) => {
+            return {
+                id: data.id || 'gs-' + Date.now(),
+                title: data.titre || 'Untitled',
+                subtitle: data.soustitre || '',
+                p1: { 
+                    sujet: data.p1_sujet || '', 
+                    contenu: data.p1_contenu ? data.p1_contenu.split('\n') : [] 
+                },
+                p2: { 
+                    sujet: data.p2_sujet || '', 
+                    contenu: data.p2_contenu ? data.p2_contenu.split('\n') : [] 
+                },
+                p3: { 
+                    sujet: data.p3_sujet || '', 
+                    contenu: data.p3_contenu ? data.p3_contenu.split('\n') : [] 
+                },
+                p4: { 
+                    sujet: data.p4_sujet || '', 
+                    contenu: data.p4_contenu ? data.p4_contenu.split('\n') : [] 
+                },
+                timestamp: new Date().toLocaleString(),
+                source: 'google-sheet'
+            };
+        });
+        
+        return convertedHistory;
+    } catch (error) {
+        console.error('❌ Erreur chargement Google Sheet:', error);
+        
+        if (wsStatusIndicator) {
+            wsStatusIndicator.style.background = '#dc3545';
+            wsStatusIndicator.style.color = '#fff';
+            wsStatusIndicator.textContent = '❌ Erreur connexion';
+        }
+        
+        return [];
+    }
+}
         // Create Modal Functions
 function openCreateModal() {
     window.scrollTo({ top: 0, behavior: 'smooth' }); // ← Scroll vers le haut
@@ -2881,21 +2910,27 @@ const contentData = {
     timestamp: new Date().toLocaleString(),
     source: 'create-modal'
 };
-                // Send to server
-                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
+                // Send to Google Sheet
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-    titre: contentData.title || '',
-    soustitre: contentData.subtitle || '',
-    p1: contentData.p1 || { sujet: '', contenu: [] },
-    p2: contentData.p2 || { sujet: '', contenu: [] },
-    p3: contentData.p3 || { sujet: '', contenu: [] },
-    p4: contentData.p4 || { sujet: '', contenu: [] }
-})
- });
+                        action: 'create',
+                        titre: contentData.title || '',
+                        soustitre: contentData.subtitle || '',
+                        p1_sujet: contentData.p1?.sujet || '',
+                        p1_contenu: contentData.p1?.contenu?.join('\n') || '',
+                        p2_sujet: contentData.p2?.sujet || '',
+                        p2_contenu: contentData.p2?.contenu?.join('\n') || '',
+                        p3_sujet: contentData.p3?.sujet || '',
+                        p3_contenu: contentData.p3?.contenu?.join('\n') || '',
+                        p4_sujet: contentData.p4?.sujet || '',
+                        p4_contenu: contentData.p4?.contenu?.join('\n') || ''
+                    })
+                });
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
