@@ -2295,31 +2295,34 @@ function editSelectedContent() {
                 return;
             }
 
-            try {
-                console.log('🌐 Suppression sur Google Sheet...');
-                
-                // Supprimer sur Google Sheet
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        action: 'delete',
-                        id: contentId
-                    })
-                });
+           try {
+    // 1. SUPPRESSION IMMÉDIATE de l'interface (avant même la requête serveur)
+    const lengthBefore = contentStore.length;
+    contentStore = contentStore.filter(item => item.id !== contentId);
+    console.log('📊 contentStore après suppression locale:', contentStore.length, 'éléments');
+    console.log('📊 Différence:', lengthBefore - contentStore.length, 'élément(s) supprimé(s)');
+    
+    // Mise à jour immédiate de l'affichage
+    displayContentCards();
+    showStatusMessage('🗑️ Suppression en cours...', 'info');
+    
+    // 2. Ensuite, envoyer la suppression à Google Sheet (en arrière-plan)
+    console.log('🌐 Suppression sur Google Sheet...');
+    
+    await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: 'delete',
+            id: contentId
+        })
+    });
 
-                console.log('✅ Suppression envoyée à Google Sheet');
-                // Supprimer du store local
-                const lengthBefore = contentStore.length;
-                contentStore = contentStore.filter(item => item.id !== contentId);
-                console.log('📊 contentStore après suppression:', contentStore.length, 'éléments');
-                console.log('📊 Différence:', lengthBefore - contentStore.length, 'élément(s) supprimé(s)');
-                
-                displayContentCards();
-                showStatusMessage('✅ Contenu supprimé', 'success');
+    console.log('✅ Suppression envoyée à Google Sheet');
+    showStatusMessage('✅ Contenu supprimé', 'success');
                 
                 console.log('==============================================');
                 console.log('✅ SUPPRESSION TERMINÉE');
