@@ -2427,7 +2427,7 @@ function editSelectedContent() {
         // Character counters for all text areas
         // Quick Edit Modal Functions
      function openEditModal(contentId) {
-    const content = contentStore.find(item => item.id === contentId);
+    const content = contentStore.find(item => String(item.id) === String(contentId));
     if (!content) return;
 
     document.getElementById('editContentId').value = contentId;
