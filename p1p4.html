@@ -2037,7 +2037,7 @@ body {
         let currentSelectedContentId = null;
         function selectContent(contentId) {
     currentSelectedContentId = contentId;
-    const content = contentStore.find(item => item.id === contentId);
+const content = contentStore.find(item => String(item.id) === String(contentId));
     const nameDisplay = document.getElementById('selectedContentName');
     if (nameDisplay && content) {
         nameDisplay.textContent = content.title || 'Sans titre';
@@ -2120,7 +2120,7 @@ function editSelectedContent() {
 }
 
         async function sendContentToOverlay(contentId) {
-            const content = contentStore.find(item => item.id === contentId);
+            const content = contentStore.find(item => String(item.id) === String(contentId));;
             if (!content) {
                 console.error('Content not found:', contentId);
                 showStatusMessage('❌ Contenu introuvable', 'error');
