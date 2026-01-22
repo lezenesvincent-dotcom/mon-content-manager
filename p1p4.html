@@ -2298,7 +2298,7 @@ function editSelectedContent() {
            try {
     // 1. SUPPRESSION IMMÉDIATE de l'interface (avant même la requête serveur)
     const lengthBefore = contentStore.length;
-    contentStore = contentStore.filter(item => item.id !== contentId);
+    contentStore = contentStore.filter(item => String(item.id) !== String(contentId));
     console.log('📊 contentStore après suppression locale:', contentStore.length, 'éléments');
     console.log('📊 Différence:', lengthBefore - contentStore.length, 'élément(s) supprimé(s)');
     
