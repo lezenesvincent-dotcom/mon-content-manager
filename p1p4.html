@@ -2634,7 +2634,10 @@ function editSelectedContent() {
                 }
             });
             // Auto-refresh toutes les 5 secondes
-            setInterval(loadSharedData, 5000);
+           setInterval(async () => {
+    await loadSharedData();
+    displayContentCards();
+}, 5000);
             // Character counters for all text areas
             const textareas = [
                 'p1_line1', 'p1_line2',
