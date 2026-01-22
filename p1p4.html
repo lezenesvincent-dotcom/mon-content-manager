@@ -1919,12 +1919,10 @@ body {
                 // REMPLACER complètement contentStore (pas de merge)
                 contentStore = history;
                 console.log('✅ Historique chargé depuis serveur:', contentStore.length, 'éléments');
-                showStatusMessage(`✅ Synchronisé: ${contentStore.length} éléments`, 'success');
                 return contentStore;
             } else {
                 console.log('ℹ️ Aucun historique disponible sur le serveur');
                 contentStore = [];
-                showStatusMessage('ℹ️ Aucun contenu sur le serveur', 'info');
                 return contentStore;
             }
         }
