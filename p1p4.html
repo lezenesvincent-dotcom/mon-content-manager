@@ -998,6 +998,13 @@
 /* Ajouter du padding en bas pour pas que la barre cache le contenu */
 body {
     padding-bottom: 35vh;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
 }
         /* Checkbox de sélection */
 .card-checkbox {
