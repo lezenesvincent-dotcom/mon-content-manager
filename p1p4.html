@@ -994,7 +994,16 @@
 .control-bar-info strong {
     color: #fff;
 }
+        
+html {
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
 
+html::-webkit-scrollbar {
+    display: none;
+}
 /* Ajouter du padding en bas pour pas que la barre cache le contenu */
 body {
     padding-bottom: 35vh;
