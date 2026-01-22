@@ -2505,7 +2505,7 @@ function editSelectedContent() {
     }
 
    try {
-        const contentIndex = contentStore.findIndex(item => item.id === contentId);
+        const contentIndex = contentStore.findIndex(item => String(item.id) === String(contentId));
         if (contentIndex !== -1) {
             contentStore[contentIndex] = {
                 ...contentStore[contentIndex],
