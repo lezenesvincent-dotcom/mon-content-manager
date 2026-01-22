@@ -2081,7 +2081,7 @@ async function deleteSelectedCards() {
             await fetch(`${WS_SERVER_URL}/api/history/${contentId}`, {
                 method: 'DELETE'
             });
-            contentStore = contentStore.filter(item => item.id !== contentId);
+            contentStore = contentStore.filter(item => String(item.id) !== String(contentId));
         }
         
         selectedCards = [];
