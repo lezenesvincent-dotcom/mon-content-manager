@@ -1161,31 +1161,32 @@
         });
 
         // ========== SUPPRESSION ==========
-        async function deleteContent(contentId) {
-            if (!confirm('🗑️ Supprimer ce contenu ?')) return;
-            
-            try {
-                showStatusMessage('🔄 Suppression...', 'info');
-                
-                await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ action: 'delete', id: contentId })
-                });
-                
-                setTimeout(async () => {
-                    await loadContents();
-                    showStatusMessage('✅ Contenu supprimé !', 'success');
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Erreur suppression:', error);
-                showStatusMessage('❌ Erreur: ' + error.message, 'error');
-            }
-        }
+       async function deleteContent(contentId) {
+    if (!confirm('🗑️ Supprimer ce contenu ?')) return;
+    
+    try {
+        // 1. SUPPRESSION IMMÉDIATE de l'interface
+        contents = contents.filter(item => String(item.id) !== String(contentId));
+        displayContents();
+        showStatusMessage('🗑️ Suppression en cours...', 'info');
+        
+        // 2. Ensuite, envoyer à Google Sheet
+        await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action: 'delete', id: contentId })
+        });
+        
+        showStatusMessage('✅ Contenu supprimé !', 'success');
+        
+    } catch (error) {
+        console.error('Erreur suppression:', error);
+        showStatusMessage('❌ Erreur: ' + error.message, 'error');
+    }
+}
 
         async function deleteSelectedCards() {
             if (selectedCards.length === 0) return;
