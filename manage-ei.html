@@ -1369,6 +1369,10 @@
             // Refresh toutes les 30 secondes
             setInterval(loadContents, 30000);
         });
+        // Auto-refresh toutes les 5 secondes
+setInterval(async () => {
+    await loadContents();
+}, 5000);
     </script>
 </body>
 </html>
