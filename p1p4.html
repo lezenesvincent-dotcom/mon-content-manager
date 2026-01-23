@@ -1921,13 +1921,13 @@ body::-webkit-scrollbar {
         // Démarrer la connexion WebSocket Control au chargement
         connectControlWebSocket();
         
-        async function loadSharedData() {
+        async function loadSharedData(silent = false) {
             console.log('==============================================');
             console.log('🔄 CHARGEMENT DE L\'HISTORIQUE depuis le serveur WebSocket...');
             console.log('==============================================');
             
             // Charger UNIQUEMENT depuis WebSocket - plus de localStorage ni Gist
-            const history = await loadFromWebSocket();
+            const history = await loadFromWebSocket(silent);
             
             console.log('📦 Historique reçu:', history);
             
@@ -2649,7 +2649,7 @@ function editSelectedContent() {
             });
             // Auto-refresh toutes les 5 secondes
            setInterval(async () => {
-    await loadSharedData();
+    await loadSharedData(true);
     displayContentCards();
 }, 5000);
             // Character counters for all text areas
@@ -2776,15 +2776,15 @@ function editSelectedContent() {
         const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoSIgN07Vwk0OKfnbdc5N7gUWlsh5DB5ojI07vlmuqqAFHppsmG3YgPzgYjT_i0N_Qjg/exec';
         
-      async function loadFromWebSocket() {
+      async function loadFromWebSocket(silent = false) {
     const wsStatusIndicator = document.getElementById('wsStatusIndicator');
     
     try {
-        if (wsStatusIndicator) {
-            wsStatusIndicator.style.background = '#ffc107';
-            wsStatusIndicator.style.color = '#000';
-            wsStatusIndicator.textContent = '🔄 Chargement...';
-        }
+        if (wsStatusIndicator && !silent) {
+    wsStatusIndicator.style.background = '#ffc107';
+    wsStatusIndicator.style.color = '#000';
+    wsStatusIndicator.textContent = '🔄 Chargement...';
+}
         
         // Utiliser JSONP pour éviter CORS
         const history = await new Promise((resolve, reject) => {
