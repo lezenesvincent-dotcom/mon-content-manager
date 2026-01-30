@@ -1118,6 +1118,7 @@ body::-webkit-scrollbar {
     }
 }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -2646,6 +2647,28 @@ function editSelectedContent() {
         });
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Drag & drop pour réorganiser les cartes
+setTimeout(() => {
+    const contentList = document.getElementById('contentList');
+    if (contentList) {
+        new Sortable(contentList, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            onEnd: function() {
+                // Réorganiser contentStore selon le nouvel ordre
+                const cards = contentList.querySelectorAll('.content-card');
+                const newOrder = [];
+                cards.forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    const item = contentStore.find(c => String(c.id) === String(id));
+                    if (item) newOrder.push(item);
+                });
+                contentStore = newOrder;
+                console.log('✅ Ordre mis à jour');
+            }
+        });
+    }
+}, 1000);
             // Load shared data on startup
             loadSharedData().then(() => {
                 displayContentCards();
