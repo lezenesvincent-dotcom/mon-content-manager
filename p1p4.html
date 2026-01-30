@@ -1098,24 +1098,23 @@ body::-webkit-scrollbar {
     background: linear-gradient(135deg, #4a4a6c 0%, #3a3a5c 100%);
     font-size: 0.9rem;
 }
-       @media (max-width: 1200px) {
+    @media (max-width: 1024px) {
     .control-bar {
-        height: auto;!important
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        padding: 15px;!important
+        padding: 10px 5px !important;
+        height: auto !important;
+        gap: 5px !important;
+    }
+    .control-bar > div {
+        flex: none !important;
+        gap: 5px !important;
     }
     .control-bar-btn {
-        padding: 15px 25px;!important
-        font-size: 1rem;!important
+        padding: 12px 15px !important;
+        font-size: 0.85rem !important;
+        letter-spacing: 0 !important;
     }
-}
-
-@media (max-width: 768px) {
-    .control-bar-btn {
-        padding: 12px 18px;!important
-        font-size: 0.9rem;!important
+    .control-bar-info {
+        display: none !important;
     }
 }
     </style>
