@@ -1099,12 +1099,15 @@ body::-webkit-scrollbar {
     font-size: 0.9rem;
 }
 @media (pointer: coarse) {
-    .control-bar {
-        width: 100%;
-        left: 0;
-    }
     .control-bar-btn {
-        transform: scale(0.8);
+        padding: 25px 35px !important;
+        font-size: 1.3rem !important;
+    }
+    .control-bar {
+        gap: 15px !important;
+    }
+    .control-bar > div {
+        gap: 15px !important;
     }
 }
     </style>
