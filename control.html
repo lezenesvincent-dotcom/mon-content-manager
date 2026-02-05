@@ -1310,11 +1310,16 @@
             }
             
             // Graphique 3D
-            document.getElementById('graphValo-val').textContent = (state.graphValo || 48.5).toFixed(2);
-            document.getElementById('graphRotY-val').textContent = state.graphRotY || -15;
-            document.getElementById('graph-x').textContent = state.graphX || 0;
-            document.getElementById('graph-y').textContent = state.graphY || -2;
-            document.getElementById('graphZoom-val').textContent = state.graphZoom || 32;
+            const gv = document.getElementById('graphValo-val');
+            if (gv) gv.textContent = (state.graphValo || 48.5).toFixed(2);
+            const gr = document.getElementById('graphRotY-val');
+            if (gr) gr.textContent = state.graphRotY || -15;
+            const gx = document.getElementById('graph-x');
+            if (gx) gx.textContent = state.graphX || 0;
+            const gy = document.getElementById('graph-y');
+            if (gy) gy.textContent = state.graphY || -2;
+            const gz = document.getElementById('graphZoom-val');
+            if (gz) gz.textContent = state.graphZoom || 32;
             
             // Sliders graphique
             const valoSlider = document.querySelector('input[oninput*="updateGraphValo"]');
