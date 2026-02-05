@@ -453,7 +453,6 @@ développement
                           // Mettre à jour l'état depuis control.html (UPDATE_STATE ou SYNC_STATE)
                             if (message.state && message.state.headerX !== undefined) {
                                 // Stopper la lévitation AVANT de modifier les positions
-                                const wasLevitating = levitationEnabled;
                                 stopLevitation();
                                 
                                 state.headerX = message.state.headerX;
@@ -524,8 +523,8 @@ développement
                                 console.log('✅ Positions mises à jour - slots:', state.slots.map(s => `(${s.x},${s.y},s:${s.scale})`).join(' '));
                                 
                                 // Relancer la lévitation si elle tournait
-                                if (wasLevitating && !isAnimating) {
-                                    setTimeout(startLevitation, 50);
+                                 if (!isAnimating) {
+                                    setTimeout(startLevitation, 10);
                                 }
                             }
                             
