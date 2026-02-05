@@ -450,16 +450,33 @@ développement
                             // Commandes du joystick control.html
                             console.log('🎮 Commande control reçue:', message.command);
                             
-                            // Mettre à jour l'état SEULEMENT si les valeurs existent
+                          // Mettre à jour l'état depuis control.html (UPDATE_STATE ou SYNC_STATE)
                             if (message.state && message.state.headerX !== undefined) {
+                                // Stopper la lévitation AVANT de modifier les positions
+                                const wasLevitating = levitationEnabled;
+                                stopLevitation();
+                                
                                 state.headerX = message.state.headerX;
                                 state.headerY = message.state.headerY;
                                 state.centerX = message.state.centerX;
                                 state.centerY = message.state.centerY;
-                                if (message.state.slots) state.slots = message.state.slots;
                                 state.speedIN = message.state.speedIN;
                                 state.speedNEXT = message.state.speedNEXT;
                                 state.speedLev = message.state.speedLev;
+                                
+                                // Mettre à jour les slots (position + scale)
+                                if (message.state.slots && Array.isArray(message.state.slots)) {
+                                    for (let i = 0; i < 4; i++) {
+                                        if (message.state.slots[i]) {
+                                            state.slots[i].x = message.state.slots[i].x;
+                                            state.slots[i].y = message.state.slots[i].y;
+                                            state.slots[i].scale = message.state.slots[i].scale;
+                                            if (message.state.slots[i].z !== undefined) {
+                                                state.slots[i].z = message.state.slots[i].z;
+                                            }
+                                        }
+                                    }
+                                }
                                 
                                 // Mettre à jour les tailles de police
                                 if (message.state.fontSujet !== undefined) {
@@ -471,22 +488,45 @@ développement
                                     document.documentElement.style.setProperty('--font-contenu', state.fontContenu + 'rem');
                                 }
                                 
-                                // Appliquer les changements visuels
+                                // Appliquer les changements visuels - header et centre
                                 document.getElementById('header').style.left = state.headerX + 'px';
                                 document.getElementById('header').style.top = state.headerY + 'px';
                                 document.getElementById('orbitCenter').style.left = state.centerX + '%';
                                 document.getElementById('orbitCenter').style.top = state.centerY + '%';
                                 
-                                // Mettre à jour les positions des cartes (toujours, même si cachées)
+                                // Appliquer les nouvelles positions des cartes
                                 for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
                                     const cardNum = state.cardInSlot[slotIdx];
                                     const el = document.getElementById('p' + cardNum);
                                     if (el) {
-                                        const s = state.slots[slotIdx];
-                                        el.style.transform = getTransform(s.x, s.y, s.z, s.scale, 0, 0);
+                                        el.style.transform = getSlotTransform(slotIdx);
                                     }
                                 }
-                                console.log('✅ Positions mises à jour');
+                                
+                                // Mettre à jour le panneau de contrôle local aussi
+                                try {
+                                    for (let i = 0; i < 4; i++) {
+                                        const ctrlX = document.getElementById('ctrl-slot' + i + 'x');
+                                        const ctrlY = document.getElementById('ctrl-slot' + i + 'y');
+                                        const ctrlS = document.getElementById('ctrl-slot' + i + 's');
+                                        const valX = document.getElementById('val-slot' + i + 'x');
+                                        const valY = document.getElementById('val-slot' + i + 'y');
+                                        const valS = document.getElementById('val-slot' + i + 's');
+                                        if (ctrlX) ctrlX.value = state.slots[i].x;
+                                        if (ctrlY) ctrlY.value = state.slots[i].y;
+                                        if (ctrlS) ctrlS.value = state.slots[i].scale;
+                                        if (valX) valX.textContent = state.slots[i].x;
+                                        if (valY) valY.textContent = state.slots[i].y;
+                                        if (valS) valS.textContent = state.slots[i].scale;
+                                    }
+                                } catch(e) {}
+                                
+                                console.log('✅ Positions mises à jour - slots:', state.slots.map(s => `(${s.x},${s.y},s:${s.scale})`).join(' '));
+                                
+                                // Relancer la lévitation si elle tournait
+                                if (wasLevitating && !isAnimating) {
+                                    setTimeout(startLevitation, 50);
+                                }
                             }
                             
                             // Exécuter les commandes
