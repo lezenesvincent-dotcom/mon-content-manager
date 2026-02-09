@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prestations - Studio CIC</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #1a1a1a;
+            color: #e4e4e4;
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .page-wrapper { max-width: 1200px; margin: 0 auto; }
+
+        .header { text-align: center; padding: 20px 0 30px; }
+        .header img { width: 80px; height: auto; margin-bottom: 8px; }
+        .header h1 { font-size: 1.5rem; font-weight: bold; color: #fff; }
+        .header .sub { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 4px; }
+
+        .fiches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 16px;
+        }
+
+        .fiche-card {
+            background: #3c3c3c;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid rgba(80,90,100,0.3);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .fiche-card:hover {
+            border-color: rgba(0,200,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        .fiche-title {
+            font-size: 18px; font-weight: bold; color: #fff;
+            text-align: center; margin-bottom: 6px;
+            background: #2a2d35;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .fiche-date {
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 12px;
+        }
+
+        .fiche-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .fiche-label {
+            background: #555;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .fiche-value {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .fiche-heure {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .heure-badge {
+            font-size: 0.72rem;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+        .heure-prep { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+        .heure-direct { background: rgba(0,200,255,0.15); color: #00d4ff; }
+
+        .fiche-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 8px;
+        }
+        .fiche-tag {
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.4);
+        }
+        .fiche-tag.on { background: rgba(0,200,255,0.12); color: #00d4ff; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.9rem;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .new-btn {
+            background: #00d4ff;
+            color: #111;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .new-btn:hover { background: #00e8ff; }
+
+        .count-badge {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .nav-back {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: rgba(255,255,255,0.4); text-decoration: none;
+            font-size: 0.78rem; margin-bottom: 14px; transition: color 0.15s;
+        }
+        .nav-back:hover { color: rgba(255,255,255,0.7); }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="nav-back">← Retour Content Manager</a>
+    <div class="page-wrapper">
+        <div class="header">
+            <img src="logo-cic.png" alt="CIC">
+            <h1>Prestations Studio</h1>
+            <div class="sub">Toutes les fiches de réservation</div>
+        </div>
+
+        <div class="actions-bar">
+            <a href="contact-studio.html" class="new-btn" onclick="newFiche()">＋ Nouvelle fiche</a>
+            <span class="count-badge" id="countBadge"></span>
+        </div>
+
+        <div class="fiches-grid" id="fichesGrid"></div>
+        <div class="empty-state" id="emptyState" style="display:none;">
+            Aucune prestation enregistrée.<br>Créez une nouvelle fiche pour commencer.
+        </div>
+    </div>
+
+    <script>
+        const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
+
+        function loadFiches() {
+            const fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+            const grid = document.getElementById('fichesGrid');
+            const empty = document.getElementById('emptyState');
+            const count = document.getElementById('countBadge');
+            const entries = Object.values(fiches).sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+
+            count.textContent = entries.length + ' prestation' + (entries.length > 1 ? 's' : '');
+
+            if (entries.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            grid.innerHTML = entries.map(f => {
+                const toggleTags = Object.entries(f.toggles || {}).map(([k, v]) =>
+                    `<span class="fiche-tag ${v === 'oui' ? 'on' : ''}">${k}: ${v || '-'}</span>`
+                ).join('');
+
+                return `
+                <div class="fiche-card" onclick="openFiche('${f.id}')">
+                    <div class="fiche-title">${f.titre || 'Sans titre'}</div>
+                    <div class="fiche-date">${f.date || 'Date non définie'}</div>
+                    <div class="fiche-field">
+                        <span class="fiche-label">Entité groupe</span>
+                        <span class="fiche-value">${f.entite || '-'}</span>
+                    </div>
+                    <div class="fiche-field">
+                        <span class="fiche-label">Contact</span>
+                        <span class="fiche-value">${f.contact || '-'}</span>
+                    </div>
+                    <div class="fiche-heure">
+                        <span class="heure-badge heure-prep">Prépa: ${f.heurePrep || '--:--'}</span>
+                        <span class="heure-badge heure-direct">Direct: ${f.heureDirect || '--:--'}</span>
+                    </div>
+                    ${f.application ? `<div class="fiche-field"><span class="fiche-label">App</span><span class="fiche-value">${f.application}</span></div>` : ''}
+                    ${f.intervenants && f.intervenants.length ? `<div class="fiche-field"><span class="fiche-label">Intervenants</span><span class="fiche-value">${f.intervenants.length} personne(s)</span></div>` : ''}
+                    <div class="fiche-tags">${toggleTags}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function openFiche(id) {
+            localStorage.setItem('currentFicheId', id);
+            window.location.href = 'contact-studio.html';
+        }
+
+        function newFiche() {
+            localStorage.removeItem('currentFicheId');
+        }
+
+        // Refresh every 3s for real-time sync
+        loadFiches();
+        setInterval(loadFiches, 3000);
+    </script>
+</body>
+</html>
