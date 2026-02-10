@@ -24,21 +24,21 @@
         .container {
             max-width: 800px;
             width: 100%;
-            background: #1A1C2C;
+            background: white;
             border-radius: 20px;
             padding: 50px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         h1 {
-            color: #fff;
+            color: #333;
             font-size: 42px;
             margin-bottom: 15px;
             text-align: center;
         }
 
         .subtitle {
-            color: rgba(255,255,255,0.6);
+            color: #666;
             font-size: 18px;
             text-align: center;
             margin-bottom: 50px;
@@ -124,49 +124,6 @@
             background: rgba(0, 0, 0, 0.12);
         }
 
-        .info-section {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 30px;
-        }
-
-        .info-section h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
-
-        .info-section p {
-            color: rgba(255,255,255,0.6);
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .server-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: #e8f5e9;
-            border-radius: 10px;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            background: #4caf50;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -222,32 +179,6 @@
                 </div>
                 <span class="badge">SUIVI</span>
             </a>
-        </div>
-
-        <div class="info-section">
-            <h3>ℹ️ Quelle version utiliser ?</h3>
-            <p>
-                <strong>Création (recommandé) :</strong> Utilisez cette version pour des mises à jour en temps réel de vos overlays. Parfait pour les streams en direct !
-            </p>
-            <br>
-            <p>
-                <strong>Manage :</strong> L'ancienne version avec gestion de 4 pages séparées. Utile si vous avez besoin de la structure originale.
-            </p>
-            <br>
-            <p>
-                <strong>Contact Studio :</strong> Remplissez une fiche → l'événement se crée automatiquement dans le calendrier Outlook.
-            </p>
-            <br>
-            <p>
-                <strong>Prestations :</strong> Vue d'ensemble de toutes les réservations passées et à venir.
-            </p>
-        </div>
-
-        <div class="server-status">
-            <div class="status-dot"></div>
-            <span style="color: #2e7d32; font-weight: bold;">
-                Serveur WebSocket : https://ecamm-overlay-server.onrender.com
-            </span>
         </div>
 
         <div class="footer">
