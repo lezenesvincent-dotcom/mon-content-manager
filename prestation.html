@@ -141,9 +141,35 @@
             font-size: 0.78rem; margin-bottom: 14px; transition: color 0.15s;
         }
         .nav-back:hover { color: rgba(255,255,255,0.7); }
+
+        /* Status indicator */
+        .sync-status {
+            position: fixed;
+            top: 12px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            z-index: 100;
+        }
+        .sync-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #555;
+            transition: background 0.3s;
+        }
+        .sync-dot.connected { background: #00d4ff; }
+        .sync-dot.error { background: #ff4444; }
     </style>
 </head>
 <body>
+    <div class="sync-status">
+        <span class="sync-dot" id="syncDot"></span>
+        <span id="syncLabel">Connexion…</span>
+    </div>
+
     <a href="index.html" class="nav-back">← Retour Content Manager</a>
     <div class="page-wrapper">
         <div class="header">
@@ -164,14 +190,108 @@
     </div>
 
     <script>
-        const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
+        // =============================================
+        // CONFIG
+        // =============================================
+        const WS_SERVER_URL = 'wss://ecamm-overlay-server.onrender.com';
+        const API_BASE_URL  = 'https://ecamm-overlay-server.onrender.com';
 
-        function loadFiches() {
-            const fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+        let ws = null;
+        let fichesData = {};
+        let reconnectTimer = null;
+
+        // =============================================
+        // SYNC STATUS UI
+        // =============================================
+        function setStatus(state, label) {
+            const dot = document.getElementById('syncDot');
+            const lbl = document.getElementById('syncLabel');
+            dot.className = 'sync-dot ' + state;
+            lbl.textContent = label;
+        }
+
+        // =============================================
+        // LOAD FICHES VIA REST API (initial + fallback)
+        // =============================================
+        async function fetchFichesFromServer() {
+            try {
+                const res = await fetch(API_BASE_URL + '/api/fiches');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                fichesData = await res.json();
+                renderFiches();
+                // Also cache locally as fallback
+                localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+            } catch (err) {
+                console.warn('⚠️ API fetch failed, using localStorage cache:', err);
+                fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+                renderFiches();
+            }
+        }
+
+        // =============================================
+        // WEBSOCKET — real-time sync between machines
+        // =============================================
+        function connectWebSocket() {
+            if (ws && ws.readyState <= 1) return; // already open or connecting
+
+            setStatus('', 'Connexion…');
+            ws = new WebSocket(WS_SERVER_URL);
+
+            ws.onopen = () => {
+                setStatus('connected', 'Connecté');
+                // Request latest fiches
+                ws.send(JSON.stringify({ type: 'fiches_get' }));
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+
+                    if (msg.type === 'fiches_data') {
+                        // Full fiches object from server
+                        fichesData = msg.data || {};
+                        localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+                        renderFiches();
+                    }
+                    else if (msg.type === 'fiches_updated') {
+                        // Another client saved/deleted — refresh
+                        fichesData = msg.data || {};
+                        localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+                        renderFiches();
+                    }
+                } catch (err) {
+                    console.error('WS parse error:', err);
+                }
+            };
+
+            ws.onclose = () => {
+                setStatus('error', 'Déconnecté');
+                scheduleReconnect();
+            };
+
+            ws.onerror = () => {
+                setStatus('error', 'Erreur connexion');
+            };
+        }
+
+        function scheduleReconnect() {
+            if (reconnectTimer) return;
+            reconnectTimer = setTimeout(() => {
+                reconnectTimer = null;
+                connectWebSocket();
+            }, 3000);
+        }
+
+        // =============================================
+        // RENDER
+        // =============================================
+        function renderFiches() {
             const grid = document.getElementById('fichesGrid');
             const empty = document.getElementById('emptyState');
             const count = document.getElementById('countBadge');
-            const entries = Object.values(fiches).sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+            const entries = Object.values(fichesData).sort((a, b) =>
+                (b.updatedAt || '').localeCompare(a.updatedAt || '')
+            );
 
             count.textContent = entries.length + ' prestation' + (entries.length > 1 ? 's' : '');
 
@@ -180,6 +300,9 @@
                 empty.style.display = 'block';
                 return;
             }
+
+            grid.style.display = '';
+            empty.style.display = 'none';
 
             grid.innerHTML = entries.map(f => {
                 const toggleTags = Object.entries(f.toggles || {}).map(([k, v]) =>
@@ -209,6 +332,9 @@
             }).join('');
         }
 
+        // =============================================
+        // NAVIGATION
+        // =============================================
         function openFiche(id) {
             localStorage.setItem('currentFicheId', id);
             window.location.href = 'contact-studio.html';
@@ -218,9 +344,18 @@
             localStorage.removeItem('currentFicheId');
         }
 
-        // Refresh every 3s for real-time sync
-        loadFiches();
-        setInterval(loadFiches, 3000);
+        // =============================================
+        // INIT
+        // =============================================
+        // 1. Load from localStorage immediately (instant display)
+        fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+        renderFiches();
+
+        // 2. Then connect WebSocket for real-time sync
+        connectWebSocket();
+
+        // 3. Also fetch via REST API as backup
+        fetchFichesFromServer();
     </script>
 </body>
 </html>

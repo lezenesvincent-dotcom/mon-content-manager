@@ -1,16 +1,9 @@
-<!-- 
-========================================
-Graphique 3D Boursier v15
-Version: 15.0 - 10 novembre 2025 16:30
-Modifications: Labels Y derrière graph + Joystick barre rouge
-========================================
--->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graphique 3D Boursier v15 - Labels + Barre</title>
+    <title>Graphique 3D Boursier v14 - Persistance Serveur</title>
     <style>
         * {
             margin: 0;
@@ -421,26 +414,6 @@ Modifications: Labels Y derrière graph + Joystick barre rouge
                     <div class="info-display" id="labelsYInfo">X:0.0 Y:0.0</div>
                 </div>
             </div>
-
-            <!-- Contrôleur Barre Rouge (Valorisation) -->
-            <div class="controller">
-                <h3>🔴 Barre Rouge</h3>
-                <div class="joystick-container">
-                    <div class="joystick-row">
-                        <button class="joystick-btn" onclick="moveBarreRouge('up')">↑</button>
-                    </div>
-                    <div class="joystick-row">
-                        <button class="joystick-btn" onclick="moveBarreRouge('left')">←</button>
-                        <button class="joystick-btn" onclick="moveBarreRouge('center')">●</button>
-                        <button class="joystick-btn" onclick="moveBarreRouge('right')">→</button>
-                    </div>
-                    <div class="joystick-row">
-                        <button class="joystick-btn" onclick="moveBarreRouge('down')">↓</button>
-                    </div>
-                    <button class="reset-btn" onclick="resetBarreRouge()">Reset</button>
-                    <div class="info-display" id="barreRougeInfo">X:0.0 Y:-7.5</div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -685,56 +658,6 @@ Modifications: Labels Y derrière graph + Joystick barre rouge
             labelsYOffset = { x: 0, y: 0 };
             updateLabels();
         }
-
-        // ========================================
-        // CONTRÔLE BARRE ROUGE
-        // ========================================
-
-        function moveBarreRouge(direction) {
-            const STEP = 0.5; // Pas de déplacement
-            
-            switch(direction) {
-                case 'up':
-                    barreRougeOffset.y += STEP;
-                    break;
-                case 'down':
-                    barreRougeOffset.y -= STEP;
-                    break;
-                case 'left':
-                    barreRougeOffset.x -= STEP;
-                    break;
-                case 'right':
-                    barreRougeOffset.x += STEP;
-                    break;
-                case 'center':
-                    barreRougeOffset = { x: 0, y: -7.5 };
-                    break;
-            }
-            
-            updateBarreRouge();
-            
-            // Mettre à jour l'affichage
-            document.getElementById('barreRougeInfo').textContent = 
-                `X:${barreRougeOffset.x.toFixed(1)} Y:${barreRougeOffset.y.toFixed(1)}`;
-        }
-
-        function resetBarreRouge() {
-            barreRougeOffset = { x: 0, y: -7.5 };
-            updateBarreRouge();
-            document.getElementById('barreRougeInfo').textContent = 'X:0.0 Y:-7.5';
-        }
-
-        function updateBarreRouge() {
-            if (valuationCube) {
-                valuationCube.position.x = barreRougeOffset.x;
-                valuationCube.position.y = barreRougeOffset.y;
-                console.log('🔴 Barre rouge déplacée:', barreRougeOffset);
-            }
-        }
-
-        // ========================================
-        // SAUVEGARDE PARAMÈTRES
-        // ========================================
 
         function applySettings() {
             // Préparer les paramètres
@@ -1207,7 +1130,7 @@ Modifications: Labels Y derrière graph + Joystick barre rouge
                 });
                 const sprite = new THREE.Sprite(material);
                 
-                sprite.position.set(-12, y, -3); // z=-3 pour être DERRIÈRE le graph (graph est à z=0-4)
+                sprite.position.set(-12, y, 5); // Position de base, offset appliqué par updateLabels()
                 sprite.scale.set(4.5, 2.2, 1);
                 sprite.renderOrder = 999;
                 
