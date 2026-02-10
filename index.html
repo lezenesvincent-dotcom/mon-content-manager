@@ -4,192 +4,255 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Content Manager - eCamm Live</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #12141a;
-            --card-bg: #1a1d26;
-            --card-border: rgba(255,255,255,0.06);
-            --card-hover: rgba(255,255,255,0.10);
-            --accent-blue: #00d4ff;
-            --accent-green: #00dc64;
-            --accent-orange: #ffa726;
-            --accent-purple: #a78bfa;
-            --text: #e4e4e4;
-            --text-dim: rgba(255,255,255,0.4);
-            --text-mid: rgba(255,255,255,0.6);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'DM Sans', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex; flex-direction: column;
+            display: flex;
             align-items: center;
-            padding: 50px 24px 40px;
+            justify-content: center;
+            padding: 20px;
         }
-        .header { text-align: center; margin-bottom: 48px; }
-        .header-icon {
-            font-size: 2.8rem; margin-bottom: 12px; display: block;
-            filter: drop-shadow(0 0 20px rgba(0,212,255,0.3));
-        }
-        .header h1 { font-size: 2rem; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
-        .header .sub { font-size: 0.9rem; color: var(--text-dim); margin-top: 6px; }
 
-        .cards {
-            display: grid; grid-template-columns: repeat(2, 1fr);
-            gap: 16px; max-width: 780px; width: 100%;
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
-        @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
 
-        .card {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 16px; padding: 28px 24px; text-decoration: none;
-            color: var(--text); transition: all 0.25s ease;
-            display: flex; flex-direction: column; gap: 12px;
-            position: relative; overflow: hidden;
+        h1 {
+            color: #333;
+            font-size: 42px;
+            margin-bottom: 15px;
+            text-align: center;
         }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0;
-            height: 2px; opacity: 0; transition: opacity 0.25s;
-        }
-        .card:hover {
-            border-color: var(--card-hover); background: #1e2130;
-            transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-        }
-        .card:hover::before { opacity: 1; }
-        .card-blue::before { background: linear-gradient(90deg, var(--accent-blue), transparent); }
-        .card-blue:hover { border-color: rgba(0,212,255,0.15); }
-        .card-green::before { background: linear-gradient(90deg, var(--accent-green), transparent); }
-        .card-green:hover { border-color: rgba(0,220,100,0.15); }
-        .card-orange::before { background: linear-gradient(90deg, var(--accent-orange), transparent); }
-        .card-orange:hover { border-color: rgba(255,167,38,0.15); }
-        .card-purple::before { background: linear-gradient(90deg, var(--accent-purple), transparent); }
-        .card-purple:hover { border-color: rgba(167,139,250,0.15); }
 
-        .card-top { display: flex; align-items: center; justify-content: space-between; }
-        .card-icon {
-            width: 44px; height: 44px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 50px;
         }
-        .card-blue .card-icon { background: rgba(0,212,255,0.1); }
-        .card-green .card-icon { background: rgba(0,220,100,0.1); }
-        .card-orange .card-icon { background: rgba(255,167,38,0.1); }
-        .card-purple .card-icon { background: rgba(167,139,250,0.1); }
 
-        .card-badge {
-            font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 1.2px; padding: 4px 10px; border-radius: 20px;
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
         }
-        .badge-blue { background: rgba(0,212,255,0.12); color: var(--accent-blue); }
-        .badge-green { background: rgba(0,220,100,0.12); color: var(--accent-green); }
-        .badge-orange { background: rgba(255,167,38,0.12); color: var(--accent-orange); }
-        .badge-purple { background: rgba(167,139,250,0.12); color: var(--accent-purple); }
 
-        .card-title { font-size: 1.15rem; font-weight: 700; color: #fff; }
-        .card-desc { font-size: 0.8rem; color: var(--text-mid); line-height: 1.5; }
-        .card-arrow {
-            display: flex; align-items: center; gap: 6px;
-            font-size: 0.75rem; font-weight: 600; color: var(--text-dim);
-            margin-top: auto; transition: color 0.2s;
+        .tool-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-        .card:hover .card-arrow { color: var(--text); }
-        .card-arrow svg { transition: transform 0.2s; }
-        .card:hover .card-arrow svg { transform: translateX(3px); }
 
-        .info-box {
-            max-width: 780px; width: 100%; background: var(--card-bg);
-            border: 1px solid var(--card-border); border-radius: 14px;
-            padding: 20px 24px; margin-top: 24px;
+        .tool-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
-        .info-title {
-            font-size: 0.82rem; font-weight: 700; color: var(--text-mid);
-            margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+
+        .tool-card.pink {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
-        .info-row {
-            font-size: 0.78rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 4px;
+
+        .tool-card.green {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: #1a3a2a;
         }
-        .info-row strong { color: var(--text-mid); }
+
+        .tool-card.green .tool-description {
+            opacity: 0.8;
+        }
+
+        .tool-card.orange {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: #3a2a1a;
+        }
+
+        .tool-card.orange .tool-description {
+            opacity: 0.8;
+        }
+
+        .tool-icon {
+            font-size: 50px;
+            margin-bottom: 16px;
+        }
+
+        .tool-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tool-description {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .tool-card.green .badge,
+        .tool-card.orange .badge {
+            background: rgba(0, 0, 0, 0.12);
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .info-section h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .info-section p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .server-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
 
         .footer {
-            margin-top: 40px; text-align: center; font-size: 0.7rem;
-            color: var(--text-dim); line-height: 1.8;
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 12px;
         }
-        .footer a { color: var(--accent-blue); text-decoration: none; }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
+        @media (max-width: 640px) {
+            .tools-grid { grid-template-columns: 1fr; }
+            .container { padding: 30px 20px; }
+            h1 { font-size: 32px; }
         }
-        .card { animation: fadeUp 0.4s ease both; }
-        .card:nth-child(1) { animation-delay: 0.05s; }
-        .card:nth-child(2) { animation-delay: 0.1s; }
-        .card:nth-child(3) { animation-delay: 0.15s; }
-        .card:nth-child(4) { animation-delay: 0.2s; }
-        .info-box { animation: fadeUp 0.4s ease 0.25s both; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <span class="header-icon">🎥</span>
-        <h1>Content Manager</h1>
-        <div class="sub">Gérez vos overlays eCamm Live</div>
-    </div>
+    <div class="container">
+        <h1>🎥 Content Manager</h1>
+        <p class="subtitle">Gérez vos overlays eCamm Live</p>
 
-    <div class="cards">
-        <a href="creation.html" class="card card-blue">
-            <div class="card-top">
-                <div class="card-icon">🚀</div>
-                <span class="card-badge badge-blue">Temps réel</span>
-            </div>
-            <div class="card-title">Création</div>
-            <div class="card-desc">Gestion en temps réel avec mise à jour instantanée de vos overlays eCamm Live</div>
-            <div class="card-arrow">Ouvrir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-        </a>
+        <div class="tools-grid">
+            <a href="content-manager-websocket.html" class="tool-card">
+                <div class="tool-icon">🚀</div>
+                <div class="tool-title">Création</div>
+                <div class="tool-description">
+                    Gestion en temps réel avec mise à jour instantanée de vos overlays eCamm Live
+                </div>
+                <span class="badge">TEMPS RÉEL</span>
+            </a>
 
-        <a href="content-manager-websocket.html" class="card card-purple">
-            <div class="card-top">
-                <div class="card-icon">📝</div>
-                <span class="card-badge badge-purple">Legacy</span>
-            </div>
-            <div class="card-title">Manage</div>
-            <div class="card-desc">Ancien gestionnaire de contenu avec gestion de 4 pages séparées</div>
-            <div class="card-arrow">Ouvrir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-        </a>
+            <a href="p1p4.html" class="tool-card pink">
+                <div class="tool-icon">📝</div>
+                <div class="tool-title">Manage</div>
+                <div class="tool-description">
+                    Ancien gestionnaire de contenu avec gestion de 4 pages
+                </div>
+                <span class="badge">LEGACY</span>
+            </a>
 
-        <a href="contact-studio.html" class="card card-green" onclick="localStorage.removeItem('currentFicheId')">
-            <div class="card-top">
-                <div class="card-icon">📋</div>
-                <span class="card-badge badge-green">Nouveau</span>
-            </div>
-            <div class="card-title">Contact Studio</div>
-            <div class="card-desc">Fiche de réservation du Studio CIC Paris avec synchro Outlook automatique</div>
-            <div class="card-arrow">Ouvrir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-        </a>
+            <a href="contact-studio.html" class="tool-card green" onclick="localStorage.removeItem('currentFicheId')">
+                <div class="tool-icon">📋</div>
+                <div class="tool-title">Contact Studio</div>
+                <div class="tool-description">
+                    Fiche de réservation du Studio CIC Paris avec synchro Outlook automatique
+                </div>
+                <span class="badge">NOUVEAU</span>
+            </a>
 
-        <a href="prestation.html" class="card card-orange">
-            <div class="card-top">
-                <div class="card-icon">📊</div>
-                <span class="card-badge badge-orange">Suivi</span>
-            </div>
-            <div class="card-title">Prestations</div>
-            <div class="card-desc">Toutes les fiches remplies et suivi des réservations du studio</div>
-            <div class="card-arrow">Ouvrir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-        </a>
-    </div>
+            <a href="prestation.html" class="tool-card orange">
+                <div class="tool-icon">📊</div>
+                <div class="tool-title">Prestations</div>
+                <div class="tool-description">
+                    Toutes les fiches remplies et suivi des réservations du studio
+                </div>
+                <span class="badge">SUIVI</span>
+            </a>
+        </div>
 
-    <div class="info-box">
-        <div class="info-title">ℹ️ Guide rapide</div>
-        <div class="info-row"><strong>Création</strong> — Version recommandée pour mises à jour en temps réel de vos overlays pendant les streams</div>
-        <div class="info-row"><strong>Manage</strong> — Ancienne version avec gestion de 4 pages séparées</div>
-        <div class="info-row"><strong>Contact Studio</strong> — Remplissez une fiche → l'événement se crée automatiquement dans le calendrier Outlook</div>
-        <div class="info-row"><strong>Prestations</strong> — Vue d'ensemble de toutes les réservations passées et à venir</div>
-    </div>
+        <div class="info-section">
+            <h3>ℹ️ Quelle version utiliser ?</h3>
+            <p>
+                <strong>Création (recommandé) :</strong> Utilisez cette version pour des mises à jour en temps réel de vos overlays. Parfait pour les streams en direct !
+            </p>
+            <br>
+            <p>
+                <strong>Manage :</strong> L'ancienne version avec gestion de 4 pages séparées. Utile si vous avez besoin de la structure originale.
+            </p>
+            <br>
+            <p>
+                <strong>Contact Studio :</strong> Remplissez une fiche → l'événement se crée automatiquement dans le calendrier Outlook.
+            </p>
+            <br>
+            <p>
+                <strong>Prestations :</strong> Vue d'ensemble de toutes les réservations passées et à venir.
+            </p>
+        </div>
 
-    <div class="footer">
-        Serveur WebSocket : <a href="https://ecamm-overlay-server.onrender.com">ecamm-overlay-server.onrender.com</a><br>
-        Made with ❤️ for eCamm Live streaming
+        <div class="server-status">
+            <div class="status-dot"></div>
+            <span style="color: #2e7d32; font-weight: bold;">
+                Serveur WebSocket : https://ecamm-overlay-server.onrender.com
+            </span>
+        </div>
+
+        <div class="footer">
+            Made with ❤️ for eCamm Live streaming
+        </div>
     </div>
 </body>
 </html>
