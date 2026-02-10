@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a2e;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -24,21 +24,20 @@
         .container {
             max-width: 800px;
             width: 100%;
-            background: white;
+            background: #1a1a2e;
             border-radius: 20px;
             padding: 50px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         h1 {
-            color: #333;
+            color: #fff;
             font-size: 42px;
             margin-bottom: 15px;
             text-align: center;
         }
 
         .subtitle {
-            color: #666;
+            color: #888;
             font-size: 18px;
             text-align: center;
             margin-bottom: 50px;
@@ -92,6 +91,11 @@
             opacity: 0.8;
         }
 
+        .tool-card.dark {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1c2028 100%);
+            border: 1px solid #00c8ff44;
+        }
+
         .tool-icon {
             font-size: 50px;
             margin-bottom: 16px;
@@ -124,10 +128,15 @@
             background: rgba(0, 0, 0, 0.12);
         }
 
+        .tool-card.dark .badge {
+            background: rgba(0, 200, 255, 0.2);
+            color: #00c8ff;
+        }
+
         .footer {
             text-align: center;
             margin-top: 30px;
-            color: #999;
+            color: #555;
             font-size: 12px;
         }
 
@@ -178,6 +187,15 @@
                     Toutes les fiches remplies et suivi des réservations du studio
                 </div>
                 <span class="badge">SUIVI</span>
+            </a>
+
+            <a href="https://lezenesvincent-dotcom.github.io/regie-video/" class="tool-card dark">
+                <div class="tool-icon">🎬</div>
+                <div class="tool-title">Régie Vidéo</div>
+                <div class="tool-description">
+                    Panneau de contrôle régie vidéo avec retour caméras Sony FR7 et contrôle PTZ
+                </div>
+                <span class="badge">STUDIO</span>
             </a>
         </div>
 
