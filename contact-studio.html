@@ -466,25 +466,95 @@
     </div>
     <div class="toast" id="toast"></div>
     <script>
+        // ============================================
+        // CONFIG
+        // ============================================
         const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
+        const WS_URL = WS_SERVER_URL.replace('https://', 'wss://').replace('http://', 'ws://');
         const FICHE_ID = localStorage.getItem('currentFicheId') || Date.now().toString();
         localStorage.setItem('currentFicheId', FICHE_ID);
 
-        // Auto-save on every input change
+        let ws = null;
+        let wsReconnectTimer = null;
+        let isSaving = false;
+
+        // ============================================
+        // WEBSOCKET
+        // ============================================
+        function connectWebSocket() {
+            if (ws && ws.readyState === WebSocket.OPEN) return;
+            try {
+                ws = new WebSocket(WS_URL);
+                ws.onopen = () => {
+                    console.log('🟢 WebSocket connecté');
+                    showToast('🟢 Serveur connecté');
+                    // S'abonner aux updates de cette fiche
+                    ws.send(JSON.stringify({ type: 'subscribe_fiche', ficheId: FICHE_ID }));
+                };
+                ws.onmessage = (event) => {
+                    try {
+                        const msg = JSON.parse(event.data);
+                        // Si un autre client a mis à jour cette fiche
+                        if (msg.type === 'fiche_updated' && msg.data && msg.data.id === FICHE_ID) {
+                            if (!isSaving) {
+                                console.log('📥 Mise à jour reçue du serveur');
+                                applyData(msg.data);
+                                // Sauvegarder en local aussi
+                                let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+                                fiches[FICHE_ID] = msg.data;
+                                localStorage.setItem('fiches_studio', JSON.stringify(fiches));
+                                showToast('📥 Fiche mise à jour');
+                            }
+                        }
+                    } catch (e) { console.error('WS parse error', e); }
+                };
+                ws.onclose = () => {
+                    console.log('🔴 WebSocket déconnecté');
+                    clearTimeout(wsReconnectTimer);
+                    wsReconnectTimer = setTimeout(connectWebSocket, 5000);
+                };
+                ws.onerror = (err) => {
+                    console.error('❌ WS error', err);
+                    ws.close();
+                };
+            } catch (e) {
+                console.error('WS connect error', e);
+                clearTimeout(wsReconnectTimer);
+                wsReconnectTimer = setTimeout(connectWebSocket, 5000);
+            }
+        }
+
+        // ============================================
+        // AUTO-SAVE (local + serveur + WS broadcast)
+        // ============================================
         function autoSave() {
+            isSaving = true;
             const data = collectData();
             data.id = FICHE_ID;
             data.updatedAt = new Date().toISOString();
-            // Save locally
+
+            // 1. Save locally
             let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
             fiches[FICHE_ID] = data;
             localStorage.setItem('fiches_studio', JSON.stringify(fiches));
-            // Try server sync
+
+            // 2. Sync to server via REST
             fetch(WS_SERVER_URL + '/api/fiches', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
-            }).catch(() => {});
+            }).then(r => {
+                if (r.ok) console.log('☁️ Synced to server');
+            }).catch(err => {
+                console.warn('⚠️ Server sync failed, data saved locally', err);
+            });
+
+            // 3. Also broadcast via WebSocket for real-time
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'fiche_update', data: data }));
+            }
+
+            setTimeout(() => { isSaving = false; }, 200);
         }
 
         // Debounce auto-save
@@ -501,6 +571,9 @@
                 setTimeout(scheduleAutoSave, 50);
         });
 
+        // ============================================
+        // COLLECT DATA
+        // ============================================
         function collectData() {
             const d = {
                 titre: document.getElementById('titreEvent').value,
@@ -532,6 +605,9 @@
             return d;
         }
 
+        // ============================================
+        // UI HANDLERS
+        // ============================================
         function toggle(el) {
             const f = el.dataset.field;
             document.querySelectorAll('.toggle-btn[data-field="'+f+'"]').forEach(b => b.classList.remove('active'));
@@ -567,12 +643,10 @@
             location.reload();
         }
 
-        // Load saved fiche data on open
-        function loadData() {
-            const id = localStorage.getItem('currentFicheId');
-            if (!id) return;
-            const fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
-            const data = fiches[id];
+        // ============================================
+        // APPLY DATA (populate form from data object)
+        // ============================================
+        function applyData(data) {
             if (!data) return;
 
             // Text fields
@@ -628,8 +702,51 @@
             }
         }
 
-        // Load data on page open
+        // ============================================
+        // LOAD DATA (local first, then server fallback)
+        // ============================================
+        async function loadData() {
+            const id = localStorage.getItem('currentFicheId');
+            if (!id) return;
+
+            // 1. Try local first
+            const fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+            const localData = fiches[id];
+
+            // 2. Try server
+            let serverData = null;
+            try {
+                const resp = await fetch(WS_SERVER_URL + '/api/fiches/' + id);
+                if (resp.ok) {
+                    serverData = await resp.json();
+                    console.log('☁️ Fiche chargée depuis le serveur');
+                }
+            } catch (e) {
+                console.warn('⚠️ Impossible de charger depuis le serveur', e);
+            }
+
+            // 3. Use most recent version
+            let data = localData;
+            if (serverData) {
+                if (!localData || (serverData.updatedAt && localData.updatedAt && serverData.updatedAt > localData.updatedAt)) {
+                    data = serverData;
+                    // Update local cache
+                    fiches[id] = serverData;
+                    localStorage.setItem('fiches_studio', JSON.stringify(fiches));
+                }
+            }
+
+            if (data) {
+                applyData(data);
+                showToast('✅ Fiche chargée');
+            }
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
         loadData();
+        connectWebSocket();
     </script>
 </body>
 </html>
