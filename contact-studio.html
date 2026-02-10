@@ -566,6 +566,70 @@
             localStorage.removeItem('currentFicheId');
             location.reload();
         }
+
+        // Load saved fiche data on open
+        function loadData() {
+            const id = localStorage.getItem('currentFicheId');
+            if (!id) return;
+            const fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+            const data = fiches[id];
+            if (!data) return;
+
+            // Text fields
+            if (data.titre) document.getElementById('titreEvent').value = data.titre;
+            if (data.date) document.getElementById('dateEvent').value = data.date;
+            if (data.entite) document.getElementById('entiteGroupe').value = data.entite;
+            if (data.contact) document.getElementById('contactField').value = data.contact;
+            if (data.heurePrep) document.getElementById('heurePrep').value = data.heurePrep;
+            if (data.heureDirect) document.getElementById('heureDirect').value = data.heureDirect;
+            if (data.ibmChaine) document.getElementById('ibmChaine').value = data.ibmChaine;
+            if (data.ibmLien) document.getElementById('ibmLien').value = data.ibmLien;
+
+            // Toggles
+            if (data.toggles) {
+                Object.keys(data.toggles).forEach(field => {
+                    const val = data.toggles[field];
+                    if (val) {
+                        document.querySelectorAll('.toggle-btn[data-field="'+field+'"]').forEach(b => b.classList.remove('active'));
+                        const target = document.querySelector('.toggle-btn[data-field="'+field+'"][data-val="'+val+'"]');
+                        if (target) target.classList.add('active');
+                    }
+                });
+            }
+
+            // Application radio
+            if (data.application) {
+                document.querySelectorAll('#appRadio .radio-item').forEach(item => {
+                    item.classList.remove('active');
+                    const label = item.querySelector('.radio-label');
+                    if (label && label.textContent === data.application) item.classList.add('active');
+                });
+            }
+
+            // Mode studio/visio
+            if (data.mode) selectMode(data.mode);
+
+            // Intervenants
+            if (data.intervenants && data.intervenants.length > 0) {
+                const tbody = document.getElementById('intervenantsBody');
+                const rows = tbody.querySelectorAll('tr');
+                data.intervenants.forEach((person, i) => {
+                    let row = rows[i];
+                    if (!row) {
+                        addRow();
+                        row = tbody.querySelectorAll('tr')[i];
+                    }
+                    const inputs = row.querySelectorAll('input');
+                    const cols = ['nom','prenom','fonction','entreprise'];
+                    cols.forEach((col, j) => {
+                        if (inputs[j] && person[col]) inputs[j].value = person[col];
+                    });
+                });
+            }
+        }
+
+        // Load data on page open
+        loadData();
     </script>
 </body>
 </html>
