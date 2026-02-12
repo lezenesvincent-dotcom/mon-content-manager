@@ -1112,7 +1112,11 @@
             return null;
         }
 
+        var ghSaveLock = false;
         async function ghSave(fiches) {
+            if (ghSaveLock) { console.log('🔒 ghSave locked, skipping'); return; }
+            ghSaveLock = true;
+            try {
             for (let attempt = 0; attempt < 3; attempt++) {
                 try {
                     const content = btoa(unescape(encodeURIComponent(JSON.stringify(fiches, null, 2))));
@@ -1126,15 +1130,13 @@
                     if (r.ok) {
                         const d = await r.json();
                         ghSha = d.content.sha;
-                        console.log('☁️ GitHub synced (attempt ' + (attempt+1) + ')');
+                        console.log('☁️ GitHub synced (attempt ' + (attempt+1) + ') SHA:' + ghSha.substring(0,8));
                         return;
                     }
                     if (r.status === 409 || r.status === 422) {
-                        // SHA conflict - re-fetch and retry
                         console.warn('⚠️ SHA conflict, re-fetching...');
                         const existing = await ghLoadSha();
                         if (existing) {
-                            // Merge: our data takes priority
                             Object.assign(existing, fiches);
                             fiches = existing;
                         }
@@ -1145,6 +1147,7 @@
                     if (attempt === 2) console.error('❌ GitHub save failed after 3 attempts', e);
                 }
             }
+            } finally { ghSaveLock = false; }
         }
 
         var currentFicheData = null; // Fiche en cours toujours en mémoire
