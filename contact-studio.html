@@ -1147,25 +1147,33 @@
             }
         }
 
+        var currentFicheData = null; // Fiche en cours toujours en mémoire
+
         function autoSave() {
             isSaving = true;
             const data = collectData();
             data.id = FICHE_ID;
             data.updatedAt = new Date().toISOString();
+            currentFicheData = data;
 
             // 1. Save locally IMMEDIATELY
             let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
             fiches[FICHE_ID] = data;
             localStorage.setItem('fiches_studio', JSON.stringify(fiches));
 
-            // 2. Schedule GitHub save (debounced 1s)
+            // 2. Schedule GitHub save (debounced 2s)
             clearTimeout(ghSaveTimer);
-            ghSaveTimer = setTimeout(function() {
-                let freshFiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
-                ghSave(freshFiches).catch(function(e) {
+            ghSaveTimer = setTimeout(async function() {
+                try {
+                    // Charger l'état actuel de GitHub
+                    let ghFiches = await ghLoadSha() || {};
+                    // TOUJOURS injecter la fiche courante
+                    ghFiches[FICHE_ID] = currentFicheData;
+                    await ghSave(ghFiches);
+                } catch(e) {
                     console.warn('⚠️ GitHub sync failed', e);
-                });
-            }, 1000);
+                }
+            }, 2000);
 
             // 3. Also broadcast via WebSocket for real-time
             if (ws && ws.readyState === WebSocket.OPEN) {
@@ -1202,29 +1210,8 @@
             let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
             fiches[FICHE_ID] = data;
             localStorage.setItem('fiches_studio', JSON.stringify(fiches));
-            // Fire GitHub save (best-effort, uses sendBeacon if available)
-            try {
-                const content = btoa(unescape(encodeURIComponent(JSON.stringify(fiches, null, 2))));
-                const body = JSON.stringify({
-                    message: 'Auto-save beforeunload ' + new Date().toISOString(),
-                    content: content,
-                    sha: ghSha,
-                    branch: 'main'
-                });
-                navigator.sendBeacon(GH_API + '?beacon=1', '');
-                // sendBeacon can't set headers for GitHub API, so use sync XHR as fallback
-                const xhr = new XMLHttpRequest();
-                xhr.open('PUT', GH_API, false); // synchronous
-                xhr.setRequestHeader('Authorization', 'token ' + GH_TOKEN);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.setRequestHeader('Accept', 'application/vnd.github.v3+json');
-                xhr.send(body);
-                if (xhr.status === 200) {
-                    console.log('☁️ Saved on beforeunload');
-                }
-            } catch(e) {
-                console.warn('beforeunload GitHub save failed', e);
-            }
+            // Note: XHR synchrone bloqué par Chrome dans beforeunload
+            // Le save GitHub se fera au prochain chargement si nécessaire
         });
 
         // ============================================
@@ -1330,19 +1317,22 @@
             data.id = FICHE_ID;
             data.updatedAt = new Date().toISOString();
             
-            // Save local
-            let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
-            fiches[FICHE_ID] = data;
-            localStorage.setItem('fiches_studio', JSON.stringify(fiches));
-            
             showToast('💾 Sauvegarde...');
             
-            // Save GitHub and WAIT for it
+            // Save GitHub: load current state, merge, push
             try {
-                await ghSave(fiches);
+                let ghFiches = await ghLoadSha() || {};
+                ghFiches[FICHE_ID] = data;
+                await ghSave(ghFiches);
+                // Also update localStorage
+                localStorage.setItem('fiches_studio', JSON.stringify(ghFiches));
                 console.log('✅ Saved to GitHub before navigation');
             } catch(e) {
                 console.warn('⚠️ GitHub save failed before nav', e);
+                // Fallback: save locally
+                let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+                fiches[FICHE_ID] = data;
+                localStorage.setItem('fiches_studio', JSON.stringify(fiches));
             }
             
             // Now navigate
