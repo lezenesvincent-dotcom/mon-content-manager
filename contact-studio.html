@@ -400,6 +400,20 @@
         .toggle-btn:hover { opacity: 0.8; }
 
         .label-img { height: 44px; width: auto; object-fit: contain; }
+        .label-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 18px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
 
         .small-input::placeholder { color: rgba(255,255,255,0.5); font-weight: bold; }
         .small-input select, select.small-input {
@@ -648,7 +662,7 @@
 
             <!-- Diffusion IBM -->
             <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:8px; flex-wrap:wrap;">
-                <img src="images/img_09b_diffusion_ibm.png" alt="" class="label-img">
+                <span class="label-badge">Diffusion IBM</span>
                 <div class="toggle-group">
                     <span class="toggle-label">Oui</span>
                     <div class="toggle-btn active" data-field="diffIBM" data-val="oui" onclick="toggle(this)"></div>
@@ -741,21 +755,21 @@
         <div class="section">
             <div class="inline-row" style="justify-content:center;gap:16px;flex-wrap:wrap;">
                 <div class="inline-row">
-                    <img src="images/img_09_e4276c0082.png" alt="" class="label-img">
+                    <span class="label-badge">Diffusion G&eacute;n&eacute;rique</span>
                     <div class="toggle-group">
                         <span class="toggle-label">Oui</span><div class="toggle-btn active" data-field="diffGen" data-val="oui" onclick="toggle(this)"></div>
                         <span class="toggle-label">Non</span><div class="toggle-btn" data-field="diffGen" data-val="non" onclick="toggle(this)"></div>
                     </div>
                 </div>
                 <div class="inline-row">
-                    <img src="images/img_09c_fournis_gen.png" alt="" class="label-img">
+                    <span class="label-badge">Je fournis mon g&eacute;n&eacute;rique</span>
                     <div class="toggle-group">
                         <span class="toggle-label">Oui</span><div class="toggle-btn active" data-field="fournisGen" data-val="oui" onclick="toggle(this)"></div>
                         <span class="toggle-label">Non</span><div class="toggle-btn" data-field="fournisGen" data-val="non" onclick="toggle(this)"></div>
                     </div>
                 </div>
                 <div class="inline-row">
-                    <img src="images/img_09d_studio_gen.png" alt="" class="label-img">
+                    <span class="label-badge">Le studio fournit le g&eacute;n&eacute;rique</span>
                     <div class="toggle-group">
                         <span class="toggle-label">Oui</span><div class="toggle-btn" data-field="studioGen" data-val="oui" onclick="toggle(this)"></div>
                         <span class="toggle-label">Non</span><div class="toggle-btn active" data-field="studioGen" data-val="non" onclick="toggle(this)"></div>
@@ -792,7 +806,7 @@
         <!-- VISITE + MODE - FIXED -->
         <div class="section">
             <div class="form-row" style="justify-content:center;">
-                <img src="images/img_10b_visite_studio.png" alt="" class="label-img">
+                <span class="label-badge">Visite du studio</span>
                 <div class="toggle-group">
                     <span class="toggle-label">Oui</span><div class="toggle-btn active" data-field="visite" data-val="oui" onclick="toggle(this)"></div>
                     <span class="toggle-label">Non</span><div class="toggle-btn" data-field="visite" data-val="non" onclick="toggle(this)"></div>
