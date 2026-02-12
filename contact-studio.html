@@ -136,7 +136,7 @@
             position: absolute;
             left: 50%; top: 50%; transform: translate(-50%, -50%);
             background: transparent; border: none;
-            color: rgba(255,255,255,0.6); font-size: 20px; font-weight: bold;
+            color: #fff; font-size: 20px; font-weight: bold;
             font-family: Arial, Helvetica, sans-serif;
             outline: none; text-align: center;
         }
@@ -855,7 +855,7 @@
 
         function transmettreParMail() {
             const titre = document.getElementById('titreEvent').value || '(sans titre)';
-            const date = document.getElementById('dateEvent').value || '';
+            const date = document.getElementById('dateEvent').value || document.getElementById('dateEventValue').value || '';
             const entite = document.getElementById('entiteGroupe').value || '';
             const contact = document.getElementById('contactField').value || '';
             const heurePrep = document.getElementById('heurePrep').textContent || '';
@@ -924,7 +924,9 @@
         // ============================================
         const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
         const WS_URL = WS_SERVER_URL.replace('https://', 'wss://').replace('http://', 'ws://');
-        const FICHE_ID = localStorage.getItem('currentFicheId') || Date.now().toString();
+        // ID depuis URL ?fiche=xxx ou localStorage ou nouveau
+        const urlParams = new URLSearchParams(window.location.search);
+        const FICHE_ID = urlParams.get('fiche') || localStorage.getItem('currentFicheId') || Date.now().toString();
         localStorage.setItem('currentFicheId', FICHE_ID);
 
         let ws = null;
@@ -1140,20 +1142,24 @@
             } else {
                 previewWrap.style.display = 'none';
             }
+            scheduleAutoSave();
         }
 
         function toggle(el) {
             const f = el.dataset.field;
             document.querySelectorAll('.toggle-btn[data-field="'+f+'"]').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
+            scheduleAutoSave();
         }
         function selectRadio(el) {
             el.closest('.radio-group').querySelectorAll('.radio-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
+            scheduleAutoSave();
         }
         function selectMode(m) {
             document.getElementById('modeStudio').classList.toggle('active', m==='studio');
             document.getElementById('modeVisio').classList.toggle('active', m==='visio');
+            scheduleAutoSave();
         }
         let rowCount = 3;
         function addRow() {
@@ -1284,9 +1290,12 @@
         // ============================================
         // INIT
         // ============================================
+        window._isLoading = true;
         (async function() {
             await ghLoadSha();
             await loadData();
+            window._isLoading = false;
+            console.log('✅ Init complete, auto-save enabled');
         })();
         connectWebSocket();
     </script>
@@ -1351,6 +1360,7 @@
         const m = String(getWheelValue('tpMinWheel')).padStart(2, '0');
         document.getElementById(tpCurrentField).textContent = h + ':' + m;
         closeTimePicker();
+        if (typeof scheduleAutoSave === 'function' && !window._isLoading) scheduleAutoSave();
     }
 
     function closeTimePicker() {
@@ -1437,6 +1447,7 @@
         const yyyy = dpSelected.getFullYear();
         document.getElementById('dateEvent').value = dd + '/' + mm + '/' + yyyy;
         document.getElementById('dateEventValue').value = yyyy + '-' + mm + '-' + dd;
+        if (typeof scheduleAutoSave === 'function' && !window._isLoading) scheduleAutoSave();
     }
 
     initDatePicker();

@@ -74,8 +74,9 @@
         }
         .fiche-date {
             text-align: center;
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+            color: #fff;
+            font-weight: 700;
             margin-bottom: 12px;
         }
 
@@ -236,6 +237,13 @@
     let fichesData = {};
     let fileSha = null;
 
+    function formatDateFR(d) {
+        if (!d) return '';
+        var p = d.split('-');
+        if (p.length === 3) return p[2] + '/' + p[1] + '/' + p[0];
+        return d;
+    }
+
     async function loadFromGitHub() {
         const status = document.getElementById('syncStatus');
         status.className = 'sync-status sync-loading';
@@ -365,7 +373,7 @@
             return '<div class="fiche-card" onclick="openFiche(\'' + f.id + '\')">' +
                 '<button class="delete-btn" onclick="deleteFiche(\'' + f.id + '\', event)">&#x2716; Supprimer</button>' +
                 '<div class="fiche-title">' + (f.titre || 'Sans titre') + '</div>' +
-                '<div class="fiche-date">' + (f.date || '') + '</div>' +
+                '<div class="fiche-date">' + formatDateFR(f.date) + '</div>' +
                 '<div class="fiche-field"><span class="fiche-label">Entit&eacute;</span><span class="fiche-value">' + (f.entite || '-') + '</span></div>' +
                 '<div class="fiche-field"><span class="fiche-label">Contact</span><span class="fiche-value">' + (f.contact || '-') + '</span></div>' +
                 '<div class="fiche-heure">' +
@@ -381,7 +389,7 @@
 
     function openFiche(id) {
         localStorage.setItem('currentFicheId', id);
-        window.location.href = 'contact-studio.html';
+        window.location.href = 'contact-studio.html?fiche=' + id;
     }
 
     function newFiche() {
