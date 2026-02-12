@@ -564,16 +564,16 @@
 
         .nav-back {
             display: inline-flex; align-items: center; gap: 6px;
-            color: rgba(255,255,255,0.45); text-decoration: none;
-            font-size: 0.75rem; font-weight: 600;
-            padding: 7px 14px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 8px;
+            color: #fda085; text-decoration: none;
+            font-size: 0.85rem; font-weight: 700;
+            padding: 10px 18px;
+            background: rgba(253,160,133,0.1);
+            border: 1px solid rgba(253,160,133,0.25);
+            border-radius: 10px;
             transition: all 0.15s;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif;
         }
-        .nav-back:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); }
+        .nav-back:hover { color: #fdb99b; background: rgba(253,160,133,0.18); }
 
         .toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
@@ -1002,21 +1002,38 @@
         }
 
         async function ghSave(fiches) {
-            try {
-                const content = btoa(unescape(encodeURIComponent(JSON.stringify(fiches, null, 2))));
-                const body = { message: 'Auto-save ' + new Date().toISOString(), content: content, branch: 'main' };
-                if (ghSha) body.sha = ghSha;
-                const r = await fetch(GH_API, {
-                    method: 'PUT',
-                    headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-                if (r.ok) {
-                    const d = await r.json();
-                    ghSha = d.content.sha;
-                    console.log('☁️ GitHub synced');
+            for (let attempt = 0; attempt < 3; attempt++) {
+                try {
+                    const content = btoa(unescape(encodeURIComponent(JSON.stringify(fiches, null, 2))));
+                    const body = { message: 'Auto-save ' + new Date().toISOString(), content: content, branch: 'main' };
+                    if (ghSha) body.sha = ghSha;
+                    const r = await fetch(GH_API, {
+                        method: 'PUT',
+                        headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    if (r.ok) {
+                        const d = await r.json();
+                        ghSha = d.content.sha;
+                        console.log('☁️ GitHub synced (attempt ' + (attempt+1) + ')');
+                        return;
+                    }
+                    if (r.status === 409 || r.status === 422) {
+                        // SHA conflict - re-fetch and retry
+                        console.warn('⚠️ SHA conflict, re-fetching...');
+                        const existing = await ghLoadSha();
+                        if (existing) {
+                            // Merge: our data takes priority
+                            Object.assign(existing, fiches);
+                            fiches = existing;
+                        }
+                        continue;
+                    }
+                    throw new Error('HTTP ' + r.status);
+                } catch(e) {
+                    if (attempt === 2) console.error('❌ GitHub save failed after 3 attempts', e);
                 }
-            } catch(e) { console.warn('GH save error', e); }
+            }
         }
 
         // Init: charger le SHA
@@ -1028,15 +1045,19 @@
             data.id = FICHE_ID;
             data.updatedAt = new Date().toISOString();
 
-            // 1. Save locally
+            // 1. Save locally IMMEDIATELY
             let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
             fiches[FICHE_ID] = data;
             localStorage.setItem('fiches_studio', JSON.stringify(fiches));
 
-            // 2. Sync to GitHub
-            ghSave(fiches).catch(function(e) {
-                console.warn('⚠️ GitHub sync failed, data saved locally', e);
-            });
+            // 2. Schedule GitHub save (debounced 2s to avoid SHA conflicts)
+            clearTimeout(ghSaveTimer);
+            ghSaveTimer = setTimeout(function() {
+                let freshFiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+                ghSave(freshFiches).catch(function(e) {
+                    console.warn('⚠️ GitHub sync failed', e);
+                });
+            }, 2000);
 
             // 3. Also broadcast via WebSocket for real-time
             if (ws && ws.readyState === WebSocket.OPEN) {
@@ -1048,13 +1069,15 @@
 
         // Debounce auto-save
         let saveTimer;
+        let ghSaveTimer;
         function scheduleAutoSave() {
             clearTimeout(saveTimer);
             saveTimer = setTimeout(autoSave, 500);
         }
 
-        // Bind all inputs for auto-save
+        // Bind ALL inputs and interactions for auto-save
         document.addEventListener('input', scheduleAutoSave);
+        document.addEventListener('change', scheduleAutoSave);
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('toggle-btn') || e.target.closest('.radio-item') || e.target.closest('.mode-card'))
                 setTimeout(scheduleAutoSave, 50);
@@ -1223,34 +1246,30 @@
         // LOAD DATA (local first, then server fallback)
         // ============================================
         async function loadData() {
-            const id = localStorage.getItem('currentFicheId');
-            if (!id) return;
+            // Toujours utiliser FICHE_ID (déjà set au dessus)
+            const id = FICHE_ID;
 
-            // 1. Try local first
-            let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
-            let localData = fiches[id];
-
-            // 2. Try GitHub
-            let ghData = null;
+            // 1. Try GitHub first (source de vérité)
+            let data = null;
             try {
                 const ghFiches = await ghLoadSha();
-                if (ghFiches && ghFiches[id]) {
-                    ghData = ghFiches[id];
+                if (ghFiches) {
                     // Update local cache with ALL fiches from GitHub
-                    Object.assign(fiches, ghFiches);
-                    localStorage.setItem('fiches_studio', JSON.stringify(fiches));
-                    console.log('☁️ Fiches chargées depuis GitHub');
+                    localStorage.setItem('fiches_studio', JSON.stringify(ghFiches));
+                    if (ghFiches[id]) {
+                        data = ghFiches[id];
+                        console.log('☁️ Fiche chargée depuis GitHub');
+                    }
                 }
             } catch (e) {
                 console.warn('⚠️ GitHub load failed', e);
             }
 
-            // 3. Use most recent version
-            let data = localData;
-            if (ghData) {
-                if (!localData || (ghData.updatedAt && localData.updatedAt && ghData.updatedAt > localData.updatedAt)) {
-                    data = ghData;
-                }
+            // 2. Fallback local
+            if (!data) {
+                const fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+                data = fiches[id];
+                if (data) console.log('💾 Fiche chargée depuis localStorage');
             }
 
             if (data) {
