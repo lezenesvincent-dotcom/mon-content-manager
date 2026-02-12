@@ -246,6 +246,127 @@
         }
         .dp-today:hover { background: rgba(0, 200, 255, 0.25); }
 
+        .time-display {
+            position: absolute;
+            left: 50%; top: 50%; transform: translate(-50%, -50%);
+            color: #fff; font-size: 22px; font-weight: bold;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif;
+            cursor: pointer;
+            padding: 4px 16px;
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+        .time-display:hover { background: rgba(255,255,255,0.1); }
+
+        /* TIME PICKER OVERLAY */
+        .tp-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .tp-container {
+            background: rgba(44, 44, 46, 0.98);
+            border-radius: 24px;
+            width: 360px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .tp-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+        }
+        .tp-cancel {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .tp-done {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: #ff9f0a;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .tp-title {
+            font-size: 17px;
+            font-weight: bold;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+        }
+        .tp-wheels {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+            padding: 0 30px;
+        }
+        .tp-wheel {
+            height: 300px;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+            width: 110px;
+            text-align: center;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .tp-wheel::-webkit-scrollbar { display: none; }
+        .tp-wheel-item {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 300;
+            color: rgba(255,255,255,0.25);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            scroll-snap-align: center;
+            transition: all 0.15s;
+        }
+        .tp-wheel-item.active {
+            font-size: 34px;
+            font-weight: 500;
+            color: #fff;
+        }
+        .tp-separator {
+            font-size: 34px;
+            font-weight: bold;
+            color: #fff;
+            padding: 0 8px;
+        }
+        .tp-selection-bar {
+            position: absolute;
+            left: 20px; right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60px;
+            background: rgba(120,120,128,0.24);
+            border-radius: 14px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .tp-wheels { position: relative; z-index: 1; }
+
         .heure-center {
             display: flex; flex-direction: column;
             align-items: center; gap: 6px; margin: 12px 0;
@@ -459,11 +580,32 @@
             <div class="heure-center">
                 <div class="heure-field">
                     <img src="images/img_07_93c8388652.png" alt="">
-                    <input type="time" id="heurePrep">
+                    <div class="time-display" onclick="openTimePicker('heurePrep')">
+                        <span id="heurePrep">12:30</span>
+                    </div>
                 </div>
                 <div class="heure-field">
                     <img src="images/img_08_18d4549f00.png" alt="">
-                    <input type="time" id="heureDirect">
+                    <div class="time-display" onclick="openTimePicker('heureDirect')">
+                        <span id="heureDirect">13:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIME PICKER iOS style -->
+            <div id="timePickerOverlay" class="tp-overlay" style="display:none;" onclick="closeTimePicker()">
+                <div class="tp-container" onclick="event.stopPropagation()">
+                    <div class="tp-header">
+                        <button class="tp-cancel" onclick="closeTimePicker()">&times;</button>
+                        <span class="tp-title" id="tpTitle">Heure</span>
+                        <button class="tp-done" onclick="confirmTimePicker()">&#10003;</button>
+                    </div>
+                    <div class="tp-wheels">
+                        <div class="tp-wheel" id="tpHourWheel"></div>
+                        <div class="tp-separator">:</div>
+                        <div class="tp-wheel" id="tpMinWheel"></div>
+                    </div>
+                    <div class="tp-selection-bar"></div>
                 </div>
             </div>
             <div class="sep"></div>
@@ -492,7 +634,7 @@
             <div id="ibmPreviewWrap" style="margin: 12px 0; text-align:center;">
                 <div id="ibmPreviewLabel" style="font-size:0.85rem; font-weight:bold; color:rgba(255,255,255,0.6); margin-bottom:8px;">Solutions de march&eacute;s CIC</div>
                 <a id="ibmPreviewLink" href="https://video.ibm.com/channel/dhWaG6DN5VF" target="_blank" style="display:block; cursor:pointer;">
-                    <img id="ibmPreviewImg" src="https://image.thum.io/get/width/900/crop/500/https://video.ibm.com/channel/dhWaG6DN5VF" alt="Aper&ccedil;u" style="width:100%; max-width:900px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); transition: opacity 0.3s;">
+                    <img id="ibmPreviewImg" src="https://image.thum.io/get/width/900/crop/580/https://video.ibm.com/channel/dhWaG6DN5VF" alt="Aper&ccedil;u" style="width:100%; max-width:900px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); transition: opacity 0.3s;">
                 </a>
                 <div style="font-size:0.7rem; color:rgba(255,255,255,0.35); margin-top:6px; font-style:italic;">Cliquez pour ouvrir la cha&icirc;ne &bull; Aper&ccedil;u actualis&eacute; en temps r&eacute;el</div>
             </div>
@@ -756,8 +898,8 @@
                 date: document.getElementById('dateEventValue').value,
                 entite: document.getElementById('entiteGroupe').value,
                 contact: document.getElementById('contactField').value,
-                heurePrep: document.getElementById('heurePrep').value,
-                heureDirect: document.getElementById('heureDirect').value,
+                heurePrep: document.getElementById('heurePrep').textContent,
+                heureDirect: document.getElementById('heureDirect').textContent,
                 ibmChaine: document.getElementById('ibmChaine').value,
                 ibmLien: document.getElementById('ibmLien').value,
                 toggles: {},
@@ -795,7 +937,7 @@
 
             if (sel.value) {
                 previewLabel.textContent = sel.options[sel.selectedIndex].text;
-                previewImg.src = 'https://image.thum.io/get/width/900/crop/500/' + sel.value;
+                previewImg.src = 'https://image.thum.io/get/width/900/crop/580/' + sel.value;
                 previewLink.href = sel.value;
                 previewWrap.style.display = 'block';
             } else {
@@ -858,8 +1000,8 @@
             }
             if (data.entite) document.getElementById('entiteGroupe').value = data.entite;
             if (data.contact) document.getElementById('contactField').value = data.contact;
-            if (data.heurePrep) document.getElementById('heurePrep').value = data.heurePrep;
-            if (data.heureDirect) document.getElementById('heureDirect').value = data.heureDirect;
+            if (data.heurePrep) document.getElementById('heurePrep').textContent = data.heurePrep;
+            if (data.heureDirect) document.getElementById('heureDirect').textContent = data.heureDirect;
             if (data.ibmChaine) document.getElementById('ibmChaine').value = data.ibmChaine;
             if (data.ibmLien) document.getElementById('ibmLien').value = data.ibmLien;
 
@@ -952,6 +1094,74 @@
         loadData();
         connectWebSocket();
     </script>
+    <script>
+    // ===== TIME PICKER iOS STYLE =====
+    let tpCurrentField = null;
+    const ITEM_H = 60;
+    const PAD_ITEMS = 2;
+
+    function openTimePicker(fieldId) {
+        tpCurrentField = fieldId;
+        const current = document.getElementById(fieldId).textContent;
+        const parts = current.split(':');
+        const h = parseInt(parts[0]) || 12;
+        const m = parseInt(parts[1]) || 0;
+
+        const titleMap = { 'heurePrep': 'Heure préparation', 'heureDirect': 'Heure du Direct' };
+        document.getElementById('tpTitle').textContent = titleMap[fieldId] || 'Heure';
+
+        const hourWheel = document.getElementById('tpHourWheel');
+        let hhtml = '';
+        for (let p = 0; p < PAD_ITEMS; p++) hhtml += '<div class="tp-wheel-item" style="visibility:hidden;">&nbsp;</div>';
+        for (let i = 0; i < 24; i++) hhtml += '<div class="tp-wheel-item" data-val="' + i + '">' + String(i).padStart(2, '0') + '</div>';
+        for (let p = 0; p < PAD_ITEMS; p++) hhtml += '<div class="tp-wheel-item" style="visibility:hidden;">&nbsp;</div>';
+        hourWheel.innerHTML = hhtml;
+
+        const minWheel = document.getElementById('tpMinWheel');
+        let mhtml = '';
+        for (let p = 0; p < PAD_ITEMS; p++) mhtml += '<div class="tp-wheel-item" style="visibility:hidden;">&nbsp;</div>';
+        for (let i = 0; i < 60; i += 5) mhtml += '<div class="tp-wheel-item" data-val="' + i + '">' + String(i).padStart(2, '0') + '</div>';
+        for (let p = 0; p < PAD_ITEMS; p++) mhtml += '<div class="tp-wheel-item" style="visibility:hidden;">&nbsp;</div>';
+        minWheel.innerHTML = mhtml;
+
+        hourWheel.scrollTop = h * ITEM_H;
+        minWheel.scrollTop = Math.round(m / 5) * ITEM_H;
+
+        document.getElementById('timePickerOverlay').style.display = 'flex';
+        setupWheelHighlight(hourWheel);
+        setupWheelHighlight(minWheel);
+    }
+
+    function setupWheelHighlight(wheel) {
+        function updateActive() {
+            const idx = Math.round(wheel.scrollTop / ITEM_H);
+            wheel.querySelectorAll('.tp-wheel-item[data-val]').forEach(function(item, i) {
+                item.classList.toggle('active', i === idx);
+            });
+        }
+        wheel.addEventListener('scroll', updateActive);
+        setTimeout(updateActive, 50);
+    }
+
+    function getWheelValue(wheelId) {
+        const wheel = document.getElementById(wheelId);
+        const idx = Math.round(wheel.scrollTop / ITEM_H);
+        const items = wheel.querySelectorAll('.tp-wheel-item[data-val]');
+        return items[idx] ? parseInt(items[idx].dataset.val) : 0;
+    }
+
+    function confirmTimePicker() {
+        const h = String(getWheelValue('tpHourWheel')).padStart(2, '0');
+        const m = String(getWheelValue('tpMinWheel')).padStart(2, '0');
+        document.getElementById(tpCurrentField).textContent = h + ':' + m;
+        closeTimePicker();
+    }
+
+    function closeTimePicker() {
+        document.getElementById('timePickerOverlay').style.display = 'none';
+    }
+    </script>
+
     <script>
     // ===== CUSTOM DATE PICKER =====
     let dpYear, dpMonth, dpSelected = null;
