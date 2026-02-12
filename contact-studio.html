@@ -36,7 +36,7 @@
             position: absolute;
             top: -60px; left: -60px; right: -60px; bottom: -60px;
             animation: albumDrift 80s linear infinite;
-            opacity: 0.28;
+            opacity: 0.12;
         }
         @keyframes albumDrift {
             0% { transform: translate(0, 0) rotate(-1.5deg) scale(1.02); }
@@ -67,11 +67,13 @@
         .header h1 { font-size: 1.4rem; font-weight: bold; color: #fff; }
 
         .section {
-            background: #3c3c3c;
+            background: rgba(22, 24, 30, 0.97);
             border-radius: 14px;
             padding: 24px 20px;
             margin-bottom: 16px;
             border: 1px solid rgba(80,90,100,0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
         .section-title {
             font-size: 20px; font-weight: bold; color: #fff;
