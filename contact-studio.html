@@ -851,72 +851,170 @@
         // ============================================
         // TRANSMETTRE PAR MAIL
         // ============================================
-        const MAIL_DEST = 'lezenes.vincent@gmail.com'; // Envoi vers Gmail → redirigé vers vincent.lezenes@cic.fr
+        const MAIL_DEST = 'vincent.lezenes@cic.fr';
+        const MAIL_API = WS_SERVER_URL + '/api/send-fiche';
 
-        function transmettreParMail() {
-            const titre = document.getElementById('titreEvent').value || '(sans titre)';
-            const date = document.getElementById('dateEvent').value || document.getElementById('dateEventValue').value || '';
-            const entite = document.getElementById('entiteGroupe').value || '';
-            const contact = document.getElementById('contactField').value || '';
-            const heurePrep = document.getElementById('heurePrep').textContent || '';
-            const heureDirect = document.getElementById('heureDirect').textContent || '';
-
-            // Diffusion IBM
-            const diffIBM = document.querySelector('[data-field="diffIBM"].active') ?
-                document.querySelector('[data-field="diffIBM"].active').dataset.val : '';
+        function generateFicheHTML() {
+            const d = collectData();
+            const toggleLabel = (f) => {
+                const a = document.querySelector('[data-field="'+f+'"].active');
+                return a ? a.dataset.val.toUpperCase() : '—';
+            };
             const chaine = document.getElementById('ibmChaine');
             const chaineText = chaine.options[chaine.selectedIndex] ? chaine.options[chaine.selectedIndex].text : '';
-            const lien = document.getElementById('ibmLien').value || '';
 
-            // Replay, Chat, Q&R
-            const replay = document.querySelector('[data-field="replay"].active') ?
-                document.querySelector('[data-field="replay"].active').dataset.val : '';
-            const chat = document.querySelector('[data-field="chat"].active') ?
-                document.querySelector('[data-field="chat"].active').dataset.val : '';
-
-            // Application
-            let app = '';
-            document.querySelectorAll('[data-field="app"].active').forEach(function(b) { app = b.dataset.val; });
-
-            // Intervenants
-            let intervenants = '';
-            document.querySelectorAll('.intervenants-table tbody tr').forEach(function(tr) {
+            let intervenantsHTML = '';
+            document.querySelectorAll('#intervenantsBody tr').forEach(tr => {
                 const inputs = tr.querySelectorAll('input');
-                if (inputs.length >= 4 && inputs[0].value) {
-                    intervenants += inputs[0].value + ' ' + inputs[1].value + ' - ' + inputs[2].value + ' (' + inputs[3].value + ')%0D%0A';
+                if (inputs.length >= 4 && inputs[0].value.trim()) {
+                    intervenantsHTML += '<tr><td style="padding:6px 10px;border:1px solid #333;">' +
+                        [inputs[0].value, inputs[1].value, inputs[2].value, inputs[3].value].join('</td><td style="padding:6px 10px;border:1px solid #333;">') +
+                        '</td></tr>';
                 }
             });
 
-            // Diffusion Generique
-            const diffGen = document.querySelector('[data-field="diffGen"].active') ?
-                document.querySelector('[data-field="diffGen"].active').dataset.val : '';
+            const appEl = document.querySelector('#appRadio .radio-item.active .radio-label');
+            const app = appEl ? appEl.textContent : '—';
+            const mode = document.getElementById('modeStudio').classList.contains('active') ? 'Studio' : 'Visio';
 
-            const subject = encodeURIComponent('Fiche Contact Studio - ' + titre + ' - ' + date);
+            return `
+<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#1a1a2e;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',Arial,sans-serif;">
+<div style="max-width:650px;margin:20px auto;background:linear-gradient(135deg,#1c1e26,#2a2d3a);border-radius:18px;padding:32px;color:#fff;">
+    <div style="text-align:center;margin-bottom:20px;">
+        <img src="https://lezenesvincent-dotcom.github.io/mon-content-manager/images/logo-cic.png" alt="CIC" style="height:50px;">
+        <h1 style="font-size:22px;margin:12px 0 4px;color:#fff;">Fiche Contact Studio</h1>
+        <p style="color:rgba(255,255,255,0.4);font-size:13px;margin:0;">Studio CIC – 61 rue Taitbout, Paris</p>
+    </div>
 
-            let body = '';
-            body += '=== FICHE CONTACT STUDIO CIC ===%0D%0A%0D%0A';
-            body += 'Titre : ' + encodeURIComponent(titre) + '%0D%0A';
-            body += 'Date : ' + encodeURIComponent(date) + '%0D%0A';
-            body += 'Entité : ' + encodeURIComponent(entite) + '%0D%0A';
-            body += 'Contact : ' + encodeURIComponent(contact) + '%0D%0A';
-            body += 'Heure préparation : ' + encodeURIComponent(heurePrep) + '%0D%0A';
-            body += 'Heure du direct : ' + encodeURIComponent(heureDirect) + '%0D%0A%0D%0A';
-            body += '--- DIFFUSION IBM ---%0D%0A';
-            body += 'Diffusion IBM : ' + encodeURIComponent(diffIBM) + '%0D%0A';
-            body += 'Chaîne : ' + encodeURIComponent(chaineText) + '%0D%0A';
-            body += 'Lien : ' + encodeURIComponent(lien) + '%0D%0A%0D%0A';
-            body += '--- OPTIONS ---%0D%0A';
-            body += 'Replay : ' + encodeURIComponent(replay) + '%0D%0A';
-            body += 'Chat : ' + encodeURIComponent(chat) + '%0D%0A';
-            body += 'Application : ' + encodeURIComponent(app) + '%0D%0A%0D%0A';
-            body += '--- INTERVENANTS ---%0D%0A';
-            body += intervenants + '%0D%0A';
-            body += '--- GENERIQUE ---%0D%0A';
-            body += 'Diffusion générique : ' + encodeURIComponent(diffGen) + '%0D%0A';
+    <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr><td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;width:140px;">Titre</td>
+            <td style="padding:10px 14px;font-weight:bold;font-size:15px;">${d.titre || '—'}</td></tr>
+        <tr style="background:rgba(255,255,255,0.03);">
+            <td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Date</td>
+            <td style="padding:10px 14px;">${d.date || '—'}</td></tr>
+        <tr><td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Entit&eacute; / Groupe</td>
+            <td style="padding:10px 14px;">${d.entite || '—'}</td></tr>
+        <tr style="background:rgba(255,255,255,0.03);">
+            <td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Contact</td>
+            <td style="padding:10px 14px;">${d.contact || '—'}</td></tr>
+        <tr><td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Pr&eacute;paration</td>
+            <td style="padding:10px 14px;">${d.heurePrep || '—'}</td></tr>
+        <tr style="background:rgba(255,255,255,0.03);">
+            <td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Direct</td>
+            <td style="padding:10px 14px;font-weight:bold;">${d.heureDirect || '—'}</td></tr>
+        <tr><td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Mode</td>
+            <td style="padding:10px 14px;">${mode}</td></tr>
+        <tr style="background:rgba(255,255,255,0.03);">
+            <td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Application</td>
+            <td style="padding:10px 14px;">${app}</td></tr>
+    </table>
 
-            window.location.href = 'mailto:' + MAIL_DEST + '?subject=' + subject + '&body=' + body;
+    <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin:16px 0;">
+        <h3 style="font-size:14px;color:#fda085;margin:0 0 10px;">Diffusion IBM</h3>
+        <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;width:120px;">Diffusion</td>
+                <td style="padding:6px 0;">${toggleLabel('diffIBM')}</td></tr>
+            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;">Cha&icirc;ne</td>
+                <td style="padding:6px 0;">${chaineText || '—'}</td></tr>
+            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;">Replay</td>
+                <td style="padding:6px 0;">${toggleLabel('replay')}</td></tr>
+            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;">Chat</td>
+                <td style="padding:6px 0;">${toggleLabel('chat')}</td></tr>
+        </table>
+    </div>
 
-            showToast('Ouverture du client mail...');
+    ${intervenantsHTML ? `
+    <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin:16px 0;">
+        <h3 style="font-size:14px;color:#fda085;margin:0 0 10px;">Intervenants</h3>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <tr style="background:rgba(255,255,255,0.08);">
+                <th style="padding:6px 10px;text-align:left;border:1px solid #333;">Nom</th>
+                <th style="padding:6px 10px;text-align:left;border:1px solid #333;">Pr&eacute;nom</th>
+                <th style="padding:6px 10px;text-align:left;border:1px solid #333;">Fonction</th>
+                <th style="padding:6px 10px;text-align:left;border:1px solid #333;">Entreprise</th>
+            </tr>
+            ${intervenantsHTML}
+        </table>
+    </div>` : ''}
+
+    <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin:16px 0;">
+        <h3 style="font-size:14px;color:#fda085;margin:0 0 10px;">G&eacute;n&eacute;rique</h3>
+        <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;width:200px;">Diffusion g&eacute;n&eacute;rique</td>
+                <td style="padding:6px 0;">${toggleLabel('diffGen')}</td></tr>
+            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;">Je fournis mon g&eacute;n&eacute;rique</td>
+                <td style="padding:6px 0;">${toggleLabel('fournisGen')}</td></tr>
+            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;">Le studio fournit</td>
+                <td style="padding:6px 0;">${toggleLabel('studioGen')}</td></tr>
+        </table>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin:16px 0;">
+        <p style="font-size:12px;color:rgba(255,255,255,0.5);margin:4px 0;">Visite du studio : ${toggleLabel('visite')}</p>
+    </div>
+
+    <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);">
+        <p style="font-size:11px;color:rgba(255,255,255,0.25);">Fiche g&eacute;n&eacute;r&eacute;e automatiquement depuis Content Manager</p>
+    </div>
+</div>
+</body></html>`;
+        }
+
+        async function transmettreParMail() {
+            const titre = document.getElementById('titreEvent').value || '(sans titre)';
+            const date = document.getElementById('dateEvent').value || '';
+            const subject = 'Fiche Contact Studio - ' + titre + ' - ' + date;
+            const html = generateFicheHTML();
+
+            showToast('📧 Envoi en cours...');
+
+            try {
+                // Essai via serveur Render
+                const r = await fetch(MAIL_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: MAIL_DEST,
+                        subject: subject,
+                        html: html
+                    })
+                });
+                if (r.ok) {
+                    showToast('✅ Email envoyé à ' + MAIL_DEST);
+                    return;
+                }
+                throw new Error('HTTP ' + r.status);
+            } catch(e) {
+                console.warn('Render send failed, trying GitHub email...', e);
+            }
+
+            // Fallback: sauver dans GitHub pour traitement ultérieur
+            try {
+                const emailData = {
+                    to: MAIL_DEST,
+                    subject: subject,
+                    html: html,
+                    createdAt: new Date().toISOString(),
+                    ficheId: FICHE_ID
+                };
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(emailData, null, 2))));
+                const path = 'data/email-queue/' + FICHE_ID + '.json';
+                const apiUrl = 'https://api.github.com/repos/lezenesvincent-dotcom/mon-content-manager/contents/' + path;
+                const r = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'Email queue: ' + titre, content: content, branch: 'main' })
+                });
+                if (r.ok) {
+                    showToast('📨 Fiche mise en file d\'attente email');
+                    return;
+                }
+            } catch(e2) {
+                console.warn('GitHub email queue failed', e2);
+            }
+
+            showToast('⚠️ Envoi échoué - vérifiez votre connexion');
         }
 
         // ============================================
@@ -1086,6 +1184,42 @@
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('toggle-btn') || e.target.closest('.radio-item') || e.target.closest('.mode-card'))
                 setTimeout(scheduleAutoSave, 50);
+        });
+
+        // CRITICAL: Force save when leaving page
+        window.addEventListener('beforeunload', function() {
+            clearTimeout(saveTimer);
+            clearTimeout(ghSaveTimer);
+            // Save to localStorage immediately (synchronous)
+            const data = collectData();
+            data.id = FICHE_ID;
+            data.updatedAt = new Date().toISOString();
+            let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+            fiches[FICHE_ID] = data;
+            localStorage.setItem('fiches_studio', JSON.stringify(fiches));
+            // Fire GitHub save (best-effort, uses sendBeacon if available)
+            try {
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(fiches, null, 2))));
+                const body = JSON.stringify({
+                    message: 'Auto-save beforeunload ' + new Date().toISOString(),
+                    content: content,
+                    sha: ghSha,
+                    branch: 'main'
+                });
+                navigator.sendBeacon(GH_API + '?beacon=1', '');
+                // sendBeacon can't set headers for GitHub API, so use sync XHR as fallback
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', GH_API, false); // synchronous
+                xhr.setRequestHeader('Authorization', 'token ' + GH_TOKEN);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('Accept', 'application/vnd.github.v3+json');
+                xhr.send(body);
+                if (xhr.status === 200) {
+                    console.log('☁️ Saved on beforeunload');
+                }
+            } catch(e) {
+                console.warn('beforeunload GitHub save failed', e);
+            }
         });
 
         // ============================================
