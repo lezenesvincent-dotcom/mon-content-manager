@@ -375,7 +375,7 @@
             <!-- PREVIEW CHAINE IBM -->
             <div id="ibmPreviewWrap" style="display:none; margin: 12px 0; text-align:center;">
                 <div id="ibmPreviewLabel" style="font-size:0.8rem; font-weight:bold; color:rgba(255,255,255,0.6); margin-bottom:8px;"></div>
-                <iframe id="ibmPreviewFrame" src="" style="width:100%; height:280px; border:none; border-radius:10px; background:#000;"></iframe>
+                <iframe id="ibmPreviewFrame" src="" style="width:100%; height:450px; border:none; border-radius:10px; background:#000;"></iframe>
                 <div style="font-size:0.7rem; color:rgba(255,255,255,0.35); margin-top:6px; font-style:italic;">Aper&ccedil;u de la cha&icirc;ne</div>
             </div>
 
@@ -675,10 +675,9 @@
             lienInput.value = sel.value;
 
             if (sel.value) {
-                const channelId = sel.value.split('/channel/')[1];
                 previewLabel.textContent = sel.options[sel.selectedIndex].text;
-                // Format embed IBM Video Watson Media
-                previewFrame.src = 'https://video.ibm.com/embed/recorded/' + channelId + '?autoplay=false';
+                // Embed direct de la page chaine IBM Video
+                previewFrame.src = sel.value;
                 previewWrap.style.display = 'block';
             } else {
                 previewFrame.src = '';
