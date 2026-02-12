@@ -16,64 +16,45 @@
             overflow-x: hidden;
         }
 
-        /* ===== FOND DYNAMIQUE POCHETTES D'ALBUM ===== */
+        /* ===== FOND DYNAMIQUE STYLE APPLE MUSIC ===== */
         .album-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             z-index: 0;
             overflow: hidden;
         }
+        .album-bg .cover {
+            position: absolute;
+            top: -20%; left: -20%; right: -20%; bottom: -20%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(80px) saturate(1.8) brightness(0.4);
+            transition: opacity 2s ease-in-out;
+            opacity: 0;
+        }
+        .album-bg .cover.active { opacity: 1; }
         .album-bg::after {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(ellipse at center, rgba(17,17,24,0.45) 0%, rgba(17,17,24,0.8) 40%, rgba(17,17,24,0.96) 100%);
+            background: rgba(0,0,0,0.35);
             z-index: 1;
         }
-        .album-grid {
-            display: grid;
-            gap: 3px;
-            position: absolute;
-            top: -60px; left: -60px; right: -60px; bottom: -60px;
-            animation: albumDrift 80s linear infinite;
-            opacity: 0.12;
-        }
-        @keyframes albumDrift {
-            0% { transform: translate(0, 0) rotate(-1.5deg) scale(1.02); }
-            25% { transform: translate(-15px, -10px) rotate(-0.5deg) scale(1.01); }
-            50% { transform: translate(-25px, -18px) rotate(0.5deg) scale(1.02); }
-            75% { transform: translate(-10px, -8px) rotate(-0.5deg) scale(1.01); }
-            100% { transform: translate(0, 0) rotate(-1.5deg) scale(1.02); }
-        }
-        .album-cell {
-            width: 110px; height: 110px;
-            border-radius: 6px;
-            background-size: cover;
-            background-position: center;
-            animation: albumPulse 12s ease-in-out infinite;
-        }
-        .album-cell:nth-child(odd) { animation-delay: -4s; }
-        .album-cell:nth-child(3n) { animation-delay: -7s; }
-        .album-cell:nth-child(5n+2) { animation-delay: -2s; }
-        @keyframes albumPulse {
-            0%, 100% { opacity: 0.5; filter: brightness(0.7); }
-            50% { opacity: 1; filter: brightness(1.1); }
-        }
 
-        .page-wrapper { max-width: 820px; margin: 0 auto; position: relative; z-index: 2; }
+        .page-wrapper { max-width: 720px; margin: 0 auto; position: relative; z-index: 2; }
 
         .header { text-align: center; padding: 30px 0 20px; }
         .header img { width: 143px; height: auto; margin-bottom: 10px; }
         .header h1 { font-size: 1.4rem; font-weight: bold; color: #fff; }
 
         .section {
-            background: rgba(22, 24, 30, 0.97);
+            background: rgba(0, 0, 0, 0.45);
             border-radius: 14px;
             padding: 24px 20px;
             margin-bottom: 16px;
-            border: 1px solid rgba(80,90,100,0.3);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
         }
         .section-title {
             font-size: 20px; font-weight: bold; color: #fff;
@@ -327,7 +308,7 @@
     </style>
 </head>
 <body>
-    <div class="album-bg"><div class="album-grid" id="albumGrid"></div></div>
+    <div class="album-bg" id="albumBg"></div>
     <a href="index.html" class="nav-back" style="position:relative;z-index:2;">&larr; Retour Content Manager</a>
     <div class="page-wrapper">
         <div class="header">
@@ -815,47 +796,56 @@
         connectWebSocket();
     </script>
     <script>
-    // ===== FOND DYNAMIQUE POCHETTES D'ALBUM =====
+    // ===== FOND APPLE MUSIC - pochette floutée plein écran =====
     const ALBUMS = [
         'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228',
         'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25',
-        'https://i.scdn.co/image/ab67616d0000b27384243a01af3c77b56fe01ab1',
         'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2',
         'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b',
         'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0',
-        'https://i.scdn.co/image/ab67616d0000b27367c738a703dc979f5c3c52ef',
         'https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e',
         'https://i.scdn.co/image/ab67616d0000b273b0dd6a5cd1649c4a390f6f7a',
-        'https://i.scdn.co/image/ab67616d0000b273f46b9d202509a8f7384b90de',
         'https://i.scdn.co/image/ab67616d0000b2739a95e89d24214b94de36ccf7',
         'https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72',
-        'https://i.scdn.co/image/ab67616d0000b273b1c4b76e23414c9f20242268',
-        'https://i.scdn.co/image/ab67616d0000b2738b32b139981e79f2571cc6d8',
         'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
         'https://i.scdn.co/image/ab67616d0000b27390a50cfe99a4c19ff3cbfbdb',
         'https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526',
         'https://i.scdn.co/image/ab67616d0000b273de437d960dda1ac0a3ff0e47',
         'https://i.scdn.co/image/ab67616d0000b2738399047ff71200928f5b6508',
-        'https://i.scdn.co/image/ab67616d0000b273fdbb405ad514b0fe66ec9cf0',
-        'https://i.scdn.co/image/ab67616d0000b273712701c5e263efc8726b1464',
-        'https://i.scdn.co/image/ab67616d0000b2736c7112082b63beefffe40151',
         'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424',
         'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856',
     ];
-    function initAlbumBg() {
-        const g = document.getElementById('albumGrid');
-        if (!g) return;
-        const cols = Math.ceil((window.innerWidth + 120) / 113);
-        const rows = Math.ceil((window.innerHeight + 120) / 113);
-        let h = '';
-        for (let i = 0; i < cols * rows; i++) {
-            h += '<div class="album-cell" style="background-image:url(' + ALBUMS[i % ALBUMS.length] + ')"></div>';
-        }
-        g.innerHTML = h;
-        g.style.gridTemplateColumns = 'repeat(' + cols + ', 110px)';
+
+    let currentAlbumIndex = 0;
+    const bg = document.getElementById('albumBg');
+
+    // Créer 2 layers pour le crossfade
+    const layer1 = document.createElement('div');
+    const layer2 = document.createElement('div');
+    layer1.className = 'cover active';
+    layer2.className = 'cover';
+    bg.appendChild(layer1);
+    bg.appendChild(layer2);
+
+    // Mélanger les albums
+    for (let i = ALBUMS.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ALBUMS[i], ALBUMS[j]] = [ALBUMS[j], ALBUMS[i]];
     }
-    initAlbumBg();
-    window.addEventListener('resize', initAlbumBg);
+
+    layer1.style.backgroundImage = 'url(' + ALBUMS[0] + ')';
+
+    function nextAlbum() {
+        currentAlbumIndex = (currentAlbumIndex + 1) % ALBUMS.length;
+        const activeLayer = layer1.classList.contains('active') ? layer1 : layer2;
+        const nextLayer = activeLayer === layer1 ? layer2 : layer1;
+
+        nextLayer.style.backgroundImage = 'url(' + ALBUMS[currentAlbumIndex] + ')';
+        nextLayer.classList.add('active');
+        activeLayer.classList.remove('active');
+    }
+
+    setInterval(nextAlbum, 30000);
     </script>
 </body>
 </html>
