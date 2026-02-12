@@ -586,7 +586,7 @@
 </head>
 <body>
     <div class="album-bg" id="albumBg"></div>
-    <a href="prestation.html" class="nav-back" style="position:relative;z-index:2;">&larr; Accueil Prestations</a>
+    <a href="#" class="nav-back" style="position:relative;z-index:2;" onclick="saveAndGo('prestation.html');return false;">&larr; Accueil Prestations</a>
     <div class="page-wrapper">
         <div class="header">
             <img src="logo-cic.png" alt="CIC">
@@ -852,7 +852,7 @@
         // TRANSMETTRE PAR MAIL
         // ============================================
         const MAIL_DEST = 'vincent.lezenes@cic.fr';
-        const MAIL_API = WS_SERVER_URL + '/api/send-fiche';
+        const MAIL_API = 'https://ecamm-overlay-server.onrender.com/api/send-fiche';
 
         function generateFicheHTML() {
             const d = collectData();
@@ -1089,18 +1089,26 @@
 
         async function ghLoadSha() {
             try {
+                console.log('🔄 ghLoadSha: fetching from', GH_API);
                 const r = await fetch(GH_API, {
                     headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' },
                     cache: 'no-cache'
                 });
+                console.log('🔄 ghLoadSha: response status', r.status);
                 if (r.ok) {
                     const d = await r.json();
                     ghSha = d.sha;
                     const raw = atob(d.content.replace(/\n/g, ''));
                     const utf8 = decodeURIComponent(escape(raw));
-                    return JSON.parse(utf8);
+                    const parsed = JSON.parse(utf8);
+                    console.log('✅ ghLoadSha: loaded', Object.keys(parsed).length, 'fiches, SHA:', ghSha.substring(0,8));
+                    return parsed;
                 }
-            } catch(e) { console.warn('GH load error', e); }
+                console.warn('⚠️ ghLoadSha: HTTP', r.status);
+                if (r.status === 404) {
+                    console.log('📁 Fichier fiches.json pas encore créé sur GitHub');
+                }
+            } catch(e) { console.error('❌ ghLoadSha error:', e); }
             return null;
         }
 
@@ -1139,9 +1147,6 @@
             }
         }
 
-        // Init: charger le SHA
-        ghLoadSha();
-
         function autoSave() {
             isSaving = true;
             const data = collectData();
@@ -1153,14 +1158,14 @@
             fiches[FICHE_ID] = data;
             localStorage.setItem('fiches_studio', JSON.stringify(fiches));
 
-            // 2. Schedule GitHub save (debounced 2s to avoid SHA conflicts)
+            // 2. Schedule GitHub save (debounced 1s)
             clearTimeout(ghSaveTimer);
             ghSaveTimer = setTimeout(function() {
                 let freshFiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
                 ghSave(freshFiches).catch(function(e) {
                     console.warn('⚠️ GitHub sync failed', e);
                 });
-            }, 2000);
+            }, 1000);
 
             // 3. Also broadcast via WebSocket for real-time
             if (ws && ws.readyState === WebSocket.OPEN) {
@@ -1171,8 +1176,8 @@
         }
 
         // Debounce auto-save
-        let saveTimer;
-        let ghSaveTimer;
+        var saveTimer;
+        var ghSaveTimer;
         function scheduleAutoSave() {
             clearTimeout(saveTimer);
             saveTimer = setTimeout(autoSave, 500);
@@ -1317,6 +1322,33 @@
             location.reload();
         }
 
+        // Save and navigate - FORCE save before leaving
+        async function saveAndGo(url) {
+            clearTimeout(saveTimer);
+            clearTimeout(ghSaveTimer);
+            const data = collectData();
+            data.id = FICHE_ID;
+            data.updatedAt = new Date().toISOString();
+            
+            // Save local
+            let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+            fiches[FICHE_ID] = data;
+            localStorage.setItem('fiches_studio', JSON.stringify(fiches));
+            
+            showToast('💾 Sauvegarde...');
+            
+            // Save GitHub and WAIT for it
+            try {
+                await ghSave(fiches);
+                console.log('✅ Saved to GitHub before navigation');
+            } catch(e) {
+                console.warn('⚠️ GitHub save failed before nav', e);
+            }
+            
+            // Now navigate
+            window.location.href = url;
+        }
+
         // ============================================
         // APPLY DATA (populate form from data object)
         // ============================================
@@ -1389,19 +1421,20 @@
         // LOAD DATA (local first, then server fallback)
         // ============================================
         async function loadData() {
-            // Toujours utiliser FICHE_ID (déjà set au dessus)
             const id = FICHE_ID;
+            console.log('📥 loadData: loading fiche', id);
 
-            // 1. Try GitHub first (source de vérité)
+            // 1. Try GitHub first
             let data = null;
             try {
                 const ghFiches = await ghLoadSha();
                 if (ghFiches) {
-                    // Update local cache with ALL fiches from GitHub
                     localStorage.setItem('fiches_studio', JSON.stringify(ghFiches));
                     if (ghFiches[id]) {
                         data = ghFiches[id];
-                        console.log('☁️ Fiche chargée depuis GitHub');
+                        console.log('☁️ Fiche trouvée sur GitHub:', data.titre);
+                    } else {
+                        console.log('📭 Fiche', id, 'pas trouvée sur GitHub. Fiches dispo:', Object.keys(ghFiches));
                     }
                 }
             } catch (e) {
@@ -1412,7 +1445,8 @@
             if (!data) {
                 const fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
                 data = fiches[id];
-                if (data) console.log('💾 Fiche chargée depuis localStorage');
+                if (data) console.log('💾 Fiche trouvée en local:', data.titre);
+                else console.log('📭 Fiche', id, 'introuvable nulle part');
             }
 
             if (data) {
