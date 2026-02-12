@@ -469,7 +469,7 @@
             <div class="sep"></div>
 
             <!-- Diffusion IBM -->
-            <div class="form-row">
+            <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:8px; flex-wrap:wrap;">
                 <img src="images/img_09b_diffusion_ibm.png" alt="" class="label-img">
                 <div class="toggle-group">
                     <span class="toggle-label">Oui</span>
@@ -479,18 +479,22 @@
                 </div>
                 <select class="small-input" id="ibmChaine" onchange="onChaineSelect(this)" style="width:360px;cursor:pointer;">
                     <option value="">Cha&icirc;ne...</option>
-                    <option value="https://video.ibm.com/channel/dhWaG6DN5VF">Solutions de march&eacute;s CIC</option>
+                    <option value="https://video.ibm.com/channel/dhWaG6DN5VF" selected>Solutions de march&eacute;s CIC</option>
                     <option value="https://video.ibm.com/channel/6JAvvSqAWfG">Cr&eacute;dit Mutuel Alliance F&eacute;d&eacute;rale</option>
                 </select>
-                <input type="text" class="small-input" id="ibmLien" placeholder="Lien" style="flex:0.8;" readonly>
+            </div>
+            <div style="text-align:center; margin-bottom:8px;">
+                <input type="text" class="small-input" id="ibmLien" value="https://video.ibm.com/channel/dhWaG6DN5VF" placeholder="Lien" style="width:80%; max-width:500px; text-align:center;" readonly>
             </div>
             <div class="warning-text">Pour &eacute;viter tout incident de diffusion, le live sur votre cha&icirc;ne ouvre 30 minutes avant le direct, il est indispensable qu'un repr&eacute;sentant de votre service soit d&eacute;di&eacute; au contr&ocirc;le de prise d'antenne 30 minutes avant votre direct sur votre cha&icirc;ne</div>
 
             <!-- PREVIEW CHAINE IBM -->
-            <div id="ibmPreviewWrap" style="display:none; margin: 12px 0; text-align:center;">
-                <div id="ibmPreviewLabel" style="font-size:0.8rem; font-weight:bold; color:rgba(255,255,255,0.6); margin-bottom:8px;"></div>
-                <iframe id="ibmPreviewFrame" src="" style="width:100%; height:450px; border:none; border-radius:10px; background:#000;"></iframe>
-                <div style="font-size:0.7rem; color:rgba(255,255,255,0.35); margin-top:6px; font-style:italic;">Aper&ccedil;u de la cha&icirc;ne</div>
+            <div id="ibmPreviewWrap" style="margin: 12px 0; text-align:center;">
+                <div id="ibmPreviewLabel" style="font-size:0.85rem; font-weight:bold; color:rgba(255,255,255,0.6); margin-bottom:8px;">Solutions de march&eacute;s CIC</div>
+                <a id="ibmPreviewLink" href="https://video.ibm.com/channel/dhWaG6DN5VF" target="_blank" style="display:block; cursor:pointer;">
+                    <img id="ibmPreviewImg" src="https://image.thum.io/get/width/900/crop/500/https://video.ibm.com/channel/dhWaG6DN5VF" alt="Aper&ccedil;u" style="width:100%; max-width:900px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); transition: opacity 0.3s;">
+                </a>
+                <div style="font-size:0.7rem; color:rgba(255,255,255,0.35); margin-top:6px; font-style:italic;">Cliquez pour ouvrir la cha&icirc;ne &bull; Aper&ccedil;u actualis&eacute; en temps r&eacute;el</div>
             </div>
 
             <div class="sep"></div>
@@ -783,18 +787,18 @@
         function onChaineSelect(sel) {
             const lienInput = document.getElementById('ibmLien');
             const previewWrap = document.getElementById('ibmPreviewWrap');
-            const previewFrame = document.getElementById('ibmPreviewFrame');
+            const previewImg = document.getElementById('ibmPreviewImg');
             const previewLabel = document.getElementById('ibmPreviewLabel');
+            const previewLink = document.getElementById('ibmPreviewLink');
 
             lienInput.value = sel.value;
 
             if (sel.value) {
                 previewLabel.textContent = sel.options[sel.selectedIndex].text;
-                // Embed direct de la page chaine IBM Video
-                previewFrame.src = sel.value;
+                previewImg.src = 'https://image.thum.io/get/width/900/crop/500/' + sel.value;
+                previewLink.href = sel.value;
                 previewWrap.style.display = 'block';
             } else {
-                previewFrame.src = '';
                 previewWrap.style.display = 'none';
             }
         }
