@@ -12,13 +12,59 @@
             font-family: Arial, Helvetica, sans-serif;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
         }
-        .page-wrapper { max-width: 1200px; margin: 0 auto; }
+
+        /* ===== FOND DYNAMIQUE POCHETTES D'ALBUM ===== */
+        .album-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .album-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(26,26,26,0.55) 0%, rgba(26,26,26,0.85) 50%, rgba(26,26,26,0.97) 100%);
+            z-index: 1;
+        }
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 120px);
+            gap: 4px;
+            position: absolute;
+            top: -60px; left: -60px; right: -60px; bottom: -60px;
+            animation: albumDrift 60s linear infinite;
+            opacity: 0.35;
+        }
+        @keyframes albumDrift {
+            0% { transform: translate(0, 0) rotate(-2deg); }
+            50% { transform: translate(-30px, -20px) rotate(0deg); }
+            100% { transform: translate(0, 0) rotate(-2deg); }
+        }
+        .album-cell {
+            width: 120px;
+            height: 120px;
+            border-radius: 4px;
+            background-size: cover;
+            background-position: center;
+            animation: albumPulse 8s ease-in-out infinite;
+        }
+        .album-cell:nth-child(odd) { animation-delay: -3s; }
+        .album-cell:nth-child(3n) { animation-delay: -5s; }
+        .album-cell:nth-child(4n+1) { animation-delay: -1s; }
+        @keyframes albumPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.03); }
+        }
+
+        .page-wrapper { max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
 
         .header { text-align: center; padding: 20px 0 30px; }
-        .header img { width: 80px; height: auto; margin-bottom: 8px; }
+        .header img { width: 104px; height: auto; margin-bottom: 8px; }
         .header h1 { font-size: 1.5rem; font-weight: bold; color: #fff; }
-        .header .sub { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 4px; }
 
         .fiches-grid {
             display: grid;
@@ -139,6 +185,7 @@
             display: inline-flex; align-items: center; gap: 6px;
             color: rgba(255,255,255,0.4); text-decoration: none;
             font-size: 0.78rem; margin-bottom: 14px; transition: color 0.15s;
+            position: relative; z-index: 2;
         }
         .nav-back:hover { color: rgba(255,255,255,0.7); }
 
@@ -165,6 +212,8 @@
     </style>
 </head>
 <body>
+    <div class="album-bg"><div class="album-grid" id="albumGrid"></div></div>
+
     <div class="sync-status">
         <span class="sync-dot" id="syncDot"></span>
         <span id="syncLabel">Connexion…</span>
@@ -175,7 +224,6 @@
         <div class="header">
             <img src="logo-cic.png" alt="CIC">
             <h1>Prestations Studio</h1>
-            <div class="sub">Toutes les fiches de réservation</div>
         </div>
 
         <div class="actions-bar">
@@ -188,6 +236,58 @@
             Aucune prestation enregistrée.<br>Créez une nouvelle fiche pour commencer.
         </div>
     </div>
+
+    <script>
+        // =============================================
+        // FOND DYNAMIQUE - POCHETTES D'ALBUM
+        // =============================================
+        const ALBUM_COVERS = [
+            'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228', // Random Access Memories - Daft Punk
+            'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25', // The Dark Side of the Moon
+            'https://i.scdn.co/image/ab67616d0000b27384243a01af3c77b56fe01ab1', // Kind of Blue
+            'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2', // Discovery - Daft Punk
+            'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b', // Thriller
+            'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0', // A Night at the Opera
+            'https://i.scdn.co/image/ab67616d0000b27367c738a703dc979f5c3c52ef', // Wish You Were Here
+            'https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e', // AM - Arctic Monkeys
+            'https://i.scdn.co/image/ab67616d0000b273b0dd6a5cd1649c4a390f6f7a', // Rumours - Fleetwood Mac
+            'https://i.scdn.co/image/ab67616d0000b273f46b9d202509a8f7384b90de', // Homework - Daft Punk
+            'https://i.scdn.co/image/ab67616d0000b2739a95e89d24214b94de36ccf7', // OK Computer
+            'https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72', // Currents - Tame Impala
+            'https://i.scdn.co/image/ab67616d0000b273b1c4b76e23414c9f20242268', // Born to Run
+            'https://i.scdn.co/image/ab67616d0000b2738b32b139981e79f2571cc6d8', // The Rise and Fall of Ziggy Stardust
+            'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96', // Abbey Road
+            'https://i.scdn.co/image/ab67616d0000b27390a50cfe99a4c19ff3cbfbdb', // Blonde - Frank Ocean
+            'https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526', // Purple Rain
+            'https://i.scdn.co/image/ab67616d0000b273de437d960dda1ac0a3ff0e47', // Nevermind
+            'https://i.scdn.co/image/ab67616d0000b2738399047ff71200928f5b6508', // My Beautiful Dark Twisted Fantasy
+            'https://i.scdn.co/image/ab67616d0000b273fdbb405ad514b0fe66ec9cf0', // Channel Orange
+            'https://i.scdn.co/image/ab67616d0000b273712701c5e263efc8726b1464', // Hounds of Love - Kate Bush
+            'https://i.scdn.co/image/ab67616d0000b2736c7112082b63beefffe40151', // Human After All - Daft Punk
+            'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424', // IGOR - Tyler
+            'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856', // After Hours - The Weeknd
+        ];
+
+        function initAlbumBackground() {
+            const grid = document.getElementById('albumGrid');
+            if (!grid) return;
+            // Calculer combien de cellules pour couvrir l'écran
+            const cols = Math.ceil((window.innerWidth + 120) / 124);
+            const rows = Math.ceil((window.innerHeight + 120) / 124);
+            const total = cols * rows;
+
+            let html = '';
+            for (let i = 0; i < total; i++) {
+                const cover = ALBUM_COVERS[i % ALBUM_COVERS.length];
+                html += '<div class="album-cell" style="background-image:url(' + cover + ')"></div>';
+            }
+            grid.innerHTML = html;
+            grid.style.gridTemplateColumns = 'repeat(' + cols + ', 120px)';
+        }
+
+        initAlbumBackground();
+        window.addEventListener('resize', initAlbumBackground);
+    </script>
 
     <script>
         // =============================================
