@@ -41,10 +41,10 @@
             z-index: 1;
         }
 
-        .page-wrapper { max-width: 720px; margin: 0 auto; position: relative; z-index: 2; }
+        .page-wrapper { max-width: 1024px; margin: 0 auto; position: relative; z-index: 2; }
 
         .header { text-align: center; padding: 30px 0 20px; }
-        .header img { width: 143px; height: auto; margin-bottom: 10px; }
+        .header img { width: 186px; height: auto; margin-bottom: 10px; }
         .header h1 { font-size: 1.4rem; font-weight: bold; color: #fff; }
 
         .section {
@@ -120,7 +120,7 @@
             position: absolute;
             left: 50%; top: 50%; transform: translate(-50%, -50%);
             background: transparent; border: none;
-            color: #fff; font-size: 20px; font-weight: bold;
+            color: #fff; font-size: 24px; font-weight: bold;
             font-family: Arial, Helvetica, sans-serif;
             outline: none; text-align: center; width: 80%;
         }
@@ -136,9 +136,17 @@
             position: absolute;
             left: 50%; top: 50%; transform: translate(-50%, -50%);
             background: transparent; border: none;
-            color: rgba(255,255,255,0.6); font-size: 16px; font-weight: bold;
+            color: rgba(255,255,255,0.6); font-size: 20px; font-weight: bold;
             font-family: Arial, Helvetica, sans-serif;
             outline: none; text-align: center;
+        }
+        .date-bar input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+            transform: scale(1.3);
+        }
+        input[type="date"]::-webkit-datetime-edit {
+            font-size: 20px;
         }
 
         .heure-center {
@@ -355,12 +363,12 @@
                     <span class="toggle-label">Non</span>
                     <div class="toggle-btn" data-field="diffIBM" data-val="non" onclick="toggle(this)"></div>
                 </div>
-                <select class="small-input" id="ibmChaine" onchange="onChaineSelect(this)" style="width:260px;cursor:pointer;">
+                <select class="small-input" id="ibmChaine" onchange="onChaineSelect(this)" style="width:360px;cursor:pointer;">
                     <option value="">Cha&icirc;ne...</option>
                     <option value="https://video.ibm.com/channel/dhWaG6DN5VF">Solutions de march&eacute;s CIC</option>
                     <option value="https://video.ibm.com/channel/6JAvvSqAWfG">Cr&eacute;dit Mutuel Alliance F&eacute;d&eacute;rale</option>
                 </select>
-                <input type="text" class="small-input" id="ibmLien" placeholder="Lien" style="flex:1;" readonly>
+                <input type="text" class="small-input" id="ibmLien" placeholder="Lien" style="flex:0.8;" readonly>
             </div>
             <div class="warning-text">Pour &eacute;viter tout incident de diffusion, le live sur votre cha&icirc;ne ouvre 30 minutes avant le direct, il est indispensable qu'un repr&eacute;sentant de votre service soit d&eacute;di&eacute; au contr&ocirc;le de prise d'antenne 30 minutes avant votre direct sur votre cha&icirc;ne</div>
 
@@ -667,10 +675,10 @@
             lienInput.value = sel.value;
 
             if (sel.value) {
-                // Extraire le channel ID de l'URL
                 const channelId = sel.value.split('/channel/')[1];
                 previewLabel.textContent = sel.options[sel.selectedIndex].text;
-                previewFrame.src = 'https://video.ibm.com/embed/' + channelId;
+                // Format embed IBM Video Watson Media
+                previewFrame.src = 'https://video.ibm.com/embed/recorded/' + channelId + '?autoplay=false';
                 previewWrap.style.display = 'block';
             } else {
                 previewFrame.src = '';
