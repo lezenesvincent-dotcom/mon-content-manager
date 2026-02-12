@@ -517,6 +517,37 @@
         input:focus::placeholder { color: transparent !important; }
         input::placeholder { transition: color 0.15s; }
 
+        .btn-transmettre {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin: 16px auto;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #007AFF, #5856D6);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0,122,255,0.3);
+        }
+        .btn-transmettre:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0,122,255,0.4);
+        }
+        .btn-transmettre:active {
+            transform: translateY(0);
+        }
+        .btn-transmettre svg {
+            width: 22px; height: 22px; fill: #fff;
+        }
+
         .nav-back {
             display: inline-flex; align-items: center; gap: 6px;
             color: rgba(255,255,255,0.4); text-decoration: none;
@@ -540,6 +571,11 @@
         <div class="header">
             <img src="logo-cic.png" alt="CIC">
         </div>
+
+        <button class="btn-transmettre" onclick="transmettreParMail()">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Transmettre la fiche
+        </button>
 
         <!-- EVENEMENT -->
         <div class="section">
@@ -775,6 +811,11 @@
             </div>
         </div>
 
+        <button class="btn-transmettre" onclick="transmettreParMail()">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Transmettre la fiche
+        </button>
+
         <div class="footer">
             <strong>Contact studio : Vincent</strong><br>
             Acc&egrave;s : 61 rue Taitbout &ndash; Rendez-vous au 3e &eacute;tage (le studio est attenant au Work Caf&eacute; D2)<br>
@@ -784,6 +825,77 @@
     </div>
     <div class="toast" id="toast"></div>
     <script>
+        // ============================================
+        // TRANSMETTRE PAR MAIL
+        // ============================================
+        const MAIL_DEST = 'studio.cic@example.com'; // <-- CHANGER ICI
+
+        function transmettreParMail() {
+            const titre = document.getElementById('titreEvent').value || '(sans titre)';
+            const date = document.getElementById('dateEvent').value || '';
+            const entite = document.getElementById('entiteGroupe').value || '';
+            const contact = document.getElementById('contactField').value || '';
+            const heurePrep = document.getElementById('heurePrep').textContent || '';
+            const heureDirect = document.getElementById('heureDirect').textContent || '';
+
+            // Diffusion IBM
+            const diffIBM = document.querySelector('[data-field="diffIBM"].active') ?
+                document.querySelector('[data-field="diffIBM"].active').dataset.val : '';
+            const chaine = document.getElementById('ibmChaine');
+            const chaineText = chaine.options[chaine.selectedIndex] ? chaine.options[chaine.selectedIndex].text : '';
+            const lien = document.getElementById('ibmLien').value || '';
+
+            // Replay, Chat, Q&R
+            const replay = document.querySelector('[data-field="replay"].active') ?
+                document.querySelector('[data-field="replay"].active').dataset.val : '';
+            const chat = document.querySelector('[data-field="chat"].active') ?
+                document.querySelector('[data-field="chat"].active').dataset.val : '';
+
+            // Application
+            let app = '';
+            document.querySelectorAll('[data-field="app"].active').forEach(function(b) { app = b.dataset.val; });
+
+            // Intervenants
+            let intervenants = '';
+            document.querySelectorAll('.intervenants-table tbody tr').forEach(function(tr) {
+                const inputs = tr.querySelectorAll('input');
+                if (inputs.length >= 4 && inputs[0].value) {
+                    intervenants += inputs[0].value + ' ' + inputs[1].value + ' - ' + inputs[2].value + ' (' + inputs[3].value + ')%0D%0A';
+                }
+            });
+
+            // Diffusion Generique
+            const diffGen = document.querySelector('[data-field="diffGen"].active') ?
+                document.querySelector('[data-field="diffGen"].active').dataset.val : '';
+
+            const subject = encodeURIComponent('Fiche Contact Studio - ' + titre + ' - ' + date);
+
+            let body = '';
+            body += '=== FICHE CONTACT STUDIO CIC ===%0D%0A%0D%0A';
+            body += 'Titre : ' + encodeURIComponent(titre) + '%0D%0A';
+            body += 'Date : ' + encodeURIComponent(date) + '%0D%0A';
+            body += 'Entité : ' + encodeURIComponent(entite) + '%0D%0A';
+            body += 'Contact : ' + encodeURIComponent(contact) + '%0D%0A';
+            body += 'Heure préparation : ' + encodeURIComponent(heurePrep) + '%0D%0A';
+            body += 'Heure du direct : ' + encodeURIComponent(heureDirect) + '%0D%0A%0D%0A';
+            body += '--- DIFFUSION IBM ---%0D%0A';
+            body += 'Diffusion IBM : ' + encodeURIComponent(diffIBM) + '%0D%0A';
+            body += 'Chaîne : ' + encodeURIComponent(chaineText) + '%0D%0A';
+            body += 'Lien : ' + encodeURIComponent(lien) + '%0D%0A%0D%0A';
+            body += '--- OPTIONS ---%0D%0A';
+            body += 'Replay : ' + encodeURIComponent(replay) + '%0D%0A';
+            body += 'Chat : ' + encodeURIComponent(chat) + '%0D%0A';
+            body += 'Application : ' + encodeURIComponent(app) + '%0D%0A%0D%0A';
+            body += '--- INTERVENANTS ---%0D%0A';
+            body += intervenants + '%0D%0A';
+            body += '--- GENERIQUE ---%0D%0A';
+            body += 'Diffusion générique : ' + encodeURIComponent(diffGen) + '%0D%0A';
+
+            window.location.href = 'mailto:' + MAIL_DEST + '?subject=' + subject + '&body=' + body;
+
+            showToast('Ouverture du client mail...');
+        }
+
         // ============================================
         // CONFIG
         // ============================================
