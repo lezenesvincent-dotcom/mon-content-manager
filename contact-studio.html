@@ -151,8 +151,13 @@
 
         /* Custom Date Picker */
         .custom-datepicker {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 100%;
+            z-index: 100;
             width: 340px;
-            margin: 8px auto;
+            margin: 4px 0 0 0;
             background: rgba(55, 58, 65, 0.98);
             border-radius: 16px;
             padding: 16px;
@@ -422,6 +427,7 @@
                 <img src="images/img_03_c2282d29d7.png" alt="">
                 <input type="text" id="titreEvent" placeholder="Titre &eacute;v&egrave;nement" spellcheck="false" autofocus>
             </div>
+            <div style="position:relative; z-index:50;">
             <div class="date-bar" onclick="toggleDatePicker()">
                 <img src="images/img_04_5a97c5a8f7.png" alt="">
                 <input type="text" id="dateEvent" readonly placeholder="S&eacute;lectionner une date" style="cursor:pointer;">
@@ -441,6 +447,7 @@
                 <div class="dp-footer">
                     <button class="dp-today" onclick="dpSelectToday()">Aujourd'hui</button>
                 </div>
+            </div>
             </div>
             <div class="picto-field-wide">
                 <img src="images/img_05_fa1416ed3c.png" alt="">
@@ -1024,6 +1031,14 @@
     }
 
     initDatePicker();
+    // Fermer le picker au clic en dehors
+    document.addEventListener('click', function(e) {
+        var dp = document.getElementById('customDatePicker');
+        var db = document.querySelector('.date-bar');
+        if (dp.style.display !== 'none' && !dp.contains(e.target) && !db.contains(e.target)) {
+            dp.style.display = 'none';
+        }
+    });
     </script>
 
     <script>
