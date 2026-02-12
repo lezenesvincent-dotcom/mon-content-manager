@@ -36,7 +36,7 @@
     "titre": "Welcome",
     "date": "2026-02-12",
     "entite": "",
-    "contact": "",
+    "contact": "Huguette",
     "heurePrep": "12:30",
     "heureDirect": "13:00",
     "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
@@ -57,6 +57,6 @@
     "intervenants": [],
     "mode": "studio",
     "id": "1770921880722",
-    "updatedAt": "2026-02-12T18:44:49.079Z"
+    "updatedAt": "2026-02-12T18:44:51.192Z"
   }
 }
