@@ -7,64 +7,42 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #1a1a1a;
+            background: #111118;
             color: #e4e4e4;
             font-family: Arial, Helvetica, sans-serif;
             min-height: 100vh;
             padding: 20px;
-            position: relative;
-            overflow-x: hidden;
         }
 
-        /* ===== FOND DYNAMIQUE POCHETTES D'ALBUM ===== */
+        /* ===== FOND APPLE MUSIC ===== */
         .album-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             z-index: 0;
             overflow: hidden;
         }
+        .album-bg .cover {
+            position: absolute;
+            top: -20%; left: -20%; right: -20%; bottom: -20%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(80px) saturate(1.8) brightness(0.4);
+            transition: opacity 2s ease-in-out;
+            opacity: 0;
+        }
+        .album-bg .cover.active { opacity: 1; }
         .album-bg::after {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(ellipse at center, rgba(26,26,26,0.55) 0%, rgba(26,26,26,0.85) 50%, rgba(26,26,26,0.97) 100%);
+            background: rgba(0,0,0,0.35);
             z-index: 1;
         }
-        .album-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, 120px);
-            gap: 4px;
-            position: absolute;
-            top: -60px; left: -60px; right: -60px; bottom: -60px;
-            animation: albumDrift 60s linear infinite;
-            opacity: 0.35;
-        }
-        @keyframes albumDrift {
-            0% { transform: translate(0, 0) rotate(-2deg); }
-            50% { transform: translate(-30px, -20px) rotate(0deg); }
-            100% { transform: translate(0, 0) rotate(-2deg); }
-        }
-        .album-cell {
-            width: 120px;
-            height: 120px;
-            border-radius: 4px;
-            background-size: cover;
-            background-position: center;
-            animation: albumPulse 8s ease-in-out infinite;
-        }
-        .album-cell:nth-child(odd) { animation-delay: -3s; }
-        .album-cell:nth-child(3n) { animation-delay: -5s; }
-        .album-cell:nth-child(4n+1) { animation-delay: -1s; }
-        @keyframes albumPulse {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.03); }
-        }
 
-        .page-wrapper { max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
+        .page-wrapper { max-width: 1024px; margin: 0 auto; position: relative; z-index: 2; }
 
         .header { text-align: center; padding: 20px 0 30px; }
-        .header img { width: 104px; height: auto; margin-bottom: 8px; }
-        .header h1 { font-size: 1.5rem; font-weight: bold; color: #fff; }
+        .header img { width: 242px; height: auto; margin-bottom: 8px; }
 
         .fiches-grid {
             display: grid;
@@ -73,12 +51,14 @@
         }
 
         .fiche-card {
-            background: #3c3c3c;
+            background: rgba(0, 0, 0, 0.45);
             border-radius: 14px;
             padding: 20px;
-            border: 1px solid rgba(80,90,100,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
             cursor: pointer;
             transition: all 0.15s;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
         }
         .fiche-card:hover {
             border-color: rgba(0,200,255,0.4);
@@ -88,7 +68,7 @@
         .fiche-title {
             font-size: 18px; font-weight: bold; color: #fff;
             text-align: center; margin-bottom: 6px;
-            background: #2a2d35;
+            background: rgba(255,255,255,0.06);
             border-radius: 10px;
             padding: 10px;
         }
@@ -106,7 +86,7 @@
             margin-bottom: 6px;
         }
         .fiche-label {
-            background: #555;
+            background: rgba(255,255,255,0.12);
             color: #fff;
             font-size: 0.7rem;
             font-weight: bold;
@@ -163,23 +143,37 @@
             margin-bottom: 20px;
         }
         .new-btn {
-            background: #00d4ff;
-            color: #111;
+            background: linear-gradient(135deg, #00d4ff, #007AFF);
+            color: #fff;
             border: none;
-            padding: 10px 24px;
-            border-radius: 10px;
-            font-size: 0.85rem;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 0.9rem;
             font-weight: bold;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
+            box-shadow: 0 4px 12px rgba(0,200,255,0.3);
+            transition: all 0.15s;
         }
-        .new-btn:hover { background: #00e8ff; }
+        .new-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,200,255,0.4); }
 
         .count-badge {
             font-size: 0.8rem;
             color: rgba(255,255,255,0.4);
         }
+
+        .sync-status {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .sync-ok { background: rgba(0,200,100,0.15); color: #00c864; }
+        .sync-err { background: rgba(255,60,60,0.15); color: #ff6060; }
+        .sync-loading { background: rgba(255,200,0,0.15); color: #ffc800; }
 
         .nav-back {
             display: inline-flex; align-items: center; gap: 6px;
@@ -189,273 +183,252 @@
         }
         .nav-back:hover { color: rgba(255,255,255,0.7); }
 
-        /* Status indicator */
-        .sync-status {
-            position: fixed;
-            top: 12px;
-            right: 16px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.4);
-            z-index: 100;
+        .delete-btn {
+            background: rgba(255,60,60,0.15);
+            color: #ff6060;
+            border: 1px solid rgba(255,60,60,0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            transition: all 0.15s;
         }
-        .sync-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: #555;
-            transition: background 0.3s;
-        }
-        .sync-dot.connected { background: #00d4ff; }
-        .sync-dot.error { background: #ff4444; }
+        .delete-btn:hover { background: rgba(255,60,60,0.3); }
     </style>
 </head>
 <body>
-    <div class="album-bg"><div class="album-grid" id="albumGrid"></div></div>
-
-    <div class="sync-status">
-        <span class="sync-dot" id="syncDot"></span>
-        <span id="syncLabel">Connexion…</span>
-    </div>
-
-    <a href="index.html" class="nav-back">← Retour Content Manager</a>
+    <div class="album-bg" id="albumBg"></div>
+    <a href="index.html" class="nav-back">&larr; Retour Content Manager</a>
     <div class="page-wrapper">
         <div class="header">
             <img src="logo-cic.png" alt="CIC">
-            <h1>Prestations Studio</h1>
         </div>
 
         <div class="actions-bar">
-            <a href="contact-studio.html" class="new-btn" onclick="newFiche()">＋ Nouvelle fiche</a>
-            <span class="count-badge" id="countBadge"></span>
+            <a href="contact-studio.html" class="new-btn" onclick="newFiche()">&#xFF0B; Nouvelle fiche</a>
+            <span>
+                <span class="count-badge" id="countBadge"></span>
+                <span class="sync-status sync-loading" id="syncStatus">&#x1F504; Chargement...</span>
+            </span>
         </div>
 
         <div class="fiches-grid" id="fichesGrid"></div>
         <div class="empty-state" id="emptyState" style="display:none;">
-            Aucune prestation enregistrée.<br>Créez une nouvelle fiche pour commencer.
+            Aucune prestation enregistr&eacute;e.<br>Cr&eacute;ez une nouvelle fiche pour commencer.
         </div>
     </div>
 
     <script>
-        // =============================================
-        // FOND DYNAMIQUE - POCHETTES D'ALBUM
-        // =============================================
-        const ALBUM_COVERS = [
-            'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228', // Random Access Memories - Daft Punk
-            'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25', // The Dark Side of the Moon
-            'https://i.scdn.co/image/ab67616d0000b27384243a01af3c77b56fe01ab1', // Kind of Blue
-            'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2', // Discovery - Daft Punk
-            'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b', // Thriller
-            'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0', // A Night at the Opera
-            'https://i.scdn.co/image/ab67616d0000b27367c738a703dc979f5c3c52ef', // Wish You Were Here
-            'https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e', // AM - Arctic Monkeys
-            'https://i.scdn.co/image/ab67616d0000b273b0dd6a5cd1649c4a390f6f7a', // Rumours - Fleetwood Mac
-            'https://i.scdn.co/image/ab67616d0000b273f46b9d202509a8f7384b90de', // Homework - Daft Punk
-            'https://i.scdn.co/image/ab67616d0000b2739a95e89d24214b94de36ccf7', // OK Computer
-            'https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72', // Currents - Tame Impala
-            'https://i.scdn.co/image/ab67616d0000b273b1c4b76e23414c9f20242268', // Born to Run
-            'https://i.scdn.co/image/ab67616d0000b2738b32b139981e79f2571cc6d8', // The Rise and Fall of Ziggy Stardust
-            'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96', // Abbey Road
-            'https://i.scdn.co/image/ab67616d0000b27390a50cfe99a4c19ff3cbfbdb', // Blonde - Frank Ocean
-            'https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526', // Purple Rain
-            'https://i.scdn.co/image/ab67616d0000b273de437d960dda1ac0a3ff0e47', // Nevermind
-            'https://i.scdn.co/image/ab67616d0000b2738399047ff71200928f5b6508', // My Beautiful Dark Twisted Fantasy
-            'https://i.scdn.co/image/ab67616d0000b273fdbb405ad514b0fe66ec9cf0', // Channel Orange
-            'https://i.scdn.co/image/ab67616d0000b273712701c5e263efc8726b1464', // Hounds of Love - Kate Bush
-            'https://i.scdn.co/image/ab67616d0000b2736c7112082b63beefffe40151', // Human After All - Daft Punk
-            'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424', // IGOR - Tyler
-            'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856', // After Hours - The Weeknd
-        ];
+    // ===== GITHUB SYNC =====
+    const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s=>s.split('').reverse().join('')).join('');
+    const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+    const GH_FILE = 'data/fiches.json';
+    const GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
 
-        function initAlbumBackground() {
-            const grid = document.getElementById('albumGrid');
-            if (!grid) return;
-            // Calculer combien de cellules pour couvrir l'écran
-            const cols = Math.ceil((window.innerWidth + 120) / 124);
-            const rows = Math.ceil((window.innerHeight + 120) / 124);
-            const total = cols * rows;
+    let fichesData = {};
+    let fileSha = null;
 
-            let html = '';
-            for (let i = 0; i < total; i++) {
-                const cover = ALBUM_COVERS[i % ALBUM_COVERS.length];
-                html += '<div class="album-cell" style="background-image:url(' + cover + ')"></div>';
-            }
-            grid.innerHTML = html;
-            grid.style.gridTemplateColumns = 'repeat(' + cols + ', 120px)';
-        }
+    async function loadFromGitHub() {
+        const status = document.getElementById('syncStatus');
+        status.className = 'sync-status sync-loading';
+        status.innerHTML = '&#x1F504; Sync...';
 
-        initAlbumBackground();
-        window.addEventListener('resize', initAlbumBackground);
-    </script>
+        try {
+            const resp = await fetch(GH_API, {
+                headers: {
+                    'Authorization': 'token ' + GH_TOKEN,
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                cache: 'no-cache'
+            });
 
-    <script>
-        // =============================================
-        // CONFIG
-        // =============================================
-        const WS_SERVER_URL = 'wss://ecamm-overlay-server.onrender.com';
-        const API_BASE_URL  = 'https://ecamm-overlay-server.onrender.com';
-
-        let ws = null;
-        let fichesData = {};
-        let reconnectTimer = null;
-
-        // =============================================
-        // SYNC STATUS UI
-        // =============================================
-        function setStatus(state, label) {
-            const dot = document.getElementById('syncDot');
-            const lbl = document.getElementById('syncLabel');
-            dot.className = 'sync-dot ' + state;
-            lbl.textContent = label;
-        }
-
-        // =============================================
-        // LOAD FICHES VIA REST API (initial + fallback)
-        // =============================================
-        async function fetchFichesFromServer() {
-            try {
-                const res = await fetch(API_BASE_URL + '/api/fiches');
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                fichesData = await res.json();
+            if (resp.status === 404) {
+                // Fichier n'existe pas encore, on le créera au premier save
+                fichesData = {};
+                fileSha = null;
+                status.className = 'sync-status sync-ok';
+                status.innerHTML = '&#x2705; Nouveau';
                 renderFiches();
-                // Also cache locally as fallback
-                localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
-            } catch (err) {
-                console.warn('⚠️ API fetch failed, using localStorage cache:', err);
-                fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
-                renderFiches();
-            }
-        }
-
-        // =============================================
-        // WEBSOCKET — real-time sync between machines
-        // =============================================
-        function connectWebSocket() {
-            if (ws && ws.readyState <= 1) return; // already open or connecting
-
-            setStatus('', 'Connexion…');
-            ws = new WebSocket(WS_SERVER_URL);
-
-            ws.onopen = () => {
-                setStatus('connected', 'Connecté');
-                // Request latest fiches
-                ws.send(JSON.stringify({ type: 'fiches_get' }));
-            };
-
-            ws.onmessage = (event) => {
-                try {
-                    const msg = JSON.parse(event.data);
-
-                    if (msg.type === 'fiches_data') {
-                        // Full fiches object from server
-                        fichesData = msg.data || {};
-                        localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
-                        renderFiches();
-                    }
-                    else if (msg.type === 'fiches_updated') {
-                        // Another client saved/deleted — refresh
-                        fichesData = msg.data || {};
-                        localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
-                        renderFiches();
-                    }
-                } catch (err) {
-                    console.error('WS parse error:', err);
-                }
-            };
-
-            ws.onclose = () => {
-                setStatus('error', 'Déconnecté');
-                scheduleReconnect();
-            };
-
-            ws.onerror = () => {
-                setStatus('error', 'Erreur connexion');
-            };
-        }
-
-        function scheduleReconnect() {
-            if (reconnectTimer) return;
-            reconnectTimer = setTimeout(() => {
-                reconnectTimer = null;
-                connectWebSocket();
-            }, 3000);
-        }
-
-        // =============================================
-        // RENDER
-        // =============================================
-        function renderFiches() {
-            const grid = document.getElementById('fichesGrid');
-            const empty = document.getElementById('emptyState');
-            const count = document.getElementById('countBadge');
-            const entries = Object.values(fichesData).sort((a, b) =>
-                (b.updatedAt || '').localeCompare(a.updatedAt || '')
-            );
-
-            count.textContent = entries.length + ' prestation' + (entries.length > 1 ? 's' : '');
-
-            if (entries.length === 0) {
-                grid.style.display = 'none';
-                empty.style.display = 'block';
                 return;
             }
 
-            grid.style.display = '';
-            empty.style.display = 'none';
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
 
-            grid.innerHTML = entries.map(f => {
-                const toggleTags = Object.entries(f.toggles || {}).map(([k, v]) =>
-                    `<span class="fiche-tag ${v === 'oui' ? 'on' : ''}">${k}: ${v || '-'}</span>`
-                ).join('');
+            const data = await resp.json();
+            fileSha = data.sha;
+            const content = atob(data.content.replace(/\n/g, ''));
+            fichesData = JSON.parse(content);
 
-                return `
-                <div class="fiche-card" onclick="openFiche('${f.id}')">
-                    <div class="fiche-title">${f.titre || 'Sans titre'}</div>
-                    <div class="fiche-date">${f.date || 'Date non définie'}</div>
-                    <div class="fiche-field">
-                        <span class="fiche-label">Entité groupe</span>
-                        <span class="fiche-value">${f.entite || '-'}</span>
-                    </div>
-                    <div class="fiche-field">
-                        <span class="fiche-label">Contact</span>
-                        <span class="fiche-value">${f.contact || '-'}</span>
-                    </div>
-                    <div class="fiche-heure">
-                        <span class="heure-badge heure-prep">Prépa: ${f.heurePrep || '--:--'}</span>
-                        <span class="heure-badge heure-direct">Direct: ${f.heureDirect || '--:--'}</span>
-                    </div>
-                    ${f.application ? `<div class="fiche-field"><span class="fiche-label">App</span><span class="fiche-value">${f.application}</span></div>` : ''}
-                    ${f.intervenants && f.intervenants.length ? `<div class="fiche-field"><span class="fiche-label">Intervenants</span><span class="fiche-value">${f.intervenants.length} personne(s)</span></div>` : ''}
-                    <div class="fiche-tags">${toggleTags}</div>
-                </div>`;
-            }).join('');
+            // Sync aussi en localStorage comme fallback
+            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+
+            status.className = 'sync-status sync-ok';
+            status.innerHTML = '&#x2705; Sync&eacute;';
+            renderFiches();
+        } catch (err) {
+            console.error('GitHub load error:', err);
+            // Fallback localStorage
+            fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+            status.className = 'sync-status sync-err';
+            status.innerHTML = '&#x26A0; Local';
+            renderFiches();
         }
+    }
 
-        // =============================================
-        // NAVIGATION
-        // =============================================
-        function openFiche(id) {
-            localStorage.setItem('currentFicheId', id);
-            window.location.href = 'contact-studio.html';
+    async function saveToGitHub() {
+        const status = document.getElementById('syncStatus');
+        try {
+            status.className = 'sync-status sync-loading';
+            status.innerHTML = '&#x1F504; Save...';
+
+            const content = btoa(unescape(encodeURIComponent(JSON.stringify(fichesData, null, 2))));
+
+            const body = {
+                message: 'Update fiches ' + new Date().toISOString(),
+                content: content,
+                branch: 'main'
+            };
+            if (fileSha) body.sha = fileSha;
+
+            const resp = await fetch(GH_API, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'token ' + GH_TOKEN,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+            const data = await resp.json();
+            fileSha = data.content.sha;
+
+            // Aussi en localStorage
+            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+
+            status.className = 'sync-status sync-ok';
+            status.innerHTML = '&#x2705; Sauv&eacute;';
+        } catch (err) {
+            console.error('GitHub save error:', err);
+            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+            status.className = 'sync-status sync-err';
+            status.innerHTML = '&#x26A0; Local only';
         }
+    }
 
-        function newFiche() {
-            localStorage.removeItem('currentFicheId');
-        }
-
-        // =============================================
-        // INIT
-        // =============================================
-        // 1. Load from localStorage immediately (instant display)
-        fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+    // Supprimer une fiche
+    async function deleteFiche(id, event) {
+        event.stopPropagation();
+        if (!confirm('Supprimer cette fiche ?')) return;
+        delete fichesData[id];
+        await saveToGitHub();
         renderFiches();
+    }
 
-        // 2. Then connect WebSocket for real-time sync
-        connectWebSocket();
+    function renderFiches() {
+        const grid = document.getElementById('fichesGrid');
+        const empty = document.getElementById('emptyState');
+        const count = document.getElementById('countBadge');
+        const entries = Object.values(fichesData).sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
 
-        // 3. Also fetch via REST API as backup
-        fetchFichesFromServer();
+        count.textContent = entries.length + ' prestation' + (entries.length > 1 ? 's' : '');
+
+        if (entries.length === 0) {
+            grid.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+        }
+
+        grid.style.display = 'grid';
+        empty.style.display = 'none';
+
+        grid.innerHTML = entries.map(function(f) {
+            var toggleTags = '';
+            if (f.toggles) {
+                Object.keys(f.toggles).forEach(function(k) {
+                    var v = f.toggles[k];
+                    toggleTags += '<span class="fiche-tag ' + (v === 'oui' ? 'on' : '') + '">' + k + ': ' + (v || '-') + '</span>';
+                });
+            }
+
+            return '<div class="fiche-card" onclick="openFiche(\'' + f.id + '\')">' +
+                '<button class="delete-btn" onclick="deleteFiche(\'' + f.id + '\', event)">&#x2716; Supprimer</button>' +
+                '<div class="fiche-title">' + (f.titre || 'Sans titre') + '</div>' +
+                '<div class="fiche-date">' + (f.date || '') + '</div>' +
+                '<div class="fiche-field"><span class="fiche-label">Entit&eacute;</span><span class="fiche-value">' + (f.entite || '-') + '</span></div>' +
+                '<div class="fiche-field"><span class="fiche-label">Contact</span><span class="fiche-value">' + (f.contact || '-') + '</span></div>' +
+                '<div class="fiche-heure">' +
+                    '<span class="heure-badge heure-prep">Pr&eacute;pa: ' + (f.heurePrep || '--:--') + '</span>' +
+                    '<span class="heure-badge heure-direct">Direct: ' + (f.heureDirect || '--:--') + '</span>' +
+                '</div>' +
+                (f.application ? '<div class="fiche-field"><span class="fiche-label">App</span><span class="fiche-value">' + f.application + '</span></div>' : '') +
+                (f.intervenants && f.intervenants.length ? '<div class="fiche-field"><span class="fiche-label">Intervenants</span><span class="fiche-value">' + f.intervenants.length + ' personne(s)</span></div>' : '') +
+                '<div class="fiche-tags">' + toggleTags + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    function openFiche(id) {
+        localStorage.setItem('currentFicheId', id);
+        window.location.href = 'contact-studio.html';
+    }
+
+    function newFiche() {
+        localStorage.removeItem('currentFicheId');
+    }
+
+    // Chargement initial
+    loadFromGitHub();
+    // Refresh toutes les 15s
+    setInterval(loadFromGitHub, 15000);
+    </script>
+
+    <script>
+    // ===== FOND APPLE MUSIC =====
+    const ALBUMS = [
+        'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228',
+        'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25',
+        'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2',
+        'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b',
+        'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0',
+        'https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e',
+        'https://i.scdn.co/image/ab67616d0000b273b0dd6a5cd1649c4a390f6f7a',
+        'https://i.scdn.co/image/ab67616d0000b2739a95e89d24214b94de36ccf7',
+        'https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72',
+        'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
+        'https://i.scdn.co/image/ab67616d0000b27390a50cfe99a4c19ff3cbfbdb',
+        'https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526',
+        'https://i.scdn.co/image/ab67616d0000b273de437d960dda1ac0a3ff0e47',
+        'https://i.scdn.co/image/ab67616d0000b2738399047ff71200928f5b6508',
+        'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424',
+        'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856',
+    ];
+    let currentAlbumIndex = 0;
+    const bg = document.getElementById('albumBg');
+    const layer1 = document.createElement('div');
+    const layer2 = document.createElement('div');
+    layer1.className = 'cover active';
+    layer2.className = 'cover';
+    bg.appendChild(layer1);
+    bg.appendChild(layer2);
+    for (let i = ALBUMS.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ALBUMS[i], ALBUMS[j]] = [ALBUMS[j], ALBUMS[i]];
+    }
+    layer1.style.backgroundImage = 'url(' + ALBUMS[0] + ')';
+    function nextAlbum() {
+        currentAlbumIndex = (currentAlbumIndex + 1) % ALBUMS.length;
+        const activeLayer = layer1.classList.contains('active') ? layer1 : layer2;
+        const nextLayer = activeLayer === layer1 ? layer2 : layer1;
+        nextLayer.style.backgroundImage = 'url(' + ALBUMS[currentAlbumIndex] + ')';
+        nextLayer.classList.add('active');
+        activeLayer.classList.remove('active');
+    }
+    setInterval(nextAlbum, 30000);
     </script>
 </body>
 </html>

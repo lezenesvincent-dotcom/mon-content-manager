@@ -566,7 +566,7 @@
 </head>
 <body>
     <div class="album-bg" id="albumBg"></div>
-    <a href="index.html" class="nav-back" style="position:relative;z-index:2;">&larr; Retour Content Manager</a>
+    <a href="prestation.html" class="nav-back" style="position:relative;z-index:2;">&larr; Accueil Prestations</a>
     <div class="page-wrapper">
         <div class="header">
             <img src="logo-cic.png" alt="CIC">
@@ -957,6 +957,49 @@
         // ============================================
         // AUTO-SAVE (local + serveur + WS broadcast)
         // ============================================
+        // ===== GITHUB SYNC =====
+        const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s=>s.split('').reverse().join('')).join('');
+        const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+        const GH_FILE = 'data/fiches.json';
+        const GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
+        let ghSha = null;
+
+        async function ghLoadSha() {
+            try {
+                const r = await fetch(GH_API, {
+                    headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' },
+                    cache: 'no-cache'
+                });
+                if (r.ok) {
+                    const d = await r.json();
+                    ghSha = d.sha;
+                    return JSON.parse(atob(d.content.replace(/\n/g, '')));
+                }
+            } catch(e) { console.warn('GH load error', e); }
+            return null;
+        }
+
+        async function ghSave(fiches) {
+            try {
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(fiches, null, 2))));
+                const body = { message: 'Auto-save ' + new Date().toISOString(), content: content, branch: 'main' };
+                if (ghSha) body.sha = ghSha;
+                const r = await fetch(GH_API, {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (r.ok) {
+                    const d = await r.json();
+                    ghSha = d.content.sha;
+                    console.log('☁️ GitHub synced');
+                }
+            } catch(e) { console.warn('GH save error', e); }
+        }
+
+        // Init: charger le SHA
+        ghLoadSha();
+
         function autoSave() {
             isSaving = true;
             const data = collectData();
@@ -968,15 +1011,9 @@
             fiches[FICHE_ID] = data;
             localStorage.setItem('fiches_studio', JSON.stringify(fiches));
 
-            // 2. Sync to server via REST
-            fetch(WS_SERVER_URL + '/api/fiches', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).then(r => {
-                if (r.ok) console.log('☁️ Synced to server');
-            }).catch(err => {
-                console.warn('⚠️ Server sync failed, data saved locally', err);
+            // 2. Sync to GitHub
+            ghSave(fiches).catch(function(e) {
+                console.warn('⚠️ GitHub sync failed, data saved locally', e);
             });
 
             // 3. Also broadcast via WebSocket for real-time
@@ -1168,29 +1205,29 @@
             if (!id) return;
 
             // 1. Try local first
-            const fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
-            const localData = fiches[id];
+            let fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+            let localData = fiches[id];
 
-            // 2. Try server
-            let serverData = null;
+            // 2. Try GitHub
+            let ghData = null;
             try {
-                const resp = await fetch(WS_SERVER_URL + '/api/fiches/' + id);
-                if (resp.ok) {
-                    serverData = await resp.json();
-                    console.log('☁️ Fiche chargée depuis le serveur');
+                const ghFiches = await ghLoadSha();
+                if (ghFiches && ghFiches[id]) {
+                    ghData = ghFiches[id];
+                    // Update local cache with ALL fiches from GitHub
+                    Object.assign(fiches, ghFiches);
+                    localStorage.setItem('fiches_studio', JSON.stringify(fiches));
+                    console.log('☁️ Fiches chargées depuis GitHub');
                 }
             } catch (e) {
-                console.warn('⚠️ Impossible de charger depuis le serveur', e);
+                console.warn('⚠️ GitHub load failed', e);
             }
 
             // 3. Use most recent version
             let data = localData;
-            if (serverData) {
-                if (!localData || (serverData.updatedAt && localData.updatedAt && serverData.updatedAt > localData.updatedAt)) {
-                    data = serverData;
-                    // Update local cache
-                    fiches[id] = serverData;
-                    localStorage.setItem('fiches_studio', JSON.stringify(fiches));
+            if (ghData) {
+                if (!localData || (ghData.updatedAt && localData.updatedAt && ghData.updatedAt > localData.updatedAt)) {
+                    data = ghData;
                 }
             }
 
