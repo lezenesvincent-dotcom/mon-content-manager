@@ -987,7 +987,9 @@
                 if (r.ok) {
                     const d = await r.json();
                     ghSha = d.sha;
-                    return JSON.parse(atob(d.content.replace(/\n/g, '')));
+                    const raw = atob(d.content.replace(/\n/g, ''));
+                    const utf8 = decodeURIComponent(escape(raw));
+                    return JSON.parse(utf8);
                 }
             } catch(e) { console.warn('GH load error', e); }
             return null;
@@ -1254,7 +1256,10 @@
         // ============================================
         // INIT
         // ============================================
-        loadData();
+        (async function() {
+            await ghLoadSha();
+            await loadData();
+        })();
         connectWebSocket();
     </script>
     <script>
