@@ -7,16 +7,63 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #1a1a1a;
+            background: #111118;
             color: #e4e4e4;
             font-family: Arial, Helvetica, sans-serif;
             min-height: 100vh;
             padding: 20px 20px 60px;
+            position: relative;
+            overflow-x: hidden;
         }
-        .page-wrapper { max-width: 820px; margin: 0 auto; }
+
+        /* ===== FOND DYNAMIQUE POCHETTES D'ALBUM ===== */
+        .album-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .album-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(17,17,24,0.45) 0%, rgba(17,17,24,0.8) 40%, rgba(17,17,24,0.96) 100%);
+            z-index: 1;
+        }
+        .album-grid {
+            display: grid;
+            gap: 3px;
+            position: absolute;
+            top: -60px; left: -60px; right: -60px; bottom: -60px;
+            animation: albumDrift 80s linear infinite;
+            opacity: 0.28;
+        }
+        @keyframes albumDrift {
+            0% { transform: translate(0, 0) rotate(-1.5deg) scale(1.02); }
+            25% { transform: translate(-15px, -10px) rotate(-0.5deg) scale(1.01); }
+            50% { transform: translate(-25px, -18px) rotate(0.5deg) scale(1.02); }
+            75% { transform: translate(-10px, -8px) rotate(-0.5deg) scale(1.01); }
+            100% { transform: translate(0, 0) rotate(-1.5deg) scale(1.02); }
+        }
+        .album-cell {
+            width: 110px; height: 110px;
+            border-radius: 6px;
+            background-size: cover;
+            background-position: center;
+            animation: albumPulse 12s ease-in-out infinite;
+        }
+        .album-cell:nth-child(odd) { animation-delay: -4s; }
+        .album-cell:nth-child(3n) { animation-delay: -7s; }
+        .album-cell:nth-child(5n+2) { animation-delay: -2s; }
+        @keyframes albumPulse {
+            0%, 100% { opacity: 0.5; filter: brightness(0.7); }
+            50% { opacity: 1; filter: brightness(1.1); }
+        }
+
+        .page-wrapper { max-width: 820px; margin: 0 auto; position: relative; z-index: 2; }
 
         .header { text-align: center; padding: 30px 0 20px; }
-        .header img { width: 110px; height: auto; margin-bottom: 10px; }
+        .header img { width: 143px; height: auto; margin-bottom: 10px; }
         .header h1 { font-size: 1.4rem; font-weight: bold; color: #fff; }
 
         .section {
@@ -146,6 +193,18 @@
         .label-img { height: 36px; width: auto; object-fit: contain; }
 
         .small-input::placeholder { color: rgba(255,255,255,0.5); font-weight: bold; }
+        .small-input select, select.small-input {
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px;
+        }
+        select.small-input option {
+            background: #1c1f24;
+            color: #e4e4e4;
+        }
         .small-input {
             background: rgba(30,32,40,0.8);
             border: 1px solid rgba(60,70,90,0.3);
@@ -266,11 +325,12 @@
     </style>
 </head>
 <body>
-    <a href="index.html" class="nav-back">&larr; Retour Content Manager</a>
+    <div class="album-bg"><div class="album-grid" id="albumGrid"></div></div>
+    <a href="index.html" class="nav-back" style="position:relative;z-index:2;">&larr; Retour Content Manager</a>
     <div class="page-wrapper">
         <div class="header">
             <img src="logo-cic.png" alt="CIC">
-            <h1>Studio CIC - Paris</h1>
+        </div>
         </div>
 
         <!-- EVENEMENT -->
@@ -312,8 +372,12 @@
                     <span class="toggle-label">Non</span>
                     <div class="toggle-btn" data-field="diffIBM" data-val="non" onclick="toggle(this)"></div>
                 </div>
-                <input type="text" class="small-input" id="ibmChaine" placeholder="Cha&icirc;ne" style="width:120px;">
-                <input type="text" class="small-input" id="ibmLien" placeholder="Lien" style="flex:1;">
+                <select class="small-input" id="ibmChaine" onchange="onChaineSelect(this)" style="width:260px;cursor:pointer;">
+                    <option value="">Cha&icirc;ne...</option>
+                    <option value="https://video.ibm.com/channel/dhWaG6DN5VF">Solutions de march&eacute;s CIC</option>
+                    <option value="https://video.ibm.com/channel/6JAvvSqAWfG">Cr&eacute;dit Mutuel Alliance F&eacute;d&eacute;rale</option>
+                </select>
+                <input type="text" class="small-input" id="ibmLien" placeholder="Lien" style="flex:1;" readonly>
             </div>
             <div class="warning-text">Pour &eacute;viter tout incident de diffusion, le live sur votre cha&icirc;ne ouvre 30 minutes avant le direct, il est indispensable qu'un repr&eacute;sentant de votre service soit d&eacute;di&eacute; au contr&ocirc;le de prise d'antenne 30 minutes avant votre direct sur votre cha&icirc;ne</div>
             <div class="sep"></div>
@@ -603,6 +667,11 @@
         // ============================================
         // UI HANDLERS
         // ============================================
+        function onChaineSelect(sel) {
+            const lienInput = document.getElementById('ibmLien');
+            lienInput.value = sel.value;
+        }
+
         function toggle(el) {
             const f = el.dataset.field;
             document.querySelectorAll('.toggle-btn[data-field="'+f+'"]').forEach(b => b.classList.remove('active'));
@@ -742,6 +811,49 @@
         // ============================================
         loadData();
         connectWebSocket();
+    </script>
+    <script>
+    // ===== FOND DYNAMIQUE POCHETTES D'ALBUM =====
+    const ALBUMS = [
+        'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228',
+        'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25',
+        'https://i.scdn.co/image/ab67616d0000b27384243a01af3c77b56fe01ab1',
+        'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2',
+        'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b',
+        'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0',
+        'https://i.scdn.co/image/ab67616d0000b27367c738a703dc979f5c3c52ef',
+        'https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e',
+        'https://i.scdn.co/image/ab67616d0000b273b0dd6a5cd1649c4a390f6f7a',
+        'https://i.scdn.co/image/ab67616d0000b273f46b9d202509a8f7384b90de',
+        'https://i.scdn.co/image/ab67616d0000b2739a95e89d24214b94de36ccf7',
+        'https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72',
+        'https://i.scdn.co/image/ab67616d0000b273b1c4b76e23414c9f20242268',
+        'https://i.scdn.co/image/ab67616d0000b2738b32b139981e79f2571cc6d8',
+        'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
+        'https://i.scdn.co/image/ab67616d0000b27390a50cfe99a4c19ff3cbfbdb',
+        'https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526',
+        'https://i.scdn.co/image/ab67616d0000b273de437d960dda1ac0a3ff0e47',
+        'https://i.scdn.co/image/ab67616d0000b2738399047ff71200928f5b6508',
+        'https://i.scdn.co/image/ab67616d0000b273fdbb405ad514b0fe66ec9cf0',
+        'https://i.scdn.co/image/ab67616d0000b273712701c5e263efc8726b1464',
+        'https://i.scdn.co/image/ab67616d0000b2736c7112082b63beefffe40151',
+        'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424',
+        'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856',
+    ];
+    function initAlbumBg() {
+        const g = document.getElementById('albumGrid');
+        if (!g) return;
+        const cols = Math.ceil((window.innerWidth + 120) / 113);
+        const rows = Math.ceil((window.innerHeight + 120) / 113);
+        let h = '';
+        for (let i = 0; i < cols * rows; i++) {
+            h += '<div class="album-cell" style="background-image:url(' + ALBUMS[i % ALBUMS.length] + ')"></div>';
+        }
+        g.innerHTML = h;
+        g.style.gridTemplateColumns = 'repeat(' + cols + ', 110px)';
+    }
+    initAlbumBg();
+    window.addEventListener('resize', initAlbumBg);
     </script>
 </body>
 </html>
