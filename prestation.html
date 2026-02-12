@@ -214,7 +214,7 @@
         </div>
 
         <div class="actions-bar">
-            <a href="contact-studio.html" class="new-btn" onclick="newFiche()">&#xFF0B; Nouvelle fiche</a>
+            <a href="#" class="new-btn" onclick="newFiche(); return false;">&#xFF0B; Nouvelle fiche</a>
             <span>
                 <span class="count-badge" id="countBadge"></span>
                 <span class="sync-status sync-loading" id="syncStatus">&#x1F504; Chargement...</span>
@@ -393,7 +393,9 @@
     }
 
     function newFiche() {
+        const newId = Date.now().toString();
         localStorage.removeItem('currentFicheId');
+        window.location.href = 'contact-studio.html?fiche=' + newId;
     }
 
     // Chargement initial

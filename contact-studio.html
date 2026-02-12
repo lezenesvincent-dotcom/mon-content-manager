@@ -1414,35 +1414,29 @@
             const id = FICHE_ID;
             console.log('📥 loadData: loading fiche', id);
 
-            // 1. Try GitHub first
-            let data = null;
-            try {
-                const ghFiches = await ghLoadSha();
-                if (ghFiches) {
-                    localStorage.setItem('fiches_studio', JSON.stringify(ghFiches));
-                    if (ghFiches[id]) {
-                        data = ghFiches[id];
-                        console.log('☁️ Fiche trouvée sur GitHub:', data.titre);
-                    } else {
-                        console.log('📭 Fiche', id, 'pas trouvée sur GitHub. Fiches dispo:', Object.keys(ghFiches));
-                    }
+            // 1. Try GitHub first (ghSha already loaded)
+            let ghFiches = await ghLoadSha();
+            if (ghFiches) {
+                localStorage.setItem('fiches_studio', JSON.stringify(ghFiches));
+                if (ghFiches[id]) {
+                    applyData(ghFiches[id]);
+                    console.log('☁️ Fiche trouvée sur GitHub:', ghFiches[id].titre);
+                    showToast('✅ Fiche chargée');
+                    return;
                 }
-            } catch (e) {
-                console.warn('⚠️ GitHub load failed', e);
             }
 
             // 2. Fallback local
-            if (!data) {
-                const fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
-                data = fiches[id];
-                if (data) console.log('💾 Fiche trouvée en local:', data.titre);
-                else console.log('📭 Fiche', id, 'introuvable nulle part');
+            const localFiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+            if (localFiches[id]) {
+                applyData(localFiches[id]);
+                console.log('💾 Fiche trouvée en local:', localFiches[id].titre);
+                showToast('✅ Fiche chargée');
+                return;
             }
 
-            if (data) {
-                applyData(data);
-                showToast('✅ Fiche chargée');
-            }
+            // 3. Nouvelle fiche — c'est normal, rien à charger
+            console.log('🆕 Nouvelle fiche', id, '— formulaire vierge');
         }
 
         // ============================================
@@ -1450,7 +1444,6 @@
         // ============================================
         window._isLoading = true;
         (async function() {
-            await ghLoadSha();
             await loadData();
             window._isLoading = false;
             console.log('✅ Init complete, auto-save enabled');
