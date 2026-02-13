@@ -313,6 +313,10 @@
         return dur + ' min';
     }
     function escHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function fixEnc(str) {
+        if (!str) return str;
+        try { return decodeURIComponent(escape(str)); } catch(e) { return str; }
+    }
 
     function getEventImage(subject) {
         const s = (subject || '').toLowerCase();
@@ -364,73 +368,125 @@
 
     function renderEvents() {
         if (!calendarData || !calendarData.salle) return;
+
+        // Grouper par jour pour gérer le chevauchement
+        var dayEvents = {};
         calendarData.salle.forEach(function(ev) {
             if (!ev.start) return;
+            // Fix encodage
+            ev.subject = fixEnc(ev.subject);
+            ev.location = fixEnc(ev.location);
+            ev.organizer = fixEnc(ev.organizer);
+
             const start = new Date(ev.start), end = new Date(ev.end||ev.start);
             const diffDays = Math.round((start - currentMonday)/(1000*60*60*24));
             if (diffDays < 0 || diffDays >= 5) return;
-            const col = document.getElementById('dayCol'+diffDays);
+
+            if (!dayEvents[diffDays]) dayEvents[diffDays] = [];
+            dayEvents[diffDays].push(ev);
+        });
+
+        Object.keys(dayEvents).forEach(function(dayIdx) {
+            var evts = dayEvents[dayIdx];
+            var col = document.getElementById('dayCol'+dayIdx);
             if (!col) return;
 
-            const sH=start.getUTCHours()+1, sM=start.getUTCMinutes(), eH=end.getUTCHours()+1, eM=end.getUTCMinutes();
-            const startMin=sH*60+sM, endMin=eH*60+eM;
-            const topPx = (startMin-START_HOUR*60)*(HOUR_PX/60);
-            const heightPx = Math.max((endMin-startMin)*(HOUR_PX/60), 28);
-            if (topPx < 0) return;
+            // Calculer les colonnes de chevauchement
+            var placed = [];
+            evts.forEach(function(ev) {
+                var start = new Date(ev.start), end = new Date(ev.end||ev.start);
+                var sH=start.getUTCHours()+1, sM=start.getUTCMinutes(), eH=end.getUTCHours()+1, eM=end.getUTCMinutes();
+                var startMin=sH*60+sM, endMin=eH*60+eM;
 
-            const timeStr = String(sH).padStart(2,'0')+':'+String(sM).padStart(2,'0')+' - '+String(eH).padStart(2,'0')+':'+String(eM).padStart(2,'0');
-            const durStr = getDuration(startMin, endMin);
-            const eventImg = getEventImage(ev.subject);
+                // Trouver les events qui chevauchent
+                var overlapCol = 0;
+                var maxCol = 0;
+                var overlaps = [];
+                placed.forEach(function(p) {
+                    if (startMin < p.endMin && endMin > p.startMin) {
+                        overlaps.push(p);
+                        if (p.col >= overlapCol) overlapCol = p.col + 1;
+                        if (p.maxCol > maxCol) maxCol = p.maxCol;
+                    }
+                });
 
-            const el = document.createElement('div');
-            el.className = 'event' + (eventImg ? '' : ' no-image');
-            el.style.top = topPx+'px'; el.style.height = heightPx+'px';
-
-            let html = '';
-
-            // Image de fond
-            if (eventImg) {
-                html += '<div class="event-bg"><img src="'+eventImg+'" alt=""></div>';
-            }
-            html += '<div class="event-overlay"></div>';
-
-            // Poignée haut
-            html += '<div class="event-handle top"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
-
-            // Contenu
-            html += '<div class="event-inner">';
-            html += '<div class="event-title">'+escHtml(ev.subject||'')+'</div>';
-            if (heightPx > 34) html += '<div class="event-time">'+timeStr+'</div>';
-            if (heightPx > 55 && ev.organizer) html += '<div class="event-org">'+escHtml(ev.organizer)+'</div>';
-            html += '</div>';
-
-            // Badge durée
-            if (heightPx > 42) html += '<div class="event-badge">'+durStr+'</div>';
-
-            // Poignée bas
-            html += '<div class="event-handle bottom"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
-
-            el.innerHTML = html;
-
-            // Tooltip
-            el.addEventListener('mouseenter', function(e) {
-                const tt = document.getElementById('tooltip');
-                tt.innerHTML = '<div class="tt-title">'+escHtml(ev.subject||'')+'</div>'+
-                    '<div class="tt-row">Horaire : <span>'+timeStr+'</span></div>'+
-                    '<div class="tt-row">Durée : <span>'+durStr+'</span></div>'+
-                    (ev.organizer?'<div class="tt-row">Organisateur : <span>'+escHtml(ev.organizer)+'</span></div>':'')+
-                    (ev.location?'<div class="tt-row">Lieu : <span>'+escHtml(ev.location)+'</span></div>':'');
-                tt.style.left = Math.min(e.clientX+12, window.innerWidth-300)+'px';
-                tt.style.top = (e.clientY-10)+'px';
-                tt.classList.add('visible');
+                var item = { ev: ev, startMin: startMin, endMin: endMin, col: overlapCol, maxCol: 0 };
+                // Mettre à jour maxCol pour tous les overlaps
+                overlaps.forEach(function(p) { p.maxCol = Math.max(p.maxCol, overlapCol); });
+                item.maxCol = Math.max(maxCol, overlapCol);
+                placed.push(item);
             });
-            el.addEventListener('mousemove', function(e) {
-                const tt = document.getElementById('tooltip');
-                tt.style.left = Math.min(e.clientX+12, window.innerWidth-300)+'px';
-                tt.style.top = (e.clientY-10)+'px';
+
+            // Calculer maxCol final pour chaque groupe
+            placed.forEach(function(item) {
+                placed.forEach(function(other) {
+                    if (item === other) return;
+                    if (item.startMin < other.endMin && item.endMin > other.startMin) {
+                        var m = Math.max(item.maxCol, other.maxCol, item.col, other.col);
+                        item.maxCol = m;
+                        other.maxCol = m;
+                    }
+                });
             });
-            el.addEventListener('mouseleave', function() { document.getElementById('tooltip').classList.remove('visible'); });
-            col.appendChild(el);
+
+            // Render chaque event
+            placed.forEach(function(item) {
+                var ev = item.ev;
+                var topPx = (item.startMin-START_HOUR*60)*(HOUR_PX/60);
+                var heightPx = Math.max((item.endMin-item.startMin)*(HOUR_PX/60), 28);
+                if (topPx < 0) return;
+
+                var totalCols = item.maxCol + 1;
+                var widthPct = 100 / totalCols;
+                var leftPct = item.col * widthPct;
+
+                var timeStr = String(Math.floor(item.startMin/60)).padStart(2,'0')+':'+String(item.startMin%60).padStart(2,'0')+
+                    ' - '+String(Math.floor(item.endMin/60)).padStart(2,'0')+':'+String(item.endMin%60).padStart(2,'0');
+                var durStr = getDuration(item.startMin, item.endMin);
+                var eventImg = getEventImage(ev.subject);
+
+                var el = document.createElement('div');
+                el.className = 'event' + (eventImg ? '' : ' no-image');
+                el.style.top = topPx+'px';
+                el.style.height = heightPx+'px';
+                if (totalCols > 1) {
+                    el.style.left = 'calc('+leftPct+'% + 2px)';
+                    el.style.right = 'auto';
+                    el.style.width = 'calc('+widthPct+'% - 4px)';
+                }
+
+                var html = '';
+                if (eventImg) html += '<div class="event-bg"><img src="'+eventImg+'" alt=""></div>';
+                html += '<div class="event-overlay"></div>';
+                html += '<div class="event-handle top"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
+                html += '<div class="event-inner">';
+                html += '<div class="event-title">'+escHtml(ev.subject||'')+'</div>';
+                if (heightPx > 34) html += '<div class="event-time">'+timeStr+'</div>';
+                if (heightPx > 55 && ev.organizer) html += '<div class="event-org">'+escHtml(ev.organizer)+'</div>';
+                html += '</div>';
+                if (heightPx > 42) html += '<div class="event-badge">'+durStr+'</div>';
+                html += '<div class="event-handle bottom"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
+                el.innerHTML = html;
+
+                el.addEventListener('mouseenter', function(e) {
+                    var tt = document.getElementById('tooltip');
+                    tt.innerHTML = '<div class="tt-title">'+escHtml(ev.subject||'')+'</div>'+
+                        '<div class="tt-row">Horaire : <span>'+timeStr+'</span></div>'+
+                        '<div class="tt-row">Durée : <span>'+durStr+'</span></div>'+
+                        (ev.organizer?'<div class="tt-row">Organisateur : <span>'+escHtml(ev.organizer)+'</span></div>':'')+
+                        (ev.location?'<div class="tt-row">Lieu : <span>'+escHtml(ev.location)+'</span></div>':'');
+                    tt.style.left = Math.min(e.clientX+12, window.innerWidth-300)+'px';
+                    tt.style.top = (e.clientY-10)+'px';
+                    tt.classList.add('visible');
+                });
+                el.addEventListener('mousemove', function(e) {
+                    var tt = document.getElementById('tooltip');
+                    tt.style.left = Math.min(e.clientX+12, window.innerWidth-300)+'px';
+                    tt.style.top = (e.clientY-10)+'px';
+                });
+                el.addEventListener('mouseleave', function() { document.getElementById('tooltip').classList.remove('visible'); });
+                col.appendChild(el);
+            });
         });
     }
 
