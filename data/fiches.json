@@ -66,8 +66,8 @@
     "contact": "Martin",
     "heurePrep": "12:30",
     "heureDirect": "13:00",
-    "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
-    "ibmLien": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "ibmChaine": "https://video.ibm.com/channel/U9p5hKnPQzr",
+    "ibmLien": "https://video.ibm.com/channel/U9p5hKnPQzr",
     "toggles": {
       "diffIBM": "oui",
       "replay": "oui",
@@ -84,6 +84,6 @@
     "intervenants": [],
     "mode": "studio",
     "id": "1770966467154",
-    "updatedAt": "2026-02-13T08:14:39.733Z"
+    "updatedAt": "2026-02-13T08:15:03.043Z"
   }
 }
