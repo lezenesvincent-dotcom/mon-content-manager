@@ -58,5 +58,32 @@
     "mode": "studio",
     "id": "1770921880722",
     "updatedAt": "2026-02-12T18:45:33.934Z"
+  },
+  "1770966467154": {
+    "titre": "New York",
+    "date": "2026-02-13",
+    "entite": "",
+    "contact": "",
+    "heurePrep": "12:30",
+    "heureDirect": "13:00",
+    "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "ibmLien": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "toggles": {
+      "diffIBM": "oui",
+      "replay": "oui",
+      "chat": "oui",
+      "qr": "non",
+      "masquerQR": "non",
+      "synthes": "oui",
+      "diffGen": "oui",
+      "fournisGen": "oui",
+      "studioGen": "non",
+      "visite": "oui"
+    },
+    "application": null,
+    "intervenants": [],
+    "mode": "studio",
+    "id": "1770966467154",
+    "updatedAt": "2026-02-13T07:07:53.835Z"
   }
 }
