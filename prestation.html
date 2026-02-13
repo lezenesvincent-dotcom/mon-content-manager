@@ -336,8 +336,9 @@
     }
 
     // Supprimer une fiche
-    async function deleteFiche(id, event) {
-        event.stopPropagation();
+    async function deleteFiche(id, ev) {
+        var e = ev || window.event;
+        if (e) { e.stopPropagation(); e.preventDefault(); }
         if (!confirm('Supprimer cette fiche ?')) return;
         delete fichesData[id];
         await saveToGitHub();
@@ -371,7 +372,7 @@
             }
 
             return '<div class="fiche-card" onclick="openFiche(\'' + f.id + '\')">' +
-                '<button class="delete-btn" onclick="deleteFiche(\'' + f.id + '\', event)">&#x2716; Supprimer</button>' +
+                '<button class="delete-btn" onclick="event.stopPropagation();deleteFiche(\'' + f.id + '\', event)">&#x2716; Supprimer</button>' +
                 '<div class="fiche-title">' + (f.titre || 'Sans titre') + '</div>' +
                 '<div class="fiche-date">' + formatDateFR(f.date) + '</div>' +
                 '<div class="fiche-field"><span class="fiche-label">Entit&eacute;</span><span class="fiche-value">' + (f.entite || '-') + '</span></div>' +
