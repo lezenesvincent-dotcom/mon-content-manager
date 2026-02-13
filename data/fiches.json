@@ -32,5 +32,33 @@
     "mode": "studio",
     "id": "1770966467154",
     "updatedAt": "2026-02-13T10:08:17.257Z"
+  },
+  "1770988161692": {
+    "titre": "",
+    "date": "2026-02-13",
+    "entite": "",
+    "contact": "",
+    "heurePrep": "11:30",
+    "heureDirect": "12:00",
+    "prepDuration": 30,
+    "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "ibmLien": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "toggles": {
+      "diffIBM": "oui",
+      "replay": "oui",
+      "chat": "oui",
+      "qr": "non",
+      "masquerQR": "non",
+      "synthes": "oui",
+      "diffGen": "oui",
+      "fournisGen": "oui",
+      "studioGen": "non",
+      "visite": "oui"
+    },
+    "application": null,
+    "intervenants": [],
+    "mode": "studio",
+    "id": "1770988161692",
+    "updatedAt": "2026-02-13T13:09:33.071Z"
   }
 }
