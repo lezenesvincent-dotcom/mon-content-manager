@@ -647,22 +647,6 @@
                 </div>
             </div>
 
-            <!-- TIME PICKER iOS style -->
-            <div id="timePickerOverlay" class="tp-overlay" style="display:none;" onclick="closeTimePicker()">
-                <div class="tp-container" onclick="event.stopPropagation()">
-                    <div class="tp-header">
-                        <button class="tp-cancel" onclick="closeTimePicker()">&times;</button>
-                        <span class="tp-title" id="tpTitle">Heure</span>
-                        <button class="tp-done" onclick="confirmTimePicker()">&#10003;</button>
-                    </div>
-                    <div class="tp-wheels">
-                        <div class="tp-wheel" id="tpHourWheel"></div>
-                        <div class="tp-separator">:</div>
-                        <div class="tp-wheel" id="tpMinWheel"></div>
-                    </div>
-                    <div class="tp-selection-bar"></div>
-                </div>
-            </div>
             <div class="sep"></div>
 
             <!-- Diffusion IBM -->
@@ -1682,5 +1666,22 @@
 
     setInterval(nextAlbum, 30000);
     </script>
+
+    <!-- TIME PICKER iOS style - au root du body pour que position:fixed marche -->
+    <div id="timePickerOverlay" class="tp-overlay" style="display:none;" onclick="closeTimePicker()">
+        <div class="tp-container" onclick="event.stopPropagation()">
+            <div class="tp-header">
+                <button class="tp-cancel" onclick="closeTimePicker()">&times;</button>
+                <span class="tp-title" id="tpTitle">Heure</span>
+                <button class="tp-done" onclick="confirmTimePicker()">&#10003;</button>
+            </div>
+            <div class="tp-wheels">
+                <div class="tp-wheel" id="tpHourWheel"></div>
+                <div class="tp-separator">:</div>
+                <div class="tp-wheel" id="tpMinWheel"></div>
+            </div>
+            <div class="tp-selection-bar"></div>
+        </div>
+    </div>
 </body>
 </html>
