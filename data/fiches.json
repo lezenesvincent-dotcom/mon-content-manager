@@ -64,9 +64,9 @@
     "date": "2026-02-13",
     "entite": "CIC",
     "contact": "Martin",
-    "heurePrep": "16:30",
+    "heurePrep": "16:15",
     "heureDirect": "17:00",
-    "prepDuration": 30,
+    "prepDuration": 45,
     "ibmChaine": "https://video.ibm.com/channel/U9p5hKnPQzr",
     "ibmLien": "https://video.ibm.com/channel/U9p5hKnPQzr",
     "toggles": {
@@ -85,6 +85,6 @@
     "intervenants": [],
     "mode": "studio",
     "id": "1770966467154",
-    "updatedAt": "2026-02-13T09:09:54.279Z"
+    "updatedAt": "2026-02-13T09:10:11.947Z"
   }
 }
