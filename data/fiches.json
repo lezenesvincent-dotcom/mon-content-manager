@@ -61,7 +61,7 @@
   },
   "1770966467154": {
     "titre": "FRANCK V11",
-    "date": "2026-02-15",
+    "date": "2026-02-13",
     "entite": "CIC",
     "contact": "Martin",
     "heurePrep": "16:15",
@@ -85,6 +85,6 @@
     "intervenants": [],
     "mode": "studio",
     "id": "1770966467154",
-    "updatedAt": "2026-02-13T09:44:54.377Z"
+    "updatedAt": "2026-02-13T09:44:58.090Z"
   }
 }
