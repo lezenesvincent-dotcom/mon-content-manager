@@ -971,7 +971,7 @@
             const dateStr = document.getElementById('dateEvent').value || '';
             const heureDirectStr = document.getElementById('heureDirect').textContent || '13:00';
             const prepTimeStr = document.getElementById('heurePrepDisplay').dataset.time || '12:30';
-            const subject = titre;
+            const subject = 'CONTACT ' + titre;
             const html = generateFicheHTML();
 
             // Convertir date DD/MM/YYYY en YYYY-MM-DD
@@ -999,7 +999,7 @@
                         subject: subject,
                         html: html,
                         calendarDirect: {
-                            title: 'CONTACT : ' + titre,
+                            title: 'CONTACT ' + titre,
                             date: isoDate,
                             startTime: heureDirectStr,
                             endTime: endDirect,
@@ -1007,7 +1007,7 @@
                             ficheId: FICHE_ID
                         },
                         calendarPrep: {
-                            title: 'PRÉPA : ' + titre,
+                            title: 'PRÉPA ' + titre,
                             date: isoDate,
                             startTime: prepTimeStr,
                             endTime: heureDirectStr,
