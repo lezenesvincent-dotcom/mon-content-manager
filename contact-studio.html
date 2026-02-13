@@ -872,8 +872,8 @@
             document.querySelectorAll('#intervenantsBody tr').forEach(tr => {
                 const inputs = tr.querySelectorAll('input');
                 if (inputs.length >= 4 && inputs[0].value.trim()) {
-                    intervenantsHTML += '<tr><td style="padding:6px 10px;border:1px solid #333;">' +
-                        [inputs[0].value, inputs[1].value, inputs[2].value, inputs[3].value].join('</td><td style="padding:6px 10px;border:1px solid #333;">') +
+                    intervenantsHTML += '<tr><td style="padding:5px 8px;color:#ffffff;font-size:12px;border-bottom:1px solid #2a2d3e;">' +
+                        [inputs[0].value, inputs[1].value, inputs[2].value, inputs[3].value].join('</td><td style="padding:5px 8px;color:#ffffff;font-size:12px;border-bottom:1px solid #2a2d3e;">') +
                         '</td></tr>';
                 }
             });
@@ -884,85 +884,205 @@
 
             return `
 <!DOCTYPE html><html><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#1a1a2e;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',Arial,sans-serif;">
-<div style="max-width:650px;margin:20px auto;background:linear-gradient(135deg,#1c1e26,#2a2d3a);border-radius:18px;padding:32px;color:#fff;">
-    <div style="text-align:center;margin-bottom:20px;">
-        <img src="https://lezenesvincent-dotcom.github.io/mon-content-manager/images/logo-cic.png" alt="CIC" style="height:50px;">
-        <h1 style="font-size:22px;margin:12px 0 4px;color:#fff;">Fiche Contact Studio</h1>
-        <p style="color:rgba(255,255,255,0.4);font-size:13px;margin:0;">Studio CIC – 61 rue Taitbout, Paris</p>
-    </div>
+<body style="margin:0;padding:0;background-color:#111119;font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#111119;">
+<tr><td align="center" style="padding:20px 10px;">
 
-    <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-        <tr><td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;width:140px;">Titre</td>
-            <td style="padding:10px 14px;font-weight:bold;font-size:15px;">${d.titre || '—'}</td></tr>
-        <tr style="background:rgba(255,255,255,0.03);">
-            <td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Date</td>
-            <td style="padding:10px 14px;">${d.date || '—'}</td></tr>
-        <tr><td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Entit&eacute; / Groupe</td>
-            <td style="padding:10px 14px;">${d.entite || '—'}</td></tr>
-        <tr style="background:rgba(255,255,255,0.03);">
-            <td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Contact</td>
-            <td style="padding:10px 14px;">${d.contact || '—'}</td></tr>
-        <tr><td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Pr&eacute;paration</td>
-            <td style="padding:10px 14px;">${d.heurePrep || '—'}</td></tr>
-        <tr style="background:rgba(255,255,255,0.03);">
-            <td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Direct</td>
-            <td style="padding:10px 14px;font-weight:bold;">${d.heureDirect || '—'}</td></tr>
-        <tr><td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Mode</td>
-            <td style="padding:10px 14px;">${mode}</td></tr>
-        <tr style="background:rgba(255,255,255,0.03);">
-            <td style="padding:10px 14px;color:rgba(255,255,255,0.5);font-size:12px;">Application</td>
-            <td style="padding:10px 14px;">${app}</td></tr>
-    </table>
+<!-- CONTAINER PRINCIPAL -->
+<table width="620" cellpadding="0" cellspacing="0" style="background-color:#1e2030;border-radius:16px;border:1px solid #2a2d3e;">
+    
+    <!-- HEADER LOGO -->
+    <tr><td align="center" style="padding:28px 20px 16px;">
+        <img src="https://lezenesvincent-dotcom.github.io/mon-content-manager/images/logo-cic.png" alt="CIC" width="60" style="display:block;">
+        <p style="color:#9a9bb2;font-size:13px;margin:10px 0 0;">Studio CIC &ndash; Paris</p>
+    </td></tr>
 
-    <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin:16px 0;">
-        <h3 style="font-size:14px;color:#fda085;margin:0 0 10px;">Diffusion IBM</h3>
-        <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;width:120px;">Diffusion</td>
-                <td style="padding:6px 0;">${toggleLabel('diffIBM')}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;">Cha&icirc;ne</td>
-                <td style="padding:6px 0;">${chaineText || '—'}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;">Replay</td>
-                <td style="padding:6px 0;">${toggleLabel('replay')}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;">Chat</td>
-                <td style="padding:6px 0;">${toggleLabel('chat')}</td></tr>
+    <!-- TITRE EVENT -->
+    <tr><td align="center" style="padding:8px 30px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td align="center" style="background-color:#292b3e;border-radius:12px;padding:14px 20px;border:1px solid #3a3d52;">
+                <span style="color:#ffffff;font-size:20px;font-weight:bold;letter-spacing:0.5px;">${d.titre || '(sans titre)'}</span>
+            </td></tr>
         </table>
-    </div>
+    </td></tr>
 
-    ${intervenantsHTML ? `
-    <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin:16px 0;">
-        <h3 style="font-size:14px;color:#fda085;margin:0 0 10px;">Intervenants</h3>
-        <table style="width:100%;border-collapse:collapse;font-size:13px;">
-            <tr style="background:rgba(255,255,255,0.08);">
-                <th style="padding:6px 10px;text-align:left;border:1px solid #333;">Nom</th>
-                <th style="padding:6px 10px;text-align:left;border:1px solid #333;">Pr&eacute;nom</th>
-                <th style="padding:6px 10px;text-align:left;border:1px solid #333;">Fonction</th>
-                <th style="padding:6px 10px;text-align:left;border:1px solid #333;">Entreprise</th>
+    <!-- DATE -->
+    <tr><td align="center" style="padding:8px 30px;">
+        <table cellpadding="0" cellspacing="0">
+            <tr><td align="center" style="background-color:#292b3e;border-radius:10px;padding:10px 28px;border:1px solid #3a3d52;">
+                <span style="color:#ffffff;font-size:14px;font-weight:600;">${d.date || '—'}</span>
+            </td></tr>
+        </table>
+    </td></tr>
+
+    <!-- CHAMPS PRINCIPAUX -->
+    <tr><td style="padding:12px 30px 4px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <!-- Entité groupe -->
+            <tr><td style="padding:5px 0;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#292b3e;border-radius:10px;border:1px solid #3a3d52;">
+                    <tr>
+                        <td width="130" style="background-color:#333650;border-radius:10px 0 0 10px;padding:10px 14px;">
+                            <span style="color:#b8b9cc;font-size:12px;font-weight:600;">Entit&eacute; groupe</span>
+                        </td>
+                        <td style="padding:10px 14px;">
+                            <span style="color:#ffffff;font-size:14px;">${d.entite || '—'}</span>
+                        </td>
+                    </tr>
+                </table>
+            </td></tr>
+            <!-- Contact -->
+            <tr><td style="padding:5px 0;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#292b3e;border-radius:10px;border:1px solid #3a3d52;">
+                    <tr>
+                        <td width="130" style="background-color:#333650;border-radius:10px 0 0 10px;padding:10px 14px;">
+                            <span style="color:#b8b9cc;font-size:12px;font-weight:600;">Contact</span>
+                        </td>
+                        <td style="padding:10px 14px;">
+                            <span style="color:#ffffff;font-size:14px;">${d.contact || '—'}</span>
+                        </td>
+                    </tr>
+                </table>
+            </td></tr>
+        </table>
+    </td></tr>
+
+    <!-- HORAIRES -->
+    <tr><td align="center" style="padding:12px 30px;">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td align="center" style="padding:0 8px;">
+                    <table cellpadding="0" cellspacing="0" style="background-color:#292b3e;border-radius:10px;border:1px solid #3a3d52;">
+                        <tr>
+                            <td style="background-color:#333650;border-radius:10px 0 0 10px;padding:8px 12px;">
+                                <span style="color:#b8b9cc;font-size:11px;font-weight:600;">Heure du Direct</span>
+                            </td>
+                            <td style="padding:8px 16px;">
+                                <span style="color:#ffffff;font-size:18px;font-weight:bold;">${d.heureDirect || '—'}</span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td align="center" style="padding:0 8px;">
+                    <table cellpadding="0" cellspacing="0" style="background-color:#292b3e;border-radius:10px;border:1px solid #3a3d52;">
+                        <tr>
+                            <td style="background-color:#333650;border-radius:10px 0 0 10px;padding:8px 12px;">
+                                <span style="color:#b8b9cc;font-size:11px;font-weight:600;">Pr&eacute;pa</span>
+                            </td>
+                            <td style="padding:8px 16px;">
+                                <span style="color:#ffffff;font-size:18px;font-weight:bold;">${d.heurePrep || '—'}</span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
             </tr>
-            ${intervenantsHTML}
         </table>
-    </div>` : ''}
+    </td></tr>
 
-    <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin:16px 0;">
-        <h3 style="font-size:14px;color:#fda085;margin:0 0 10px;">G&eacute;n&eacute;rique</h3>
-        <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;width:200px;">Diffusion g&eacute;n&eacute;rique</td>
-                <td style="padding:6px 0;">${toggleLabel('diffGen')}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;">Je fournis mon g&eacute;n&eacute;rique</td>
-                <td style="padding:6px 0;">${toggleLabel('fournisGen')}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.5);font-size:12px;">Le studio fournit</td>
-                <td style="padding:6px 0;">${toggleLabel('studioGen')}</td></tr>
+    <!-- MODE -->
+    <tr><td align="center" style="padding:4px 30px;">
+        <span style="color:#9a9bb2;font-size:12px;">Mode : </span>
+        <span style="color:#ffffff;font-size:13px;font-weight:600;">${mode}</span>
+        <span style="color:#3a3d52;"> &bull; </span>
+        <span style="color:#9a9bb2;font-size:12px;">Application : </span>
+        <span style="color:#ffffff;font-size:13px;font-weight:600;">${app}</span>
+    </td></tr>
+
+    <!-- SÉPARATEUR -->
+    <tr><td style="padding:12px 30px;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td style="border-top:1px solid #2a2d3e;"></td></tr></table></td></tr>
+
+    <!-- DIFFUSION IBM -->
+    <tr><td style="padding:4px 30px 12px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#1a1c2d;border-radius:12px;border:1px solid #2a2d3e;">
+            <tr><td style="padding:14px 16px;">
+                <p style="color:#fda085;font-size:14px;font-weight:bold;margin:0 0 10px;">Diffusion IBM</p>
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="140" style="padding:4px 0;color:#7a7c92;font-size:12px;">Diffusion</td>
+                        <td style="padding:4px 0;color:#ffffff;font-size:13px;">${toggleLabel('diffIBM')}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:4px 0;color:#7a7c92;font-size:12px;">Cha&icirc;ne</td>
+                        <td style="padding:4px 0;color:#ffffff;font-size:13px;">${chaineText || '—'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:4px 0;color:#7a7c92;font-size:12px;">Replay</td>
+                        <td style="padding:4px 0;color:#ffffff;font-size:13px;">${toggleLabel('replay')}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:4px 0;color:#7a7c92;font-size:12px;">Chat</td>
+                        <td style="padding:4px 0;color:#ffffff;font-size:13px;">${toggleLabel('chat')}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:4px 0;color:#7a7c92;font-size:12px;">Q&amp;R</td>
+                        <td style="padding:4px 0;color:#ffffff;font-size:13px;">${toggleLabel('qr')}</td>
+                    </tr>
+                </table>
+            </td></tr>
         </table>
-    </div>
+    </td></tr>
 
-    <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin:16px 0;">
-        <p style="font-size:12px;color:rgba(255,255,255,0.5);margin:4px 0;">Visite du studio : ${toggleLabel('visite')}</p>
-    </div>
+    <!-- INTERVENANTS -->
+    ${intervenantsHTML ? `
+    <tr><td style="padding:4px 30px 12px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#1a1c2d;border-radius:12px;border:1px solid #2a2d3e;">
+            <tr><td style="padding:14px 16px;">
+                <p style="color:#fda085;font-size:14px;font-weight:bold;margin:0 0 10px;">Intervenants</p>
+                <table width="100%" cellpadding="0" cellspacing="0" style="font-size:12px;">
+                    <tr style="background-color:#252740;">
+                        <th style="padding:6px 8px;text-align:left;color:#9a9bb2;border-bottom:1px solid #2a2d3e;">Nom</th>
+                        <th style="padding:6px 8px;text-align:left;color:#9a9bb2;border-bottom:1px solid #2a2d3e;">Pr&eacute;nom</th>
+                        <th style="padding:6px 8px;text-align:left;color:#9a9bb2;border-bottom:1px solid #2a2d3e;">Fonction</th>
+                        <th style="padding:6px 8px;text-align:left;color:#9a9bb2;border-bottom:1px solid #2a2d3e;">Entreprise</th>
+                    </tr>
+                    ${intervenantsHTML}
+                </table>
+            </td></tr>
+        </table>
+    </td></tr>` : ''}
 
-    <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);">
-        <p style="font-size:11px;color:rgba(255,255,255,0.25);">Fiche g&eacute;n&eacute;r&eacute;e automatiquement depuis Studio Manager</p>
-    </div>
-</div>
+    <!-- GÉNÉRIQUE -->
+    <tr><td style="padding:4px 30px 12px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#1a1c2d;border-radius:12px;border:1px solid #2a2d3e;">
+            <tr><td style="padding:14px 16px;">
+                <p style="color:#fda085;font-size:14px;font-weight:bold;margin:0 0 10px;">G&eacute;n&eacute;rique</p>
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="180" style="padding:4px 0;color:#7a7c92;font-size:12px;">Diffusion g&eacute;n&eacute;rique</td>
+                        <td style="padding:4px 0;color:#ffffff;font-size:13px;">${toggleLabel('diffGen')}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:4px 0;color:#7a7c92;font-size:12px;">Je fournis mon g&eacute;n&eacute;rique</td>
+                        <td style="padding:4px 0;color:#ffffff;font-size:13px;">${toggleLabel('fournisGen')}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:4px 0;color:#7a7c92;font-size:12px;">Le studio fournit</td>
+                        <td style="padding:4px 0;color:#ffffff;font-size:13px;">${toggleLabel('studioGen')}</td>
+                    </tr>
+                </table>
+            </td></tr>
+        </table>
+    </td></tr>
+
+    <!-- VISITE -->
+    <tr><td style="padding:4px 30px 12px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#1a1c2d;border-radius:12px;border:1px solid #2a2d3e;">
+            <tr><td style="padding:12px 16px;">
+                <span style="color:#7a7c92;font-size:12px;">Visite du studio : </span>
+                <span style="color:#ffffff;font-size:13px;font-weight:600;">${toggleLabel('visite')}</span>
+            </td></tr>
+        </table>
+    </td></tr>
+
+    <!-- FOOTER -->
+    <tr><td align="center" style="padding:12px 20px 20px;border-top:1px solid #2a2d3e;">
+        <p style="font-size:11px;color:#5a5c72;margin:0;">Fiche g&eacute;n&eacute;r&eacute;e depuis Studio Manager &bull; Studio CIC</p>
+    </td></tr>
+
+</table>
+<!-- FIN CONTAINER -->
+
+</td></tr></table>
 </body></html>`;
         }
 
