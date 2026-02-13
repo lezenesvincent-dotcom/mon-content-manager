@@ -13,17 +13,29 @@
             min-height: 100vh;
             overflow: hidden;
         }
-        .bg-gradient {
+
+        /* ===== FOND POCHETTES ALBUM ===== */
+        .album-bg {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(ellipse at 20% 50%, rgba(30,30,80,0.6) 0%, transparent 60%),
-                        radial-gradient(ellipse at 80% 80%, rgba(20,20,60,0.5) 0%, transparent 50%),
-                        linear-gradient(160deg, #0c0e1a 0%, #141630 40%, #0e1025 100%);
-            z-index: 0;
+            z-index: 0; overflow: hidden;
         }
+        .album-bg .cover {
+            position: absolute; top: -20%; left: -20%; right: -20%; bottom: -20%;
+            background-size: cover; background-position: center;
+            filter: blur(80px) saturate(1.8) brightness(0.35);
+            transition: opacity 2s ease-in-out; opacity: 0;
+        }
+        .album-bg .cover.active { opacity: 1; }
+        .album-bg::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3); z-index: 1;
+        }
+
         .page-wrap {
-            position: relative; z-index: 1; height: 100vh;
-            display: flex; flex-direction: column; padding: 16px 20px;
+            position: relative; z-index: 2; height: 100vh;
+            display: flex; flex-direction: column; padding: 14px 24px 18px;
         }
+
         .nav-back {
             position: fixed; top: 12px; left: 16px; z-index: 100;
             color: #c8b4ff; text-decoration: none; font-size: 12px;
@@ -31,9 +43,11 @@
             border: 1px solid rgba(100,80,200,0.2); backdrop-filter: blur(10px); transition: all 0.2s;
         }
         .nav-back:hover { background: rgba(100,80,200,0.3); }
+
+        /* HEADER */
         .agenda-header {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 8px 14px; margin-top: 4px;
+            padding: 0 4px 12px; margin-top: 2px;
         }
         .agenda-title h1 { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.85); }
         .agenda-title .salle-name { font-size: 10px; color: rgba(255,255,255,0.3); }
@@ -49,11 +63,16 @@
         .sync-dot { width: 5px; height: 5px; border-radius: 50%; background: #4ade80; display: inline-block; }
         .sync-dot.loading { background: #fbbf24; }
         .sync-dot.error { background: #f87171; }
+
+        /* GRILLE */
         .agenda-body {
-            flex: 1; display: flex; overflow: hidden; border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.015);
+            flex: 1; display: flex; overflow: hidden;
+            border-radius: 18px;
+            background: rgba(10,10,30,0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .time-col { width: 48px; min-width: 48px; padding-top: 48px; overflow: hidden; }
+        .time-col { width: 48px; min-width: 48px; padding-top: 52px; overflow: hidden; }
         .time-label {
             height: 60px; display: flex; align-items: flex-start; justify-content: flex-end;
             font-size: 10px; color: rgba(255,255,255,0.2); padding-right: 8px;
@@ -62,26 +81,37 @@
         .days-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; }
         .days-header {
             display: grid; grid-template-columns: repeat(5, 1fr);
-            position: sticky; top: 0; z-index: 10; gap: 6px; padding: 0 3px;
+            position: sticky; top: 0; z-index: 10; gap: 8px; padding: 0 4px;
+            background: rgba(10,10,30,0.6); backdrop-filter: blur(8px);
         }
         .day-header {
             text-align: center; padding: 10px 4px 8px;
-            background: rgba(255,255,255,0.02); border-radius: 12px 12px 0 0;
         }
-        .day-header .day-name { font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 600; letter-spacing: 0.5px; }
-        .day-header .day-num { font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.8); margin-top: 2px; }
+        .day-header .day-name {
+            font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 700;
+        }
+        .day-header .day-num {
+            font-size: 17px; font-weight: 800; color: rgba(255,255,255,0.75); margin-top: 2px;
+        }
         .day-header.today .day-num {
             background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
             border-radius: 50%; width: 30px; height: 30px;
             display: inline-flex; align-items: center; justify-content: center; font-size: 15px;
         }
-        .days-grid { display: grid; grid-template-columns: repeat(5, 1fr); position: relative; gap: 6px; padding: 0 3px; }
+
+        .days-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            position: relative; gap: 8px; padding: 0 4px;
+        }
         .day-col {
             position: relative; min-height: calc(14 * 60px);
-            border-radius: 0 0 12px 12px; border: 1px solid rgba(255,255,255,0.04);
-            border-top: none; background: rgba(255,255,255,0.01);
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(255,255,255,0.012);
         }
-        .hour-line { height: 60px; border-bottom: 1px solid rgba(255,255,255,0.025); }
+        .hour-line { height: 60px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+
+        /* NOW LINE */
         .now-line {
             position: absolute; left: 0; right: 0; height: 2px;
             background: linear-gradient(90deg, #818cf8, #6366f1); z-index: 5;
@@ -91,61 +121,125 @@
             content: ''; position: absolute; left: -3px; top: -3px;
             width: 8px; height: 8px; border-radius: 50%; background: #818cf8;
         }
+
+        /* ÉVÉNEMENTS */
         .event {
-            position: absolute; left: 4px; right: 4px; border-radius: 10px;
-            font-size: 11px; overflow: hidden; cursor: grab; z-index: 3;
+            position: absolute; left: 4px; right: 4px;
+            border-radius: 12px;
+            overflow: hidden; cursor: grab; z-index: 3;
             transition: transform 0.15s, box-shadow 0.15s;
-            border: 1px solid rgba(255,255,255,0.08); min-height: 26px;
+            border: 1px solid rgba(255,255,255,0.1);
+            min-height: 28px;
         }
         .event:hover {
-            transform: scale(1.015); box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-            z-index: 6; border-color: rgba(255,255,255,0.15);
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            z-index: 6; border-color: rgba(255,255,255,0.2);
         }
         .event:active { cursor: grabbing; }
-        .event-inner { padding: 6px 8px; height: 100%; display: flex; flex-direction: column; position: relative; z-index: 1; }
-        .event-title { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; font-size: 11px; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
-        .event-time { font-size: 9px; color: rgba(255,255,255,0.65); margin-top: 2px; }
-        .event-org { font-size: 9px; color: rgba(255,255,255,0.4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: auto; }
-        .event-badge {
-            position: absolute; bottom: 6px; right: 6px;
-            background: rgba(255,255,255,0.12); backdrop-filter: blur(6px);
-            color: rgba(255,255,255,0.8); font-size: 9px; font-weight: 600;
-            padding: 3px 8px; border-radius: 10px; z-index: 2;
+
+        /* Image de fond de l'event */
+        .event-bg {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
         }
+        .event-bg img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
+            display: block;
+        }
+
+        /* Dégradé sombre en bas pour lisibilité texte */
+        .event-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg,
+                rgba(0,0,0,0.1) 0%,
+                rgba(0,0,0,0.25) 40%,
+                rgba(0,0,0,0.6) 100%);
+            z-index: 1;
+        }
+        /* Events sans image */
+        .event.no-image .event-overlay {
+            background: none;
+        }
+        .event.no-image {
+            background: linear-gradient(135deg, rgba(80,90,140,0.4), rgba(50,60,110,0.25));
+        }
+
+        .event-inner {
+            position: relative; z-index: 2;
+            padding: 6px 8px; height: 100%;
+            display: flex; flex-direction: column;
+        }
+        .event-title {
+            font-weight: 800; color: #fff; font-size: 11px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+            overflow: hidden; text-overflow: ellipsis;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        }
+        .event-time {
+            font-size: 9px; color: rgba(255,255,255,0.7); margin-top: 2px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .event-org {
+            font-size: 9px; color: rgba(255,255,255,0.5); margin-top: auto;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .event-badge {
+            position: absolute; bottom: 8px; right: 8px; z-index: 3;
+            background: rgba(0,0,0,0.35); backdrop-filter: blur(8px);
+            color: rgba(255,255,255,0.85); font-size: 9px; font-weight: 700;
+            padding: 3px 9px; border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Poignées */
         .event-handle {
             position: absolute; left: 50%; transform: translateX(-50%);
-            width: 30px; height: 5px; background: rgba(255,255,255,0.25);
-            border-radius: 3px; cursor: ns-resize; z-index: 4;
+            z-index: 4; cursor: ns-resize;
             opacity: 0; transition: opacity 0.15s;
+            width: 32px; height: 8px;
         }
-        .event:hover .event-handle { opacity: 1; }
-        .event-handle.top { top: 2px; }
-        .event-handle.bottom { bottom: 2px; }
-        .event.color-blue { background: linear-gradient(135deg, rgba(80,100,220,0.45), rgba(60,80,180,0.3)); }
-        .event.color-red { background: linear-gradient(135deg, rgba(220,80,80,0.4), rgba(180,60,60,0.25)); }
-        .event.color-green { background: linear-gradient(135deg, rgba(80,200,120,0.35), rgba(60,160,90,0.2)); }
-        .event.color-orange { background: linear-gradient(135deg, rgba(240,160,80,0.4), rgba(200,130,60,0.25)); }
-        .event.color-purple { background: linear-gradient(135deg, rgba(140,100,240,0.4), rgba(110,80,200,0.25)); }
-        .event.color-yellow { background: linear-gradient(135deg, rgba(220,200,60,0.35), rgba(180,160,40,0.2)); }
-        .event.color-default { background: linear-gradient(135deg, rgba(120,130,160,0.3), rgba(90,100,130,0.15)); }
+        .event-handle img {
+            width: 100%; height: 100%; object-fit: contain;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+        }
+        .event:hover .event-handle { opacity: 0.8; }
+        .event-handle.top { top: 3px; }
+        .event-handle.bottom { bottom: 3px; }
+
+        /* Ombre sous les events */
+        .event-shadow {
+            position: absolute; left: 5%; right: 5%; bottom: -6px;
+            height: 12px; z-index: -1;
+            background: url('agenda-assets/ombre.png') center / 100% 100% no-repeat;
+            opacity: 0.5;
+            filter: blur(2px);
+        }
+
+        /* Tooltip */
         .event-tooltip {
-            display: none; position: fixed; background: rgba(30,32,50,0.95);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
-            padding: 14px 18px; font-size: 13px; color: #fff; z-index: 100;
-            max-width: 280px; box-shadow: 0 12px 32px rgba(0,0,0,0.6); backdrop-filter: blur(20px);
+            display: none; position: fixed;
+            background: rgba(20,22,40,0.95); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 14px 18px; font-size: 13px; color: #fff;
+            z-index: 100; max-width: 280px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.6); backdrop-filter: blur(20px);
         }
         .event-tooltip.visible { display: block; }
         .event-tooltip .tt-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
         .event-tooltip .tt-row { color: rgba(255,255,255,0.45); font-size: 11px; margin: 4px 0; }
         .event-tooltip .tt-row span { color: rgba(255,255,255,0.85); }
+
         .days-scroll::-webkit-scrollbar { width: 4px; }
         .days-scroll::-webkit-scrollbar-track { background: transparent; }
         .days-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
     </style>
 </head>
 <body>
-    <div class="bg-gradient"></div>
+    <div class="album-bg" id="albumBg"></div>
     <a href="index.html" class="nav-back">&larr; Studio Manager</a>
+
     <div class="page-wrap">
         <div class="agenda-header">
             <div class="agenda-title">
@@ -174,13 +268,31 @@
         </div>
     </div>
     <div class="event-tooltip" id="tooltip"></div>
+
 <script>
+    // ===== CONFIG =====
     const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s=>s.split('').reverse().join('')).join('');
     const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
     const GH_FILE = 'calendar-data.json';
     const GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
+    const IMG_BASE = 'agenda-assets/';
     const START_HOUR = 7, END_HOUR = 21, HOUR_PX = 60;
     const JOURS_FULL = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
+
+    // Mapping mots-clés → image
+    const EVENT_IMAGES = {
+        morning: IMG_BASE + 'event-morning.png',
+        'conf call': IMG_BASE + 'event-confcall.png',
+        'conference call': IMG_BASE + 'event-confcall.png',
+        'conf hebdo': IMG_BASE + 'event-confcall.png',
+        'direct analystes': IMG_BASE + 'event-da.png',
+        'da ': IMG_BASE + 'event-da.png',
+        'reunion': IMG_BASE + 'event-reunion.png',
+        'réunion': IMG_BASE + 'event-reunion.png',
+        'point': IMG_BASE + 'event-reunion.png',
+        'chart': IMG_BASE + 'event-reunion.png',
+    };
+
     let currentMonday = getMonday(new Date());
     let calendarData = null;
 
@@ -202,6 +314,14 @@
     }
     function escHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+    function getEventImage(subject) {
+        const s = (subject || '').toLowerCase();
+        for (const [keyword, img] of Object.entries(EVENT_IMAGES)) {
+            if (s.includes(keyword)) return img;
+        }
+        return null;
+    }
+
     function renderAgenda() {
         const today = new Date();
         const endWeek = new Date(currentMonday); endWeek.setDate(endWeek.getDate() + 4);
@@ -211,7 +331,7 @@
 
         let th = '';
         for (let h = START_HOUR; h <= END_HOUR; h++) th += '<div class="time-label">'+String(h).padStart(2,'0')+':00</div>';
-        document.getElementById('timeCol').innerHTML = '<div style="height:48px;"></div>' + th;
+        document.getElementById('timeCol').innerHTML = '<div style="height:52px;"></div>' + th;
 
         let hh = '';
         for (let i = 0; i < 5; i++) {
@@ -229,6 +349,7 @@
         }
         document.getElementById('daysGrid').innerHTML = gh;
 
+        // Now line
         const dayIdx = today.getDay()-1;
         if (dayIdx >= 0 && dayIdx < 5 && getMonday(today).toDateString() === currentMonday.toDateString()) {
             const topPx = (today.getHours()*60+today.getMinutes()-START_HOUR*60)*(HOUR_PX/60);
@@ -254,26 +375,44 @@
             const sH=start.getUTCHours()+1, sM=start.getUTCMinutes(), eH=end.getUTCHours()+1, eM=end.getUTCMinutes();
             const startMin=sH*60+sM, endMin=eH*60+eM;
             const topPx = (startMin-START_HOUR*60)*(HOUR_PX/60);
-            const heightPx = Math.max((endMin-startMin)*(HOUR_PX/60), 26);
+            const heightPx = Math.max((endMin-startMin)*(HOUR_PX/60), 28);
             if (topPx < 0) return;
 
-            const color = getEventColor(ev.subject||'');
             const timeStr = String(sH).padStart(2,'0')+':'+String(sM).padStart(2,'0')+' - '+String(eH).padStart(2,'0')+':'+String(eM).padStart(2,'0');
             const durStr = getDuration(startMin, endMin);
+            const eventImg = getEventImage(ev.subject);
 
             const el = document.createElement('div');
-            el.className = 'event color-'+color;
+            el.className = 'event' + (eventImg ? '' : ' no-image');
             el.style.top = topPx+'px'; el.style.height = heightPx+'px';
 
-            let inner = '<div class="event-handle top"></div><div class="event-inner">';
-            inner += '<div class="event-title">'+escHtml(ev.subject||'')+'</div>';
-            if (heightPx > 32) inner += '<div class="event-time">'+timeStr+'</div>';
-            if (heightPx > 50 && ev.organizer) inner += '<div class="event-org">'+escHtml(ev.organizer)+'</div>';
-            inner += '</div>';
-            if (heightPx > 40) inner += '<div class="event-badge">'+durStr+'</div>';
-            inner += '<div class="event-handle bottom"></div>';
-            el.innerHTML = inner;
+            let html = '';
 
+            // Image de fond
+            if (eventImg) {
+                html += '<div class="event-bg"><img src="'+eventImg+'" alt=""></div>';
+            }
+            html += '<div class="event-overlay"></div>';
+
+            // Poignée haut
+            html += '<div class="event-handle top"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
+
+            // Contenu
+            html += '<div class="event-inner">';
+            html += '<div class="event-title">'+escHtml(ev.subject||'')+'</div>';
+            if (heightPx > 34) html += '<div class="event-time">'+timeStr+'</div>';
+            if (heightPx > 55 && ev.organizer) html += '<div class="event-org">'+escHtml(ev.organizer)+'</div>';
+            html += '</div>';
+
+            // Badge durée
+            if (heightPx > 42) html += '<div class="event-badge">'+durStr+'</div>';
+
+            // Poignée bas
+            html += '<div class="event-handle bottom"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
+
+            el.innerHTML = html;
+
+            // Tooltip
             el.addEventListener('mouseenter', function(e) {
                 const tt = document.getElementById('tooltip');
                 tt.innerHTML = '<div class="tt-title">'+escHtml(ev.subject||'')+'</div>'+
@@ -295,17 +434,7 @@
         });
     }
 
-    function getEventColor(subject) {
-        const s = subject.toLowerCase();
-        if (s.includes('prépa') || s.includes('prepa')) return 'red';
-        if (s.includes('contact')) return 'blue';
-        if (s.includes('morning')) return 'green';
-        if (s.includes('chart') || s.includes('solutions')) return 'purple';
-        if (s.includes('webinaire') || s.includes('conférence')) return 'orange';
-        if (s.includes('absent') || s.includes('annul')) return 'yellow';
-        return 'default';
-    }
-
+    // ===== LOAD DATA =====
     async function loadCalendarData() {
         const dot = document.getElementById('syncDot'), label = document.getElementById('syncLabel');
         dot.className = 'sync-dot loading'; label.textContent = 'Sync...';
@@ -322,6 +451,49 @@
     }
     function clearEvents() { document.querySelectorAll('.event').forEach(function(e){e.remove();}); }
 
+    // ===== FOND POCHETTES ALBUM =====
+    const ALBUMS = [
+        'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228',
+        'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25',
+        'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2',
+        'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b',
+        'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0',
+        'https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e',
+        'https://i.scdn.co/image/ab67616d0000b273b0dd6a5cd1649c4a390f6f7a',
+        'https://i.scdn.co/image/ab67616d0000b2739a95e89d24214b94de36ccf7',
+        'https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72',
+        'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
+        'https://i.scdn.co/image/ab67616d0000b27390a50cfe99a4c19ff3cbfbdb',
+        'https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526',
+        'https://i.scdn.co/image/ab67616d0000b273de437d960dda1ac0a3ff0e47',
+        'https://i.scdn.co/image/ab67616d0000b2738399047ff71200928f5b6508',
+        'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424',
+        'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856',
+    ];
+    let currentAlbumIndex = 0;
+    const bg = document.getElementById('albumBg');
+    const layer1 = document.createElement('div');
+    const layer2 = document.createElement('div');
+    layer1.className = 'cover active';
+    layer2.className = 'cover';
+    bg.appendChild(layer1);
+    bg.appendChild(layer2);
+    for (let i = ALBUMS.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ALBUMS[i], ALBUMS[j]] = [ALBUMS[j], ALBUMS[i]];
+    }
+    layer1.style.backgroundImage = 'url(' + ALBUMS[0] + ')';
+    function nextAlbum() {
+        currentAlbumIndex = (currentAlbumIndex + 1) % ALBUMS.length;
+        const activeLayer = layer1.classList.contains('active') ? layer1 : layer2;
+        const nextLayer = activeLayer === layer1 ? layer2 : layer1;
+        nextLayer.style.backgroundImage = 'url(' + ALBUMS[currentAlbumIndex] + ')';
+        nextLayer.classList.add('active');
+        activeLayer.classList.remove('active');
+    }
+    setInterval(nextAlbum, 30000);
+
+    // ===== INIT =====
     renderAgenda(); loadCalendarData();
     setInterval(loadCalendarData, 5*60*1000);
     setInterval(function() { document.querySelectorAll('.now-line').forEach(function(e){e.remove();}); renderAgenda(); }, 60000);
