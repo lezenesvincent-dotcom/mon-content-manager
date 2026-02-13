@@ -963,25 +963,40 @@
 
         async function transmettreParMail() {
             const titre = document.getElementById('titreEvent').value || '(sans titre)';
-            const date = document.getElementById('dateEvent').value || '';
-            const subject = 'Fiche Contact Studio - ' + titre + ' - ' + date;
+            const dateStr = document.getElementById('dateEvent').value || '';
+            const heurePrep = document.getElementById('heurePrep').textContent || '12:30';
+            const heureDirect = document.getElementById('heureDirect').textContent || '13:00';
+            const subject = 'Fiche Contact Studio - ' + titre + ' - ' + dateStr;
             const html = generateFicheHTML();
+
+            // Convertir date DD/MM/YYYY en YYYY-MM-DD
+            let isoDate = '';
+            if (dateStr) {
+                const parts = dateStr.split('/');
+                if (parts.length === 3) isoDate = parts[2] + '-' + parts[1] + '-' + parts[0];
+            }
 
             showToast('📧 Envoi en cours...');
 
             try {
-                // Essai via serveur Render
                 const r = await fetch(MAIL_API, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         to: MAIL_DEST,
                         subject: subject,
-                        html: html
+                        html: html,
+                        calendar: {
+                            title: 'Studio CIC - ' + titre,
+                            date: isoDate,
+                            startTime: heurePrep,
+                            endTime: heureDirect,
+                            location: 'Studio CIC - 61 rue Taitbout, Paris 9e - 3e étage'
+                        }
                     })
                 });
                 if (r.ok) {
-                    showToast('✅ Email envoyé à ' + MAIL_DEST);
+                    showToast('✅ Email + invitation envoyés à ' + MAIL_DEST);
                     return;
                 }
                 throw new Error('HTTP ' + r.status);
