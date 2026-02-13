@@ -257,6 +257,24 @@
             transition: background 0.15s;
         }
         .time-display:hover { background: rgba(255,255,255,0.1); }
+        .prep-btn {
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+        }
+        .prep-btn.active {
+            background: rgba(253,160,133,0.25);
+            border-color: #fda085;
+            color: #fda085;
+        }
+        .prep-btn:hover { background: rgba(255,255,255,0.1); }
 
         /* TIME PICKER OVERLAY */
         .tp-overlay {
@@ -634,16 +652,20 @@
             </div>
             <div class="heure-center">
                 <div class="heure-field">
-                    <img src="images/img_07_93c8388652.png" alt="">
-                    <div class="time-display" onclick="openTimePicker('heurePrep')">
-                        <span id="heurePrep">12:30</span>
-                    </div>
-                </div>
-                <div class="heure-field">
                     <img src="images/img_08_18d4549f00.png" alt="">
                     <div class="time-display" onclick="openTimePicker('heureDirect')">
                         <span id="heureDirect">13:00</span>
                     </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:6px;">
+                    <span class="label-badge" style="font-size:11px;">Préparation</span>
+                    <div style="display:flex; gap:4px;">
+                        <button class="prep-btn" data-prep="15" onclick="selectPrep(15)">15m</button>
+                        <button class="prep-btn active" data-prep="30" onclick="selectPrep(30)">30m</button>
+                        <button class="prep-btn" data-prep="45" onclick="selectPrep(45)">45m</button>
+                        <button class="prep-btn" data-prep="60" onclick="selectPrep(60)">1h</button>
+                    </div>
+                    <span id="heurePrepDisplay" style="color:rgba(255,255,255,0.5); font-size:12px;">prépa 12:30</span>
                 </div>
             </div>
 
@@ -947,8 +969,8 @@
         async function transmettreParMail() {
             const titre = document.getElementById('titreEvent').value || '(sans titre)';
             const dateStr = document.getElementById('dateEvent').value || '';
-            const heurePrep = document.getElementById('heurePrep').textContent || '12:30';
-            const heureDirect = document.getElementById('heureDirect').textContent || '13:00';
+            const heureDirectStr = document.getElementById('heureDirect').textContent || '13:00';
+            const prepTimeStr = document.getElementById('heurePrepDisplay').dataset.time || '12:30';
             const subject = titre;
             const html = generateFicheHTML();
 
@@ -958,6 +980,13 @@
                 const parts = dateStr.split('/');
                 if (parts.length === 3) isoDate = parts[2] + '-' + parts[1] + '-' + parts[0];
             }
+
+            // Calculer fin du direct (1h après)
+            const dParts = heureDirectStr.split(':');
+            let endH = parseInt(dParts[0]) + 1;
+            let endM = parseInt(dParts[1]);
+            if (endH >= 24) endH -= 24;
+            const endDirect = String(endH).padStart(2,'0') + ':' + String(endM).padStart(2,'0');
 
             showToast('📧 Envoi en cours...');
 
@@ -969,13 +998,22 @@
                         to: MAIL_DEST,
                         subject: subject,
                         html: html,
-                        calendar: {
+                        calendarDirect: {
                             title: 'CONTACT : ' + titre,
                             date: isoDate,
-                            startTime: heurePrep,
-                            endTime: heureDirect,
+                            startTime: heureDirectStr,
+                            endTime: endDirect,
                             location: 'Studio CIC - 61 rue Taitbout, Paris 9e - 3e étage',
                             ficheId: FICHE_ID
+                        },
+                        calendarPrep: {
+                            title: 'PRÉPA : ' + titre,
+                            date: isoDate,
+                            startTime: prepTimeStr,
+                            endTime: heureDirectStr,
+                            location: 'Studio CIC - 61 rue Taitbout, Paris 9e - 3e étage',
+                            ficheId: FICHE_ID + '-prep',
+                            category: 'Catégorie Rouge'
                         }
                     })
                 });
@@ -1225,8 +1263,9 @@
                 date: document.getElementById('dateEventValue').value,
                 entite: document.getElementById('entiteGroupe').value,
                 contact: document.getElementById('contactField').value,
-                heurePrep: document.getElementById('heurePrep').textContent,
+                heurePrep: document.getElementById('heurePrepDisplay').dataset.time || '12:30',
                 heureDirect: document.getElementById('heureDirect').textContent,
+                prepDuration: prepDuration,
                 ibmChaine: document.getElementById('ibmChaine').value,
                 ibmLien: document.getElementById('ibmLien').value,
                 toggles: {},
@@ -1361,8 +1400,9 @@
             }
             if (data.entite) document.getElementById('entiteGroupe').value = data.entite;
             if (data.contact) document.getElementById('contactField').value = data.contact;
-            if (data.heurePrep) document.getElementById('heurePrep').textContent = data.heurePrep;
             if (data.heureDirect) document.getElementById('heureDirect').textContent = data.heureDirect;
+            if (data.prepDuration) { prepDuration = data.prepDuration; selectPrep(prepDuration); }
+            updatePrepDisplay();
             if (data.ibmChaine) document.getElementById('ibmChaine').value = data.ibmChaine;
             if (data.ibmLien) document.getElementById('ibmLien').value = data.ibmLien;
 
@@ -1453,6 +1493,34 @@
         connectWebSocket();
     </script>
     <script>
+    // ===== DURÉE PRÉPARATION =====
+    let prepDuration = 30; // minutes par défaut
+
+    function selectPrep(min) {
+        prepDuration = min;
+        document.querySelectorAll('.prep-btn').forEach(function(b) {
+            b.classList.toggle('active', parseInt(b.dataset.prep) === min);
+        });
+        updatePrepDisplay();
+        if (typeof scheduleAutoSave === 'function' && !window._isLoading) scheduleAutoSave();
+    }
+
+    function updatePrepDisplay() {
+        const direct = document.getElementById('heureDirect').textContent;
+        const parts = direct.split(':');
+        let h = parseInt(parts[0]) || 13;
+        let m = parseInt(parts[1]) || 0;
+        // Soustraire la durée de prépa
+        let totalMin = h * 60 + m - prepDuration;
+        if (totalMin < 0) totalMin += 24 * 60;
+        const ph = Math.floor(totalMin / 60);
+        const pm = totalMin % 60;
+        const prepTime = String(ph).padStart(2,'0') + ':' + String(pm).padStart(2,'0');
+        document.getElementById('heurePrepDisplay').textContent = 'prépa ' + prepTime;
+        // Garder un champ caché pour collectData
+        document.getElementById('heurePrepDisplay').dataset.time = prepTime;
+    }
+
     // ===== TIME PICKER iOS STYLE =====
     let tpCurrentField = null;
     const ITEM_H = 42;
@@ -1533,6 +1601,7 @@
         const m = String(getWheelValue('tpMinWheel')).padStart(2, '0');
         document.getElementById(tpCurrentField).textContent = h + ':' + m;
         closeTimePicker();
+        updatePrepDisplay();
         if (typeof scheduleAutoSave === 'function' && !window._isLoading) scheduleAutoSave();
     }
 
@@ -1696,11 +1765,11 @@
                 <button class="tp-done" onclick="confirmTimePicker()">&#10003;</button>
             </div>
             <div class="tp-wheels">
+                <div class="tp-selection-bar"></div>
                 <div class="tp-wheel" id="tpHourWheel"></div>
                 <div class="tp-separator">:</div>
                 <div class="tp-wheel" id="tpMinWheel"></div>
             </div>
-            <div class="tp-selection-bar"></div>
         </div>
     </div>
 </body>
