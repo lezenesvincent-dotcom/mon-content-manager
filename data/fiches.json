@@ -62,8 +62,8 @@
   "1770966467154": {
     "titre": "New York",
     "date": "2026-02-13",
-    "entite": "",
-    "contact": "",
+    "entite": "CIC",
+    "contact": "Martin",
     "heurePrep": "12:30",
     "heureDirect": "13:00",
     "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
@@ -84,6 +84,6 @@
     "intervenants": [],
     "mode": "studio",
     "id": "1770966467154",
-    "updatedAt": "2026-02-13T07:08:01.249Z"
+    "updatedAt": "2026-02-13T07:08:09.038Z"
   }
 }
