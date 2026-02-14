@@ -337,10 +337,12 @@
     const JOURS_FULL = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
 
     const EVENT_IMAGES = {
-        morning: { src: IMG_BASE + 'picto-morning.png', mode: 'fixed', height: 40 },
-        'conf call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed', height: 45 },
-        'conference call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed', height: 45 },
-        'conf hebdo': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed', height: 45 },
+        morning: { src: IMG_BASE + 'picto-morning.png', mode: 'fixed' },
+        'conf call': { src: IMG_BASE + 'picto-confcall.png', mini: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
+        'conference call': { src: IMG_BASE + 'picto-confcall.png', mini: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
+        'conf hebdo': { src: IMG_BASE + 'picto-confcall.png', mini: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
+        'décryptage': { src: IMG_BASE + 'picto-decryptage.png', mini: IMG_BASE + 'picto-decryptage-mini.png', mode: 'fixed' },
+        'decryptage': { src: IMG_BASE + 'picto-decryptage.png', mini: IMG_BASE + 'picto-decryptage-mini.png', mode: 'fixed' },
     };
 
     let currentMonday = getMonday(new Date());
@@ -447,7 +449,7 @@
                     for (var j = 0; j < evts.length; j++) {
                         if (i === j) continue;
                         var subJ = (evts[j].subject || '').toLowerCase();
-                        if (subJ.includes('conf call') || subJ.includes('conf hebdo') || subJ.includes('conference call')) {
+                        if (subJ.includes('conf call') || subJ.includes('conf hebdo') || subJ.includes('conference call') || subJ.includes('cryptage')) {
                             var confStart = new Date(evts[j].start);
                             if (Math.abs(prepaEnd - confStart) < 5 * 60 * 1000) {
                                 evts[i].end = evts[j].end;
@@ -520,8 +522,9 @@
 
                 var html = '';
                 if (isFixed) {
+                    var imgSrc = (totalCols > 1 && eventImg.mini) ? eventImg.mini : eventImg.src;
                     html += '<div class="picto-wrap">';
-                    html += '<img src="'+eventImg.src+'" alt="">';
+                    html += '<img src="'+imgSrc+'" alt="">';
                     html += '<div class="picto-time">'+timeStr+'</div>';
                     html += '</div>';
                 } else {
