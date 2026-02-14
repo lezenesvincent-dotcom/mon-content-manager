@@ -141,13 +141,93 @@
         /* Image de fond de l'event */
         .event-bg {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 0;
+            z-index: 0; overflow: hidden;
         }
         .event-bg img {
             width: 100%; height: 100%;
             object-fit: cover; object-position: center;
             display: block;
         }
+        .event-bg.fixed-mode {
+            display: flex; align-items: center; justify-content: center;
+        }
+        .event-bg.fixed-mode img {
+            width: 100%; height: auto;
+            object-fit: contain; object-position: center;
+        }
+
+        /* Drag ghost */
+        .event.dragging {
+            opacity: 0.5;
+            z-index: 20;
+        }
+        .drag-ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0.85;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+            border: 2px solid rgba(130,140,248,0.5);
+        }
+
+        /* Drop indicator */
+        .drop-indicator {
+            position: absolute;
+            left: 2px; right: 2px;
+            height: 3px;
+            background: #818cf8;
+            border-radius: 2px;
+            z-index: 15;
+            box-shadow: 0 0 8px rgba(130,140,248,0.6);
+            display: none;
+        }
+
+        /* Popup confirmation */
+        .confirm-popup {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20,22,40,0.95);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 20px 28px;
+            z-index: 300;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+            text-align: center;
+            min-width: 280px;
+        }
+        .confirm-popup.visible { display: block; }
+        .confirm-popup h3 {
+            color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 8px;
+        }
+        .confirm-popup p {
+            color: rgba(255,255,255,0.5); font-size: 12px; margin-bottom: 16px;
+        }
+        .confirm-popup .btn-row {
+            display: flex; gap: 10px; justify-content: center;
+        }
+        .confirm-popup button {
+            padding: 8px 20px; border-radius: 10px; border: none;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            font-family: inherit; transition: all 0.15s;
+        }
+        .confirm-popup .btn-cancel {
+            background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);
+        }
+        .confirm-popup .btn-cancel:hover { background: rgba(255,255,255,0.15); }
+        .confirm-popup .btn-confirm {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
+        }
+        .confirm-popup .btn-confirm:hover { opacity: 0.85; }
+        .confirm-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); z-index: 250;
+        }
+        .confirm-overlay.visible { display: block; }
 
         /* Dégradé sombre en bas pour lisibilité texte */
         .event-overlay {
@@ -268,6 +348,15 @@
         </div>
     </div>
     <div class="event-tooltip" id="tooltip"></div>
+    <div class="confirm-overlay" id="confirmOverlay"></div>
+    <div class="confirm-popup" id="confirmPopup">
+        <h3 id="confirmTitle">Déplacer l'événement ?</h3>
+        <p id="confirmDesc"></p>
+        <div class="btn-row">
+            <button class="btn-cancel" onclick="cancelDrag()">Annuler</button>
+            <button class="btn-confirm" onclick="confirmDrag()">Confirmer</button>
+        </div>
+    </div>
 
 <script>
     // ===== CONFIG =====
@@ -279,18 +368,18 @@
     const START_HOUR = 7, END_HOUR = 21, HOUR_PX = 60;
     const JOURS_FULL = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
 
-    // Mapping mots-clés → image
+    // Mapping mots-clés → image + type (fixed = taille fixe, cover = object-fit cover)
     const EVENT_IMAGES = {
-        morning: IMG_BASE + 'event-morning.png',
-        'conf call': IMG_BASE + 'event-confcall.png',
-        'conference call': IMG_BASE + 'event-confcall.png',
-        'conf hebdo': IMG_BASE + 'event-confcall.png',
-        'direct analystes': IMG_BASE + 'event-da.png',
-        'da ': IMG_BASE + 'event-da.png',
-        'reunion': IMG_BASE + 'event-reunion.png',
-        'réunion': IMG_BASE + 'event-reunion.png',
-        'point': IMG_BASE + 'event-reunion.png',
-        'chart': IMG_BASE + 'event-reunion.png',
+        morning: { src: IMG_BASE + 'picto-morning.png', mode: 'fixed' },
+        'conf call': { src: IMG_BASE + 'event-confcall.png', mode: 'cover' },
+        'conference call': { src: IMG_BASE + 'event-confcall.png', mode: 'cover' },
+        'conf hebdo': { src: IMG_BASE + 'event-confcall.png', mode: 'cover' },
+        'direct analystes': { src: IMG_BASE + 'event-da.png', mode: 'cover' },
+        'da ': { src: IMG_BASE + 'event-da.png', mode: 'cover' },
+        'reunion': { src: IMG_BASE + 'event-reunion.png', mode: 'cover' },
+        'réunion': { src: IMG_BASE + 'event-reunion.png', mode: 'cover' },
+        'point': { src: IMG_BASE + 'event-reunion.png', mode: 'cover' },
+        'chart': { src: IMG_BASE + 'event-reunion.png', mode: 'cover' },
     };
 
     let currentMonday = getMonday(new Date());
@@ -320,8 +409,8 @@
 
     function getEventImage(subject) {
         const s = (subject || '').toLowerCase();
-        for (const [keyword, img] of Object.entries(EVENT_IMAGES)) {
-            if (s.includes(keyword)) return img;
+        for (const [keyword, imgObj] of Object.entries(EVENT_IMAGES)) {
+            if (s.includes(keyword)) return imgObj;
         }
         return null;
     }
@@ -456,15 +545,20 @@
                 }
 
                 var html = '';
-                if (eventImg) html += '<div class="event-bg"><img src="'+eventImg+'" alt=""></div>';
+                if (eventImg) {
+                    var bgClass = eventImg.mode === 'fixed' ? 'event-bg fixed-mode' : 'event-bg';
+                    html += '<div class="'+bgClass+'"><img src="'+eventImg.src+'" alt=""></div>';
+                }
                 html += '<div class="event-overlay"></div>';
                 html += '<div class="event-handle top"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
                 html += '<div class="event-inner">';
-                html += '<div class="event-title">'+escHtml(ev.subject||'')+'</div>';
-                if (heightPx > 34) html += '<div class="event-time">'+timeStr+'</div>';
-                if (heightPx > 55 && ev.organizer) html += '<div class="event-org">'+escHtml(ev.organizer)+'</div>';
+                if (!eventImg || eventImg.mode !== 'fixed') {
+                    html += '<div class="event-title">'+escHtml(ev.subject||'')+'</div>';
+                    if (heightPx > 34) html += '<div class="event-time">'+timeStr+'</div>';
+                    if (heightPx > 55 && ev.organizer) html += '<div class="event-org">'+escHtml(ev.organizer)+'</div>';
+                }
                 html += '</div>';
-                if (heightPx > 42) html += '<div class="event-badge">'+durStr+'</div>';
+                if (heightPx > 42 && (!eventImg || eventImg.mode !== 'fixed')) html += '<div class="event-badge">'+durStr+'</div>';
                 html += '<div class="event-handle bottom"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
                 el.innerHTML = html;
 
@@ -485,6 +579,23 @@
                     tt.style.top = (e.clientY-10)+'px';
                 });
                 el.addEventListener('mouseleave', function() { document.getElementById('tooltip').classList.remove('visible'); });
+
+                // Stocker les données pour le drag
+                el._evData = { subject: ev.subject, startMin: item.startMin, endMin: item.endMin, ev: ev };
+
+                // Drag mouse
+                el.addEventListener('mousedown', function(e) {
+                    if (e.target.closest('.event-handle')) return; // Les poignées sont pour resize
+                    initDrag(el, ev, e.clientX, e.clientY, false);
+                });
+
+                // Drag touch (pas de long press, direct)
+                el.addEventListener('touchstart', function(e) {
+                    if (e.target.closest('.event-handle')) return;
+                    var t = e.touches[0];
+                    initDrag(el, ev, t.clientX, t.clientY, true);
+                }, { passive: true });
+
                 col.appendChild(el);
             });
         });
@@ -548,6 +659,125 @@
         activeLayer.classList.remove('active');
     }
     setInterval(nextAlbum, 30000);
+
+    // ===== DRAG & DROP =====
+    var dragState = null;
+
+    function initDrag(el, ev, startX, startY, isTouch) {
+        var evData = el._evData;
+        if (!evData) return;
+        
+        document.getElementById('tooltip').classList.remove('visible');
+
+        dragState = {
+            el: el,
+            evData: evData,
+            startX: startX,
+            startY: startY,
+            origTop: parseInt(el.style.top),
+            origDayIdx: parseInt(el.parentElement.id.replace('dayCol','')),
+            moved: false,
+            isTouch: isTouch,
+            newDayIdx: null,
+            newStartMin: null
+        };
+
+        el.classList.add('dragging');
+    }
+
+    function moveDrag(clientX, clientY) {
+        if (!dragState) return;
+        var dx = clientX - dragState.startX;
+        var dy = clientY - dragState.startY;
+
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) dragState.moved = true;
+        if (!dragState.moved) return;
+
+        // Calculer la nouvelle position
+        var scroll = document.getElementById('daysScroll');
+        var gridRect = document.getElementById('daysGrid').getBoundingClientRect();
+        var colWidth = gridRect.width / 5;
+        var relX = clientX - gridRect.left;
+        var newDayIdx = Math.floor(relX / colWidth);
+        newDayIdx = Math.max(0, Math.min(4, newDayIdx));
+
+        var relY = clientY - gridRect.top + scroll.scrollTop;
+        var newMin = START_HOUR * 60 + Math.round(relY / HOUR_PX * 60 / 15) * 15;
+
+        dragState.newDayIdx = newDayIdx;
+        dragState.newStartMin = newMin;
+
+        // Déplacer visuellement
+        var newTop = (newMin - START_HOUR * 60) * (HOUR_PX / 60);
+        dragState.el.style.top = newTop + 'px';
+
+        // Changer de colonne si nécessaire
+        var targetCol = document.getElementById('dayCol' + newDayIdx);
+        if (targetCol && dragState.el.parentElement !== targetCol) {
+            targetCol.appendChild(dragState.el);
+        }
+    }
+
+    function endDrag() {
+        if (!dragState) return;
+        dragState.el.classList.remove('dragging');
+
+        if (!dragState.moved) {
+            dragState = null;
+            return;
+        }
+
+        // Afficher popup de confirmation
+        var evData = dragState.evData;
+        var newH = Math.floor(dragState.newStartMin / 60);
+        var newM = dragState.newStartMin % 60;
+        var dur = evData.endMin - evData.startMin;
+        var endH = Math.floor((dragState.newStartMin + dur) / 60);
+        var endM = (dragState.newStartMin + dur) % 60;
+        var newDay = new Date(currentMonday);
+        newDay.setDate(newDay.getDate() + dragState.newDayIdx);
+
+        document.getElementById('confirmTitle').textContent = 'Déplacer "' + (evData.subject || '').substring(0, 30) + '" ?';
+        document.getElementById('confirmDesc').textContent =
+            JOURS_FULL[dragState.newDayIdx] + ' ' + newDay.getDate() + ' — ' +
+            String(newH).padStart(2,'0') + ':' + String(newM).padStart(2,'0') + ' → ' +
+            String(endH).padStart(2,'0') + ':' + String(endM).padStart(2,'0');
+
+        document.getElementById('confirmOverlay').classList.add('visible');
+        document.getElementById('confirmPopup').classList.add('visible');
+    }
+
+    function confirmDrag() {
+        // TODO: Pousser le changement via EWS quand dispo
+        document.getElementById('confirmOverlay').classList.remove('visible');
+        document.getElementById('confirmPopup').classList.remove('visible');
+        dragState = null;
+        // Pour l'instant on laisse l'event à sa nouvelle position visuellement
+    }
+
+    function cancelDrag() {
+        if (dragState) {
+            // Remettre l'event à sa position d'origine
+            dragState.el.style.top = dragState.origTop + 'px';
+            var origCol = document.getElementById('dayCol' + dragState.origDayIdx);
+            if (origCol && dragState.el.parentElement !== origCol) {
+                origCol.appendChild(dragState.el);
+            }
+        }
+        document.getElementById('confirmOverlay').classList.remove('visible');
+        document.getElementById('confirmPopup').classList.remove('visible');
+        dragState = null;
+    }
+
+    // Mouse events
+    document.addEventListener('mousemove', function(e) { if (dragState) { e.preventDefault(); moveDrag(e.clientX, e.clientY); } });
+    document.addEventListener('mouseup', function() { if (dragState) endDrag(); });
+
+    // Touch events
+    document.addEventListener('touchmove', function(e) {
+        if (dragState) { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); }
+    }, { passive: false });
+    document.addEventListener('touchend', function() { if (dragState) endDrag(); });
 
     // ===== INIT =====
     renderAgenda(); loadCalendarData();
