@@ -64,50 +64,69 @@
         .sync-dot.loading { background: #fbbf24; }
         .sync-dot.error { background: #f87171; }
 
-        /* GRILLE */
+        /* ===== CADRE PRINCIPAL ===== */
         .agenda-body {
             flex: 1; display: flex; overflow: hidden;
-            border-radius: 18px;
-            background: rgba(10,10,30,0.4);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(180,180,190,0.12) 0%, rgba(120,120,140,0.06) 100%);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
         }
-        .time-col { width: 48px; min-width: 48px; padding-top: 52px; overflow: hidden; }
+
+        .time-col { width: 44px; min-width: 44px; padding-top: 52px; overflow: hidden; }
         .time-label {
             height: 60px; display: flex; align-items: flex-start; justify-content: flex-end;
-            font-size: 10px; color: rgba(255,255,255,0.2); padding-right: 8px;
+            font-size: 10px; color: rgba(255,255,255,0.25); padding-right: 6px;
             transform: translateY(-7px); font-weight: 500;
         }
+
         .days-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; }
+
+        /* ===== HEADER JOURS - barre arrondie ===== */
         .days-header {
             display: grid; grid-template-columns: repeat(5, 1fr);
-            position: sticky; top: 0; z-index: 10; gap: 8px; padding: 0 4px;
-            background: rgba(10,10,30,0.6); backdrop-filter: blur(8px);
+            position: sticky; top: 0; z-index: 10; gap: 6px; padding: 6px 6px 0;
+        }
+        .days-header-bar {
+            grid-column: 1 / -1;
+            background: linear-gradient(180deg, rgba(160,160,175,0.15) 0%, rgba(120,120,140,0.08) 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.06);
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
         }
         .day-header {
-            text-align: center; padding: 10px 4px 8px;
+            text-align: center; padding: 8px 4px 6px;
         }
         .day-header .day-name {
-            font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 700;
+            font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 600; text-transform: capitalize;
         }
         .day-header .day-num {
-            font-size: 17px; font-weight: 800; color: rgba(255,255,255,0.75); margin-top: 2px;
+            font-size: 16px; font-weight: 800; color: rgba(255,255,255,0.7); margin-top: 1px;
         }
         .day-header.today .day-num {
             background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
-            border-radius: 50%; width: 30px; height: 30px;
-            display: inline-flex; align-items: center; justify-content: center; font-size: 15px;
+            border-radius: 50%; width: 28px; height: 28px;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 14px;
         }
 
+        /* ===== COLONNES JOURS - bords arrondis, ombres ===== */
         .days-grid {
             display: grid; grid-template-columns: repeat(5, 1fr);
-            position: relative; gap: 8px; padding: 0 4px;
+            position: relative; gap: 6px; padding: 6px;
         }
         .day-col {
             position: relative; min-height: calc(14 * 60px);
-            border-radius: 14px;
-            border: 1px solid rgba(255,255,255,0.04);
-            background: rgba(255,255,255,0.012);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: linear-gradient(180deg,
+                rgba(100,100,120,0.08) 0%,
+                rgba(80,80,100,0.04) 50%,
+                rgba(140,140,160,0.1) 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03),
+                        inset 0 -2px 8px rgba(255,255,255,0.02),
+                        0 1px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
         .hour-line { height: 60px; border-bottom: 1px solid rgba(255,255,255,0.02); }
 
@@ -122,7 +141,7 @@
             width: 8px; height: 8px; border-radius: 50%; background: #818cf8;
         }
 
-        /* ÉVÉNEMENTS */
+        /* ===== ÉVÉNEMENTS ===== */
         .event {
             position: absolute; left: 4px; right: 4px;
             border-radius: 12px;
@@ -140,14 +159,7 @@
         .event.fixed-picto .event-handle { display: none; }
         .event.fixed-picto .event-inner { display: none; }
         .event.fixed-picto .event-badge { display: none; }
-        .event.fixed-picto .event-bg {
-            position: relative; overflow: visible;
-        }
-        .event.fixed-picto .event-bg img {
-            width: 100%; height: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
-        }
+
         .event:hover {
             transform: scale(1.02);
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
@@ -155,124 +167,21 @@
         }
         .event:active { cursor: grabbing; }
 
-        /* Picto taille fixe : pas de conteneur, juste l'image */
-        .event.fixed-picto {
-            border: none;
-            border-radius: 0;
-            background: none;
-            overflow: visible;
-            min-height: 0;
-        }
-        .event.fixed-picto:hover {
-            transform: scale(1.03);
-            box-shadow: none;
-            border-color: transparent;
-        }
-
-        /* Image de fond de l'event */
         .event-bg {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             z-index: 0; overflow: hidden;
         }
         .event-bg img {
             width: 100%; height: 100%;
-            object-fit: cover; object-position: center;
-            display: block;
-        }
-        .event-bg.fixed-mode {
-            display: flex; align-items: center; justify-content: center;
-        }
-        .event-bg.fixed-mode img {
-            width: 100%; height: auto;
-            object-fit: contain; object-position: center;
+            object-fit: cover; object-position: center; display: block;
         }
 
-        /* Drag ghost */
-        .event.dragging {
-            opacity: 0.5;
-            z-index: 20;
-        }
-        .drag-ghost {
-            position: fixed;
-            pointer-events: none;
-            z-index: 200;
-            opacity: 0.85;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.6);
-            border: 2px solid rgba(130,140,248,0.5);
-        }
-
-        /* Drop indicator */
-        .drop-indicator {
-            position: absolute;
-            left: 2px; right: 2px;
-            height: 3px;
-            background: #818cf8;
-            border-radius: 2px;
-            z-index: 15;
-            box-shadow: 0 0 8px rgba(130,140,248,0.6);
-            display: none;
-        }
-
-        /* Popup confirmation */
-        .confirm-popup {
-            display: none;
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(20,22,40,0.95);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 16px;
-            padding: 20px 28px;
-            z-index: 300;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 16px 48px rgba(0,0,0,0.6);
-            text-align: center;
-            min-width: 280px;
-        }
-        .confirm-popup.visible { display: block; }
-        .confirm-popup h3 {
-            color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 8px;
-        }
-        .confirm-popup p {
-            color: rgba(255,255,255,0.5); font-size: 12px; margin-bottom: 16px;
-        }
-        .confirm-popup .btn-row {
-            display: flex; gap: 10px; justify-content: center;
-        }
-        .confirm-popup button {
-            padding: 8px 20px; border-radius: 10px; border: none;
-            font-size: 13px; font-weight: 600; cursor: pointer;
-            font-family: inherit; transition: all 0.15s;
-        }
-        .confirm-popup .btn-cancel {
-            background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);
-        }
-        .confirm-popup .btn-cancel:hover { background: rgba(255,255,255,0.15); }
-        .confirm-popup .btn-confirm {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
-        }
-        .confirm-popup .btn-confirm:hover { opacity: 0.85; }
-        .confirm-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4); z-index: 250;
-        }
-        .confirm-overlay.visible { display: block; }
-
-        /* Dégradé sombre en bas pour lisibilité texte */
         .event-overlay {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg,
-                rgba(0,0,0,0.1) 0%,
-                rgba(0,0,0,0.25) 40%,
-                rgba(0,0,0,0.6) 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.6) 100%);
             z-index: 1;
         }
-        /* Events sans image */
-        .event.no-image .event-overlay {
-            background: none;
-        }
+        .event.no-image .event-overlay { background: none; }
         .event.no-image {
             background: linear-gradient(135deg, rgba(80,90,140,0.4), rgba(50,60,110,0.25));
         }
@@ -305,7 +214,6 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Poignées */
         .event-handle {
             position: absolute; left: 50%; transform: translateX(-50%);
             z-index: 4; cursor: ns-resize;
@@ -320,14 +228,32 @@
         .event-handle.top { top: 3px; }
         .event-handle.bottom { bottom: 3px; }
 
-        /* Ombre sous les events */
-        .event-shadow {
-            position: absolute; left: 5%; right: 5%; bottom: -6px;
-            height: 12px; z-index: -1;
-            background: url('agenda-assets/ombre.png') center / 100% 100% no-repeat;
-            opacity: 0.5;
-            filter: blur(2px);
+        .event.dragging { opacity: 0.5; z-index: 20; }
+
+        /* Popup confirmation */
+        .confirm-popup {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20,22,40,0.95); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px; padding: 20px 28px; z-index: 300;
+            backdrop-filter: blur(20px); box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+            text-align: center; min-width: 280px;
         }
+        .confirm-popup.visible { display: block; }
+        .confirm-popup h3 { color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+        .confirm-popup p { color: rgba(255,255,255,0.5); font-size: 12px; margin-bottom: 16px; }
+        .confirm-popup .btn-row { display: flex; gap: 10px; justify-content: center; }
+        .confirm-popup button {
+            padding: 8px 20px; border-radius: 10px; border: none;
+            font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+        }
+        .confirm-popup .btn-cancel { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+        .confirm-popup .btn-confirm { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+        .confirm-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); z-index: 250;
+        }
+        .confirm-overlay.visible { display: block; }
 
         /* Tooltip */
         .event-tooltip {
@@ -350,7 +276,6 @@
 <body>
     <div class="album-bg" id="albumBg"></div>
     <a href="index.html" class="nav-back">&larr; Studio Manager</a>
-
     <div class="page-wrap">
         <div class="agenda-header">
             <div class="agenda-title">
@@ -390,7 +315,6 @@
     </div>
 
 <script>
-    // ===== CONFIG =====
     const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s=>s.split('').reverse().join('')).join('');
     const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
     const GH_FILE = 'calendar-data.json';
@@ -399,18 +323,11 @@
     const START_HOUR = 7, END_HOUR = 21, HOUR_PX = 60;
     const JOURS_FULL = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
 
-    // Mapping mots-clés → image + type (fixed = taille fixe, cover = object-fit cover)
     const EVENT_IMAGES = {
         morning: { src: IMG_BASE + 'picto-morning.png', mode: 'fixed' },
         'conf call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
         'conference call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
         'conf hebdo': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
-        'direct analystes': { src: IMG_BASE + 'event-da.png', mode: 'cover' },
-        'da ': { src: IMG_BASE + 'event-da.png', mode: 'cover' },
-        'reunion': { src: IMG_BASE + 'event-reunion.png', mode: 'cover' },
-        'réunion': { src: IMG_BASE + 'event-reunion.png', mode: 'cover' },
-        'point': { src: IMG_BASE + 'event-reunion.png', mode: 'cover' },
-        'chart': { src: IMG_BASE + 'event-reunion.png', mode: 'cover' },
     };
 
     let currentMonday = getMonday(new Date());
@@ -437,7 +354,6 @@
         if (!str) return str;
         try { return decodeURIComponent(escape(str)); } catch(e) { return str; }
     }
-
     function getEventImage(subject) {
         const s = (subject || '').toLowerCase();
         for (const [keyword, imgObj] of Object.entries(EVENT_IMAGES)) {
@@ -453,33 +369,35 @@
         document.getElementById('weekLabel').textContent =
             currentMonday.getDate()+' '+mois[currentMonday.getMonth()]+' — '+endWeek.getDate()+' '+mois[endWeek.getMonth()]+'  ·  S'+getWeekNumber(currentMonday);
 
-        let th = '';
-        for (let h = START_HOUR; h <= END_HOUR; h++) th += '<div class="time-label">'+String(h).padStart(2,'0')+':00</div>';
+        var th = '';
+        for (var h = START_HOUR; h <= END_HOUR; h++) th += '<div class="time-label">'+String(h).padStart(2,'0')+':00</div>';
         document.getElementById('timeCol').innerHTML = '<div style="height:52px;"></div>' + th;
 
-        let hh = '';
-        for (let i = 0; i < 5; i++) {
-            const d = new Date(currentMonday); d.setDate(d.getDate()+i);
+        // Header jours dans une barre arrondie
+        var hh = '<div class="days-header-bar">';
+        for (var i = 0; i < 5; i++) {
+            var d = new Date(currentMonday); d.setDate(d.getDate()+i);
             hh += '<div class="day-header '+(d.toDateString()===today.toDateString()?'today':'')+'">'+
                 '<div class="day-name">'+JOURS_FULL[i]+'</div><div class="day-num">'+d.getDate()+'</div></div>';
         }
+        hh += '</div>';
         document.getElementById('daysHeader').innerHTML = hh;
 
-        let gh = '';
-        for (let i = 0; i < 5; i++) {
+        var gh = '';
+        for (var i = 0; i < 5; i++) {
             gh += '<div class="day-col" id="dayCol'+i+'">';
-            for (let h = START_HOUR; h < END_HOUR; h++) gh += '<div class="hour-line"></div>';
+            for (var h = START_HOUR; h < END_HOUR; h++) gh += '<div class="hour-line"></div>';
             gh += '</div>';
         }
         document.getElementById('daysGrid').innerHTML = gh;
 
         // Now line
-        const dayIdx = today.getDay()-1;
+        var dayIdx = today.getDay()-1;
         if (dayIdx >= 0 && dayIdx < 5 && getMonday(today).toDateString() === currentMonday.toDateString()) {
-            const topPx = (today.getHours()*60+today.getMinutes()-START_HOUR*60)*(HOUR_PX/60);
+            var topPx = (today.getHours()*60+today.getMinutes()-START_HOUR*60)*(HOUR_PX/60);
             if (topPx > 0) {
-                const col = document.getElementById('dayCol'+dayIdx);
-                if (col) { const l = document.createElement('div'); l.className='now-line'; l.style.top=topPx+'px'; col.appendChild(l); }
+                var col = document.getElementById('dayCol'+dayIdx);
+                if (col) { var l = document.createElement('div'); l.className='now-line'; l.style.top=topPx+'px'; col.appendChild(l); }
             }
         }
         renderEvents();
@@ -489,19 +407,15 @@
     function renderEvents() {
         if (!calendarData || !calendarData.salle) return;
 
-        // Grouper par jour pour gérer le chevauchement
         var dayEvents = {};
         calendarData.salle.forEach(function(ev) {
             if (!ev.start) return;
-            // Fix encodage
             ev.subject = fixEnc(ev.subject);
             ev.location = fixEnc(ev.location);
             ev.organizer = fixEnc(ev.organizer);
-
-            const start = new Date(ev.start), end = new Date(ev.end||ev.start);
-            const diffDays = Math.round((start - currentMonday)/(1000*60*60*24));
+            var start = new Date(ev.start);
+            var diffDays = Math.round((start - currentMonday)/(1000*60*60*24));
             if (diffDays < 0 || diffDays >= 5) return;
-
             if (!dayEvents[diffDays]) dayEvents[diffDays] = [];
             dayEvents[diffDays].push(ev);
         });
@@ -511,21 +425,18 @@
             var col = document.getElementById('dayCol'+dayIdx);
             if (!col) return;
 
-            // Fusionner prépa conf call + conf call en un seul event
+            // Fusionner prépa + conf call
             var toSkip = {};
             for (var i = 0; i < evts.length; i++) {
                 var subI = (evts[i].subject || '').toLowerCase();
                 if (subI.includes('prépa') || subI.includes('prepa')) {
-                    // Chercher la conf call qui suit
                     var prepaEnd = new Date(evts[i].end || evts[i].start);
                     for (var j = 0; j < evts.length; j++) {
                         if (i === j) continue;
                         var subJ = (evts[j].subject || '').toLowerCase();
                         if (subJ.includes('conf call') || subJ.includes('conf hebdo') || subJ.includes('conference call')) {
                             var confStart = new Date(evts[j].start);
-                            // Si la conf commence quand la prépa finit (ou très proche)
                             if (Math.abs(prepaEnd - confStart) < 5 * 60 * 1000) {
-                                // Fusionner : la prépa prend le picto conf call et s'étend jusqu'à la fin de la conf
                                 evts[i].end = evts[j].end;
                                 evts[i].subject = evts[j].subject;
                                 evts[i]._merged = true;
@@ -538,17 +449,13 @@
             }
             evts = evts.filter(function(_, idx) { return !toSkip[idx]; });
 
-            // Calculer les colonnes de chevauchement
+            // Chevauchement
             var placed = [];
             evts.forEach(function(ev) {
                 var start = new Date(ev.start), end = new Date(ev.end||ev.start);
                 var sH=start.getUTCHours()+1, sM=start.getUTCMinutes(), eH=end.getUTCHours()+1, eM=end.getUTCMinutes();
                 var startMin=sH*60+sM, endMin=eH*60+eM;
-
-                // Trouver les events qui chevauchent
-                var overlapCol = 0;
-                var maxCol = 0;
-                var overlaps = [];
+                var overlapCol = 0, maxCol = 0, overlaps = [];
                 placed.forEach(function(p) {
                     if (startMin < p.endMin && endMin > p.startMin) {
                         overlaps.push(p);
@@ -556,27 +463,22 @@
                         if (p.maxCol > maxCol) maxCol = p.maxCol;
                     }
                 });
-
                 var item = { ev: ev, startMin: startMin, endMin: endMin, col: overlapCol, maxCol: 0 };
-                // Mettre à jour maxCol pour tous les overlaps
                 overlaps.forEach(function(p) { p.maxCol = Math.max(p.maxCol, overlapCol); });
                 item.maxCol = Math.max(maxCol, overlapCol);
                 placed.push(item);
             });
-
-            // Calculer maxCol final pour chaque groupe
             placed.forEach(function(item) {
                 placed.forEach(function(other) {
                     if (item === other) return;
                     if (item.startMin < other.endMin && item.endMin > other.startMin) {
                         var m = Math.max(item.maxCol, other.maxCol, item.col, other.col);
-                        item.maxCol = m;
-                        other.maxCol = m;
+                        item.maxCol = m; other.maxCol = m;
                     }
                 });
             });
 
-            // Render chaque event
+            // Render
             placed.forEach(function(item) {
                 var ev = item.ev;
                 var topPx = (item.startMin-START_HOUR*60)*(HOUR_PX/60);
@@ -591,9 +493,9 @@
                     ' - '+String(Math.floor(item.endMin/60)).padStart(2,'0')+':'+String(item.endMin%60).padStart(2,'0');
                 var durStr = getDuration(item.startMin, item.endMin);
                 var eventImg = getEventImage(ev.subject);
+                var isFixed = eventImg && eventImg.mode === 'fixed';
 
                 var el = document.createElement('div');
-                var isFixed = eventImg && eventImg.mode === 'fixed';
                 el.className = 'event' + (isFixed ? ' fixed-picto' : (eventImg ? '' : ' no-image'));
                 el.style.top = topPx+'px';
                 if (!isFixed) el.style.height = heightPx+'px';
@@ -605,7 +507,7 @@
 
                 var html = '';
                 if (isFixed) {
-                    html += '<img src="'+eventImg.src+'" alt="" style="width:100%;display:block;">';
+                    html += '<img src="'+eventImg.src+'" alt="" style="width:100%;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));">';
                 } else {
                     if (eventImg) {
                         html += '<div class="event-bg"><img src="'+eventImg.src+'" alt=""></div>';
@@ -640,16 +542,11 @@
                 });
                 el.addEventListener('mouseleave', function() { document.getElementById('tooltip').classList.remove('visible'); });
 
-                // Stocker les données pour le drag
                 el._evData = { subject: ev.subject, startMin: item.startMin, endMin: item.endMin, ev: ev };
-
-                // Drag mouse
                 el.addEventListener('mousedown', function(e) {
-                    if (e.target.closest('.event-handle')) return; // Les poignées sont pour resize
+                    if (e.target.closest('.event-handle')) return;
                     initDrag(el, ev, e.clientX, e.clientY, false);
                 });
-
-                // Drag touch (pas de long press, direct)
                 el.addEventListener('touchstart', function(e) {
                     if (e.target.closest('.event-handle')) return;
                     var t = e.touches[0];
@@ -663,23 +560,85 @@
 
     // ===== LOAD DATA =====
     async function loadCalendarData() {
-        const dot = document.getElementById('syncDot'), label = document.getElementById('syncLabel');
+        var dot = document.getElementById('syncDot'), label = document.getElementById('syncLabel');
         dot.className = 'sync-dot loading'; label.textContent = 'Sync...';
         try {
-            const resp = await fetch(GH_API, { headers: { 'Authorization': 'token '+GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store' });
+            var resp = await fetch(GH_API, { headers: { 'Authorization': 'token '+GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store' });
             if (!resp.ok) throw new Error('HTTP '+resp.status);
-            const data = await resp.json();
+            var data = await resp.json();
             calendarData = JSON.parse(atob(data.content));
             dot.className = 'sync-dot';
-            const u = calendarData.updatedAt ? new Date(calendarData.updatedAt) : null;
+            var u = calendarData.updatedAt ? new Date(calendarData.updatedAt) : null;
             label.textContent = u ? u.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : 'OK';
             clearEvents(); renderEvents();
         } catch(err) { console.error(err); dot.className='sync-dot error'; label.textContent='Erreur'; }
     }
     function clearEvents() { document.querySelectorAll('.event').forEach(function(e){e.remove();}); }
 
+    // ===== DRAG & DROP =====
+    var dragState = null;
+    function initDrag(el, ev, startX, startY, isTouch) {
+        var evData = el._evData; if (!evData) return;
+        document.getElementById('tooltip').classList.remove('visible');
+        dragState = { el:el, evData:evData, startX:startX, startY:startY,
+            origTop:parseInt(el.style.top), origDayIdx:parseInt(el.parentElement.id.replace('dayCol','')),
+            moved:false, isTouch:isTouch, newDayIdx:null, newStartMin:null };
+        el.classList.add('dragging');
+    }
+    function moveDrag(cx, cy) {
+        if (!dragState) return;
+        if (Math.abs(cx-dragState.startX)>5 || Math.abs(cy-dragState.startY)>5) dragState.moved=true;
+        if (!dragState.moved) return;
+        var scroll = document.getElementById('daysScroll');
+        var gridRect = document.getElementById('daysGrid').getBoundingClientRect();
+        var colW = gridRect.width/5;
+        var newDayIdx = Math.max(0, Math.min(4, Math.floor((cx-gridRect.left)/colW)));
+        var relY = cy - gridRect.top + scroll.scrollTop;
+        var newMin = START_HOUR*60 + Math.round(relY/HOUR_PX*60/15)*15;
+        dragState.newDayIdx = newDayIdx; dragState.newStartMin = newMin;
+        dragState.el.style.top = (newMin-START_HOUR*60)*(HOUR_PX/60)+'px';
+        var tc = document.getElementById('dayCol'+newDayIdx);
+        if (tc && dragState.el.parentElement !== tc) tc.appendChild(dragState.el);
+    }
+    function endDrag() {
+        if (!dragState) return;
+        dragState.el.classList.remove('dragging');
+        if (!dragState.moved) { dragState=null; return; }
+        var evData = dragState.evData;
+        var nH=Math.floor(dragState.newStartMin/60), nM=dragState.newStartMin%60;
+        var dur=evData.endMin-evData.startMin;
+        var eH=Math.floor((dragState.newStartMin+dur)/60), eM=(dragState.newStartMin+dur)%60;
+        var nd = new Date(currentMonday); nd.setDate(nd.getDate()+dragState.newDayIdx);
+        document.getElementById('confirmTitle').textContent = 'Déplacer "' + (evData.subject||'').substring(0,30) + '" ?';
+        document.getElementById('confirmDesc').textContent =
+            JOURS_FULL[dragState.newDayIdx]+' '+nd.getDate()+' — '+
+            String(nH).padStart(2,'0')+':'+String(nM).padStart(2,'0')+' → '+
+            String(eH).padStart(2,'0')+':'+String(eM).padStart(2,'0');
+        document.getElementById('confirmOverlay').classList.add('visible');
+        document.getElementById('confirmPopup').classList.add('visible');
+    }
+    function confirmDrag() {
+        document.getElementById('confirmOverlay').classList.remove('visible');
+        document.getElementById('confirmPopup').classList.remove('visible');
+        dragState=null;
+    }
+    function cancelDrag() {
+        if (dragState) {
+            dragState.el.style.top = dragState.origTop+'px';
+            var oc = document.getElementById('dayCol'+dragState.origDayIdx);
+            if (oc && dragState.el.parentElement !== oc) oc.appendChild(dragState.el);
+        }
+        document.getElementById('confirmOverlay').classList.remove('visible');
+        document.getElementById('confirmPopup').classList.remove('visible');
+        dragState=null;
+    }
+    document.addEventListener('mousemove', function(e) { if (dragState) { e.preventDefault(); moveDrag(e.clientX,e.clientY); } });
+    document.addEventListener('mouseup', function() { if (dragState) endDrag(); });
+    document.addEventListener('touchmove', function(e) { if (dragState) { e.preventDefault(); moveDrag(e.touches[0].clientX,e.touches[0].clientY); } }, {passive:false});
+    document.addEventListener('touchend', function() { if (dragState) endDrag(); });
+
     // ===== FOND POCHETTES ALBUM =====
-    const ALBUMS = [
+    var ALBUMS = [
         'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228',
         'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25',
         'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2',
@@ -697,147 +656,22 @@
         'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424',
         'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856',
     ];
-    let currentAlbumIndex = 0;
-    const bg = document.getElementById('albumBg');
-    const layer1 = document.createElement('div');
-    const layer2 = document.createElement('div');
-    layer1.className = 'cover active';
-    layer2.className = 'cover';
-    bg.appendChild(layer1);
-    bg.appendChild(layer2);
-    for (let i = ALBUMS.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [ALBUMS[i], ALBUMS[j]] = [ALBUMS[j], ALBUMS[i]];
-    }
-    layer1.style.backgroundImage = 'url(' + ALBUMS[0] + ')';
+    var currentAlbumIndex = 0;
+    var bg = document.getElementById('albumBg');
+    var layer1 = document.createElement('div');
+    var layer2 = document.createElement('div');
+    layer1.className = 'cover active'; layer2.className = 'cover';
+    bg.appendChild(layer1); bg.appendChild(layer2);
+    for (var i = ALBUMS.length-1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t=ALBUMS[i]; ALBUMS[i]=ALBUMS[j]; ALBUMS[j]=t; }
+    layer1.style.backgroundImage = 'url('+ALBUMS[0]+')';
     function nextAlbum() {
-        currentAlbumIndex = (currentAlbumIndex + 1) % ALBUMS.length;
-        const activeLayer = layer1.classList.contains('active') ? layer1 : layer2;
-        const nextLayer = activeLayer === layer1 ? layer2 : layer1;
-        nextLayer.style.backgroundImage = 'url(' + ALBUMS[currentAlbumIndex] + ')';
-        nextLayer.classList.add('active');
-        activeLayer.classList.remove('active');
+        currentAlbumIndex = (currentAlbumIndex+1)%ALBUMS.length;
+        var al = layer1.classList.contains('active') ? layer1 : layer2;
+        var nl = al===layer1 ? layer2 : layer1;
+        nl.style.backgroundImage = 'url('+ALBUMS[currentAlbumIndex]+')';
+        nl.classList.add('active'); al.classList.remove('active');
     }
     setInterval(nextAlbum, 30000);
-
-    // ===== DRAG & DROP =====
-    var dragState = null;
-
-    function initDrag(el, ev, startX, startY, isTouch) {
-        var evData = el._evData;
-        if (!evData) return;
-        
-        document.getElementById('tooltip').classList.remove('visible');
-
-        dragState = {
-            el: el,
-            evData: evData,
-            startX: startX,
-            startY: startY,
-            origTop: parseInt(el.style.top),
-            origDayIdx: parseInt(el.parentElement.id.replace('dayCol','')),
-            moved: false,
-            isTouch: isTouch,
-            newDayIdx: null,
-            newStartMin: null
-        };
-
-        el.classList.add('dragging');
-    }
-
-    function moveDrag(clientX, clientY) {
-        if (!dragState) return;
-        var dx = clientX - dragState.startX;
-        var dy = clientY - dragState.startY;
-
-        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) dragState.moved = true;
-        if (!dragState.moved) return;
-
-        // Calculer la nouvelle position
-        var scroll = document.getElementById('daysScroll');
-        var gridRect = document.getElementById('daysGrid').getBoundingClientRect();
-        var colWidth = gridRect.width / 5;
-        var relX = clientX - gridRect.left;
-        var newDayIdx = Math.floor(relX / colWidth);
-        newDayIdx = Math.max(0, Math.min(4, newDayIdx));
-
-        var relY = clientY - gridRect.top + scroll.scrollTop;
-        var newMin = START_HOUR * 60 + Math.round(relY / HOUR_PX * 60 / 15) * 15;
-
-        dragState.newDayIdx = newDayIdx;
-        dragState.newStartMin = newMin;
-
-        // Déplacer visuellement
-        var newTop = (newMin - START_HOUR * 60) * (HOUR_PX / 60);
-        dragState.el.style.top = newTop + 'px';
-
-        // Changer de colonne si nécessaire
-        var targetCol = document.getElementById('dayCol' + newDayIdx);
-        if (targetCol && dragState.el.parentElement !== targetCol) {
-            targetCol.appendChild(dragState.el);
-        }
-    }
-
-    function endDrag() {
-        if (!dragState) return;
-        dragState.el.classList.remove('dragging');
-
-        if (!dragState.moved) {
-            dragState = null;
-            return;
-        }
-
-        // Afficher popup de confirmation
-        var evData = dragState.evData;
-        var newH = Math.floor(dragState.newStartMin / 60);
-        var newM = dragState.newStartMin % 60;
-        var dur = evData.endMin - evData.startMin;
-        var endH = Math.floor((dragState.newStartMin + dur) / 60);
-        var endM = (dragState.newStartMin + dur) % 60;
-        var newDay = new Date(currentMonday);
-        newDay.setDate(newDay.getDate() + dragState.newDayIdx);
-
-        document.getElementById('confirmTitle').textContent = 'Déplacer "' + (evData.subject || '').substring(0, 30) + '" ?';
-        document.getElementById('confirmDesc').textContent =
-            JOURS_FULL[dragState.newDayIdx] + ' ' + newDay.getDate() + ' — ' +
-            String(newH).padStart(2,'0') + ':' + String(newM).padStart(2,'0') + ' → ' +
-            String(endH).padStart(2,'0') + ':' + String(endM).padStart(2,'0');
-
-        document.getElementById('confirmOverlay').classList.add('visible');
-        document.getElementById('confirmPopup').classList.add('visible');
-    }
-
-    function confirmDrag() {
-        // TODO: Pousser le changement via EWS quand dispo
-        document.getElementById('confirmOverlay').classList.remove('visible');
-        document.getElementById('confirmPopup').classList.remove('visible');
-        dragState = null;
-        // Pour l'instant on laisse l'event à sa nouvelle position visuellement
-    }
-
-    function cancelDrag() {
-        if (dragState) {
-            // Remettre l'event à sa position d'origine
-            dragState.el.style.top = dragState.origTop + 'px';
-            var origCol = document.getElementById('dayCol' + dragState.origDayIdx);
-            if (origCol && dragState.el.parentElement !== origCol) {
-                origCol.appendChild(dragState.el);
-            }
-        }
-        document.getElementById('confirmOverlay').classList.remove('visible');
-        document.getElementById('confirmPopup').classList.remove('visible');
-        dragState = null;
-    }
-
-    // Mouse events
-    document.addEventListener('mousemove', function(e) { if (dragState) { e.preventDefault(); moveDrag(e.clientX, e.clientY); } });
-    document.addEventListener('mouseup', function() { if (dragState) endDrag(); });
-
-    // Touch events
-    document.addEventListener('touchmove', function(e) {
-        if (dragState) { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); }
-    }, { passive: false });
-    document.addEventListener('touchend', function() { if (dragState) endDrag(); });
 
     // ===== INIT =====
     renderAgenda(); loadCalendarData();
