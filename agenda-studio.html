@@ -131,6 +131,23 @@
             border: 1px solid rgba(255,255,255,0.1);
             min-height: 28px;
         }
+        .event.fixed-picto {
+            border: none; border-radius: 0;
+            background: none !important;
+            overflow: visible;
+        }
+        .event.fixed-picto .event-overlay { display: none; }
+        .event.fixed-picto .event-handle { display: none; }
+        .event.fixed-picto .event-inner { display: none; }
+        .event.fixed-picto .event-badge { display: none; }
+        .event.fixed-picto .event-bg {
+            position: relative; overflow: visible;
+        }
+        .event.fixed-picto .event-bg img {
+            width: 100%; height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+        }
         .event:hover {
             transform: scale(1.02);
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
@@ -385,9 +402,9 @@
     // Mapping mots-clés → image + type (fixed = taille fixe, cover = object-fit cover)
     const EVENT_IMAGES = {
         morning: { src: IMG_BASE + 'picto-morning.png', mode: 'fixed' },
-        'conf call': { src: IMG_BASE + 'event-confcall.png', mode: 'cover' },
-        'conference call': { src: IMG_BASE + 'event-confcall.png', mode: 'cover' },
-        'conf hebdo': { src: IMG_BASE + 'event-confcall.png', mode: 'cover' },
+        'conf call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
+        'conference call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
+        'conf hebdo': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
         'direct analystes': { src: IMG_BASE + 'event-da.png', mode: 'cover' },
         'da ': { src: IMG_BASE + 'event-da.png', mode: 'cover' },
         'reunion': { src: IMG_BASE + 'event-reunion.png', mode: 'cover' },
@@ -493,6 +510,33 @@
             var evts = dayEvents[dayIdx];
             var col = document.getElementById('dayCol'+dayIdx);
             if (!col) return;
+
+            // Fusionner prépa conf call + conf call en un seul event
+            var toSkip = {};
+            for (var i = 0; i < evts.length; i++) {
+                var subI = (evts[i].subject || '').toLowerCase();
+                if (subI.includes('prépa') || subI.includes('prepa')) {
+                    // Chercher la conf call qui suit
+                    var prepaEnd = new Date(evts[i].end || evts[i].start);
+                    for (var j = 0; j < evts.length; j++) {
+                        if (i === j) continue;
+                        var subJ = (evts[j].subject || '').toLowerCase();
+                        if (subJ.includes('conf call') || subJ.includes('conf hebdo') || subJ.includes('conference call')) {
+                            var confStart = new Date(evts[j].start);
+                            // Si la conf commence quand la prépa finit (ou très proche)
+                            if (Math.abs(prepaEnd - confStart) < 5 * 60 * 1000) {
+                                // Fusionner : la prépa prend le picto conf call et s'étend jusqu'à la fin de la conf
+                                evts[i].end = evts[j].end;
+                                evts[i].subject = evts[j].subject;
+                                evts[i]._merged = true;
+                                toSkip[j] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            evts = evts.filter(function(_, idx) { return !toSkip[idx]; });
 
             // Calculer les colonnes de chevauchement
             var placed = [];
