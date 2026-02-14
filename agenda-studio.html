@@ -324,10 +324,10 @@
     const JOURS_FULL = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
 
     const EVENT_IMAGES = {
-        morning: { src: IMG_BASE + 'picto-morning.png', mode: 'fixed' },
-        'conf call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
-        'conference call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
-        'conf hebdo': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed' },
+        morning: { src: IMG_BASE + 'picto-morning.png', mode: 'fixed', height: 40 },
+        'conf call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed', height: 45 },
+        'conference call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed', height: 45 },
+        'conf hebdo': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed', height: 45 },
     };
 
     let currentMonday = getMonday(new Date());
@@ -507,7 +507,9 @@
 
                 var html = '';
                 if (isFixed) {
-                    html += '<img src="'+eventImg.src+'" alt="" style="width:100%;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));">';
+                    var fixedH = eventImg.height || 45;
+                    el.style.height = fixedH + 'px';
+                    html += '<img src="'+eventImg.src+'" alt="" style="height:100%;width:auto;max-width:100%;display:block;margin:0 auto;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));">';
                 } else {
                     if (eventImg) {
                         html += '<div class="event-bg"><img src="'+eventImg.src+'" alt=""></div>';
