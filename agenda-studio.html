@@ -138,6 +138,20 @@
         }
         .event:active { cursor: grabbing; }
 
+        /* Picto taille fixe : pas de conteneur, juste l'image */
+        .event.fixed-picto {
+            border: none;
+            border-radius: 0;
+            background: none;
+            overflow: visible;
+            min-height: 0;
+        }
+        .event.fixed-picto:hover {
+            transform: scale(1.03);
+            box-shadow: none;
+            border-color: transparent;
+        }
+
         /* Image de fond de l'event */
         .event-bg {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -535,31 +549,33 @@
                 var eventImg = getEventImage(ev.subject);
 
                 var el = document.createElement('div');
-                el.className = 'event' + (eventImg ? '' : ' no-image');
+                var isFixed = eventImg && eventImg.mode === 'fixed';
+                el.className = 'event' + (isFixed ? ' fixed-picto' : (eventImg ? '' : ' no-image'));
                 el.style.top = topPx+'px';
-                el.style.height = heightPx+'px';
-                if (totalCols > 1) {
+                if (!isFixed) el.style.height = heightPx+'px';
+                if (totalCols > 1 && !isFixed) {
                     el.style.left = 'calc('+leftPct+'% + 2px)';
                     el.style.right = 'auto';
                     el.style.width = 'calc('+widthPct+'% - 4px)';
                 }
 
                 var html = '';
-                if (eventImg) {
-                    var bgClass = eventImg.mode === 'fixed' ? 'event-bg fixed-mode' : 'event-bg';
-                    html += '<div class="'+bgClass+'"><img src="'+eventImg.src+'" alt=""></div>';
-                }
-                html += '<div class="event-overlay"></div>';
-                html += '<div class="event-handle top"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
-                html += '<div class="event-inner">';
-                if (!eventImg || eventImg.mode !== 'fixed') {
+                if (isFixed) {
+                    html += '<img src="'+eventImg.src+'" alt="" style="width:100%;display:block;">';
+                } else {
+                    if (eventImg) {
+                        html += '<div class="event-bg"><img src="'+eventImg.src+'" alt=""></div>';
+                    }
+                    html += '<div class="event-overlay"></div>';
+                    html += '<div class="event-handle top"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
+                    html += '<div class="event-inner">';
                     html += '<div class="event-title">'+escHtml(ev.subject||'')+'</div>';
                     if (heightPx > 34) html += '<div class="event-time">'+timeStr+'</div>';
                     if (heightPx > 55 && ev.organizer) html += '<div class="event-org">'+escHtml(ev.organizer)+'</div>';
+                    html += '</div>';
+                    if (heightPx > 42) html += '<div class="event-badge">'+durStr+'</div>';
+                    html += '<div class="event-handle bottom"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
                 }
-                html += '</div>';
-                if (heightPx > 42 && (!eventImg || eventImg.mode !== 'fixed')) html += '<div class="event-badge">'+durStr+'</div>';
-                html += '<div class="event-handle bottom"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
                 el.innerHTML = html;
 
                 el.addEventListener('mouseenter', function(e) {
