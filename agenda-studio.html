@@ -160,16 +160,17 @@
         .event.fixed-picto .event-inner { display: none; }
         .event.fixed-picto .event-badge { display: none; }
         .event.fixed-picto .picto-wrap {
-            display: flex; flex-direction: column; align-items: center;
+            position: relative; display: inline-block; width: 100%;
         }
         .event.fixed-picto .picto-wrap img {
-            height: auto; max-width: 100%; display: block;
+            width: 100%; height: auto; display: block;
             filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
         }
         .event.fixed-picto .picto-time {
-            font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.6);
-            text-align: center; margin-top: 2px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            position: absolute; bottom: 2px; left: 0; right: 0;
+            font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.8);
+            text-align: center;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
 
         .event:hover {
@@ -519,10 +520,8 @@
 
                 var html = '';
                 if (isFixed) {
-                    var fixedH = eventImg.height || 45;
-                    el.style.height = (fixedH + 16) + 'px';
                     html += '<div class="picto-wrap">';
-                    html += '<img src="'+eventImg.src+'" alt="" style="height:'+fixedH+'px;">';
+                    html += '<img src="'+eventImg.src+'" alt="">';
                     html += '<div class="picto-time">'+timeStr+'</div>';
                     html += '</div>';
                 } else {
