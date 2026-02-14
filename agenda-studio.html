@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-14 22:35:06 -->
+<!-- BUILD: 2026-02-14 23:00:58 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -431,7 +431,10 @@
             ev.location = fixEnc(ev.location);
             ev.organizer = fixEnc(ev.organizer);
             var start = new Date(ev.start);
-            var diffDays = Math.round((start - currentMonday)/(1000*60*60*24));
+            // Utiliser les dates locales pour éviter le décalage UTC/Paris
+            var startLocal = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+            var mondayLocal = new Date(currentMonday.getFullYear(), currentMonday.getMonth(), currentMonday.getDate());
+            var diffDays = Math.round((startLocal - mondayLocal)/(1000*60*60*24));
             if (diffDays < 0 || diffDays >= 5) return;
             if (!dayEvents[diffDays]) dayEvents[diffDays] = [];
             dayEvents[diffDays].push(ev);
