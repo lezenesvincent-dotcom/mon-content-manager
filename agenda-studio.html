@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 12:06:57 -->
+<!-- BUILD: 2026-02-15 12:13:35 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -244,7 +244,7 @@
         .event-handle.top { top: 3px; }
         .event-handle.bottom { bottom: 3px; }
 
-        .event.dragging { z-index: 50; transform: scale(1.05); box-shadow: 0 12px 36px rgba(0,0,0,0.6); pointer-events: none; }
+        .event.dragging { z-index: 50; outline: 2px solid rgba(99,102,241,0.8); outline-offset: 2px; }
 
         /* Popup confirmation */
         .confirm-popup {
@@ -678,6 +678,7 @@
 
                 el._evData = { subject: ev.subject, startMin: item.startMin, endMin: item.endMin, ev: ev };
                 el.addEventListener('click', function(e) {
+                    if (dragState) return; // don't re-select during drag
                     e.stopPropagation();
                     selectEvent(el, ev);
                 });
@@ -737,7 +738,7 @@
     // Click on empty grid area = place event there
     document.getElementById('daysGrid').addEventListener('click', function(e) {
         if (!dragState) return;
-        if (e.target.closest('.event')) return;
+        // Allow drop on any area including existing events
         var col = e.target.closest('.day-col');
         if (!col) return;
         e.stopPropagation();
