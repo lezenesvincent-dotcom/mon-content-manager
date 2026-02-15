@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 03:06:02 -->
+<!-- BUILD: 2026-02-15 03:10:29 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -268,9 +268,9 @@
         .confirm-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.4); z-index: 250;
+        }
 
         /* Category picker popup */
-        }
         .catpicker-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.5); z-index: 400;
@@ -404,6 +404,9 @@
         'conf hebdo': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed', height: 45 },
         'décryptage': { src: IMG_BASE + 'picto-decryptage.png', mini: IMG_BASE + 'picto-decryptage-mini.png', mode: 'fixed', height: 45 },
         'decryptage': { src: IMG_BASE + 'picto-decryptage.png', mini: IMG_BASE + 'picto-decryptage-mini.png', mode: 'fixed', height: 45 },
+        'direct analyste': { src: IMG_BASE + 'picto-da.png', mini: IMG_BASE + 'picto-da-mini.png', mode: 'fixed', height: 45 },
+        'direct expert': { src: IMG_BASE + 'picto-da.png', mini: IMG_BASE + 'picto-da-mini.png', mode: 'fixed', height: 45 },
+        'call': { src: IMG_BASE + 'picto-call.png', mini: IMG_BASE + 'picto-call-mini.png', mode: 'fixed', height: 45 },
     };
 
     let currentMonday = getMonday(new Date());
@@ -759,7 +762,7 @@
     // ===== CATEGORY PICKER =====
     var CATEGORIES = [
         { id: 'call', label: 'Call', icon: IMG_BASE + 'picto-call-mini.png' },
-        { id: 'da', label: 'DA', icon: IMG_BASE + 'picto-confcall.png' },
+        { id: 'da', label: 'DA', icon: IMG_BASE + 'picto-da-mini.png' },
         { id: 'shooting', label: 'Shooting', icon: IMG_BASE + 'picto-morning.png' },
     ];
     var catPickerState = { dayIdx: -1, hour: 0, minute: 0 };
@@ -815,9 +818,12 @@
                 col.addEventListener('click', function(e) {
                     // Ignore if clicked on an event
                     if (e.target.closest('.event')) return;
+                    // Ignore if drag was in progress
+                    if (dragState) return;
                     var rect = col.getBoundingClientRect();
-                    var yOff = e.clientY - rect.top + col.parentElement.scrollTop;
-                    var totalMin = START_HOUR * 60 + (yOff / HOUR_PX) * 60;
+                    var scrollEl = document.getElementById('daysScroll');
+                    var yOff = e.clientY - rect.top;
+                    var totalMin = START_HOUR * 60 + ((yOff + scrollEl.scrollTop - col.offsetTop) / HOUR_PX) * 60;
                     var hour = Math.floor(totalMin / 60);
                     var minute = Math.round((totalMin % 60) / 15) * 15;
                     if (minute >= 60) { hour++; minute = 0; }
