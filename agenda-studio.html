@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 03:48:48 -->
+<!-- BUILD: 2026-02-15 03:53:08 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -597,8 +597,9 @@
 
                 var html = '';
                 if (isFixed) {
+                    var pictoSrc = (totalCols > 1 && eventImg.mini) ? eventImg.mini : eventImg.src;
                     html += '<div class="picto-wrap">';
-                    html += '<img src="'+eventImg.src+'" alt="">';
+                    html += '<img src="'+pictoSrc+'" alt="">';
                     html += '<div class="picto-time">'+timeStr+'</div>';
                     html += '</div>';
                 } else {
@@ -853,9 +854,11 @@
         var dayDate = new Date(currentMonday);
         dayDate.setDate(dayDate.getDate() + s.dayIdx);
 
-        // Create event object in salle data
-        var startISO = dayDate.toISOString().split('T')[0] + 'T' + hStr + ':00Z';
-        var endISO = dayDate.toISOString().split('T')[0] + 'T' + endStr + ':00Z';
+        // Store UTC-1 so that render (+1 for Paris) gives correct local time
+        var utcH = s.hour - 1;
+        var utcEndH = endHour - 1;
+        var startISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcH).padStart(2,'0') + ':' + String(s.minute).padStart(2,'0') + ':00Z';
+        var endISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcEndH).padStart(2,'0') + ':' + String(endMin).padStart(2,'0') + ':00Z';
         var newEvent = {
             subject: s.category.label + ' ' + author,
             start: startISO,
@@ -872,7 +875,6 @@
         }
 
         closeCatPicker();
-        console.log('Event créé: ' + newEvent.subject + ' | ' + hStr + '-' + endStr + ' | ' + JOURS_FULL[s.dayIdx]);
     }
 
     // Attach click on empty areas via event delegation on daysScroll
