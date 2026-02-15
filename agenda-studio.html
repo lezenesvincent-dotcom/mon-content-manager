@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 03:16:28 -->
+<!-- BUILD: 2026-02-15 03:33:15 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -375,17 +375,17 @@
     <div class="confirm-popup" id="confirmPopup">
         <h3 id="confirmTitle">Déplacer l'événement ?</h3>
         <p id="confirmDesc"></p>
+        <div class="btn-row">
+            <button class="btn-cancel" onclick="cancelDrag()">Annuler</button>
+            <button class="btn-confirm" onclick="confirmDrag()">Confirmer</button>
+        </div>
+    </div>
 
     <!-- Category picker -->
     <div class="catpicker-overlay" id="catpickerOverlay" onclick="closeCatPicker()"></div>
     <div class="catpicker" id="catpicker">
         <h4>Nouvelle prestation</h4>
         <div class="catpicker-grid" id="catpickerGrid"></div>
-    </div>
-        <div class="btn-row">
-            <button class="btn-cancel" onclick="cancelDrag()">Annuler</button>
-            <button class="btn-confirm" onclick="confirmDrag()">Confirmer</button>
-        </div>
     </div>
 
 <script>
@@ -808,29 +808,23 @@
         // Futur : créer l'événement via l'API
     }
 
-    // Attach click on empty areas via event delegation on daysGrid
+    // Attach click on empty areas via event delegation on daysScroll
     function attachDayColClicks() {
-        var grid = document.getElementById('daysGrid');
-        if (!grid) return;
-        grid.addEventListener('click', function(e) {
-            // Ignore if clicked on an event
+        document.getElementById('daysScroll').onclick = function(e) {
             if (e.target.closest('.event')) return;
-            // Ignore if drag was in progress
             if (dragState) return;
-            // Find which day-col was clicked
             var col = e.target.closest('.day-col');
             if (!col) return;
             var dayIdx = parseInt(col.id.replace('dayCol',''));
             if (isNaN(dayIdx)) return;
             var rect = col.getBoundingClientRect();
-            var scrollEl = document.getElementById('daysScroll');
             var yOff = e.clientY - rect.top;
-            var totalMin = START_HOUR * 60 + ((yOff + scrollEl.scrollTop - col.offsetTop) / HOUR_PX) * 60;
+            var totalMin = START_HOUR * 60 + (yOff / (HOUR_PX/60));
             var hour = Math.floor(totalMin / 60);
             var minute = Math.round((totalMin % 60) / 15) * 15;
             if (minute >= 60) { hour++; minute = 0; }
             openCatPicker(e, dayIdx, hour, minute);
-        });
+        };
     }
 
     initCatPicker();
