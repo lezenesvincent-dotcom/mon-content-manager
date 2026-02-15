@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 12:46:07 -->
+<!-- BUILD: 2026-02-15 12:50:18 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -422,6 +422,7 @@
         }
         .input-dialog .btn-cancel { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
         .input-dialog .btn-confirm { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+        .input-dialog .btn-delete { background: rgba(220,38,38,0.8); color: #fff; }
         }
         .confirm-overlay.visible { display: block; }
 
@@ -504,6 +505,8 @@
                 <input type="time" id="inputTime" value="09:00">
             </div>
             <div class="dialog-buttons">
+                <button class="btn-delete" id="btnDelete" onclick="deleteEvent()" style="display:none">Supprimer</button>
+                <div style="flex:1"></div>
                 <button class="btn-cancel" onclick="cancelInputDialog()">Annuler</button>
                 <button class="btn-confirm" onclick="confirmInputDialog()">Créer</button>
             </div>
@@ -937,8 +940,31 @@
         document.getElementById('inputDialogTitle').textContent = 'Modifier';
         document.getElementById('inputTitle').value = ev.subject || '';
         document.getElementById('inputTime').value = hStr;
+        document.getElementById('btnDelete').style.display = 'inline-block';
+        document.querySelector('.btn-confirm').textContent = 'Modifier';
         document.getElementById('inputDialogOverlay').classList.add('visible');
         setTimeout(function() { document.getElementById('inputTitle').focus(); document.getElementById('inputTitle').select(); }, 50);
+    }
+
+    function deleteEvent() {
+        if (!editState) return;
+        var ev = editState.ev;
+        // Remove from calendarData.salle
+        if (calendarData && calendarData.salle) {
+            var idx = calendarData.salle.indexOf(ev);
+            if (idx > -1) calendarData.salle.splice(idx, 1);
+        }
+        // Remove from localEvents
+        if (ev._localId) {
+            for (var li = 0; li < localEvents.length; li++) {
+                if (localEvents[li]._localId === ev._localId) {
+                    localEvents.splice(li, 1); break;
+                }
+            }
+        }
+        editState = null;
+        document.getElementById('inputDialogOverlay').classList.remove('visible');
+        clearEvents(); renderEvents();
     }
 
     // ===== FOND POCHETTES ALBUM =====
@@ -1063,6 +1089,9 @@
         document.getElementById('inputDialogTitle').textContent = s.category.label + ' — ' + author;
         document.getElementById('inputTitle').value = s.category.label + ' ' + author;
         document.getElementById('inputTime').value = hStr;
+        document.getElementById('btnDelete').style.display = 'none';
+        document.querySelector('.btn-confirm').textContent = 'Créer';
+        editState = null;
         document.getElementById('inputDialogOverlay').classList.add('visible');
         setTimeout(function() { document.getElementById('inputTitle').focus(); document.getElementById('inputTitle').select(); }, 50);
     }
