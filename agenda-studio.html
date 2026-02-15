@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 13:04:02 -->
+<!-- BUILD: 2026-02-15 14:50:36 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -517,9 +517,41 @@
     const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s=>s.split('').reverse().join('')).join('');
     const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
     const GH_FILE = 'calendar-data.json';
+    const GH_PENDING = 'calendar-pending.json';
     const GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
+    const GH_PENDING_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_PENDING;
     const IMG_BASE = 'agenda-assets/';
     const START_HOUR = 7, END_HOUR = 21, HOUR_PX = 60;
+
+    // Push pending actions to GitHub
+    async function pushPending(action) {
+        // action = { type: 'create'|'update'|'delete', event: {...} }
+        try {
+            // Read current pending file
+            var pending = [];
+            var sha = null;
+            try {
+                var resp = await fetch(GH_PENDING_API, { headers: { 'Authorization': 'token '+GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store' });
+                if (resp.ok) {
+                    var data = await resp.json();
+                    sha = data.sha;
+                    pending = JSON.parse(atob(data.content));
+                }
+            } catch(e) {}
+            // Add new action
+            action.timestamp = new Date().toISOString();
+            pending.push(action);
+            // Write back
+            var body = { message: 'pending: '+action.type, content: btoa(unescape(encodeURIComponent(JSON.stringify(pending, null, 2)))) };
+            if (sha) body.sha = sha;
+            await fetch(GH_PENDING_API, {
+                method: 'PUT',
+                headers: { 'Authorization': 'token '+GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            console.log('Pending pushed:', action.type);
+        } catch(err) { console.error('Push pending error:', err); }
+    }
     const JOURS_FULL = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
 
     const EVENT_IMAGES = {
@@ -919,6 +951,7 @@
                 }
             }
             clearEvents(); renderEvents();
+            pushPending({ type: 'move', event: { subject: ev.subject, start: ev.start, end: ev.end, location: ev.location || '', organizer: ev.organizer || '', _localId: ev._localId || '' } });
         }
         document.getElementById('confirmOverlay').classList.remove('visible');
         document.getElementById('confirmPopup').classList.remove('visible');
@@ -965,6 +998,7 @@
         editState = null;
         document.getElementById('inputDialogOverlay').classList.remove('visible');
         clearEvents(); renderEvents();
+        pushPending({ type: 'delete', event: { subject: ev.subject, start: ev.start, end: ev.end, _localId: ev._localId || '' } });
     }
 
     // ===== FOND POCHETTES ALBUM =====
@@ -1135,6 +1169,7 @@
             }
             editState = null;
             clearEvents(); renderEvents();
+            pushPending({ type: 'update', event: { subject: ev.subject, start: ev.start, end: ev.end, location: ev.location || 'Studio CIC', organizer: ev.organizer || '', _localId: ev._localId || '' } });
         } else {
             // CREATE new event
             var s = catPickerState;
@@ -1158,6 +1193,7 @@
                 calendarData.salle.push(newEvent);
                 clearEvents(); renderEvents();
             }
+            pushPending({ type: 'create', event: { subject: newEvent.subject, start: newEvent.start, end: newEvent.end, location: newEvent.location, organizer: newEvent.organizer, _localId: newEvent._localId } });
         }
 
         document.getElementById('inputDialogOverlay').classList.remove('visible');
