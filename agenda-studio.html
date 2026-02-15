@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 11:41:05 -->
+<!-- BUILD: 2026-02-15 12:06:57 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -21,7 +21,7 @@
             z-index: 0; overflow: hidden;
         }
         .album-bg .cover {
-            position: absolute; top: -20%; left: -20%; right: -20%; bottom: -20%;
+            position: absolute; top: -20vh; left: -20vw; width: 140vw; height: 140vh;
             background-size: cover; background-position: center;
             filter: blur(80px) saturate(1.8) brightness(0.35);
             transition: opacity 2s ease-in-out; opacity: 0;
@@ -97,18 +97,18 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
         }
         .day-header {
-            text-align: center; padding: 8px 4px 6px;
+            text-align: center; padding: 10px 4px 8px;
         }
         .day-header .day-name {
-            font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 600; text-transform: capitalize;
+            font-size: 14px; color: rgba(255,255,255,0.45); font-weight: 700; text-transform: capitalize;
         }
         .day-header .day-num {
-            font-size: 16px; font-weight: 800; color: rgba(255,255,255,0.7); margin-top: 1px;
+            font-size: 22px; font-weight: 900; color: rgba(255,255,255,0.85); margin-top: 2px;
         }
         .day-header.today .day-num {
             background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
-            border-radius: 50%; width: 28px; height: 28px;
-            display: inline-flex; align-items: center; justify-content: center; font-size: 14px;
+            border-radius: 50%; width: 34px; height: 34px;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 18px;
         }
 
         /* ===== COLONNES JOURS - bords arrondis, ombres ===== */
@@ -244,7 +244,7 @@
         .event-handle.top { top: 3px; }
         .event-handle.bottom { bottom: 3px; }
 
-        .event.dragging { opacity: 0.5; z-index: 20; }
+        .event.dragging { z-index: 50; transform: scale(1.05); box-shadow: 0 12px 36px rgba(0,0,0,0.6); pointer-events: none; }
 
         /* Popup confirmation */
         .confirm-popup {
@@ -414,6 +414,8 @@
         'decryptage': { src: IMG_BASE + 'picto-decryptage.png', mini: IMG_BASE + 'picto-decryptage-mini.png', mode: 'fixed', height: 45 },
         'direct analyste': { src: IMG_BASE + 'picto-da.png', mini: IMG_BASE + 'picto-da-mini.png', mode: 'fixed', height: 45 },
         'direct expert': { src: IMG_BASE + 'picto-da.png', mini: IMG_BASE + 'picto-da-mini.png', mode: 'fixed', height: 45 },
+        'da ': { src: IMG_BASE + 'picto-da.png', mini: IMG_BASE + 'picto-da-mini.png', mode: 'fixed', height: 45 },
+        'shooting': { src: IMG_BASE + 'picto-morning.png', mode: 'fixed', height: 55 },
         'call': { src: IMG_BASE + 'picto-call.png', mini: IMG_BASE + 'picto-call-mini.png', mode: 'fixed', height: 45 },
     };
 
@@ -675,15 +677,10 @@
                 el.addEventListener('mouseleave', function() { document.getElementById('tooltip').classList.remove('visible'); });
 
                 el._evData = { subject: ev.subject, startMin: item.startMin, endMin: item.endMin, ev: ev };
-                el.addEventListener('mousedown', function(e) {
-                    if (e.target.closest('.event-handle')) return;
-                    initDrag(el, ev, e.clientX, e.clientY, false);
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectEvent(el, ev);
                 });
-                el.addEventListener('touchstart', function(e) {
-                    if (e.target.closest('.event-handle')) return;
-                    var t = e.touches[0];
-                    initDrag(el, ev, t.clientX, t.clientY, true);
-                }, { passive: true });
 
                 col.appendChild(el);
             });
@@ -707,93 +704,103 @@
     }
     function clearEvents() { document.querySelectorAll('.event').forEach(function(e){e.remove();}); }
 
-    // ===== DRAG & DROP =====
+    // ===== DRAG & DROP (click-to-move) =====
     var dragState = null;
-    function initDrag(el, ev, startX, startY, isTouch) {
+    var dragGhost = null;
+
+    function selectEvent(el, ev) {
+        if (dragState) { cancelDrag(); return; }
         var evData = el._evData; if (!evData) return;
         document.getElementById('tooltip').classList.remove('visible');
-        dragState = { el:el, evData:evData, startX:startX, startY:startY,
+        dragState = { el:el, evData:evData,
             origTop:parseInt(el.style.top), origDayIdx:parseInt(el.parentElement.id.replace('dayCol','')),
-            moved:false, isTouch:isTouch, newDayIdx:null, newStartMin:null };
+            newDayIdx:parseInt(el.parentElement.id.replace('dayCol','')), newStartMin:evData.startMin };
         el.classList.add('dragging');
+        dragGhost = el.cloneNode(true);
+        dragGhost.style.position = 'fixed';
+        dragGhost.style.width = el.offsetWidth + 'px';
+        dragGhost.style.opacity = '0.75';
+        dragGhost.style.pointerEvents = 'none';
+        dragGhost.style.zIndex = '500';
+        dragGhost.style.transition = 'none';
+        dragGhost.style.left = '-9999px';
+        dragGhost.classList.remove('dragging');
+        document.body.appendChild(dragGhost);
     }
-    function moveDrag(cx, cy) {
+
+    document.addEventListener('mousemove', function(e) {
+        if (!dragState || !dragGhost) return;
+        dragGhost.style.left = (e.clientX - dragGhost.offsetWidth/2) + 'px';
+        dragGhost.style.top = (e.clientY - 20) + 'px';
+    });
+
+    // Click on empty grid area = place event there
+    document.getElementById('daysGrid').addEventListener('click', function(e) {
         if (!dragState) return;
-        if (Math.abs(cx-dragState.startX)>5 || Math.abs(cy-dragState.startY)>5) dragState.moved=true;
-        if (!dragState.moved) return;
+        if (e.target.closest('.event')) return;
+        var col = e.target.closest('.day-col');
+        if (!col) return;
+        e.stopPropagation();
+        var newDayIdx = parseInt(col.id.replace('dayCol',''));
         var scroll = document.getElementById('daysScroll');
-        var gridRect = document.getElementById('daysGrid').getBoundingClientRect();
-        var colW = gridRect.width/5;
-        var newDayIdx = Math.max(0, Math.min(4, Math.floor((cx-gridRect.left)/colW)));
-        var relY = cy - gridRect.top + scroll.scrollTop;
+        var rect = col.getBoundingClientRect();
+        var relY = e.clientY - rect.top;
         var newMin = START_HOUR*60 + Math.round(relY/HOUR_PX*60/15)*15;
-        dragState.newDayIdx = newDayIdx; dragState.newStartMin = newMin;
-        dragState.el.style.top = (newMin-START_HOUR*60)*(HOUR_PX/60)+'px';
-        var tc = document.getElementById('dayCol'+newDayIdx);
-        if (tc && dragState.el.parentElement !== tc) tc.appendChild(dragState.el);
-    }
-    function endDrag() {
-        if (!dragState) return;
+        // Remove ghost
+        if (dragGhost) { dragGhost.remove(); dragGhost = null; }
         dragState.el.classList.remove('dragging');
-        if (!dragState.moved) { dragState=null; return; }
+        dragState.newDayIdx = newDayIdx;
+        dragState.newStartMin = newMin;
+        // Show confirm
         var evData = dragState.evData;
-        var nH=Math.floor(dragState.newStartMin/60), nM=dragState.newStartMin%60;
+        var nH=Math.floor(newMin/60), nM=newMin%60;
         var dur=evData.endMin-evData.startMin;
-        var eH=Math.floor((dragState.newStartMin+dur)/60), eM=(dragState.newStartMin+dur)%60;
-        var nd = new Date(currentMonday); nd.setDate(nd.getDate()+dragState.newDayIdx);
-        document.getElementById('confirmTitle').textContent = 'Déplacer "' + (evData.subject||'').substring(0,30) + '" ?';
+        var eH=Math.floor((newMin+dur)/60), eM=(newMin+dur)%60;
+        var nd = new Date(currentMonday); nd.setDate(nd.getDate()+newDayIdx);
+        document.getElementById('confirmTitle').textContent = 'D\u00e9placer "' + (evData.subject||'').substring(0,30) + '" ?';
         document.getElementById('confirmDesc').textContent =
-            JOURS_FULL[dragState.newDayIdx]+' '+nd.getDate()+' — '+
-            String(nH).padStart(2,'0')+':'+String(nM).padStart(2,'0')+' → '+
+            JOURS_FULL[newDayIdx]+' '+nd.getDate()+' \u2014 '+
+            String(nH).padStart(2,'0')+':'+String(nM).padStart(2,'0')+' \u2192 '+
             String(eH).padStart(2,'0')+':'+String(eM).padStart(2,'0');
         document.getElementById('confirmOverlay').classList.add('visible');
         document.getElementById('confirmPopup').classList.add('visible');
-    }
+    }, true);
+
+    // ESC to cancel
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && dragState) cancelDrag(); });
+
     function confirmDrag() {
-        if (dragState && dragState.moved && dragState.evData) {
+        if (dragState && dragState.evData) {
             var ev = dragState.evData.ev;
             var dur = dragState.evData.endMin - dragState.evData.startMin;
             var newStart = dragState.newStartMin;
             var newEnd = newStart + dur;
             var nd = new Date(currentMonday);
             nd.setDate(nd.getDate() + dragState.newDayIdx);
-            var utcSH = Math.floor(newStart/60) - 1;
-            var utcSM = newStart % 60;
-            var utcEH = Math.floor(newEnd/60) - 1;
-            var utcEM = newEnd % 60;
+            var utcSH = Math.floor(newStart/60) - 1, utcSM = newStart % 60;
+            var utcEH = Math.floor(newEnd/60) - 1, utcEM = newEnd % 60;
             ev.start = nd.toISOString().split('T')[0] + 'T' + String(utcSH).padStart(2,'0') + ':' + String(utcSM).padStart(2,'0') + ':00Z';
             ev.end = nd.toISOString().split('T')[0] + 'T' + String(utcEH).padStart(2,'0') + ':' + String(utcEM).padStart(2,'0') + ':00Z';
-            // Update localEvents if it's a local event
             if (ev._localId) {
                 for (var li = 0; li < localEvents.length; li++) {
                     if (localEvents[li]._localId === ev._localId) {
-                        localEvents[li].start = ev.start;
-                        localEvents[li].end = ev.end;
-                        break;
+                        localEvents[li].start = ev.start; localEvents[li].end = ev.end; break;
                     }
                 }
             }
-            clearEvents();
-            renderEvents();
+            clearEvents(); renderEvents();
         }
         document.getElementById('confirmOverlay').classList.remove('visible');
         document.getElementById('confirmPopup').classList.remove('visible');
         dragState=null;
     }
     function cancelDrag() {
-        if (dragState) {
-            dragState.el.style.top = dragState.origTop+'px';
-            var oc = document.getElementById('dayCol'+dragState.origDayIdx);
-            if (oc && dragState.el.parentElement !== oc) oc.appendChild(dragState.el);
-        }
+        if (dragGhost) { dragGhost.remove(); dragGhost = null; }
+        if (dragState && dragState.el) dragState.el.classList.remove('dragging');
         document.getElementById('confirmOverlay').classList.remove('visible');
         document.getElementById('confirmPopup').classList.remove('visible');
         dragState=null;
     }
-    document.addEventListener('mousemove', function(e) { if (dragState) { e.preventDefault(); moveDrag(e.clientX,e.clientY); } });
-    document.addEventListener('mouseup', function() { if (dragState) endDrag(); });
-    document.addEventListener('touchmove', function(e) { if (dragState) { e.preventDefault(); moveDrag(e.touches[0].clientX,e.touches[0].clientY); } }, {passive:false});
-    document.addEventListener('touchend', function() { if (dragState) endDrag(); });
 
     // ===== FOND POCHETTES ALBUM =====
     var ALBUMS = [
