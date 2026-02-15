@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 04:16:31 -->
+<!-- BUILD: 2026-02-15 04:20:35 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -419,6 +419,7 @@
 
     let currentMonday = getMonday(new Date());
     let calendarData = null;
+    var localEvents = [];
 
     function getMonday(d) {
         const date = new Date(d); const day = date.getDay();
@@ -492,8 +493,13 @@
     }
 
     function renderEvents() {
-        try {
         if (!calendarData || !calendarData.salle) return;
+
+        // Re-inject local events
+        localEvents.forEach(function(le) {
+            var exists = calendarData.salle.some(function(e) { return e._localId === le._localId; });
+            if (!exists) calendarData.salle.push(le);
+        });
 
         var dayEvents = {};
         calendarData.salle.forEach(function(ev) {
@@ -610,7 +616,6 @@
                 var totalCols = item.totalCols;
                 var widthPct = 100 / totalCols;
                 var leftPct = item.col * widthPct;
-                console.log('EVENT:', ev.subject, 'col:', item.col, 'totalCols:', totalCols, 'startMin:', item.startMin, 'endMin:', item.endMin);
 
                 var timeStr = String(Math.floor(item.startMin/60)).padStart(2,'0')+':'+String(item.startMin%60).padStart(2,'0')+
                     ' - '+String(Math.floor(item.endMin/60)).padStart(2,'0')+':'+String(item.endMin%60).padStart(2,'0');
@@ -683,7 +688,6 @@
                 col.appendChild(el);
             });
         });
-        } catch(err) { console.error('renderEvents ERROR:', err); }
     }
 
     // ===== LOAD DATA =====
@@ -881,27 +885,25 @@
 
     function selectAuthor(author) {
         var s = catPickerState;
-        var hStr = String(s.hour).padStart(2,'0') + ':' + String(s.minute).padStart(2,'0');
-        var endHour = s.hour + 1;
-        var endMin = s.minute;
-        var endStr = String(endHour).padStart(2,'0') + ':' + String(endMin).padStart(2,'0');
         var dayDate = new Date(currentMonday);
         dayDate.setDate(dayDate.getDate() + s.dayIdx);
 
         // Store UTC-1 so that render (+1 for Paris) gives correct local time
         var utcH = s.hour - 1;
-        var utcEndH = endHour - 1;
+        var utcEndH = s.hour; // 1h duration
         var startISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcH).padStart(2,'0') + ':' + String(s.minute).padStart(2,'0') + ':00Z';
-        var endISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcEndH).padStart(2,'0') + ':' + String(endMin).padStart(2,'0') + ':00Z';
+        var endISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcEndH).padStart(2,'0') + ':' + String(s.minute).padStart(2,'0') + ':00Z';
         var newEvent = {
             subject: s.category.label + ' ' + author,
             start: startISO,
             end: endISO,
             location: 'Studio CIC',
             organizer: author,
-            status: 'Busy'
+            status: 'Busy',
+            _localId: 'local_' + Date.now()
         };
 
+        localEvents.push(newEvent);
         if (calendarData && calendarData.salle) {
             calendarData.salle.push(newEvent);
             clearEvents();
