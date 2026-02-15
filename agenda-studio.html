@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 03:53:08 -->
+<!-- BUILD: 2026-02-15 03:58:30 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -578,6 +578,7 @@
                 var totalCols = item.maxCol + 1;
                 var widthPct = 100 / totalCols;
                 var leftPct = item.col * widthPct;
+                console.log('EVENT:', ev.subject, 'col:', item.col, 'maxCol:', item.maxCol, 'totalCols:', totalCols, 'startMin:', item.startMin, 'endMin:', item.endMin);
 
                 var timeStr = String(Math.floor(item.startMin/60)).padStart(2,'0')+':'+String(item.startMin%60).padStart(2,'0')+
                     ' - '+String(Math.floor(item.endMin/60)).padStart(2,'0')+':'+String(item.endMin%60).padStart(2,'0');
