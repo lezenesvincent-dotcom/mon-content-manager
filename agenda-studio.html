@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 03:58:30 -->
+<!-- BUILD: 2026-02-15 04:04:54 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -539,46 +539,77 @@
             }
             evts = evts.filter(function(_, idx) { return !toSkip[idx]; });
 
-            // Chevauchement
-            var placed = [];
+            // Chevauchement - algorithme robuste
+            var items = [];
             evts.forEach(function(ev) {
                 var start = new Date(ev.start), end = new Date(ev.end||ev.start);
                 var sH=start.getUTCHours()+1, sM=start.getUTCMinutes(), eH=end.getUTCHours()+1, eM=end.getUTCMinutes();
                 var startMin=sH*60+sM, endMin=eH*60+eM;
-                var overlapCol = 0, maxCol = 0, overlaps = [];
-                placed.forEach(function(p) {
-                    if (startMin < p.endMin && endMin > p.startMin) {
-                        overlaps.push(p);
-                        if (p.col >= overlapCol) overlapCol = p.col + 1;
-                        if (p.maxCol > maxCol) maxCol = p.maxCol;
-                    }
-                });
-                var item = { ev: ev, startMin: startMin, endMin: endMin, col: overlapCol, maxCol: 0 };
-                overlaps.forEach(function(p) { p.maxCol = Math.max(p.maxCol, overlapCol); });
-                item.maxCol = Math.max(maxCol, overlapCol);
-                placed.push(item);
-            });
-            placed.forEach(function(item) {
-                placed.forEach(function(other) {
-                    if (item === other) return;
-                    if (item.startMin < other.endMin && item.endMin > other.startMin) {
-                        var m = Math.max(item.maxCol, other.maxCol, item.col, other.col);
-                        item.maxCol = m; other.maxCol = m;
-                    }
-                });
+                if (endMin <= startMin) endMin = startMin + 30;
+                items.push({ ev: ev, startMin: startMin, endMin: endMin, col: 0, totalCols: 1 });
             });
 
+            // Trier par heure de début puis par durée (plus long d'abord)
+            items.sort(function(a, b) {
+                if (a.startMin !== b.startMin) return a.startMin - b.startMin;
+                return (b.endMin - b.startMin) - (a.endMin - a.startMin);
+            });
+
+            // Assigner les colonnes
+            for (var i = 0; i < items.length; i++) {
+                var usedCols = [];
+                for (var j = 0; j < i; j++) {
+                    if (items[j].startMin < items[i].endMin && items[j].endMin > items[i].startMin) {
+                        usedCols.push(items[j].col);
+                    }
+                }
+                var col = 0;
+                while (usedCols.indexOf(col) !== -1) col++;
+                items[i].col = col;
+            }
+
+            // Calculer totalCols pour chaque groupe d'overlap
+            for (var i = 0; i < items.length; i++) {
+                var groupMax = items[i].col;
+                for (var j = 0; j < items.length; j++) {
+                    if (i === j) continue;
+                    if (items[i].startMin < items[j].endMin && items[i].endMin > items[j].startMin) {
+                        if (items[j].col > groupMax) groupMax = items[j].col;
+                    }
+                }
+                items[i].totalCols = groupMax + 1;
+            }
+
+            // Synchroniser totalCols dans chaque cluster
+            var changed = true;
+            while (changed) {
+                changed = false;
+                for (var i = 0; i < items.length; i++) {
+                    for (var j = 0; j < items.length; j++) {
+                        if (i === j) continue;
+                        if (items[i].startMin < items[j].endMin && items[i].endMin > items[j].startMin) {
+                            var maxTC = Math.max(items[i].totalCols, items[j].totalCols);
+                            if (items[i].totalCols !== maxTC || items[j].totalCols !== maxTC) {
+                                items[i].totalCols = maxTC;
+                                items[j].totalCols = maxTC;
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+
             // Render
-            placed.forEach(function(item) {
+            items.forEach(function(item) {
                 var ev = item.ev;
                 var topPx = (item.startMin-START_HOUR*60)*(HOUR_PX/60);
                 var heightPx = Math.max((item.endMin-item.startMin)*(HOUR_PX/60), 28);
                 if (topPx < 0) return;
 
-                var totalCols = item.maxCol + 1;
+                var totalCols = item.totalCols;
                 var widthPct = 100 / totalCols;
                 var leftPct = item.col * widthPct;
-                console.log('EVENT:', ev.subject, 'col:', item.col, 'maxCol:', item.maxCol, 'totalCols:', totalCols, 'startMin:', item.startMin, 'endMin:', item.endMin);
+                console.log('EVENT:', ev.subject, 'col:', item.col, 'totalCols:', totalCols, 'startMin:', item.startMin, 'endMin:', item.endMin);
 
                 var timeStr = String(Math.floor(item.startMin/60)).padStart(2,'0')+':'+String(item.startMin%60).padStart(2,'0')+
                     ' - '+String(Math.floor(item.endMin/60)).padStart(2,'0')+':'+String(item.endMin%60).padStart(2,'0');
