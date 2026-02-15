@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 12:21:49 -->
+<!-- BUILD: 2026-02-15 12:32:19 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -340,6 +340,86 @@
         }
         .catpicker-author:last-child { border-bottom: none; }
         .catpicker-author:hover { background: rgba(99,102,241,0.25); }
+
+        /* Allday event mode */
+        .event.allday-picto {
+            position: absolute; left: 4px; right: 4px;
+            border: none; border-radius: 14px;
+            background: none !important;
+            overflow: hidden;
+        }
+        .event.allday-picto .allday-bg {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        }
+        .event.allday-picto .allday-bg img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            border-radius: 14px;
+        }
+        .event.allday-picto .allday-title {
+            position: absolute; bottom: 40px; right: 10px;
+            font-size: 18px; font-weight: 900; color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            text-align: right; line-height: 1.1;
+        }
+        .event.allday-picto .allday-badge {
+            position: absolute; bottom: 10px; right: 10px;
+        }
+
+        /* Input dialog */
+        .input-dialog-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 500;
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        }
+        .input-dialog-overlay.visible { display: flex; align-items: center; justify-content: center; }
+        .input-dialog {
+            background: rgba(18,20,38,0.92);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px; padding: 28px 32px;
+            min-width: 360px; max-width: 440px;
+            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08);
+            overflow: hidden; position: relative;
+        }
+        .input-dialog::before {
+            content: ''; position: absolute; top: -30%; right: -20%; width: 160px; height: 160px;
+            background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .input-dialog h4 {
+            color: rgba(255,255,255,0.5); font-size: 13px; text-transform: uppercase;
+            letter-spacing: 1.5px; margin: 0 0 20px 0;
+        }
+        .input-dialog .field-group {
+            margin-bottom: 16px;
+        }
+        .input-dialog .field-label {
+            font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+        }
+        .input-dialog input[type="text"],
+        .input-dialog input[type="time"] {
+            width: 100%; box-sizing: border-box;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px; padding: 12px 16px;
+            color: #fff; font-size: 16px; font-family: inherit; font-weight: 500;
+            outline: none; transition: border-color 0.2s;
+            caret-color: #818cf8;
+        }
+        .input-dialog input:focus {
+            border-color: rgba(99,102,241,0.6);
+            background: rgba(255,255,255,0.08);
+        }
+        .input-dialog input::placeholder { color: rgba(255,255,255,0.2); }
+        .input-dialog .dialog-buttons {
+            display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;
+        }
+        .input-dialog .dialog-buttons button {
+            padding: 10px 24px; border-radius: 12px; border: none;
+            font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+        }
+        .input-dialog .btn-cancel { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+        .input-dialog .btn-confirm { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
         }
         .confirm-overlay.visible { display: block; }
 
@@ -409,6 +489,25 @@
         <div class="catpicker-grid" id="catpickerGrid"></div>
     </div>
 
+    <!-- Input dialog for title + time -->
+    <div class="input-dialog-overlay" id="inputDialogOverlay">
+        <div class="input-dialog">
+            <h4 id="inputDialogTitle">Détails</h4>
+            <div class="field-group">
+                <div class="field-label">Titre</div>
+                <input type="text" id="inputTitle" placeholder="Nom de l'événement..." autocomplete="off">
+            </div>
+            <div class="field-group">
+                <div class="field-label">Heure de direct</div>
+                <input type="time" id="inputTime" value="09:00">
+            </div>
+            <div class="dialog-buttons">
+                <button class="btn-cancel" onclick="cancelInputDialog()">Annuler</button>
+                <button class="btn-confirm" onclick="confirmInputDialog()">Créer</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s=>s.split('').reverse().join('')).join('');
     const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
@@ -429,6 +528,7 @@
         'direct expert': { src: IMG_BASE + 'picto-da.png', mini: IMG_BASE + 'picto-da-mini.png', mode: 'fixed', height: 45 },
         'da ': { src: IMG_BASE + 'picto-da.png', mini: IMG_BASE + 'picto-da-mini.png', mode: 'fixed', height: 45 },
         'shooting': { src: IMG_BASE + 'picto-morning.png', mode: 'fixed', height: 55 },
+        'absent': { src: IMG_BASE + 'picto-absent.png', mode: 'allday' },
         'call': { src: IMG_BASE + 'picto-call.png', mini: IMG_BASE + 'picto-call-mini.png', mode: 'fixed', height: 45 },
     };
 
@@ -635,9 +735,10 @@
                 var durStr = getDuration(item.startMin, item.endMin);
                 var eventImg = getEventImage(ev.subject);
                 var isFixed = eventImg && eventImg.mode === 'fixed';
+                var isAllday = eventImg && eventImg.mode === 'allday';
 
                 var el = document.createElement('div');
-                el.className = 'event' + (isFixed ? ' fixed-picto' : (eventImg ? '' : ' no-image'));
+                el.className = 'event' + (isFixed ? ' fixed-picto' : (isAllday ? ' allday-picto' : (eventImg ? '' : ' no-image')));
                 el.style.top = topPx+'px';
                 if (!isFixed) el.style.height = heightPx+'px';
                 if (totalCols > 1) {
@@ -647,7 +748,14 @@
                 }
 
                 var html = '';
-                if (isFixed) {
+                if (isAllday) {
+                    // Split subject into words for line breaks
+                    var words = (ev.subject||'').split(' ');
+                    var titleHtml = words.map(function(w) { return escHtml(w); }).join('<br>');
+                    html += '<div class="allday-bg"><img src="'+eventImg.src+'" alt=""></div>';
+                    html += '<div class="allday-title">'+titleHtml+'</div>';
+                    html += '<div class="allday-badge"><div class="event-badge" style="position:static;display:inline-block;">'+durStr+'</div></div>';
+                } else if (isFixed) {
                     var pictoSrc = (totalCols > 1 && eventImg.mini) ? eventImg.mini : eventImg.src;
                     html += '<div class="picto-wrap">';
                     html += '<img src="'+pictoSrc+'" alt="">';
@@ -929,21 +1037,41 @@
     }
 
     function selectAuthor(author) {
+        catPickerState.author = author;
+        closeCatPicker();
+        // Open input dialog
         var s = catPickerState;
+        var hStr = String(s.hour).padStart(2,'0') + ':' + String(s.minute).padStart(2,'0');
+        document.getElementById('inputDialogTitle').textContent = s.category.label + ' — ' + author;
+        document.getElementById('inputTitle').value = s.category.label + ' ' + author;
+        document.getElementById('inputTime').value = hStr;
+        document.getElementById('inputDialogOverlay').classList.add('visible');
+        setTimeout(function() { document.getElementById('inputTitle').focus(); document.getElementById('inputTitle').select(); }, 50);
+    }
+
+    function cancelInputDialog() {
+        document.getElementById('inputDialogOverlay').classList.remove('visible');
+    }
+
+    function confirmInputDialog() {
+        var s = catPickerState;
+        var title = document.getElementById('inputTitle').value || (s.category.label + ' ' + s.author);
+        var timeParts = document.getElementById('inputTime').value.split(':');
+        var hour = parseInt(timeParts[0]) || s.hour;
+        var minute = parseInt(timeParts[1]) || 0;
         var dayDate = new Date(currentMonday);
         dayDate.setDate(dayDate.getDate() + s.dayIdx);
 
-        // Store UTC-1 so that render (+1 for Paris) gives correct local time
-        var utcH = s.hour - 1;
-        var utcEndH = s.hour; // 1h duration
-        var startISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcH).padStart(2,'0') + ':' + String(s.minute).padStart(2,'0') + ':00Z';
-        var endISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcEndH).padStart(2,'0') + ':' + String(s.minute).padStart(2,'0') + ':00Z';
+        var utcH = hour - 1;
+        var utcEndH = hour;
+        var startISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcH).padStart(2,'0') + ':' + String(minute).padStart(2,'0') + ':00Z';
+        var endISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcEndH).padStart(2,'0') + ':' + String(minute).padStart(2,'0') + ':00Z';
         var newEvent = {
-            subject: s.category.label + ' ' + author,
+            subject: title,
             start: startISO,
             end: endISO,
             location: 'Studio CIC',
-            organizer: author,
+            organizer: s.author,
             status: 'Busy',
             _localId: 'local_' + Date.now()
         };
@@ -955,8 +1083,14 @@
             renderEvents();
         }
 
-        closeCatPicker();
+        document.getElementById('inputDialogOverlay').classList.remove('visible');
     }
+    // Enter key confirms dialog
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && document.getElementById('inputDialogOverlay').classList.contains('visible')) {
+            confirmInputDialog();
+        }
+    });
 
     // Attach click on empty areas via event delegation on daysScroll
     function attachDayColClicks() {
