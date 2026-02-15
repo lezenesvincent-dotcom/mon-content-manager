@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 12:43:32 -->
+<!-- BUILD: 2026-02-15 12:46:07 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -23,14 +23,14 @@
         .album-bg .cover {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-size: cover; background-position: center;
-            filter: blur(80px) saturate(1.8) brightness(0.35);
+            filter: blur(60px) saturate(2.5) brightness(0.7);
             transition: opacity 2s ease-in-out; opacity: 0;
             transform: scale(1.4);
         }
         .album-bg .cover.active { opacity: 1; }
         .album-bg::after {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.3); z-index: 1;
+            background: rgba(0,0,0,0.1); z-index: 1;
         }
 
         .page-wrap {
@@ -943,22 +943,21 @@
 
     // ===== FOND POCHETTES ALBUM =====
     var ALBUMS = [
-        'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228',
-        'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25',
-        'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2',
-        'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b',
-        'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0',
-        'https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e',
-        'https://i.scdn.co/image/ab67616d0000b273b0dd6a5cd1649c4a390f6f7a',
-        'https://i.scdn.co/image/ab67616d0000b2739a95e89d24214b94de36ccf7',
-        'https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72',
+        'https://i.scdn.co/image/ab67616d0000b273b1c4b76e23414c9f20f43b14',
+        'https://i.scdn.co/image/ab67616d0000b2738b52c6b9bc4e43d873869699',
+        'https://i.scdn.co/image/ab67616d0000b273e2e352d89826aef6dbd5ff8f',
+        'https://i.scdn.co/image/ab67616d0000b2739e1cfc756886ac782e363d79',
+        'https://i.scdn.co/image/ab67616d0000b27368384dd85fd5e95831252f60',
+        'https://i.scdn.co/image/ab67616d0000b273879e9318cb9f4e05ee552ac9',
+        'https://i.scdn.co/image/ab67616d0000b273b46f74097655d7f353caab14',
+        'https://i.scdn.co/image/ab67616d0000b2730b51f8d91f3a21e8426361ae',
+        'https://i.scdn.co/image/ab67616d0000b2734718e2b124f79258be7571c1',
+        'https://i.scdn.co/image/ab67616d0000b27395f754318336a07e85ec59bc',
+        'https://i.scdn.co/image/ab67616d0000b273d9985092cd88bffd97653b58',
+        'https://i.scdn.co/image/ab67616d0000b2738940ac99f49e44f59e6f7fb3',
         'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
-        'https://i.scdn.co/image/ab67616d0000b27390a50cfe99a4c19ff3cbfbdb',
-        'https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526',
-        'https://i.scdn.co/image/ab67616d0000b273de437d960dda1ac0a3ff0e47',
-        'https://i.scdn.co/image/ab67616d0000b2738399047ff71200928f5b6508',
-        'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424',
-        'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856',
+        'https://i.scdn.co/image/ab67616d0000b2734637341b9f507521afa9a778',
+        'https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647',
     ];
     var currentAlbumIndex = 0;
     var bg = document.getElementById('albumBg');
