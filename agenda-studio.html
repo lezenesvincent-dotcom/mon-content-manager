@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 02:51:56 -->
+<!-- BUILD: 2026-02-15 03:06:02 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -268,6 +268,57 @@
         .confirm-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.4); z-index: 250;
+
+        /* Category picker popup */
+        }
+        .catpicker-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 400;
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        }
+        .catpicker-overlay.visible { display: block; }
+        .catpicker {
+            display: none; position: fixed;
+            background: rgba(18,20,38,0.85);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; padding: 18px;
+            z-index: 450; min-width: 220px; max-width: 320px;
+            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        .catpicker::before {
+            content: ''; position: absolute; top: -40%; right: -30%; width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .catpicker::after {
+            content: ''; position: absolute; bottom: -30%; left: -20%; width: 160px; height: 160px;
+            background: radial-gradient(circle, rgba(236,72,153,0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .catpicker.visible { display: block; animation: catpickerIn 0.25s ease-out; }
+        @keyframes catpickerIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+        .catpicker h4 {
+            color: rgba(255,255,255,0.5); font-size: 10px; text-transform: uppercase;
+            letter-spacing: 1.5px; margin: 0 0 12px 2px; position: relative; z-index: 1;
+        }
+        .catpicker-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; position: relative; z-index: 1;
+        }
+        .catpicker-item {
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            cursor: pointer; padding: 8px 4px; border-radius: 12px;
+            transition: background 0.15s;
+        }
+        .catpicker-item:hover { background: rgba(255,255,255,0.08); }
+        .catpicker-item img {
+            width: 56px; height: 56px; object-fit: contain; border-radius: 10px;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+        }
+        .catpicker-item span {
+            font-size: 10px; color: rgba(255,255,255,0.6); font-weight: 600;
+        }
         }
         .confirm-overlay.visible { display: block; }
 
@@ -324,6 +375,13 @@
     <div class="confirm-popup" id="confirmPopup">
         <h3 id="confirmTitle">Déplacer l'événement ?</h3>
         <p id="confirmDesc"></p>
+
+    <!-- Category picker -->
+    <div class="catpicker-overlay" id="catpickerOverlay" onclick="closeCatPicker()"></div>
+    <div class="catpicker" id="catpicker">
+        <h4>Nouvelle prestation</h4>
+        <div class="catpicker-grid" id="catpickerGrid"></div>
+    </div>
         <div class="btn-row">
             <button class="btn-cancel" onclick="cancelDrag()">Annuler</button>
             <button class="btn-confirm" onclick="confirmDrag()">Confirmer</button>
@@ -419,6 +477,7 @@
             }
         }
         renderEvents();
+        attachDayColClicks();
         setTimeout(function(){ document.getElementById('daysScroll').scrollTop = (8-START_HOUR)*HOUR_PX; }, 100);
     }
 
@@ -696,6 +755,79 @@
         nl.classList.add('active'); al.classList.remove('active');
     }
     setInterval(nextAlbum, 30000);
+
+    // ===== CATEGORY PICKER =====
+    var CATEGORIES = [
+        { id: 'call', label: 'Call', icon: IMG_BASE + 'picto-call-mini.png' },
+        { id: 'da', label: 'DA', icon: IMG_BASE + 'picto-confcall.png' },
+        { id: 'shooting', label: 'Shooting', icon: IMG_BASE + 'picto-morning.png' },
+    ];
+    var catPickerState = { dayIdx: -1, hour: 0, minute: 0 };
+
+    function initCatPicker() {
+        var grid = document.getElementById('catpickerGrid');
+        grid.innerHTML = '';
+        CATEGORIES.forEach(function(cat) {
+            var div = document.createElement('div');
+            div.className = 'catpicker-item';
+            div.innerHTML = '<img src="'+cat.icon+'" alt="'+cat.label+'"><span>'+cat.label+'</span>';
+            div.onclick = function(e) { e.stopPropagation(); selectCategory(cat); };
+            grid.appendChild(div);
+        });
+    }
+
+    function openCatPicker(e, dayIdx, hour, minute) {
+        catPickerState = { dayIdx: dayIdx, hour: hour, minute: minute };
+        var picker = document.getElementById('catpicker');
+        var overlay = document.getElementById('catpickerOverlay');
+
+        // Position near click
+        var x = e.clientX, y = e.clientY;
+        var pw = 260, ph = 200;
+        if (x + pw > window.innerWidth) x = window.innerWidth - pw - 16;
+        if (y + ph > window.innerHeight) y = y - ph;
+        picker.style.left = x + 'px';
+        picker.style.top = y + 'px';
+
+        overlay.classList.add('visible');
+        picker.classList.add('visible');
+    }
+
+    function closeCatPicker() {
+        document.getElementById('catpickerOverlay').classList.remove('visible');
+        document.getElementById('catpicker').classList.remove('visible');
+    }
+
+    function selectCategory(cat) {
+        closeCatPicker();
+        var s = catPickerState;
+        var hStr = String(s.hour).padStart(2,'0') + ':' + String(s.minute).padStart(2,'0');
+        console.log('Catégorie: ' + cat.label + ' | Jour: ' + JOURS_FULL[s.dayIdx] + ' | Heure: ' + hStr);
+        // Futur : créer l'événement via l'API
+    }
+
+    // Attach click on empty areas of day columns
+    function attachDayColClicks() {
+        for (var i = 0; i < 5; i++) {
+            (function(dayIdx) {
+                var col = document.getElementById('dayCol' + dayIdx);
+                if (!col) return;
+                col.addEventListener('click', function(e) {
+                    // Ignore if clicked on an event
+                    if (e.target.closest('.event')) return;
+                    var rect = col.getBoundingClientRect();
+                    var yOff = e.clientY - rect.top + col.parentElement.scrollTop;
+                    var totalMin = START_HOUR * 60 + (yOff / HOUR_PX) * 60;
+                    var hour = Math.floor(totalMin / 60);
+                    var minute = Math.round((totalMin % 60) / 15) * 15;
+                    if (minute >= 60) { hour++; minute = 0; }
+                    openCatPicker(e, dayIdx, hour, minute);
+                });
+            })(i);
+        }
+    }
+
+    initCatPicker();
 
     // ===== INIT =====
     renderAgenda(); loadCalendarData();
