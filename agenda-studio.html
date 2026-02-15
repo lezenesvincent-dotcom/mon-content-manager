@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 03:10:29 -->
+<!-- BUILD: 2026-02-15 03:14:19 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -820,6 +820,7 @@
                     if (e.target.closest('.event')) return;
                     // Ignore if drag was in progress
                     if (dragState) return;
+                    alert('CLIC zone vide - dayIdx:'+dayIdx);
                     var rect = col.getBoundingClientRect();
                     var scrollEl = document.getElementById('daysScroll');
                     var yOff = e.clientY - rect.top;
