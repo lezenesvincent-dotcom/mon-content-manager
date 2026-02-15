@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 04:04:54 -->
+<!-- BUILD: 2026-02-15 04:16:31 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -492,6 +492,7 @@
     }
 
     function renderEvents() {
+        try {
         if (!calendarData || !calendarData.salle) return;
 
         var dayEvents = {};
@@ -563,9 +564,9 @@
                         usedCols.push(items[j].col);
                     }
                 }
-                var col = 0;
-                while (usedCols.indexOf(col) !== -1) col++;
-                items[i].col = col;
+                var assignCol = 0;
+                while (usedCols.indexOf(assignCol) !== -1) assignCol++;
+                items[i].col = assignCol;
             }
 
             // Calculer totalCols pour chaque groupe d'overlap
@@ -682,6 +683,7 @@
                 col.appendChild(el);
             });
         });
+        } catch(err) { console.error('renderEvents ERROR:', err); }
     }
 
     // ===== LOAD DATA =====
