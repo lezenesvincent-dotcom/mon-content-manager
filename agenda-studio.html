@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 03:33:15 -->
+<!-- BUILD: 2026-02-15 03:48:48 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -319,6 +319,14 @@
         .catpicker-item span {
             font-size: 10px; color: rgba(255,255,255,0.6); font-weight: 600;
         }
+        .catpicker-author {
+            padding: 10px 14px; color: #fff; font-size: 13px; font-weight: 500;
+            border-radius: 10px; cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .catpicker-author:last-child { border-bottom: none; }
+        .catpicker-author:hover { background: rgba(99,102,241,0.25); }
         }
         .confirm-overlay.visible { display: block; }
 
@@ -384,7 +392,7 @@
     <!-- Category picker -->
     <div class="catpicker-overlay" id="catpickerOverlay" onclick="closeCatPicker()"></div>
     <div class="catpicker" id="catpicker">
-        <h4>Nouvelle prestation</h4>
+        <h4 id="catpickerTitle">New</h4>
         <div class="catpicker-grid" id="catpickerGrid"></div>
     </div>
 
@@ -764,11 +772,23 @@
         { id: 'da', label: 'DA', icon: IMG_BASE + 'picto-da-mini.png' },
         { id: 'shooting', label: 'Shooting', icon: IMG_BASE + 'picto-morning.png' },
     ];
-    var catPickerState = { dayIdx: -1, hour: 0, minute: 0 };
+    var AUTHORS = [
+        'Christian Devismes', 'Alexandre Gerard', 'Laure Rufin',
+        'Patrick Poussard', 'Eric Ravary'
+    ];
+    var catPickerState = { dayIdx: -1, hour: 0, minute: 0, category: null, step: 'category' };
 
     function initCatPicker() {
+        renderCatPickerGrid();
+    }
+
+    function renderCatPickerGrid() {
         var grid = document.getElementById('catpickerGrid');
+        var title = document.getElementById('catpickerTitle');
         grid.innerHTML = '';
+        title.textContent = 'New';
+        catPickerState.step = 'category';
+        grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
         CATEGORIES.forEach(function(cat) {
             var div = document.createElement('div');
             div.className = 'catpicker-item';
@@ -778,16 +798,35 @@
         });
     }
 
+    function renderAuthorList() {
+        var grid = document.getElementById('catpickerGrid');
+        var title = document.getElementById('catpickerTitle');
+        grid.innerHTML = '';
+        title.textContent = catPickerState.category.label;
+        catPickerState.step = 'author';
+        grid.style.gridTemplateColumns = '1fr';
+        AUTHORS.forEach(function(author) {
+            var div = document.createElement('div');
+            div.className = 'catpicker-author';
+            div.textContent = author;
+            div.onclick = function(e) { e.stopPropagation(); selectAuthor(author); };
+            grid.appendChild(div);
+        });
+    }
+
     function openCatPicker(e, dayIdx, hour, minute) {
-        catPickerState = { dayIdx: dayIdx, hour: hour, minute: minute };
+        catPickerState = { dayIdx: dayIdx, hour: hour, minute: minute, category: null, step: 'category' };
+        renderCatPickerGrid();
         var picker = document.getElementById('catpicker');
         var overlay = document.getElementById('catpickerOverlay');
 
         // Position near click
         var x = e.clientX, y = e.clientY;
-        var pw = 260, ph = 200;
+        var pw = 260, ph = 280;
         if (x + pw > window.innerWidth) x = window.innerWidth - pw - 16;
         if (y + ph > window.innerHeight) y = y - ph;
+        if (x < 10) x = 10;
+        if (y < 10) y = 10;
         picker.style.left = x + 'px';
         picker.style.top = y + 'px';
 
@@ -801,11 +840,39 @@
     }
 
     function selectCategory(cat) {
-        closeCatPicker();
+        catPickerState.category = cat;
+        renderAuthorList();
+    }
+
+    function selectAuthor(author) {
         var s = catPickerState;
         var hStr = String(s.hour).padStart(2,'0') + ':' + String(s.minute).padStart(2,'0');
-        console.log('Catégorie: ' + cat.label + ' | Jour: ' + JOURS_FULL[s.dayIdx] + ' | Heure: ' + hStr);
-        // Futur : créer l'événement via l'API
+        var endHour = s.hour + 1;
+        var endMin = s.minute;
+        var endStr = String(endHour).padStart(2,'0') + ':' + String(endMin).padStart(2,'0');
+        var dayDate = new Date(currentMonday);
+        dayDate.setDate(dayDate.getDate() + s.dayIdx);
+
+        // Create event object in salle data
+        var startISO = dayDate.toISOString().split('T')[0] + 'T' + hStr + ':00Z';
+        var endISO = dayDate.toISOString().split('T')[0] + 'T' + endStr + ':00Z';
+        var newEvent = {
+            subject: s.category.label + ' ' + author,
+            start: startISO,
+            end: endISO,
+            location: 'Studio CIC',
+            organizer: author,
+            status: 'Busy'
+        };
+
+        if (calendarData && calendarData.salle) {
+            calendarData.salle.push(newEvent);
+            clearEvents();
+            renderEvents();
+        }
+
+        closeCatPicker();
+        console.log('Event créé: ' + newEvent.subject + ' | ' + hStr + '-' + endStr + ' | ' + JOURS_FULL[s.dayIdx]);
     }
 
     // Attach click on empty areas via event delegation on daysScroll
