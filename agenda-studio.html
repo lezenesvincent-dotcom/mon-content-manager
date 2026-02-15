@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 12:36:49 -->
+<!-- BUILD: 2026-02-15 12:43:32 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -358,10 +358,10 @@
             display: block; border-radius: 14px;
         }
         .event.allday-picto .allday-title {
-            position: absolute; bottom: 40px; right: 10px;
-            font-size: 18px; font-weight: 900; color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-            text-align: right; line-height: 1.1;
+            position: absolute; bottom: 60px; right: 8px;
+            font-size: 12px; font-weight: 800; color: #fff;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+            text-align: right; line-height: 1.15;
         }
         .event.allday-picto .allday-badge {
             position: absolute; bottom: 10px; right: 10px;
@@ -803,6 +803,11 @@
                     e.stopPropagation();
                     selectEvent(el, ev);
                 });
+                el.addEventListener('dblclick', function(e) {
+                    e.stopPropagation();
+                    if (dragState) cancelDrag();
+                    editEvent(ev, item);
+                });
 
                 col.appendChild(el);
             });
@@ -922,6 +927,18 @@
         document.getElementById('confirmOverlay').classList.remove('visible');
         document.getElementById('confirmPopup').classList.remove('visible');
         dragState=null;
+    }
+
+    // ===== EDIT EVENT (double-click) =====
+    var editState = null;
+    function editEvent(ev, item) {
+        editState = { ev: ev, item: item };
+        var hStr = String(Math.floor(item.startMin/60)).padStart(2,'0') + ':' + String(item.startMin%60).padStart(2,'0');
+        document.getElementById('inputDialogTitle').textContent = 'Modifier';
+        document.getElementById('inputTitle').value = ev.subject || '';
+        document.getElementById('inputTime').value = hStr;
+        document.getElementById('inputDialogOverlay').classList.add('visible');
+        setTimeout(function() { document.getElementById('inputTitle').focus(); document.getElementById('inputTitle').select(); }, 50);
     }
 
     // ===== FOND POCHETTES ALBUM =====
@@ -1052,37 +1069,67 @@
     }
 
     function cancelInputDialog() {
+        editState = null;
         document.getElementById('inputDialogOverlay').classList.remove('visible');
     }
 
     function confirmInputDialog() {
-        var s = catPickerState;
-        var title = document.getElementById('inputTitle').value || (s.category.label + ' ' + s.author);
+        var title = document.getElementById('inputTitle').value;
         var timeParts = document.getElementById('inputTime').value.split(':');
-        var hour = parseInt(timeParts[0]) || s.hour;
+        var hour = parseInt(timeParts[0]) || 9;
         var minute = parseInt(timeParts[1]) || 0;
-        var dayDate = new Date(currentMonday);
-        dayDate.setDate(dayDate.getDate() + s.dayIdx);
 
-        var utcH = hour - 1;
-        var utcEndH = hour;
-        var startISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcH).padStart(2,'0') + ':' + String(minute).padStart(2,'0') + ':00Z';
-        var endISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcEndH).padStart(2,'0') + ':' + String(minute).padStart(2,'0') + ':00Z';
-        var newEvent = {
-            subject: title,
-            start: startISO,
-            end: endISO,
-            location: 'Studio CIC',
-            organizer: s.author,
-            status: 'Busy',
-            _localId: 'local_' + Date.now()
-        };
-
-        localEvents.push(newEvent);
-        if (calendarData && calendarData.salle) {
-            calendarData.salle.push(newEvent);
-            clearEvents();
-            renderEvents();
+        if (editState) {
+            // EDIT existing event
+            var ev = editState.ev;
+            ev.subject = title || ev.subject;
+            var dur = editState.item.endMin - editState.item.startMin;
+            var dayIdx = 0;
+            // Find which day this event is on
+            var evStart = new Date(ev.start);
+            var startLocal = new Date(evStart.getFullYear(), evStart.getMonth(), evStart.getDate());
+            var mondayLocal = new Date(currentMonday.getFullYear(), currentMonday.getMonth(), currentMonday.getDate());
+            dayIdx = Math.round((startLocal - mondayLocal)/(1000*60*60*24));
+            var dayDate = new Date(currentMonday);
+            dayDate.setDate(dayDate.getDate() + dayIdx);
+            var utcH = hour - 1, utcEH = Math.floor((hour*60+minute+dur)/60) - 1, utcEM = (hour*60+minute+dur)%60;
+            ev.start = dayDate.toISOString().split('T')[0] + 'T' + String(utcH).padStart(2,'0') + ':' + String(minute).padStart(2,'0') + ':00Z';
+            ev.end = dayDate.toISOString().split('T')[0] + 'T' + String(utcEH).padStart(2,'0') + ':' + String(utcEM).padStart(2,'0') + ':00Z';
+            if (ev._localId) {
+                for (var li = 0; li < localEvents.length; li++) {
+                    if (localEvents[li]._localId === ev._localId) {
+                        localEvents[li].subject = ev.subject;
+                        localEvents[li].start = ev.start;
+                        localEvents[li].end = ev.end;
+                        break;
+                    }
+                }
+            }
+            editState = null;
+            clearEvents(); renderEvents();
+        } else {
+            // CREATE new event
+            var s = catPickerState;
+            var dayDate = new Date(currentMonday);
+            dayDate.setDate(dayDate.getDate() + s.dayIdx);
+            var utcH = hour - 1;
+            var utcEndH = hour;
+            var startISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcH).padStart(2,'0') + ':' + String(minute).padStart(2,'0') + ':00Z';
+            var endISO = dayDate.toISOString().split('T')[0] + 'T' + String(utcEndH).padStart(2,'0') + ':' + String(minute).padStart(2,'0') + ':00Z';
+            var newEvent = {
+                subject: title || (s.category.label + ' ' + s.author),
+                start: startISO,
+                end: endISO,
+                location: 'Studio CIC',
+                organizer: s.author,
+                status: 'Busy',
+                _localId: 'local_' + Date.now()
+            };
+            localEvents.push(newEvent);
+            if (calendarData && calendarData.salle) {
+                calendarData.salle.push(newEvent);
+                clearEvents(); renderEvents();
+            }
         }
 
         document.getElementById('inputDialogOverlay').classList.remove('visible');
