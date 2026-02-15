@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 03:14:19 -->
+<!-- BUILD: 2026-02-15 03:16:28 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -480,7 +480,6 @@
             }
         }
         renderEvents();
-        attachDayColClicks();
         setTimeout(function(){ document.getElementById('daysScroll').scrollTop = (8-START_HOUR)*HOUR_PX; }, 100);
     }
 
@@ -809,35 +808,35 @@
         // Futur : créer l'événement via l'API
     }
 
-    // Attach click on empty areas of day columns
+    // Attach click on empty areas via event delegation on daysGrid
     function attachDayColClicks() {
-        for (var i = 0; i < 5; i++) {
-            (function(dayIdx) {
-                var col = document.getElementById('dayCol' + dayIdx);
-                if (!col) return;
-                col.addEventListener('click', function(e) {
-                    // Ignore if clicked on an event
-                    if (e.target.closest('.event')) return;
-                    // Ignore if drag was in progress
-                    if (dragState) return;
-                    alert('CLIC zone vide - dayIdx:'+dayIdx);
-                    var rect = col.getBoundingClientRect();
-                    var scrollEl = document.getElementById('daysScroll');
-                    var yOff = e.clientY - rect.top;
-                    var totalMin = START_HOUR * 60 + ((yOff + scrollEl.scrollTop - col.offsetTop) / HOUR_PX) * 60;
-                    var hour = Math.floor(totalMin / 60);
-                    var minute = Math.round((totalMin % 60) / 15) * 15;
-                    if (minute >= 60) { hour++; minute = 0; }
-                    openCatPicker(e, dayIdx, hour, minute);
-                });
-            })(i);
-        }
+        var grid = document.getElementById('daysGrid');
+        if (!grid) return;
+        grid.addEventListener('click', function(e) {
+            // Ignore if clicked on an event
+            if (e.target.closest('.event')) return;
+            // Ignore if drag was in progress
+            if (dragState) return;
+            // Find which day-col was clicked
+            var col = e.target.closest('.day-col');
+            if (!col) return;
+            var dayIdx = parseInt(col.id.replace('dayCol',''));
+            if (isNaN(dayIdx)) return;
+            var rect = col.getBoundingClientRect();
+            var scrollEl = document.getElementById('daysScroll');
+            var yOff = e.clientY - rect.top;
+            var totalMin = START_HOUR * 60 + ((yOff + scrollEl.scrollTop - col.offsetTop) / HOUR_PX) * 60;
+            var hour = Math.floor(totalMin / 60);
+            var minute = Math.round((totalMin % 60) / 15) * 15;
+            if (minute >= 60) { hour++; minute = 0; }
+            openCatPicker(e, dayIdx, hour, minute);
+        });
     }
 
     initCatPicker();
 
     // ===== INIT =====
-    renderAgenda(); loadCalendarData();
+    renderAgenda(); attachDayColClicks(); loadCalendarData();
     setInterval(loadCalendarData, 5*60*1000);
     setInterval(function() { document.querySelectorAll('.now-line').forEach(function(e){e.remove();}); renderAgenda(); }, 60000);
 </script>
