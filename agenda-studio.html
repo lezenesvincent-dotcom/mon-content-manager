@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: 2026-02-15 04:20:35 -->
+<!-- BUILD: 2026-02-15 11:41:05 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -281,8 +281,8 @@
             display: none; position: fixed;
             background: rgba(18,20,38,0.85);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 18px;
-            z-index: 450; min-width: 220px; max-width: 320px;
+            border-radius: 24px; padding: 24px;
+            z-index: 450; min-width: 340px; max-width: 420px;
             backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
             box-shadow: 0 20px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08);
             overflow: hidden;
@@ -300,28 +300,28 @@
         .catpicker.visible { display: block; animation: catpickerIn 0.25s ease-out; }
         @keyframes catpickerIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
         .catpicker h4 {
-            color: rgba(255,255,255,0.5); font-size: 10px; text-transform: uppercase;
-            letter-spacing: 1.5px; margin: 0 0 12px 2px; position: relative; z-index: 1;
+            color: rgba(255,255,255,0.5); font-size: 13px; text-transform: uppercase;
+            letter-spacing: 1.5px; margin: 0 0 16px 2px; position: relative; z-index: 1;
         }
         .catpicker-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; position: relative; z-index: 1;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; position: relative; z-index: 1;
         }
         .catpicker-item {
-            display: flex; flex-direction: column; align-items: center; gap: 6px;
-            cursor: pointer; padding: 8px 4px; border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            cursor: pointer; padding: 10px 6px; border-radius: 14px;
             transition: background 0.15s;
         }
         .catpicker-item:hover { background: rgba(255,255,255,0.08); }
         .catpicker-item img {
-            width: 56px; height: 56px; object-fit: contain; border-radius: 10px;
-            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+            width: 90px; height: 60px; object-fit: contain; border-radius: 12px;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
         }
         .catpicker-item span {
-            font-size: 10px; color: rgba(255,255,255,0.6); font-weight: 600;
+            font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 600;
         }
         .catpicker-author {
-            padding: 10px 14px; color: #fff; font-size: 13px; font-weight: 500;
-            border-radius: 10px; cursor: pointer;
+            padding: 14px 18px; color: #fff; font-size: 15px; font-weight: 500;
+            border-radius: 12px; cursor: pointer;
             transition: background 0.15s;
             border-bottom: 1px solid rgba(255,255,255,0.06);
         }
@@ -750,6 +750,32 @@
         document.getElementById('confirmPopup').classList.add('visible');
     }
     function confirmDrag() {
+        if (dragState && dragState.moved && dragState.evData) {
+            var ev = dragState.evData.ev;
+            var dur = dragState.evData.endMin - dragState.evData.startMin;
+            var newStart = dragState.newStartMin;
+            var newEnd = newStart + dur;
+            var nd = new Date(currentMonday);
+            nd.setDate(nd.getDate() + dragState.newDayIdx);
+            var utcSH = Math.floor(newStart/60) - 1;
+            var utcSM = newStart % 60;
+            var utcEH = Math.floor(newEnd/60) - 1;
+            var utcEM = newEnd % 60;
+            ev.start = nd.toISOString().split('T')[0] + 'T' + String(utcSH).padStart(2,'0') + ':' + String(utcSM).padStart(2,'0') + ':00Z';
+            ev.end = nd.toISOString().split('T')[0] + 'T' + String(utcEH).padStart(2,'0') + ':' + String(utcEM).padStart(2,'0') + ':00Z';
+            // Update localEvents if it's a local event
+            if (ev._localId) {
+                for (var li = 0; li < localEvents.length; li++) {
+                    if (localEvents[li]._localId === ev._localId) {
+                        localEvents[li].start = ev.start;
+                        localEvents[li].end = ev.end;
+                        break;
+                    }
+                }
+            }
+            clearEvents();
+            renderEvents();
+        }
         document.getElementById('confirmOverlay').classList.remove('visible');
         document.getElementById('confirmPopup').classList.remove('visible');
         dragState=null;
@@ -861,7 +887,7 @@
 
         // Position near click
         var x = e.clientX, y = e.clientY;
-        var pw = 260, ph = 280;
+        var pw = 380, ph = 320;
         if (x + pw > window.innerWidth) x = window.innerWidth - pw - 16;
         if (y + ph > window.innerHeight) y = y - ph;
         if (x < 10) x = 10;
