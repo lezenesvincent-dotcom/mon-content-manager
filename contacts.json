@@ -210,14 +210,14 @@
     "photo": "contacts-photos/eva-bellin.png"
   },
   {
-    "id": "c22",
     "firstName": "Eva",
     "lastName": "Zarbo",
-    "speciality": "eco",
+    "speciality": "esg",
     "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/eva-zarbo.png"
+    "photo": "contacts-photos/eva-zarbo.png",
+    "id": "c22"
   },
   {
     "id": "c23",
