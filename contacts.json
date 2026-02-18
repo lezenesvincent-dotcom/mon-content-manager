@@ -90,14 +90,14 @@
     "id": "c09"
   },
   {
-    "id": "c10",
     "firstName": "Virginie",
     "lastName": "Royère",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteurs Agroalimentaire",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/virginie-royere.png"
+    "photo": "contacts-photos/virginie-royere.png",
+    "id": "c10"
   },
   {
     "firstName": "Arnaud",
