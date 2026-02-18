@@ -110,14 +110,14 @@
     "id": "c11"
   },
   {
-    "id": "c12",
     "firstName": "David",
     "lastName": "Da Maia",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteurs Luxe & Biens de Consommation",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/david-da-maia.png"
+    "photo": "contacts-photos/david-da-maia.png",
+    "id": "c12"
   },
   {
     "firstName": "Pierre",
