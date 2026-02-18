@@ -310,14 +310,14 @@
     "photo": "contacts-photos/stephane-leandri.png"
   },
   {
-    "id": "c32",
     "firstName": "William",
     "lastName": "Honvo",
     "speciality": "eco",
-    "function": "",
+    "function": "Économiste",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/william-honvo.png"
+    "photo": "contacts-photos/william-honvo.png",
+    "id": "c32"
   },
   {
     "firstName": "Gaëlle",
