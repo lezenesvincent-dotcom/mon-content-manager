@@ -103,11 +103,11 @@
     "firstName": "Arnaud",
     "lastName": "Cadart",
     "speciality": "actions",
-    "function": "Analyste ESG",
+    "function": "Analyste Secteur Santé",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "id": "c11",
-    "photo": "contacts-photos/arnaud-cadart.png"
+    "photo": "contacts-photos/arnaud-cadart.png",
+    "id": "c11"
   },
   {
     "id": "c12",
