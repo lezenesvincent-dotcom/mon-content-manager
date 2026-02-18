@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphique 3D Boursier v14 - Persistance Serveur</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            width: 1920px;
+            height: 1080px;
+        }
+
+        #container {
+            width: 1920px;
+            height: 1080px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* STATS COMPACTES EN HAUT (15% de hauteur) */
+        #stats {
+            height: 15%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 60px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .stat-label {
+            font-size: 28px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: normal;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 56px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .stat-value.positive {
+            color: #4ade80;
+        }
+
+        /* GRAPHIQUE OCCUPE 85% */
+        #chartContainer {
+            height: 85%;
+            position: relative;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        #refreshButton {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        #refreshButton:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        #applyButton {
+            position: absolute;
+            bottom: 90px;
+            right: 30px;
+            padding: 15px 30px;
+            background: rgba(100, 255, 100, 0.3);
+            border: 2px solid #4ade80;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        #applyButton:hover {
+            background: rgba(100, 255, 100, 0.5);
+            transform: scale(1.05);
+        }
+
+        #applyButton.saved {
+            background: rgba(100, 255, 100, 0.8);
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        #yearLabels {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .year-label {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        #priceLabels {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .price-label {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        /* CONTRÔLEURS */
+        #controllers {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 30px;
+            z-index: 1000;
+        }
+
+        .controller {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .controller h3 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .joystick-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .joystick-row {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .joystick-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 8px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .joystick-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        .joystick-btn:active {
+            transform: scale(0.95);
+        }
+
+        .reset-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 100, 100, 0.8);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 100, 100, 1);
+        }
+
+        .info-display {
+            margin-top: 10px;
+            font-size: 12px;
+            text-align: center;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- STATS COMPACTES -->
+        <div id="stats"></div>
+        
+        <!-- GRAPHIQUE GRAND -->
+        <div id="chartContainer">
+            <canvas id="threeCanvas"></canvas>
+            <div id="yearLabels"></div>
+            <button id="applyButton" onclick="applySettings()">✓ Appliquer</button>
+            <button id="refreshButton" onclick="reloadAnimation()">🔄 Rafraîchir</button>
+        </div>
+
+        <!-- CONTRÔLEURS -->
+        <div id="controllers">
+            <!-- Contrôleur Caméra Position -->
+            <div class="controller">
+                <h3>📹 Position Caméra</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveCamera('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveCamera('left')">←</button>
+                        <button class="joystick-btn" onclick="moveCamera('center')">●</button>
+                        <button class="joystick-btn" onclick="moveCamera('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveCamera('down')">↓</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetCamera()">Reset Position</button>
+                    <div class="info-display" id="cameraInfo">X:0 Y:5 Z:32</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Angle Caméra -->
+            <div class="controller">
+                <h3>🎯 Angle Caméra</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="rotateCamera('up')">▲</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="rotateCamera('left')">◀</button>
+                        <button class="joystick-btn" onclick="rotateCamera('center')">●</button>
+                        <button class="joystick-btn" onclick="rotateCamera('right')">▶</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="rotateCamera('down')">▼</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetCameraAngle()">Reset Angle</button>
+                    <div class="info-display" id="angleInfo">H:0° V:-20°</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Graphique -->
+            <div class="controller">
+                <h3>📊 Graphique</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraph('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraph('left')">←</button>
+                        <button class="joystick-btn" onclick="moveGraph('center')">●</button>
+                        <button class="joystick-btn" onclick="moveGraph('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraph('down')">↓</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetGraph()">Reset</button>
+                    <div class="info-display" id="graphInfo">X:0 Y:0</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Lumière Position -->
+            <div class="controller">
+                <h3>💡 Position Lumière</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('left')">←</button>
+                        <button class="joystick-btn" onclick="moveLight('center')">●</button>
+                        <button class="joystick-btn" onclick="moveLight('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('down')">↓</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLight()">Reset</button>
+                    <div class="info-display" id="lightInfo">X:5 Y:10 Z:7</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Intensité Lumière -->
+            <div class="controller">
+                <h3>🔆 Intensité</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="adjustIntensity('up')" style="font-size: 24px;">☀️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="adjustIntensity('center')" style="font-size: 18px;">●</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="adjustIntensity('down')" style="font-size: 24px;">🌙</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLight()">Reset</button>
+                    <div class="info-display" id="intensityInfo">60%</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Profondeur Lumière (Z) -->
+            <div class="controller">
+                <h3>💡 Profondeur (Z)</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('forward')" title="Rapprocher">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('center')">●</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('backward')" title="Éloigner">⬇️</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLight()">Reset</button>
+                    <div class="info-display" id="lightZInfo">Z:7</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Labels X (années) -->
+            <div class="controller">
+                <h3>🏷️ Labels X</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Annees('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Annees('left')">←</button>
+                        <button class="joystick-btn" onclick="moveLabels_Annees('center')">●</button>
+                        <button class="joystick-btn" onclick="moveLabels_Annees('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Annees('down')">↓</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLabels()">Reset</button>
+                    <div class="info-display" id="labelsXInfo">X:0.0 Y:0.0</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Labels Y (prix) -->
+            <div class="controller">
+                <h3>🏷️ Labels Y</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Prix('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Prix('left')">←</button>
+                        <button class="joystick-btn" onclick="moveLabels_Prix('center')">●</button>
+                        <button class="joystick-btn" onclick="moveLabels_Prix('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Prix('down')">↓</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLabels()">Reset</button>
+                    <div class="info-display" id="labelsYInfo">X:0.0 Y:0.0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // ========================================
+        // CONFIGURATION WEBSOCKET
+        // ========================================
+        const WS_URL = 'wss://ecamm-overlay-server.onrender.com';
+        let ws = null;
+        let reconnectTimeout = null;
+
+        // ========================================
+        // VARIABLES GLOBALES THREE.JS
+        // ========================================
+        let threeScene = null;
+        let threeCamera = null;
+        let threeRenderer = null;
+        let chartCurve = null;
+        let constructionProgress = 0;
+        let rotationStartTime = null;
+        let animationFrameId = null;
+        let mockData = null;
+        let valuationCube = null;
+        let valuationStartTime = null;
+        let chartMesh = null;  // Stocker le mesh pour l'animation
+        let directionalLight = null; // Référence à la lumière
+        let yearLabelsSprites = []; // Stocker les labels années (axe X)
+        let priceLabelsSprites = []; // Stocker les labels prix (axe Y)
+        let horizontalLines = []; // Stocker les lignes horizontales
+
+        // Variables de position
+        let cameraOffset = { x: 0, y: 5, z: 32 };
+        let cameraAngle = { horizontal: 0, vertical: -20 }; // En degrés
+        let graphOffset = { x: 0, y: 0 };
+        let lightPosition = { x: 5, y: 10, z: 7 }; // Position lumière
+        let lightIntensity = 0.6; // Intensité lumière
+        let labelsXOffset = { x: 0, y: 0 }; // Offset SEULEMENT pour labels X (années)
+        let labelsYOffset = { x: 0, y: 0 }; // Offset SEULEMENT pour labels Y (prix)
+        let barreRougeOffset = { x: 0, y: -7.5 }; // Position barre rouge
+        let barreRougeSize = { width: 9, height: 0.325 }; // Taille barre rouge
+        const MOVE_STEP = 2; // Unités de déplacement par clic
+        const ANGLE_STEP = 1; // 1° de rotation par clic
+        const LIGHT_STEP = 1; // Pas de déplacement lumière
+        const INTENSITY_STEP = 0.1; // Pas d'intensité
+        const LABEL_STEP = 0.5; // Pas de déplacement labels
+        const BARRE_STEP = 0.5; // Pas de déplacement barre rouge
+        const SIZE_STEP = 0.5; // Pas de taille barre rouge
+
+        function moveCamera(direction) {
+            const step = MOVE_STEP;
+            switch(direction) {
+                case 'up': cameraOffset.y += step; break;
+                case 'down': cameraOffset.y -= step; break;
+                case 'left': cameraOffset.x -= step; break;
+                case 'right': cameraOffset.x += step; break;
+                case 'center': /* ne rien faire */ break;
+            }
+            updateCamera();
+        }
+
+        function rotateCamera(direction) {
+            const step = ANGLE_STEP;
+            switch(direction) {
+                case 'up': cameraAngle.vertical += step; break;
+                case 'down': cameraAngle.vertical -= step; break;
+                case 'left': cameraAngle.horizontal -= step; break;
+                case 'right': cameraAngle.horizontal += step; break;
+                case 'center': /* ne rien faire */ break;
+            }
+            updateCamera();
+        }
+
+        function moveGraph(direction) {
+            const step = MOVE_STEP;
+            switch(direction) {
+                case 'up': graphOffset.y += step; break;
+                case 'down': graphOffset.y -= step; break;
+                case 'left': graphOffset.x -= step; break;
+                case 'right': graphOffset.x += step; break;
+                case 'center': /* ne rien faire */ break;
+            }
+            updateGraphPosition();
+        }
+
+        function updateCamera() {
+            if (threeCamera) {
+                // Position
+                threeCamera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
+                
+                // Calculer le point lookAt avec les angles
+                const distance = 10;
+                const horizontalRad = (cameraAngle.horizontal * Math.PI) / 180;
+                const verticalRad = (cameraAngle.vertical * Math.PI) / 180;
+                
+                // Point de visée calculé avec les angles
+                const lookX = cameraOffset.x + Math.sin(horizontalRad) * distance * Math.cos(verticalRad);
+                const lookY = cameraOffset.y + Math.sin(verticalRad) * distance;
+                const lookZ = -Math.cos(horizontalRad) * distance * Math.cos(verticalRad);
+                
+                threeCamera.lookAt(lookX, lookY, lookZ);
+                
+                // Mise à jour affichage
+                document.getElementById('cameraInfo').textContent = 
+                    `X:${cameraOffset.x.toFixed(0)} Y:${cameraOffset.y.toFixed(0)} Z:${cameraOffset.z}`;
+                
+                document.getElementById('angleInfo').textContent = 
+                    `H:${cameraAngle.horizontal.toFixed(0)}° V:${cameraAngle.vertical.toFixed(0)}°`;
+                
+                // Log pour debug (uniquement toutes les 10 modifications)
+                if (!window.updateCount) window.updateCount = 0;
+                window.updateCount++;
+                if (window.updateCount % 10 === 0) {
+                    console.log('📹 Positions actuelles:', { cameraOffset, cameraAngle, graphOffset });
+                }
+            }
+        }
+
+        function updateGraphPosition() {
+            if (threeScene) {
+                threeScene.position.set(graphOffset.x, graphOffset.y, 0);
+                document.getElementById('graphInfo').textContent = 
+                    `X:${graphOffset.x.toFixed(0)} Y:${graphOffset.y.toFixed(0)}`;
+                console.log('📊 Graph position mise à jour:', graphOffset);
+            } else {
+                console.log('⚠️ updateGraphPosition appelé mais threeScene n\'existe pas encore');
+            }
+        }
+
+        function resetCamera() {
+            cameraOffset = { x: 0, y: 5, z: 32 };
+            updateCamera();
+        }
+
+        function resetCameraAngle() {
+            cameraAngle = { horizontal: 0, vertical: -20 };
+            updateCamera();
+        }
+
+        function resetGraph() {
+            graphOffset = { x: 0, y: 0 };
+            updateGraphPosition();
+        }
+
+        function moveLight(direction) {
+            const step = LIGHT_STEP;
+            switch(direction) {
+                case 'up': lightPosition.y += step; break;
+                case 'down': lightPosition.y -= step; break;
+                case 'left': lightPosition.x -= step; break;
+                case 'right': lightPosition.x += step; break;
+                case 'forward': lightPosition.z -= step; break; // Avant (se rapproche)
+                case 'backward': lightPosition.z += step; break; // Arrière (s'éloigne)
+                case 'center': /* ne rien faire */ break;
+            }
+            updateLight();
+        }
+
+        function adjustIntensity(direction) {
+            if (direction === 'up') {
+                lightIntensity = Math.min(2.0, lightIntensity + INTENSITY_STEP);
+            } else if (direction === 'down') {
+                lightIntensity = Math.max(0.0, lightIntensity - INTENSITY_STEP);
+            }
+            updateLight();
+        }
+
+        function updateLight() {
+            if (directionalLight) {
+                directionalLight.position.set(lightPosition.x, lightPosition.y, lightPosition.z);
+                directionalLight.intensity = lightIntensity;
+                
+                document.getElementById('lightInfo').textContent = 
+                    `X:${lightPosition.x.toFixed(0)} Y:${lightPosition.y.toFixed(0)} Z:${lightPosition.z}`;
+                
+                document.getElementById('lightZInfo').textContent = 
+                    `Z:${lightPosition.z.toFixed(0)}`;
+                
+                document.getElementById('intensityInfo').textContent = 
+                    `${(lightIntensity * 100).toFixed(0)}%`;
+            }
+        }
+
+        function resetLight() {
+            lightPosition = { x: 5, y: 10, z: 7 };
+            lightIntensity = 0.6;
+            updateLight();
+        }
+
+        function moveLabels_Annees(direction) {
+            // Contrôle SEULEMENT les labels X (années)
+            const step = LABEL_STEP;
+            switch(direction) {
+                case 'up': labelsXOffset.y += step; break;
+                case 'down': labelsXOffset.y -= step; break;
+                case 'left': labelsXOffset.x -= step; break;
+                case 'right': labelsXOffset.x += step; break;
+                case 'center': /* ne rien faire */ break;
+            }
+            updateLabels();
+        }
+
+        function moveLabels_Prix(direction) {
+            // Contrôle SEULEMENT les labels Y (prix)
+            const step = LABEL_STEP;
+            switch(direction) {
+                case 'up': labelsYOffset.y += step; break;
+                case 'down': labelsYOffset.y -= step; break;
+                case 'left': labelsYOffset.x -= step; break;
+                case 'right': labelsYOffset.x += step; break;
+                case 'center': /* ne rien faire */ break;
+            }
+            updateLabels();
+        }
+
+        function updateLabels() {
+            // Mettre à jour labels X (années) avec leur propre offset
+            yearLabelsSprites.forEach(sprite => {
+                sprite.position.x = sprite.userData.baseX + labelsXOffset.x;
+                sprite.position.y = sprite.userData.baseY + labelsXOffset.y;
+            });
+            
+            // Mettre à jour labels Y (prix) avec leur propre offset
+            priceLabelsSprites.forEach(sprite => {
+                sprite.position.x = sprite.userData.baseX + labelsYOffset.x;
+                sprite.position.y = sprite.userData.baseY + labelsYOffset.y;
+            });
+            
+            // Mettre à jour lignes horizontales (suivent les labels Y)
+            horizontalLines.forEach(line => {
+                line.position.y = line.userData.baseY + labelsYOffset.y;
+            });
+            
+            // Affichages séparés
+            document.getElementById('labelsXInfo').textContent = `X:${labelsXOffset.x.toFixed(1)} Y:${labelsXOffset.y.toFixed(1)}`;
+            document.getElementById('labelsYInfo').textContent = `X:${labelsYOffset.x.toFixed(1)} Y:${labelsYOffset.y.toFixed(1)}`;
+        }
+
+        function resetLabels() {
+            labelsXOffset = { x: 0, y: 0 };
+            labelsYOffset = { x: 0, y: 0 };
+            updateLabels();
+        }
+
+        function applySettings() {
+            // Préparer les paramètres
+            const settings = {
+                cameraOffset: { ...cameraOffset },
+                cameraAngle: { ...cameraAngle },
+                graphOffset: { ...graphOffset },
+                lightPosition: { ...lightPosition },
+                lightIntensity: lightIntensity,
+                labelsXOffset: { ...labelsXOffset },
+                labelsYOffset: { ...labelsYOffset },
+                barreRougeOffset: { ...barreRougeOffset },
+                barreRougeSize: { ...barreRougeSize }
+            };
+            
+            const btn = document.getElementById('applyButton');
+            btn.textContent = '⏳ Sauvegarde...';
+            
+            try {
+                // 1. Sauvegarder localement (fallback)
+                localStorage.setItem('graphSettings', JSON.stringify(settings));
+                console.log('✅ Sauvegarde locale OK:', settings);
+                
+                // 2. Sauvegarder sur le serveur via HTTP POST
+                fetch(`${WS_URL.replace('wss:', 'https:')}/api/graph`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(settings)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('✅ Sauvegarde serveur OK:', data);
+                    
+                    // Animation visuelle du bouton
+                    btn.classList.add('saved');
+                    btn.textContent = '✓ Synchronisé !';
+                    
+                    setTimeout(() => {
+                        btn.classList.remove('saved');
+                        btn.textContent = '✓ Appliquer';
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('⚠️ Erreur sauvegarde serveur:', error);
+                    // Fallback sur localStorage uniquement
+                    btn.classList.add('saved');
+                    btn.textContent = '✓ Local seulement';
+                    
+                    setTimeout(() => {
+                        btn.classList.remove('saved');
+                        btn.textContent = '✓ Appliquer';
+                    }, 2000);
+                });
+                
+                // 3. Broadcaster via WebSocket si connecté
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'graph_settings',
+                        settings: settings
+                    }));
+                    console.log('📡 Settings broadcast via WebSocket');
+                }
+                
+            } catch(e) {
+                console.error('❌ Erreur sauvegarde:', e);
+                btn.textContent = '❌ Erreur';
+                setTimeout(() => {
+                    btn.textContent = '✓ Appliquer';
+                }, 2000);
+            }
+        }
+
+        function loadSettings() {
+            console.log('📥 Chargement des paramètres...');
+            
+            // Tentative de chargement depuis le serveur
+            fetch(`${WS_URL.replace('wss:', 'https:')}/api/graph`)
+                .then(response => response.json())
+                .then(settings => {
+                    console.log('✅ Paramètres chargés depuis le serveur:', settings);
+                    applyLoadedSettings(settings);
+                })
+                .catch(error => {
+                    console.warn('⚠️ Serveur non disponible, chargement localStorage:', error);
+                    // Fallback sur localStorage
+                    const saved = localStorage.getItem('graphSettings');
+                    if (saved) {
+                        try {
+                            const settings = JSON.parse(saved);
+                            console.log('✅ Paramètres chargés depuis localStorage:', settings);
+                            applyLoadedSettings(settings);
+                        } catch(e) {
+                            console.log('⚠️ Erreur chargement localStorage:', e);
+                            useDefaultSettings();
+                        }
+                    } else {
+                        useDefaultSettings();
+                    }
+                });
+        }
+
+        function applyLoadedSettings(settings) {
+            if (settings.cameraOffset) cameraOffset = settings.cameraOffset;
+            if (settings.cameraAngle) cameraAngle = settings.cameraAngle;
+            if (settings.graphOffset) graphOffset = settings.graphOffset;
+            if (settings.lightPosition) lightPosition = settings.lightPosition;
+            if (settings.lightIntensity !== undefined) lightIntensity = settings.lightIntensity;
+            
+            // Compatibilité v12 : si labelsOffset existe, le dupliquer
+            if (settings.labelsOffset) {
+                labelsXOffset = { ...settings.labelsOffset };
+                labelsYOffset = { ...settings.labelsOffset };
+            }
+            // v13+ : charger les offsets séparés si présents
+            if (settings.labelsXOffset) labelsXOffset = settings.labelsXOffset;
+            if (settings.labelsYOffset) labelsYOffset = settings.labelsYOffset;
+            if (settings.barreRougeOffset) barreRougeOffset = settings.barreRougeOffset;
+            if (settings.barreRougeSize) barreRougeSize = settings.barreRougeSize;
+            
+            console.log('📹 Camera:', cameraOffset, cameraAngle);
+            console.log('📊 Graph:', graphOffset);
+            console.log('💡 Light:', lightPosition, lightIntensity);
+            console.log('🏷️ Labels X:', labelsXOffset);
+            console.log('🏷️ Labels Y:', labelsYOffset);
+            console.log('🔴 Barre:', barreRougeOffset, barreRougeSize);
+        }
+
+        function useDefaultSettings() {
+            console.log('ℹ️ Aucune position sauvegardée, utilisation des valeurs par défaut');
+            console.log('📹 Camera défaut:', cameraOffset, cameraAngle);
+            console.log('📊 Graph défaut:', graphOffset);
+            console.log('💡 Light défaut:', lightPosition, lightIntensity);
+            console.log('🏷️ Labels X défaut:', labelsXOffset);
+            console.log('🏷️ Labels Y défaut:', labelsYOffset);
+            console.log('🔴 Barre défaut:', barreRougeOffset, barreRougeSize);
+        }
+
+        function reloadAnimation() {
+            console.log('🔄 Rechargement v13...');
+            
+            // SAUVEGARDER les positions avant de recharger
+            const savedCameraOffset = { ...cameraOffset };
+            const savedCameraAngle = { ...cameraAngle };
+            const savedGraphOffset = { ...graphOffset };
+            const savedLightPosition = { ...lightPosition };
+            const savedLightIntensity = lightIntensity;
+            const savedLabelsXOffset = { ...labelsXOffset };
+            const savedLabelsYOffset = { ...labelsYOffset };
+            
+            console.log('💾 Positions sauvegardées pour reload:', {
+                cameraOffset: savedCameraOffset,
+                cameraAngle: savedCameraAngle,
+                graphOffset: savedGraphOffset
+            });
+            
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            
+            if (threeScene) {
+                while(threeScene.children.length > 0) { 
+                    threeScene.remove(threeScene.children[0]); 
+                }
+            }
+            
+            if (threeRenderer) {
+                threeRenderer.dispose();
+            }
+            
+            threeScene = null;
+            threeCamera = null;
+            threeRenderer = null;
+            chartCurve = null;
+            constructionProgress = 0;
+            rotationStartTime = null;
+            animationFrameId = null;
+            valuationCube = null;
+            valuationStartTime = null;
+            chartMesh = null;
+            directionalLight = null;
+            yearLabelsSprites = [];
+            priceLabelsSprites = [];
+            horizontalLines = [];
+            
+            // RESTAURER les positions
+            cameraOffset = savedCameraOffset;
+            cameraAngle = savedCameraAngle;
+            graphOffset = savedGraphOffset;
+            lightPosition = savedLightPosition;
+            lightIntensity = savedLightIntensity;
+            labelsXOffset = savedLabelsXOffset;
+            labelsYOffset = savedLabelsYOffset;
+            
+            console.log('📥 Positions restaurées:', { cameraOffset, cameraAngle, graphOffset });
+            
+            mockData = generateMockData();
+            setTimeout(() => {
+                initThreeJS();
+                // Appliquer les positions APRÈS que la scène soit créée
+                setTimeout(() => {
+                    updateCamera();
+                    updateGraphPosition();
+                    updateLight();
+                    updateLabels();
+                    console.log('🎯 Positions restaurées après reload');
+                }, 150);
+            }, 100);
+        }
+
+        function generateMockData() {
+            // Données sur 11 ans (novembre 2015 → novembre 2025) - 11 valeurs
+            const data = [
+                { label: '11/15', value: 41.08 },
+                { label: '11/16', value: 42.15 },
+                { label: '11/17', value: 43.50 },
+                { label: '11/18', value: 44.20 },
+                { label: '11/19', value: 45.80 },
+                { label: '11/20', value: 46.50 },
+                { label: '11/21', value: 47.90 },
+                { label: '11/22', value: 49.10 },
+                { label: '11/23', value: 49.85 },
+                { label: '11/24', value: 50.47 },
+                { label: '11/25', value: 50.87 }
+            ];
+            return data;
+        }
+
+        function createSmoothCurve(points) {
+            const curve = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.5);
+            return curve.getPoints(points.length * 50);
+        }
+
+        function initThreeJS() {
+            const canvas = document.getElementById('threeCanvas');
+            const container = canvas.parentElement;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            console.log('📐 Canvas:', width, 'x', height);
+
+            threeScene = new THREE.Scene();
+            threeScene.background = null;
+
+            // Camera - Contrôlée par les offsets et angles
+            threeCamera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
+            threeCamera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
+            
+            // Calculer lookAt avec les angles
+            const distance = 10;
+            const horizontalRad = (cameraAngle.horizontal * Math.PI) / 180;
+            const verticalRad = (cameraAngle.vertical * Math.PI) / 180;
+            
+            const lookX = cameraOffset.x + Math.sin(horizontalRad) * distance * Math.cos(verticalRad);
+            const lookY = cameraOffset.y + Math.sin(verticalRad) * distance;
+            const lookZ = -Math.cos(horizontalRad) * distance * Math.cos(verticalRad);
+            
+            threeCamera.lookAt(lookX, lookY, lookZ);
+
+            // Renderer ultra HD
+            threeRenderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                alpha: true,
+                antialias: true,
+                powerPreference: 'high-performance'
+            });
+            threeRenderer.setSize(width, height);
+            threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 3)); // Réduire à 3
+            threeRenderer.shadowMap.enabled = true;
+            threeRenderer.shadowMap.type = THREE.PCFSoftShadowMap; // PCF au lieu de VSM pour éviter artefacts
+
+            // Lumière
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Plus de lumière ambiante
+            threeScene.add(ambientLight);
+
+            directionalLight = new THREE.DirectionalLight(0xffffff, lightIntensity);
+            directionalLight.position.set(lightPosition.x, lightPosition.y, lightPosition.z);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048; // Réduire de 4096 à 2048
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 50;
+            directionalLight.shadow.camera.left = -20;
+            directionalLight.shadow.camera.right = 20;
+            directionalLight.shadow.camera.top = 20;
+            directionalLight.shadow.camera.bottom = -20;
+            directionalLight.shadow.bias = -0.001; // Réduire les artefacts
+            threeScene.add(directionalLight);
+
+            createChart3D();
+            
+            // Sol invisible pour ombre
+            const floorGeometry = new THREE.PlaneGeometry(50, 50);
+            const floorMaterial = new THREE.ShadowMaterial({ opacity: 0.12 }); // Opacité réduite
+            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.y = -6;
+            floor.receiveShadow = true;
+            threeScene.add(floor);
+
+            animate();
+        }
+
+        function createChart3D() {
+            const data = mockData;
+            const rawPoints = [];
+
+            const minValue = Math.min(...data.map(d => d.value)) - 2;
+            const maxValue = Math.max(...data.map(d => d.value)) + 2;
+            const range = maxValue - minValue;
+
+            data.forEach((point, i) => {
+                // Élargir VRAIMENT : × 3.5 total
+                const x = (i - data.length / 2) * 3.5;
+                // Hauteur réduite : 14 pour ne pas déborder
+                const y = ((point.value - minValue) / range) * 14 - 7;
+                const z = 0;
+                rawPoints.push(new THREE.Vector3(x, y, z));
+            });
+
+            const smoothPoints = createSmoothCurve(rawPoints);
+            chartCurve = smoothPoints;
+
+            // Dégradé vertical
+            const colors = [];
+            const colorBottom = new THREE.Color(0x4a5694);
+            const colorTop = new THREE.Color(0xa8b5f0);
+
+            for (let i = 0; i < smoothPoints.length; i++) {
+                const t = (smoothPoints[i].y + 5) / 10;
+                const color = new THREE.Color().lerpColors(colorBottom, colorTop, t);
+                colors.push(color.r, color.g, color.b);
+            }
+
+            // Forme 3D volumétrique
+            const shape = new THREE.Shape();
+            shape.moveTo(smoothPoints[0].x, smoothPoints[0].y);
+            
+            for (let i = 1; i < smoothPoints.length; i++) {
+                shape.lineTo(smoothPoints[i].x, smoothPoints[i].y);
+            }
+            
+            shape.lineTo(smoothPoints[smoothPoints.length - 1].x, -7); // -7
+            shape.lineTo(smoothPoints[0].x, -7);
+            shape.lineTo(smoothPoints[0].x, smoothPoints[0].y);
+
+            const extrudeSettings = {
+                depth: 4,
+                bevelEnabled: false
+            };
+
+            const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            
+            // Attribuer les couleurs correctement
+            const colorAttribute = new THREE.Float32BufferAttribute([], 3);
+            const positions = geometry.getAttribute('position');
+            const colorsArray = [];
+            
+            for (let i = 0; i < positions.count; i++) {
+                const y = positions.getY(i);
+                const t = Math.max(0, Math.min(1, (y + 7) / 14)); // +7 et /14
+                const color = new THREE.Color().lerpColors(colorBottom, colorTop, t);
+                colorsArray.push(color.r, color.g, color.b);
+            }
+            
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colorsArray, 3));
+
+            const material = new THREE.MeshStandardMaterial({
+                vertexColors: true,
+                metalness: 0.2,      // Réduire metalness
+                roughness: 0.6,      // Augmenter roughness
+                transparent: false,   // Désactiver transparence
+                side: THREE.FrontSide,
+                flatShading: false
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            
+            // Animation : commencer écrasé (scale.y = 0.01)
+            mesh.scale.y = 0.01;
+            mesh.position.y = -7; // -7
+            
+            chartMesh = mesh;
+            threeScene.add(mesh);
+
+            addAxisLabels(data, rawPoints, minValue, maxValue);
+            addValuationCube(minValue, maxValue, range);
+        }
+
+        function addAxisLabels(data, points, minValue, maxValue) {
+            // Canvas SÉPARÉ pour labels X (années)
+            const canvasX = document.createElement('canvas');
+            canvasX.width = 1024;
+            canvasX.height = 512;
+            const contextX = canvasX.getContext('2d');
+            
+            // Canvas SÉPARÉ pour labels Y (prix)
+            const canvasY = document.createElement('canvas');
+            canvasY.width = 1024;
+            canvasY.height = 512;
+            const contextY = canvasY.getContext('2d');
+            
+            // Labels X (années) - Format MM/AA
+            console.log('🏷️ Création de', data.length, 'labels X (années)');
+            data.forEach((point, i) => {
+                contextX.clearRect(0, 0, 1024, 512);
+                contextX.fillStyle = 'white';
+                contextX.font = 'bold 100px Arial'; // Réduit à 100px
+                contextX.textAlign = 'center';
+                contextX.textBaseline = 'middle';
+                contextX.shadowColor = 'rgba(0, 0, 0, 1)';
+                contextX.shadowBlur = 20;
+                contextX.shadowOffsetX = 4;
+                contextX.shadowOffsetY = 4;
+                contextX.fillText(point.label, 512, 256); // Affiche "11/15", "11/16", etc.
+                
+                const texture = new THREE.CanvasTexture(canvasX);
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                const material = new THREE.SpriteMaterial({ 
+                    map: texture,
+                    depthTest: false,
+                    depthWrite: false
+                });
+                const sprite = new THREE.Sprite(material);
+                
+                sprite.position.set(points[i].x, -8.5, 6);
+                sprite.scale.set(5, 2.5, 1); // Réduit : 5×2.5
+                sprite.renderOrder = 1000;
+                
+                sprite.userData = { baseX: points[i].x, baseY: -8.5 };
+                yearLabelsSprites.push(sprite);
+                threeScene.add(sprite);
+            });
+
+            // Labels Y (prix) - Format simple : 0, 20, 40, 60...
+            const range = maxValue - minValue;
+            
+            // Arrondir min/max pour avoir des valeurs propres
+            const roundedMin = Math.floor(minValue / 20) * 20;
+            const roundedMax = Math.ceil(maxValue / 20) * 20;
+            const step = (roundedMax - roundedMin) / 10; // 10 lignes
+            
+            console.log('🏷️ Création de 10 labels Y (prix) de', roundedMin, 'à', roundedMax);
+            
+            for (let i = 0; i <= 10; i++) {
+                const price = roundedMin + (i * step);
+                const y = ((price - minValue) / range) * 14 - 7;
+                
+                contextY.clearRect(0, 0, 1024, 512);
+                contextY.fillStyle = 'white';
+                contextY.font = 'bold 120px Arial';
+                contextY.textAlign = 'right';
+                contextY.textBaseline = 'middle';
+                contextY.shadowColor = 'rgba(0, 0, 0, 1)';
+                contextY.shadowBlur = 15;
+                contextY.shadowOffsetX = 3;
+                contextY.shadowOffsetY = 3;
+                contextY.fillText(Math.round(price).toString(), 900, 256); // Format: "40", "60", etc.
+                
+                const texture = new THREE.CanvasTexture(canvasY);
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                const material = new THREE.SpriteMaterial({ 
+                    map: texture,
+                    depthTest: false
+                });
+                const sprite = new THREE.Sprite(material);
+                
+                sprite.position.set(-12, y, 5); // Position de base, offset appliqué par updateLabels()
+                sprite.scale.set(4.5, 2.2, 1);
+                sprite.renderOrder = 999;
+                
+                sprite.userData = { baseX: -12, baseY: y }; // Stocker position de base
+                priceLabelsSprites.push(sprite);
+                threeScene.add(sprite);
+
+                // Lignes horizontales réduites de 20% mais étendues pour graph très large
+                const lineGeometry = new THREE.CylinderGeometry(0.064, 0.064, 40, 16); // Longueur 40
+                const lineMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                const line = new THREE.Mesh(lineGeometry, lineMaterial);
+                line.rotation.z = Math.PI / 2;
+                line.position.set(0, y, -2);
+                line.renderOrder = -1;
+                line.userData = { baseY: y }; // Stocker position de base
+                horizontalLines.push(line); // Stocker pour déplacement synchronisé
+                threeScene.add(line);
+            }
+        }
+
+        function addValuationCube(minValue, maxValue, range) {
+            const ourValuation = 48.50;
+            const valuationY = ((ourValuation - minValue) / (maxValue - minValue)) * 14 - 7; // 14 et -7
+            
+            // BARRE FINE RECTANGULAIRE : longueur réduite 70%, hauteur +30%
+            const geometry = new THREE.BoxGeometry(9, 0.325, 8); // Largeur 9 (30×0.3), hauteur 0.325 (0.25×1.3), profondeur 8
+            
+            const material = new THREE.MeshStandardMaterial({
+                color: 0xff0000,
+                metalness: 0.3,
+                roughness: 0.4,
+                emissive: 0xff0000,
+                emissiveIntensity: 0.6
+            });
+            
+            valuationCube = new THREE.Mesh(geometry, material);
+            valuationCube.position.set(0, valuationY - 7.5, 1); // -7.5 unités = environ 300px
+            valuationCube.castShadow = true;
+            valuationCube.scale.set(1, 1, 1); // Pas d'animation scale, toujours visible
+            threeScene.add(valuationCube);
+
+            // Le label sera dans les stats, pas sur le graphique
+            
+            console.log('✅ Barre valorisation ajoutée à Y:', valuationY - 7.5);
+        }
+
+        function updateStats(data) {
+            const currentValue = data[data.length - 1].value;
+            const firstValue = data[0].value;
+            const variation = currentValue - firstValue;
+            const highest = Math.max(...data.map(d => d.value));
+            const lowest = Math.min(...data.map(d => d.value));
+            const ourValuation = 48.50; // Notre valorisation
+
+            const statsHTML = `
+                <div class="stat-item">
+                    <div class="stat-label">Cours</div>
+                    <div class="stat-value">€${currentValue.toFixed(2)}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Variation</div>
+                    <div class="stat-value positive">+€${variation.toFixed(2)}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Plus haut</div>
+                    <div class="stat-value">€${highest.toFixed(2)}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Plus bas</div>
+                    <div class="stat-value">€${lowest.toFixed(2)}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Notre valorisation</div>
+                    <div class="stat-value" style="color: #ff4444;">€${ourValuation.toFixed(2)}</div>
+                </div>
+            `;
+
+            document.getElementById('stats').innerHTML = statsHTML;
+        }
+
+        function animate() {
+            animationFrameId = requestAnimationFrame(animate);
+
+            const now = Date.now();
+
+            // Initialiser rotationStartTime dès le début
+            if (!rotationStartTime) {
+                rotationStartTime = now;
+            }
+
+            const rotationElapsed = (now - rotationStartTime) / 1000;
+
+            // Animation construction graphique (2 secondes) - Monte du bas vers le haut
+            if (constructionProgress < 1) {
+                constructionProgress += 0.016 / 2; // 2 secondes au lieu de 3
+                constructionProgress = Math.min(1, constructionProgress);
+                
+                // Easing smooth (easeInOutQuad)
+                const progress = constructionProgress;
+                const eased = progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                
+                // Animer scale.y de 0.01 à 1
+                if (chartMesh) {
+                    chartMesh.scale.y = 0.01 + (eased * 0.99);
+                }
+            }
+
+            // Animation cube valorisation supprimée - la barre reste fixe et visible
+
+            // Rotation dès le début (commence pendant la construction)
+            const initialRotation = -0.15;
+            let currentRotation;
+            
+            if (rotationElapsed < 2) {
+                // Phase 1 : rotation initiale (2 secondes) - pendant la construction
+                const t = rotationElapsed / 2;
+                const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+                currentRotation = eased * initialRotation;
+            } else if (rotationElapsed < 15) {
+                // Phase 2 : rotation continue lente (2s à 15s)
+                const continuousElapsed = rotationElapsed - 2;
+                const continuousSpeed = 0.02;
+                currentRotation = initialRotation + (continuousElapsed * continuousSpeed);
+            } else {
+                // Phase 3 : oscillation gauche-droite TRÈS LENTE (après 15s)
+                const oscillationStart = rotationElapsed - 15;
+                const oscillationDuration = 40; // 40 secondes pour un cycle complet (2× plus lent)
+                const oscillationProgress = (oscillationStart % oscillationDuration) / oscillationDuration;
+                
+                const maxAngle = (20 * Math.PI) / 180; // 20° au lieu de 40°
+                const easedProgress = Math.sin(oscillationProgress * Math.PI * 2);
+                
+                const centerRotation = initialRotation + (13 * 0.02);
+                currentRotation = centerRotation + (easedProgress * maxAngle / 2);
+            }
+
+            threeScene.rotation.y = currentRotation;
+
+            if (threeRenderer && threeScene && threeCamera) {
+                threeRenderer.render(threeScene, threeCamera);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            console.log('🚀 Démarrage v13...');
+            loadSettings(); // Charger les positions sauvegardées
+            console.log('📊 Après loadSettings:', { cameraOffset, cameraAngle, graphOffset, lightPosition, labelsXOffset, labelsYOffset });
+            
+            mockData = generateMockData();
+            initThreeJS();
+            updateStats(mockData);
+            
+            // Appliquer les positions après initialisation avec délai plus long
+            setTimeout(() => {
+                console.log('⚙️ Application des positions...');
+                if (threeCamera) {
+                    updateCamera();
+                    console.log('✅ Caméra mise à jour');
+                }
+                if (threeScene) {
+                    updateGraphPosition();
+                    console.log('✅ Graphique mis à jour');
+                }
+                if (directionalLight) {
+                    updateLight();
+                    console.log('✅ Lumière mise à jour');
+                }
+                if (yearLabelsSprites.length > 0 || priceLabelsSprites.length > 0) {
+                    updateLabels();
+                    console.log('✅ Labels mis à jour');
+                }
+                console.log('🎯 TOUTES les positions appliquées');
+            }, 300); // Augmenter délai à 300ms
+        });
+
+        // ========================================
+        // WEBSOCKET - SYNCHRONISATION TEMPS RÉEL
+        // ========================================
+
+        function connectWebSocket() {
+            console.log('🔌 Connexion WebSocket...');
+            
+            try {
+                ws = new WebSocket(WS_URL);
+                
+                ws.onopen = () => {
+                    console.log('✅ WebSocket connecté');
+                    if (reconnectTimeout) {
+                        clearTimeout(reconnectTimeout);
+                        reconnectTimeout = null;
+                    }
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        console.log('📨 Message WebSocket reçu:', message.type);
+                        
+                        if (message.type === 'init' && message.graphSettings) {
+                            // Charger les paramètres à la connexion initiale
+                            console.log('📥 Paramètres initiaux reçus:', message.graphSettings);
+                            applyLoadedSettings(message.graphSettings);
+                        }
+                        
+                        if (message.type === 'graph_settings') {
+                            // Synchronisation des paramètres depuis un autre client
+                            console.log('🔄 Synchronisation paramètres depuis autre client:', message.settings);
+                            applyLoadedSettings(message.settings);
+                            
+                            // Appliquer visuellement
+                            if (threeCamera) updateCamera();
+                            if (threeScene) updateGraphPosition();
+                            if (directionalLight) updateLight();
+                            if (yearLabelsSprites.length > 0 || priceLabelsSprites.length > 0) updateLabels();
+                        }
+                    } catch (error) {
+                        console.error('❌ Erreur parsing message WebSocket:', error);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('❌ Erreur WebSocket:', error);
+                };
+                
+                ws.onclose = () => {
+                    console.log('🔌 WebSocket déconnecté');
+                    ws = null;
+                    
+                    // Reconnexion automatique après 3 secondes
+                    if (!reconnectTimeout) {
+                        reconnectTimeout = setTimeout(() => {
+                            console.log('🔄 Tentative de reconnexion...');
+                            connectWebSocket();
+                        }, 3000);
+                    }
+                };
+            } catch (error) {
+                console.error('❌ Erreur création WebSocket:', error);
+            }
+        }
+
+        // Démarrer la connexion WebSocket
+        connectWebSocket();
+    </script>
+</body>
+</html>

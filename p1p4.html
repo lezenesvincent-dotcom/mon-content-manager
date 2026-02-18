@@ -3,37 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Content Management Interface - P1-P4 System</title>
     <style>
-       * {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Cacher la scrollbar partout */
-        ::-webkit-scrollbar {
-            display: none;
-        }
-        
-        * {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-       body {
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 0;
-            overflow-y: scroll;
-        }
-
-        body::-webkit-scrollbar {
-            width: 0;
-            background: transparent;
         }
 
         .container {
@@ -122,7 +104,6 @@
             animation: fadeIn 0.4s ease-out;
             background: #1a1a2e;
             color: #e4e4e4;
-            overflow: hidden;
         }
 
         .tab-content.active {
@@ -443,10 +424,10 @@
 
         .content-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin-top: 30px;
-            padding: 0 10px;
+            padding: 0 30px 30px 30px;
         }
 
         /* Responsive : 2 colonnes sur tablette */
@@ -470,9 +451,9 @@
             box-shadow: 0 10px 40px rgba(123, 104, 238, 0.3);
             transition: all 0.3s ease;
             position: relative;
-            overflow: visible;
+            overflow: hidden;
             cursor: pointer;
-            min-height: 320px;
+            min-height: 140px;
         }
 
         .content-card:hover {
@@ -484,30 +465,40 @@
         .content-card.online {
             animation: breathe 3s ease-in-out infinite;
         }
+.content-card.selected {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
 
-        @keyframes breathe {
-            0%, 100% {
-                box-shadow: 0 10px 40px rgba(123, 104, 238, 0.3);
-            }
-            50% {
-                box-shadow: 0 10px 60px rgba(123, 104, 238, 0.6), 0 0 30px rgba(167, 139, 250, 0.5);
-            }
-        }
-
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 
+            0 0 0 5px #667eea,
+            0 0 30px rgba(102, 126, 234, 0.8),
+            0 0 60px rgba(102, 126, 234, 0.6),
+            0 0 80px rgba(102, 126, 234, 0.4);
+    }
+    50% {
+        box-shadow: 
+            0 0 0 7px #a78bfa,
+            0 0 40px rgba(167, 139, 250, 1),
+            0 0 80px rgba(102, 126, 234, 0.8),
+            0 0 100px rgba(102, 126, 234, 0.5);
+    }
+}
         /* Fusée au-dessus du titre */
         .content-card::before {
             content: '🚀';
-            font-size: 50px;
-            position: absolute;
-            top: 25px;
+             font-size: 35px;
+             position: absolute;
+             top: 15px;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .content-card h4 {
             color: #ffffff;
-            font-size: 2rem;
-            margin-top: 70px;
+            font-size: 1.4rem;
+            margin-top: 50px;
             margin-bottom: 10px;
             font-weight: 700;
             text-align: center;
@@ -560,7 +551,7 @@
             color: white;
             padding: 14px;
             border: none;
-            border-radius: 10px;
+            border-radius: 50px;
             font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
@@ -580,18 +571,6 @@
 
         .btn-next:hover {
             background: rgba(76, 175, 80, 0.45);
-        }
-
-          /* Checkbox de sélection (en haut à gauche) */
-        .card-checkbox {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            width: 22px;
-            height: 22px;
-            cursor: pointer;
-            z-index: 10;
-            accent-color: #667eea;
         }
 
         /* Bouton de suppression (croix en haut à droite) - GRIS */
@@ -912,7 +891,227 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* Barre de contrôle fixe en bas */
+.control-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+   padding: 60px;
+   height: 33vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    border-top: 2px solid #667eea;
+}
+
+.control-bar-btn {
+    padding: 40px 60px;
+    border: none;
+    border-radius: 16px;
+    font-size: 2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.control-bar-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.control-bar-btn:active {
+    transform: translateY(0);
+}
+.btn-control {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+}
+
+.btn-control:hover {
+    box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+}
+.btn-in {
+    background: linear-gradient(135deg, #f6ad55 0%, #dd6b20 100%);
+    color: white;
+}
+
+.btn-in:hover {
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+}
+
+.btn-next {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-next:hover {
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-valo {
+    background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+    color: white;
+}
+
+.btn-valo:hover {
+    box-shadow: 0 8px 25px rgba(246, 173, 85, 0.4);
+}
+
+.btn-clear {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: white;
+}
+
+.btn-clear:hover {
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+}
+
+.btn-control-edit {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-control-edit:hover {
+    box-shadow: 0 8px 25px rgba(23, 162, 184, 0.4);
+}
+
+.control-bar-info {
+    color: #b8c1ec;
+    font-size: 0.95rem;
+    margin-right: 20px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.control-bar-info strong {
+    color: #fff;
+}
+        
+html {
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+    display: none;
+}
+/* Ajouter du padding en bas pour pas que la barre cache le contenu */
+body {
+    padding-bottom: 35vh;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+        /* Checkbox de sélection */
+.card-checkbox {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 26px;
+    height: 26px;
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.card-checkbox:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+.card-checkbox.checked {
+    background: #ff6b35;
+    border-color: #ff6b35;
+}
+        /* Clavier virtuel */
+.virtual-keyboard {
+    background: rgba(30, 30, 50, 0.95);
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 20px;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.key {
+    background: linear-gradient(135deg, #3a3a5c 0%, #2a2a4c 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    min-width: 45px;
+    height: 50px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.key:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: translateY(-2px);
+}
+
+.key:active {
+    transform: translateY(0);
+}
+
+.key.wide {
+    min-width: 80px;
+}
+
+.key.extra-wide {
+    min-width: 200px;
+}
+
+.key.special {
+    background: linear-gradient(135deg, #4a4a6c 0%, #3a3a5c 100%);
+    font-size: 0.9rem;
+}
+@media (pointer: coarse) {
+    .control-bar-btn {
+        padding: 25px 35px !important;
+        font-size: 1.3rem !important;
+    }
+    .control-bar {
+        gap: 15px !important;
+    }
+    .control-bar > div {
+        gap: 15px !important;
+    }
+}
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -932,6 +1131,7 @@
 
         <div class="tabs">
             <button class="tab-button active" onclick="openTab(event, 'manage')">Manage</button>
+            <button class="tab-button" onclick="window.open('control.html', '_blank')" style="margin-left: auto;">🎮 CONTROL</button>
         </div>
 
         <div id="create" class="tab-content" style="display: none;">
@@ -1084,7 +1284,7 @@
         <div id="manage" class="tab-content active">
             <!-- Quick Edit Modal -->
 <div class="modal-overlay" id="editModal" style="display: none;">
-   <div class="modal-content" style="max-width: 1200px; max-height: 85vh; overflow-y: auto;">
+  <div class="modal-content" style="max-width: 1200px; max-height: 85vh; overflow-y: auto; padding-bottom: 220px;">
         <div class="modal-header">
             <h2 class="modal-title">
                 <span class="edit-icon">✏️</span>
@@ -1107,77 +1307,75 @@
                 <input type="text" id="editSubtitle" name="subtitle"  
                        placeholder="Enter a subtitle">
             </div>
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px;">
+    <!-- P1 -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
+        <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P1</h3>
+        
+        <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
+        <input type="text" id="editP1Sujet" maxlength="15"
+               placeholder="Sujet (15 chars max)"
+               style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
+        <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP1Sujet">0 / 15</div>
+        
+        <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
+        <textarea id="editP1Contenu" rows="7" maxlength="500"
+                  placeholder="Contenu (7 lignes max)"
+                  style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
+        <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP1Contenu">0 / 500</div>
+    </div>
 
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px;">
-                <!-- P1 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P1</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="editP1Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP1Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="editP1Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP1Contenu">0 / 500</div>
-                </div>
+    <!-- P2 -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
+        <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P2</h3>
+        
+        <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
+        <input type="text" id="editP2Sujet" maxlength="15"
+               placeholder="Sujet (15 chars max)"
+               style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
+        <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP2Sujet">0 / 15</div>
+        
+        <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
+        <textarea id="editP2Contenu" rows="7" maxlength="500"
+                  placeholder="Contenu (7 lignes max)"
+                  style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
+        <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP2Contenu">0 / 500</div>
+    </div>
 
-                <!-- P2 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P2</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="editP2Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP2Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="editP2Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP2Contenu">0 / 500</div>
-                </div>
+    <!-- P3 -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
+        <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P3</h3>
+        
+        <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
+        <input type="text" id="editP3Sujet" maxlength="15"
+               placeholder="Sujet (15 chars max)"
+               style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
+        <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP3Sujet">0 / 15</div>
+        
+        <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
+        <textarea id="editP3Contenu" rows="7" maxlength="500"
+                  placeholder="Contenu (7 lignes max)"
+                  style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
+        <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP3Contenu">0 / 500</div>
+    </div>
 
-                <!-- P3 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P3</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="editP3Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP3Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="editP3Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP3Contenu">0 / 500</div>
-                </div>
-
-                <!-- P4 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P4</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="editP4Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP4Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="editP4Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP4Contenu">0 / 500</div>
-                </div>
-            </div>
-
+    <!-- P4 -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
+        <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P4</h3>
+        
+        <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
+        <input type="text" id="editP4Sujet" maxlength="15"
+               placeholder="Sujet (15 chars max)"
+               style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
+        <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP4Sujet">0 / 15</div>
+        
+        <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
+        <textarea id="editP4Contenu" rows="7" maxlength="500"
+                  placeholder="Contenu (7 lignes max)"
+                  style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
+        <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP4Contenu">0 / 500</div>
+    </div>
+</div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeEditModal()">
                     Cancel
@@ -1189,32 +1387,106 @@
                     💾 Update
                 </button>
             </div>
+            <!-- Clavier virtuel -->
+<div class="virtual-keyboard" id="virtualKeyboard">
+    <div class="keyboard-row">
+        <button type="button" class="key" data-key="1">1</button>
+        <button type="button" class="key" data-key="2">2</button>
+        <button type="button" class="key" data-key="3">3</button>
+        <button type="button" class="key" data-key="4">4</button>
+        <button type="button" class="key" data-key="5">5</button>
+        <button type="button" class="key" data-key="6">6</button>
+        <button type="button" class="key" data-key="7">7</button>
+        <button type="button" class="key" data-key="8">8</button>
+        <button type="button" class="key" data-key="9">9</button>
+        <button type="button" class="key" data-key="0">0</button>
+    </div>
+    <div class="keyboard-row">
+        <button type="button" class="key" data-key="A">A</button>
+        <button type="button" class="key" data-key="Z">Z</button>
+        <button type="button" class="key" data-key="E">E</button>
+        <button type="button" class="key" data-key="R">R</button>
+        <button type="button" class="key" data-key="T">T</button>
+        <button type="button" class="key" data-key="Y">Y</button>
+        <button type="button" class="key" data-key="U">U</button>
+        <button type="button" class="key" data-key="I">I</button>
+        <button type="button" class="key" data-key="O">O</button>
+        <button type="button" class="key" data-key="P">P</button>
+    </div>
+    <div class="keyboard-row">
+        <button type="button" class="key" data-key="Q">Q</button>
+        <button type="button" class="key" data-key="S">S</button>
+        <button type="button" class="key" data-key="D">D</button>
+        <button type="button" class="key" data-key="F">F</button>
+        <button type="button" class="key" data-key="G">G</button>
+        <button type="button" class="key" data-key="H">H</button>
+        <button type="button" class="key" data-key="J">J</button>
+        <button type="button" class="key" data-key="K">K</button>
+        <button type="button" class="key" data-key="L">L</button>
+        <button type="button" class="key" data-key="M">M</button>
+    </div>
+    <div class="keyboard-row">
+        <button type="button" class="key" data-key="W">W</button>
+        <button type="button" class="key" data-key="X">X</button>
+        <button type="button" class="key" data-key="C">C</button>
+        <button type="button" class="key" data-key="V">V</button>
+        <button type="button" class="key" data-key="B">B</button>
+        <button type="button" class="key" data-key="N">N</button>
+        <button type="button" class="key" data-key="/">/</button>
+        <button type="button" class="key" data-key="%">%</button>
+        <button type="button" class="key" data-key="€">€</button>
+        <button type="button" class="key" data-key="$">$</button>
+    </div>
+    <div class="keyboard-row">
+        <button type="button" class="key special wide" data-key="backspace">⌫</button>
+        <button type="button" class="key extra-wide" data-key=" ">ESPACE</button>
+        <button type="button" class="key special wide" data-key="enter">↵</button>
+    </div>
+</div>
         </form>
     </div>
 </div>
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <div id="wsStatusIndicator" style="padding: 12px 20px; background: #ffc107; color: #000; border-radius: 10px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.3s ease, color 0.3s ease;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px;">
+                <div>
+                </div>
+               <div style="display: flex; gap: 10px; align-items: center;">
+    <div id="wsStatusIndicator" style="padding: 12px 20px; background: #ffc107; color: #000; border-radius: 10px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.3s ease, color 0.3s ease;">
                     🔄 Connexion...
                 </div>
+                   </div>
             </div>
+                </div>
             
-            <!-- Boutons de gestion -->
-            <div style="margin-bottom: 20px; text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
-                <button id="deleteSelectionBtn" onclick="deleteSelectedCards()" class="btn-secondary" style="background: #ff9800; color: white; border-color: #ff9800; display: none;">
-                    🗑️ Supprimer la sélection (<span id="selectionCount">0</span>)
-                </button>
-                <button onclick="clearAllHistory()" class="btn-secondary" style="background: #dc3545; color: white; border-color: #dc3545;">
-                    🗑️ Vider tout l'historique
-                </button>
-            </div>
+            
+            <!-- Bouton pour vider l'historique -->
+          <div style="margin-bottom: 20px; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+    <button id="deleteSelectionBtn" onclick="deleteSelectedCards()" class="btn-secondary" style="background: #ff6b35; color: white; border-color: #ff6b35; display: none;">
+        🗑️ Supprimer la sélection (<span id="selectionCount">0</span>)
+    </button>
+    <button onclick="clearAllHistory()" class="btn-secondary" style="background: #dc3545; color: white; border-color: #dc3545;">
+        🗑️ Vider tout l'historique
+    </button>
+</div>
             
             <div id="contentList" class="content-grid">
                 <!-- Content cards will be populated here -->
             </div>
 
-          <div id="emptyState" class="empty-state">
+            <div id="emptyState" class="empty-state">
                 <h4>📭 Aucun contenu disponible</h4>
-                <p>Cliquez sur "➕ NEW" pour créer du contenu.</p>
+                <p>Utilisez la page "🚀 Création" pour créer du contenu.</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">
+                    Le contenu créé dans "Création" apparaîtra ici automatiquement<br>
+                    (synchronisation toutes les 3 secondes)
+                </p>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; border: 1px solid rgba(255, 193, 7, 0.3);">
+                    <p style="font-size: 0.9rem; color: #ffc107;">
+                        💡 <strong>Vérifiez :</strong><br>
+                        • Le serveur WebSocket est-il accessible ?<br>
+                        • Avez-vous créé du contenu dans la page Création ?<br>
+                        • Ouvrez la console (F12) pour voir les logs de connexion
+                    </p>
+                </div>
             </div>
         </div>
 <!-- Create Modal -->
@@ -1615,13 +1887,60 @@
         let contentStore = [];
         let syncInterval = null;
         
-        async function loadSharedData() {
+        // ============================================
+        // WEBSOCKET CONTROL CONNECTION (pour NEXT/MASQUER)
+        // ============================================
+        const WS_CONTROL_URL = 'wss://ecamm-overlay-server.onrender.com';
+        let controlWs = null;
+        let controlReconnectTimeout = null;
+        
+        function connectControlWebSocket() {
+            console.log('🎮 Connexion WebSocket Control...');
+            controlWs = new WebSocket(WS_CONTROL_URL);
+            
+            controlWs.onopen = () => {
+                console.log('✅ WebSocket Control connecté');
+                if (controlReconnectTimeout) {
+                    clearTimeout(controlReconnectTimeout);
+                    controlReconnectTimeout = null;
+                }
+            };
+            
+            controlWs.onclose = () => {
+                console.log('🔌 WebSocket Control déconnecté - Reconnexion dans 3s...');
+                controlReconnectTimeout = setTimeout(connectControlWebSocket, 3000);
+            };
+            
+            controlWs.onerror = (error) => {
+                console.error('❌ Erreur WebSocket Control:', error);
+            };
+        }
+        
+        function sendControlCommand(command, data = {}) {
+            if (controlWs && controlWs.readyState === WebSocket.OPEN) {
+                controlWs.send(JSON.stringify({
+                    type: 'control',
+                    command: command,
+                    ...data
+                }));
+                console.log('📤 Commande Control envoyée:', command, data);
+                return true;
+            } else {
+                console.warn('⚠️ WebSocket Control non connecté');
+                return false;
+            }
+        }
+        
+        // Démarrer la connexion WebSocket Control au chargement
+        connectControlWebSocket();
+        
+        async function loadSharedData(silent = false) {
             console.log('==============================================');
             console.log('🔄 CHARGEMENT DE L\'HISTORIQUE depuis le serveur WebSocket...');
             console.log('==============================================');
             
             // Charger UNIQUEMENT depuis WebSocket - plus de localStorage ni Gist
-            const history = await loadFromWebSocket();
+            const history = await loadFromWebSocket(silent);
             
             console.log('📦 Historique reçu:', history);
             
@@ -1629,12 +1948,10 @@
                 // REMPLACER complètement contentStore (pas de merge)
                 contentStore = history;
                 console.log('✅ Historique chargé depuis serveur:', contentStore.length, 'éléments');
-                showStatusMessage(`✅ Synchronisé: ${contentStore.length} éléments`, 'success');
                 return contentStore;
             } else {
                 console.log('ℹ️ Aucun historique disponible sur le serveur');
                 contentStore = [];
-                showStatusMessage('ℹ️ Aucun contenu sur le serveur', 'info');
                 return contentStore;
             }
         }
@@ -1744,56 +2061,93 @@
 
         // Variable pour stocker l'ID du contenu actuellement affiché
         let currentOnlineContentId = null;
-        let selectedCards = [];
+        let currentSelectedContentId = null;
+        function selectContent(contentId) {
+    currentSelectedContentId = contentId;
+const content = contentStore.find(item => String(item.id) === String(contentId));
+    const nameDisplay = document.getElementById('selectedContentName');
+    if (nameDisplay && content) {
+        nameDisplay.textContent = content.title || 'Sans titre';
+    }
+    displayContentCards();
+    sendContentToOverlay(contentId);
+}
+let selectedCards = [];
 
-        function toggleSelection(contentId) {
-            const index = selectedCards.indexOf(contentId);
-            if (index === -1) {
-                selectedCards.push(contentId);
-            } else {
-                selectedCards.splice(index, 1);
-            }
-            updateDeleteSelectionButton();
+function toggleSelection(contentId) {
+    const index = selectedCards.indexOf(contentId);
+    if (index === -1) {
+        selectedCards.push(contentId);
+    } else {
+        selectedCards.splice(index, 1);
+    }
+    updateDeleteSelectionButton();
+    displayContentCards();
+}
+
+function updateDeleteSelectionButton() {
+    const btn = document.getElementById('deleteSelectionBtn');
+    const count = document.getElementById('selectionCount');
+    if (btn && count) {
+        count.textContent = selectedCards.length;
+        btn.style.display = selectedCards.length > 0 ? 'inline-block' : 'none';
+    }
+}
+
+async function deleteSelectedCards() {
+    if (selectedCards.length === 0) return;
+    
+    if (!confirm(`🗑️ Supprimer ${selectedCards.length} contenu(s) sélectionné(s) ?\n\nCette action est définitive.`)) {
+        return;
+    }
+
+    try {
+        showStatusMessage('🔄 Suppression en cours...', 'info');
+        
+        for (const contentId of selectedCards) {
+            await fetch(`${WS_SERVER_URL}/api/history/${contentId}`, {
+                method: 'DELETE'
+            });
+            contentStore = contentStore.filter(item => String(item.id) !== String(contentId));
         }
-
-        function updateDeleteSelectionButton() {
-            const btn = document.getElementById('deleteSelectionBtn');
-            const count = document.getElementById('selectionCount');
-            if (btn && count) {
-                count.textContent = selectedCards.length;
-                btn.style.display = selectedCards.length > 0 ? 'inline-block' : 'none';
-            }
+        
+        selectedCards = [];
+        updateDeleteSelectionButton();
+        displayContentCards();
+        showStatusMessage('✅ Sélection supprimée !', 'success');
+    } catch (error) {
+        console.error('❌ Erreur:', error);
+        showStatusMessage('❌ Erreur: ' + error.message, 'error');
+    }
+}
+function sendSelectedContent() {
+    if (!currentSelectedContentId) {
+        // Si aucun contenu sélectionné, prendre le premier de la liste
+        if (contentStore.length > 0) {
+            selectContent(contentStore[0].id);
+        } else {
+            showStatusMessage('⚠️ Aucun contenu disponible', 'error');
         }
+        return;
+    }
+    sendContentToOverlay(currentSelectedContentId);
+}
 
-        async function deleteSelectedCards() {
-            if (selectedCards.length === 0) return;
-            
-            if (!confirm(`🗑️ Supprimer ${selectedCards.length} contenu(s) sélectionné(s) ?\n\nCette action est définitive.`)) {
-                return;
-            }
-
-            try {
-                showStatusMessage('🔄 Suppression en cours...', 'info');
-                
-                for (const contentId of selectedCards) {
-                    await fetch(`${WS_SERVER_URL}/api/history/${contentId}`, {
-                        method: 'DELETE'
-                    });
-                    contentStore = contentStore.filter(item => item.id !== contentId);
-                }
-                
-                selectedCards = [];
-                displayContentCards();
-                showStatusMessage('✅ Sélection supprimée !', 'success');
-                
-            } catch (error) {
-                console.error('❌ Erreur lors de la suppression:', error);
-                showStatusMessage('❌ Erreur: ' + error.message, 'error');
-            }
-        }
+function editSelectedContent() {
+    if (!currentSelectedContentId) {
+        showStatusMessage('⚠️ Sélectionnez d\'abord un contenu', 'error');
+        return;
+    }
+    openEditModal(currentSelectedContentId);
+    // Cacher la barre de contrôle
+    document.querySelector('.control-bar').style.display = 'none';
+    // Agrandir le modal et réduire le padding
+    document.querySelector('#editModal .modal-content').style.maxHeight = '95vh';
+    document.querySelector('#editModal .modal-content').style.paddingBottom = '40px';
+}
 
         async function sendContentToOverlay(contentId) {
-            const content = contentStore.find(item => item.id === contentId);
+            const content = contentStore.find(item => String(item.id) === String(contentId));;
             if (!content) {
                 console.error('Content not found:', contentId);
                 showStatusMessage('❌ Contenu introuvable', 'error');
@@ -1817,7 +2171,7 @@
                 console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
                 
                 // Envoyer via HTTP POST au serveur
-                const response = await fetch(`${WS_SERVER_URL}/api/update`, {
+          const response = await fetch(`${WS_SERVER_URL}/api/update`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1837,7 +2191,14 @@
                 currentOnlineContentId = contentId;
                 displayContentCards(); // Rafraîchir pour afficher l'animation
                 
-                showStatusMessage(`📤 "${content.title}" envoyé au widget eCamm !`, 'success');
+                // Déclencher l'animation IN via WebSocket
+                setTimeout(() => {
+                    if (sendControlCommand('ANIMATE_IN')) {
+                        console.log('🎬 Animation IN déclenchée');
+                    }
+                }, 300); // Petit délai pour laisser le contenu arriver
+                
+                showStatusMessage(`📤 "${content.title}" envoyé + animation IN !`, 'success');
             } catch (error) {
                 console.error('=== SEND FAILED ===');
                 console.error('Error:', error);
@@ -1847,39 +2208,70 @@
 
         async function hideOverlay() {
             try {
-                console.log('=== HIDING OVERLAY ===');
+                console.log('🙈 MASQUER via WebSocket');
                 
-                // Envoyer un contenu vide
-                const emptyData = {
-                    titre: '',
-                    soustitre: '',
-                    p1: { sujet: '', contenu: ['', ''] },
-                    p2: { sujet: '', contenu: ['', ''] },
-                    p3: { sujet: '', contenu: ['', ''] },
-                    p4: { sujet: '', contenu: ['', ''] }
-                };
-                
-                const response = await fetch(`${WS_SERVER_URL}/api/update`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(emptyData)
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                // Envoyer la commande HIDE via WebSocket
+                if (sendControlCommand('HIDE')) {
+                    // Retirer le statut online
+                    currentOnlineContentId = null;
+                    displayContentCards();
+                    showStatusMessage('🙈 Overlay masqué !', 'success');
+                } else {
+                    // Fallback: envoyer contenu vide via API REST
+                    const emptyData = {
+                        titre: '',
+                        soustitre: '',
+                        p1: { sujet: '', contenu: ['', ''] },
+                        p2: { sujet: '', contenu: ['', ''] },
+                        p3: { sujet: '', contenu: ['', ''] },
+                        p4: { sujet: '', contenu: ['', ''] }
+                    };
+                    
+                    const response = await fetch(`${WS_SERVER_URL}/api/data`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(emptyData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    currentOnlineContentId = null;
+                    displayContentCards();
+                    showStatusMessage('🙈 Overlay masqué (fallback) !', 'success');
                 }
-                
-                console.log('=== OVERLAY HIDDEN ===');
-                
-                // Retirer le statut online
-                currentOnlineContentId = null;
-                displayContentCards(); // Rafraîchir pour retirer l'animation
-                
-                showStatusMessage('🙈 Overlay masqué !', 'success');
             } catch (error) {
                 console.error('=== HIDE FAILED ===');
+                console.error('Error:', error);
+                showStatusMessage('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+
+        // Afficher le graphique de valorisation
+        async function showGraph() {
+            try {
+                console.log('📈 SHOW GRAPH via WebSocket');
+                
+                // Récupérer le titre du contenu sélectionné pour extraire le symbole
+                const selectedContent = contentStore.find(item => item.id === currentOnlineContentId);
+                let stockSymbol = '';
+                
+                if (selectedContent && selectedContent.title) {
+                    // Extraire le symbole du titre (ex: "REXEL", "AIRBUS SE", "ORANGE")
+                    stockSymbol = selectedContent.title.toUpperCase().trim();
+                }
+                
+                // Envoyer la commande SHOW_GRAPH via WebSocket avec le symbole
+                if (sendControlCommand('SHOW_GRAPH', { symbol: stockSymbol })) {
+                    showStatusMessage(`📈 Graphique ${stockSymbol || 'affiché'} !`, 'success');
+                } else {
+                    showStatusMessage('❌ WebSocket non connecté', 'error');
+                }
+            } catch (error) {
+                console.error('=== SHOW_GRAPH FAILED ===');
                 console.error('Error:', error);
                 showStatusMessage('❌ Erreur: ' + error.message, 'error');
             }
@@ -1890,38 +2282,26 @@
 
         async function focusNextSubject() {
             try {
-                // Passer au sujet suivant (1 → 2 → 3 → 4 → 5 (graphique) → 0 → 1 ...)
-                currentFocusIndex = currentFocusIndex + 1;
+                console.log('🎯 NEXT Focus via WebSocket');
                 
-                // Si on arrive à 6, revenir à 0 (tout afficher)
-                if (currentFocusIndex > 5) {
-                    currentFocusIndex = 0;
-                }
-                
-                console.log('🎯 Focus sur sujet:', currentFocusIndex);
-                
-                // Envoyer le message de focus via WebSocket
-                const response = await fetch(`${WS_SERVER_URL}/api/focus`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ subjectIndex: currentFocusIndex })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                let focusText;
-                if (currentFocusIndex === 0) {
-                    focusText = 'Tous les sujets';
-                } else if (currentFocusIndex === 5) {
-                    focusText = '📈 Graphique boursier';
+                // Envoyer la commande NEXT_FOCUS via WebSocket
+                if (sendControlCommand('NEXT_FOCUS')) {
+                    showStatusMessage('⏭ Animation NEXT déclenchée !', 'success');
                 } else {
-                    focusText = `Sujet ${currentFocusIndex}`;
+                    // Fallback: essayer via API REST
+                    const response = await fetch(`${WS_SERVER_URL}/api/focus`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ subjectIndex: 1 })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    showStatusMessage('⏭ Animation NEXT déclenchée (fallback)', 'success');
                 }
-                showStatusMessage(`🎯 Focus: ${focusText}`, 'success');
                 
             } catch (error) {
                 console.error('=== FOCUS FAILED ===');
@@ -1942,33 +2322,34 @@
                 return;
             }
 
-            try {
-                const deleteUrl = `${WS_SERVER_URL}/api/history/${contentId}`;
-                console.log('🌐 URL de suppression:', deleteUrl);
-                
-                // Supprimer sur le serveur
-                const response = await fetch(deleteUrl, {
-                    method: 'DELETE'
-                });
+           try {
+    // 1. SUPPRESSION IMMÉDIATE de l'interface (avant même la requête serveur)
+    const lengthBefore = contentStore.length;
+    contentStore = contentStore.filter(item => String(item.id) !== String(contentId));
+    console.log('📊 contentStore après suppression locale:', contentStore.length, 'éléments');
+    console.log('📊 Différence:', lengthBefore - contentStore.length, 'élément(s) supprimé(s)');
+    
+    // Mise à jour immédiate de l'affichage
+    displayContentCards();
+    showStatusMessage('🗑️ Suppression en cours...', 'info');
+    
+    // 2. Ensuite, envoyer la suppression à Google Sheet (en arrière-plan)
+    console.log('🌐 Suppression sur Google Sheet...');
+    
+    await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: 'delete',
+            id: contentId
+        })
+    });
 
-                console.log('📡 Réponse serveur status:', response.status);
-                console.log('📡 Réponse serveur ok?:', response.ok);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                console.log('✅ Réponse serveur complète:', result);
-
-                // Supprimer du store local
-                const lengthBefore = contentStore.length;
-                contentStore = contentStore.filter(item => item.id !== contentId);
-                console.log('📊 contentStore après suppression:', contentStore.length, 'éléments');
-                console.log('📊 Différence:', lengthBefore - contentStore.length, 'élément(s) supprimé(s)');
-                
-                displayContentCards();
-                showStatusMessage('✅ Contenu supprimé', 'success');
+    console.log('✅ Suppression envoyée à Google Sheet');
+    showStatusMessage('✅ Contenu supprimé', 'success');
                 
                 console.log('==============================================');
                 console.log('✅ SUPPRESSION TERMINÉE');
@@ -1998,14 +2379,20 @@
             try {
                 showStatusMessage('🔄 Suppression en cours...', 'info');
                 
-                // Supprimer chaque élément un par un
-                const deletePromises = contentStore.map(content => 
-                    fetch(`${WS_SERVER_URL}/api/history/${content.id}`, {
-                        method: 'DELETE'
-                    })
-                );
-
-                await Promise.all(deletePromises);
+             // Supprimer chaque élément un par un sur Google Sheet
+                for (const content of contentStore) {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'delete',
+                            id: content.id
+                        })
+                    });
+                }
                 
                 // Vider le store local
                 contentStore = [];
@@ -2022,7 +2409,7 @@
             }
         }
 
-       function displayContentCards() {
+        function displayContentCards() {
             console.log('==============================================');
             console.log('🎨 AFFICHAGE DES CARTES');
             console.log('==============================================');
@@ -2036,7 +2423,6 @@
                 console.log('❌ Aucun contenu à afficher (contentStore vide)');
                 contentList.style.display = 'none';
                 emptyState.style.display = 'block';
-                updateDeleteSelectionButton();
                 return;
             }
             
@@ -2050,45 +2436,29 @@
                 // Vérifier si ce contenu est actuellement online
                 const isOnline = content.id === currentOnlineContentId;
                 const onlineClass = isOnline ? ' online' : '';
-                const isSelected = selectedCards.includes(content.id);
                 
                 return `
-                    <div class="content-card${onlineClass}" onclick="sendContentToOverlay('${content.id}')">
-                        <input type="checkbox" class="card-checkbox" data-id="${content.id}" 
-                               ${isSelected ? 'checked' : ''} 
-                               onclick="event.stopPropagation(); toggleSelection('${content.id}')">
-                        <button class="btn-delete-corner" onclick="event.stopPropagation(); deleteContent('${content.id}')">
-                            ✕
-                        </button>
+             <div class="content-card${onlineClass}${content.id === currentSelectedContentId ? ' selected' : ''}" data-id="${content.id}" onclick="selectContent('${content.id}')">
+    <div class="card-checkbox ${selectedCards.includes(content.id) ? 'checked' : ''}" onclick="event.stopPropagation(); toggleSelection('${content.id}');">
+        ${selectedCards.includes(content.id) ? '✓' : ''}
+    </div>
+    <button class="btn-delete-corner" onclick="event.stopPropagation(); deleteContent('${content.id}')">
+        ✕
+    </button>
                         
                         <h4>${content.title || 'TITRE'}</h4>
                         <h5>${content.subtitle || 'SOUS TITRE'}</h5>
-
-                        <div class="card-actions">
-                            <button class="btn-edit" onclick="event.stopPropagation(); openEditModal('${content.id}')">
-                                EDIT
-                            </button>
-                            <button class="btn-next" onclick="event.stopPropagation(); focusNextSubject()">
-                                NEXT ▶
-                            </button>
-                            <button class="btn-hide" onclick="event.stopPropagation(); hideOverlay()">
-                                MASQUER
-                            </button>
-                        </div>
                     </div>
                 `;
             }).join('');
-            
-            updateDeleteSelectionButton();
         }
 
         // Character counters for all text areas
         // Quick Edit Modal Functions
-function openEditModal(contentId) {
-    const content = contentStore.find(item => item.id === contentId);
+     function openEditModal(contentId) {
+    const content = contentStore.find(item => String(item.id) === String(contentId));
     if (!content) return;
 
-    // Fill form with existing data
     document.getElementById('editContentId').value = contentId;
     document.getElementById('editTitle').value = content.title || '';
     document.getElementById('editSubtitle').value = content.subtitle || '';
@@ -2109,7 +2479,6 @@ function openEditModal(contentId) {
     document.getElementById('editP4Sujet').value = content.p4?.sujet || '';
     document.getElementById('editP4Contenu').value = content.p4?.contenu ? content.p4.contenu.join('\n') : '';
 
-    // Show modal
     const modal = document.getElementById('editModal');
     modal.style.display = 'flex';
     modal.style.alignItems = 'center';
@@ -2126,6 +2495,11 @@ function openEditModal(contentId) {
     setTimeout(() => {
         document.getElementById('editForm').reset();
     }, 300);
+           // Remettre la barre de contrôle
+    document.querySelector('.control-bar').style.display = 'flex';
+           // Remettre la taille originale
+    document.querySelector('#editModal .modal-content').style.maxHeight = '85vh';
+    document.querySelector('#editModal .modal-content').style.paddingBottom = '220px';
 }
 
         function updateEditCounter(textareaId, counterId) {
@@ -2149,56 +2523,76 @@ function openEditModal(contentId) {
         });
 
         // Handle edit form submission
-      // Handle edit form submission
-        document.getElementById('editForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+       document.getElementById('editForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const contentId = document.getElementById('editContentId').value;
+
+    function splitContent(text) {
+        if (!text || text.trim() === '') return [];
+        return text.split('\n').filter(line => line.trim() !== '').slice(0, 7);
+    }
+
+   try {
+        const contentIndex = contentStore.findIndex(item => String(item.id) === String(contentId));
+        if (contentIndex !== -1) {
+            contentStore[contentIndex] = {
+                ...contentStore[contentIndex],
+                title: document.getElementById('editTitle').value.trim(),
+                subtitle: document.getElementById('editSubtitle').value.trim(),
+                p1: {
+                    sujet: document.getElementById('editP1Sujet').value.trim(),
+                    contenu: splitContent(document.getElementById('editP1Contenu').value)
+                },
+                p2: {
+                    sujet: document.getElementById('editP2Sujet').value.trim(),
+                    contenu: splitContent(document.getElementById('editP2Contenu').value)
+                },
+                p3: {
+                    sujet: document.getElementById('editP3Sujet').value.trim(),
+                    contenu: splitContent(document.getElementById('editP3Contenu').value)
+                },
+                p4: {
+                    sujet: document.getElementById('editP4Sujet').value.trim(),
+                    contenu: splitContent(document.getElementById('editP4Contenu').value)
+                },
+                timestamp: new Date().toLocaleString()
+            };
             
-            const contentId = document.getElementById('editContentId').value;
+            // Sauvegarder sur Google Sheet
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'update',
+                    id: contentId,
+                    titre: contentStore[contentIndex].title,
+                    soustitre: contentStore[contentIndex].subtitle,
+                    p1_sujet: contentStore[contentIndex].p1?.sujet || '',
+                    p1_contenu: contentStore[contentIndex].p1?.contenu?.join('\n') || '',
+                    p2_sujet: contentStore[contentIndex].p2?.sujet || '',
+                    p2_contenu: contentStore[contentIndex].p2?.contenu?.join('\n') || '',
+                    p3_sujet: contentStore[contentIndex].p3?.sujet || '',
+                    p3_contenu: contentStore[contentIndex].p3?.contenu?.join('\n') || '',
+                    p4_sujet: contentStore[contentIndex].p4?.sujet || '',
+                    p4_contenu: contentStore[contentIndex].p4?.contenu?.join('\n') || ''
+                })
+            });
+        }
 
-            // Fonction pour splitter le contenu en lignes
-            function splitContent(text) {
-                if (!text || text.trim() === '') return [];
-                return text.split('\n').filter(line => line.trim() !== '').slice(0, 7);
-            }
+        displayContentCards();
+        closeEditModal();
+        
+        showStatusMessage(`✨ "${contentStore[contentIndex].title}" updated successfully!`, 'success');
+    } catch (error) {
+        console.error('Update failed:', error);
+        showStatusMessage(`Failed to update: ${error.message}`, 'error');
+    }
+});
 
-            try {
-                // Update in contentStore
-                const contentIndex = contentStore.findIndex(item => item.id === contentId);
-                if (contentIndex !== -1) {
-                    contentStore[contentIndex] = {
-                        ...contentStore[contentIndex],
-                        title: document.getElementById('editTitle').value.trim(),
-                        subtitle: document.getElementById('editSubtitle').value.trim(),
-                        p1: {
-                            sujet: document.getElementById('editP1Sujet').value.trim(),
-                            contenu: splitContent(document.getElementById('editP1Contenu').value)
-                        },
-                        p2: {
-                            sujet: document.getElementById('editP2Sujet').value.trim(),
-                            contenu: splitContent(document.getElementById('editP2Contenu').value)
-                        },
-                        p3: {
-                            sujet: document.getElementById('editP3Sujet').value.trim(),
-                            contenu: splitContent(document.getElementById('editP3Contenu').value)
-                        },
-                        p4: {
-                            sujet: document.getElementById('editP4Sujet').value.trim(),
-                            contenu: splitContent(document.getElementById('editP4Contenu').value)
-                        },
-                        timestamp: new Date().toLocaleString()
-                    };
-                }
-
-                // Update display
-                displayContentCards();
-                closeEditModal();
-                
-                showStatusMessage(`✨ "${contentStore[contentIndex].title}" updated successfully!`, 'success');
-            } catch (error) {
-                console.error('Update failed:', error);
-                showStatusMessage(`Failed to update: ${error.message}`, 'error');
-            }
-        });
         // Duplicate content function
         async function duplicateContent() {
             const contentId = document.getElementById('editContentId').value;
@@ -2246,6 +2640,28 @@ function openEditModal(contentId) {
         });
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Drag & drop pour réorganiser les cartes
+setTimeout(() => {
+    const contentList = document.getElementById('contentList');
+    if (contentList) {
+        new Sortable(contentList, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            onEnd: function() {
+                // Réorganiser contentStore selon le nouvel ordre
+                const cards = contentList.querySelectorAll('.content-card');
+                const newOrder = [];
+                cards.forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    const item = contentStore.find(c => String(c.id) === String(id));
+                    if (item) newOrder.push(item);
+                });
+                contentStore = newOrder;
+                console.log('✅ Ordre mis à jour');
+            }
+        });
+    }
+}, 1000);
             // Load shared data on startup
             loadSharedData().then(() => {
                 displayContentCards();
@@ -2266,7 +2682,11 @@ function openEditModal(contentId) {
                     document.getElementById('gistStatusText').style.color = '#dc3545';
                 }
             });
-            
+            // Auto-refresh toutes les 5 secondes
+           setInterval(async () => {
+    await loadSharedData(true);
+    displayContentCards();
+}, 5000);
             // Character counters for all text areas
             const textareas = [
                 'p1_line1', 'p1_line2',
@@ -2389,68 +2809,93 @@ function openEditModal(contentId) {
         // ========== WEBSOCKET INTEGRATION ==========
         // Charger les données depuis le serveur WebSocket (depuis "Création")
         const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoSIgN07Vwk0OKfnbdc5N7gUWlsh5DB5ojI07vlmuqqAFHppsmG3YgPzgYjT_i0N_Qjg/exec';
         
-        async function loadFromWebSocket() {
-            const wsStatusIndicator = document.getElementById('wsStatusIndicator');
+      async function loadFromWebSocket(silent = false) {
+    const wsStatusIndicator = document.getElementById('wsStatusIndicator');
+    
+    try {
+        if (wsStatusIndicator && !silent) {
+    wsStatusIndicator.style.background = '#ffc107';
+    wsStatusIndicator.style.color = '#000';
+    wsStatusIndicator.textContent = '🔄 Chargement...';
+}
+        
+        // Utiliser JSONP pour éviter CORS
+        const history = await new Promise((resolve, reject) => {
+            const callbackName = 'jsonpCallback_' + Date.now();
             
-            try {
-                if (wsStatusIndicator) {
-                    wsStatusIndicator.style.background = '#ffc107';
-                    wsStatusIndicator.style.color = '#000';
-                    wsStatusIndicator.textContent = '🔄 Chargement...';
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                document.head.removeChild(script);
+                resolve(data);
+            };
+            
+            const script = document.createElement('script');
+            script.src = `${GOOGLE_SCRIPT_URL}?action=getAll&callback=${callbackName}`;
+            script.onerror = () => {
+                delete window[callbackName];
+                reject(new Error('Failed to load'));
+            };
+            document.head.appendChild(script);
+            
+            // Timeout après 10 secondes
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    delete window[callbackName];
+                    reject(new Error('Timeout'));
                 }
-                
-                const response = await fetch(`${WS_SERVER_URL}/history`);
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const history = await response.json();
-                console.log('✅ Historique chargé depuis WebSocket:', history.length, 'éléments');
-                console.log('📦 Données brutes du serveur:', history);
-                
-                if (wsStatusIndicator) {
-                    wsStatusIndicator.style.background = '#28a745';
-                    wsStatusIndicator.style.color = '#fff';
-                    wsStatusIndicator.textContent = '✅ Connecté (' + history.length + ')';
-                }
-                
-                // Convertir chaque élément de l'historique
-                const convertedHistory = history.map((data, index) => {
-                    console.log(`🔄 Conversion élément ${index + 1}:`, data);
-                    
-                    // Stocker les données COMPLÈTES au lieu de les aplatir
-                    const converted = {
-                        id: data.id || 'ws-' + Date.now(),
-                        title: data.titre || 'Untitled',
-                        subtitle: data.soustitre || '',
-                        // Garder les données P1-P4 complètes avec sujets et toutes les lignes
-                        p1: data.p1 || { sujet: '', contenu: [] },
-                        p2: data.p2 || { sujet: '', contenu: [] },
-                        p3: data.p3 || { sujet: '', contenu: [] },
-                        p4: data.p4 || { sujet: '', contenu: [] },
-                        timestamp: data.timestamp || new Date().toLocaleString(),
-                        source: data.source || 'websocket'
-                    };
-                    console.log(`✅ Converti:`, converted);
-                    return converted;
-                });
-                
-                console.log('📊 Historique converti final:', convertedHistory);
-                
-                return convertedHistory;
-            } catch (error) {
-                console.error('❌ Erreur chargement WebSocket:', error);
-                
-                if (wsStatusIndicator) {
-                    wsStatusIndicator.style.background = '#dc3545';
-                    wsStatusIndicator.style.color = '#fff';
-                    wsStatusIndicator.textContent = '❌ Serveur inaccessible';
-                }
-                
-                return [];
-            }
+            }, 10000);
+        });
+        
+        console.log('✅ Historique chargé depuis Google Sheet:', history.length, 'éléments');
+        
+        if (wsStatusIndicator) {
+            wsStatusIndicator.style.background = '#28a745';
+            wsStatusIndicator.style.color = '#fff';
+            wsStatusIndicator.textContent = '✅ Connecté (' + history.length + ')';
         }
+        
+        // Convertir le format Google Sheet vers le format p1p4
+        const convertedHistory = history.map((data) => {
+            return {
+                id: data.id || 'gs-' + Date.now(),
+                title: data.titre || 'Untitled',
+                subtitle: data.soustitre || '',
+                p1: { 
+                    sujet: data.p1_sujet || '', 
+                    contenu: data.p1_contenu ? data.p1_contenu.split('\n') : [] 
+                },
+                p2: { 
+                    sujet: data.p2_sujet || '', 
+                    contenu: data.p2_contenu ? data.p2_contenu.split('\n') : [] 
+                },
+                p3: { 
+                    sujet: data.p3_sujet || '', 
+                    contenu: data.p3_contenu ? data.p3_contenu.split('\n') : [] 
+                },
+                p4: { 
+                    sujet: data.p4_sujet || '', 
+                    contenu: data.p4_contenu ? data.p4_contenu.split('\n') : [] 
+                },
+                timestamp: new Date().toLocaleString(),
+                source: 'google-sheet'
+            };
+        });
+        
+        return convertedHistory;
+    } catch (error) {
+        console.error('❌ Erreur chargement Google Sheet:', error);
+        
+        if (wsStatusIndicator) {
+            wsStatusIndicator.style.background = '#dc3545';
+            wsStatusIndicator.style.color = '#fff';
+            wsStatusIndicator.textContent = '❌ Erreur connexion';
+        }
+        
+        return [];
+    }
+}
         // Create Modal Functions
 function openCreateModal() {
     window.scrollTo({ top: 0, behavior: 'smooth' }); // ← Scroll vers le haut
@@ -2508,7 +2953,11 @@ setTimeout(() => {
     if (form) {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+             // Limite de 10 contenus max
+            if (contentStore.length >= 10) {
+                showStatusMessage('⚠️ Limite atteinte ! Maximum 10 contenus. Supprimez-en pour en créer de nouveaux.', 'error');
+                return;
+            }
             try {
                 const contentId = Date.now().toString();
                // Fonction pour splitter le contenu en lignes
@@ -2540,21 +2989,27 @@ const contentData = {
     timestamp: new Date().toLocaleString(),
     source: 'create-modal'
 };
-                // Send to server
-                const response = await fetch(`${WS_SERVER_URL}/api/update`, {
+                // Send to Google Sheet
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-    titre: contentData.title || '',
-    soustitre: contentData.subtitle || '',
-    p1: contentData.p1 || { sujet: '', contenu: [] },
-    p2: contentData.p2 || { sujet: '', contenu: [] },
-    p3: contentData.p3 || { sujet: '', contenu: [] },
-    p4: contentData.p4 || { sujet: '', contenu: [] }
-})
- });
+                        action: 'create',
+                        titre: contentData.title || '',
+                        soustitre: contentData.subtitle || '',
+                        p1_sujet: contentData.p1?.sujet || '',
+                        p1_contenu: contentData.p1?.contenu?.join('\n') || '',
+                        p2_sujet: contentData.p2?.sujet || '',
+                        p2_contenu: contentData.p2?.contenu?.join('\n') || '',
+                        p3_sujet: contentData.p3?.sujet || '',
+                        p3_contenu: contentData.p3?.contenu?.join('\n') || '',
+                        p4_sujet: contentData.p4?.sujet || '',
+                        p4_contenu: contentData.p4?.contenu?.join('\n') || ''
+                    })
+                });
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -2572,6 +3027,65 @@ const contentData = {
         });
     }
 }, 100);
+        // Clavier virtuel
+let activeInput = null;
+
+// Garder trace du champ actif
+document.querySelectorAll('#editModal input, #editModal textarea').forEach(input => {
+    input.addEventListener('focus', function() {
+        activeInput = this;
+    });
+});
+
+// Gérer les clics sur le clavier
+document.getElementById('virtualKeyboard').addEventListener('click', function(e) {
+    const key = e.target.closest('.key');
+    if (!key || !activeInput) return;
+    
+    const keyValue = key.dataset.key;
+    
+    if (keyValue === 'backspace') {
+        activeInput.value = activeInput.value.slice(0, -1);
+    } else if (keyValue === 'enter') {
+        if (activeInput.tagName === 'TEXTAREA') {
+            activeInput.value += '\n';
+        }
+    } else {
+        activeInput.value += keyValue;
+    }
+    
+    activeInput.focus();
+});
     </script>
+    <!-- Barre de contrôle fixe -->
+<div class="control-bar">
+    <div style="flex: 1;"></div>
+    <div style="display: flex; gap: 30px;">
+        <button class="control-bar-btn btn-control" onclick="window.open('control.html', '_blank')">
+    🎮 CONTROL
+</button>
+        <button class="control-bar-btn btn-in" onclick="sendSelectedContent()">
+            ▶ IN
+        </button>
+        <button class="control-bar-btn btn-next" onclick="focusNextSubject()">
+            ⏭ NEXT
+        </button>
+        <button class="control-bar-btn btn-valo" onclick="showGraph()">
+            📈 VALO
+        </button>
+        <button class="control-bar-btn btn-clear" onclick="hideOverlay()">
+            ✖ CLEAR
+        </button>
+    </div>
+    <div style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 20px;">
+        <div class="control-bar-info">
+            Sélectionné : <strong id="selectedContentName">Aucun</strong>
+        </div>
+        <button class="control-bar-btn btn-control-edit" onclick="editSelectedContent()">
+            ✏ EDIT
+        </button>
+    </div>
+</div>
+</div>
 </body>
 </html>

@@ -1,0 +1,42 @@
+{
+  "0": {
+    "titre": "Webinaire ligne métiers"
+  },
+  "1": {
+    "titre": "Paris 12/12"
+  },
+  "1771335067311": {
+    "id": "1771335067311",
+    "titre": "DIRECT",
+    "date": "",
+    "entite": "CIC CRET",
+    "contact": "HUGUETTE",
+    "heureDirect": "14:00",
+    "heurePrep": "13:15",
+    "prepDuration": 45,
+    "ibmChaine": "https://video.ibm.com/channel/U9p5hKnPQzr",
+    "toggles": {
+      "diffIBM": true,
+      "replay": true,
+      "chat": false,
+      "qr": true,
+      "masquerQR": false,
+      "synthes": true,
+      "diffGen": true,
+      "fournisGen": true,
+      "studioGen": false,
+      "visite": true
+    },
+    "application": "ZOOM",
+    "intervenants": [
+      {
+        "nom": "Martin",
+        "prenom": "Fourcade",
+        "fonction": "Analyste",
+        "entreprise": "CIC"
+      }
+    ],
+    "mode": "studio",
+    "updatedAt": "2026-02-17T13:38:43.688Z"
+  }
+}

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>🔄 PRSNET Auto-Sync</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif}
+body{background:#0a0c14;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.container{width:500px;padding:30px}
+h1{font-size:20px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.status{background:rgba(100,160,255,0.08);border:1px solid rgba(100,160,255,0.15);border-radius:16px;padding:20px;margin-bottom:16px}
+.status-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.status-label{font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px}
+.status-value{font-size:14px;font-weight:600}
+.status-value.ok{color:#4ade80}
+.status-value.err{color:#f87171}
+.status-value.wait{color:#fbbf24}
+.log{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px;max-height:350px;overflow-y:auto;font-size:11px;font-family:'SF Mono',monospace;line-height:1.8}
+.log div{border-bottom:1px solid rgba(255,255,255,0.03);padding:2px 0}
+.log .ok{color:#4ade80}
+.log .err{color:#f87171}
+.log .info{color:#60a5fa}
+.log .author{color:#c084fc}
+.controls{display:flex;gap:10px;margin:16px 0}
+.btn{padding:10px 20px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,#0070f3,#0050c8);color:#fff}
+.btn-stop{background:rgba(255,60,60,0.2);color:#ff6b6b;border:1px solid rgba(255,60,60,0.3)}
+.btn-stop.active{background:rgba(60,255,60,0.2);color:#4ade80;border-color:rgba(60,255,60,0.3)}
+.countdown{font-size:12px;color:rgba(255,255,255,0.3);margin-top:8px;text-align:center}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.dot.green{background:#4ade80;box-shadow:0 0 8px rgba(74,222,128,0.5)}
+.dot.red{background:#f87171}
+.dot.yellow{background:#fbbf24;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1><span class="dot green" id="statusDot"></span> PRSNET Auto-Sync</h1>
+
+    <div class="status">
+        <div class="status-row">
+            <span class="status-label">Statut</span>
+            <span class="status-value ok" id="statusText">En attente</span>
+        </div>
+        <div class="status-row">
+            <span class="status-label">Dernière sync</span>
+            <span class="status-value" id="lastSync">—</span>
+        </div>
+        <div class="status-row">
+            <span class="status-label">Brouillons</span>
+            <span class="status-value" id="draftCount">—</span>
+        </div>
+        <div class="status-row">
+            <span class="status-label">Auteurs trouvés</span>
+            <span class="status-value" id="authorCount">—</span>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" onclick="runSync()">▶ Sync maintenant</button>
+        <button class="btn btn-stop active" id="autoBtn" onclick="toggleAuto()">⏸ Pause auto</button>
+    </div>
+    <div class="countdown" id="countdown">Prochaine sync dans 5:00</div>
+
+    <div class="log" id="log"></div>
+</div>
+
+<script>
+var GH_TOKEN = 'ghp_' + ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw']
+    .map(function(s){return s.split('').reverse().join('')}).join('');
+var GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+var PRSNET_URL = 'https://prsnet-si.cm-cic.fr/GRDC_WEB2_B/WebContentKeywordLst.aspx?key=&areas=&state=0&t=Video&p=1&d=&author=';
+var INTERVAL = 5 * 60; // 5 minutes en secondes
+var autoEnabled = true;
+var syncing = false;
+var timer = null;
+var remaining = INTERVAL;
+
+function log(msg, cls) {
+    var d = document.getElementById('log');
+    var line = document.createElement('div');
+    line.className = cls || '';
+    line.textContent = '[' + new Date().toLocaleTimeString('fr-FR') + '] ' + msg;
+    d.insertBefore(line, d.firstChild);
+    if (d.children.length > 100) d.removeChild(d.lastChild);
+}
+
+function setStatus(text, cls) {
+    var el = document.getElementById('statusText');
+    el.textContent = text;
+    el.className = 'status-value ' + cls;
+    var dot = document.getElementById('statusDot');
+    dot.className = 'dot ' + (cls === 'ok' ? 'green' : cls === 'err' ? 'red' : 'yellow');
+}
+
+function toggleAuto() {
+    autoEnabled = !autoEnabled;
+    var btn = document.getElementById('autoBtn');
+    if (autoEnabled) {
+        btn.textContent = '⏸ Pause auto';
+        btn.className = 'btn btn-stop active';
+        remaining = INTERVAL;
+        startTimer();
+        log('Auto-sync activé (toutes les 5 min)', 'ok');
+    } else {
+        btn.textContent = '▶ Activer auto';
+        btn.className = 'btn btn-stop';
+        if (timer) clearInterval(timer);
+        document.getElementById('countdown').textContent = 'Auto-sync en pause';
+        log('Auto-sync mis en pause', 'info');
+    }
+}
+
+function startTimer() {
+    if (timer) clearInterval(timer);
+    remaining = INTERVAL;
+    timer = setInterval(function() {
+        if (!autoEnabled) return;
+        remaining--;
+        var m = Math.floor(remaining / 60);
+        var s = remaining % 60;
+        document.getElementById('countdown').textContent = 'Prochaine sync dans ' + m + ':' + (s < 10 ? '0' : '') + s;
+        if (remaining <= 0) {
+            remaining = INTERVAL;
+            runSync();
+        }
+    }, 1000);
+}
+
+async function runSync() {
+    if (syncing) { log('Sync déjà en cours...', 'info'); return; }
+    syncing = true;
+    setStatus('Sync en cours...', 'wait');
+    log('── Début sync ──', 'info');
+
+    try {
+        // Step 1: Fetch PRSNET list page
+        log('Fetch liste PRSNET...', 'info');
+        var resp = await fetch(PRSNET_URL, { credentials: 'include' });
+        if (!resp.ok) throw new Error('PRSNET HTTP ' + resp.status);
+        var html = await resp.text();
+        log('Page PRSNET reçue (' + html.length + ' chars)', 'ok');
+
+        // Step 2: Parse drafts from list
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        var rows = doc.querySelectorAll('tr');
+        var drafts = [], seen = {};
+
+        rows.forEach(function(tr) {
+            var link = tr.querySelector('a[href*="WebContentPage.aspx?key="]');
+            if (!link) return;
+            var cells = tr.querySelectorAll('td');
+            var isBrouillon = false, date = '', tags = '';
+            cells.forEach(function(c) {
+                var txt = c.textContent.trim();
+                if (txt === 'Brouillon') isBrouillon = true;
+                var m = txt.match(/(\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}:\d{2})/);
+                if (m) date = m[1];
+                if (txt.indexOf(',') > -1 && (txt.indexOf('Morning') > -1 || txt.indexOf('Direct') > -1 ||
+                    txt.indexOf('Conf') > -1 || txt.indexOf('Chart') > -1 || txt.indexOf('Echo') > -1 ||
+                    txt.indexOf('cryptage') > -1 || txt.indexOf('Recherche') > -1 || txt.indexOf('Une') > -1 ||
+                    txt.indexOf('Equity') > -1))
+                    tags = txt;
+            });
+            if (!isBrouillon) return;
+            var key = link.href.match(/key=([a-f0-9-]+)/);
+            var id = key ? key[1] : '';
+            if (seen[id]) return;
+            seen[id] = true;
+            // Fix relative URLs
+            var fullUrl = link.href;
+            if (fullUrl.indexOf('http') !== 0) fullUrl = 'https://prsnet-si.cm-cic.fr' + link.getAttribute('href');
+            drafts.push({ id: id, title: link.textContent.trim(), date: date, tags: tags, url: fullUrl, author: '' });
+        });
+
+        document.getElementById('draftCount').textContent = drafts.length;
+        log(drafts.length + ' brouillons trouvés', 'ok');
+
+        if (drafts.length === 0) {
+            setStatus('0 brouillons', 'err');
+            syncing = false;
+            return;
+        }
+
+        // Step 3: Fetch each detail page for author
+        var authorsFound = 0;
+        for (var i = 0; i < drafts.length; i++) {
+            var d = drafts[i];
+            try {
+                var r = await fetch(d.url, { credentials: 'include' });
+                var dhtml = await r.text();
+                var m = dhtml.match(/ctrlTagContributors_JS\.AddTag\("[^"]*","([^"]+)"/);
+                if (m) {
+                    d.author = m[1];
+                    authorsFound++;
+                    log('  👤 ' + d.title.substring(0, 30) + ' → ' + d.author, 'author');
+                } else {
+                    log('  ❓ ' + d.title.substring(0, 30) + ' → auteur non trouvé', 'err');
+                }
+            } catch (e) {
+                log('  ❌ ' + d.title.substring(0, 30) + ' → erreur fetch', 'err');
+            }
+        }
+
+        document.getElementById('authorCount').textContent = authorsFound + '/' + drafts.length;
+
+        // Step 4: Push to GitHub
+        log('Push GitHub...', 'info');
+        var json = JSON.stringify({ updated: new Date().toISOString(), count: drafts.length, drafts: drafts }, null, 2);
+        var b64 = btoa(unescape(encodeURIComponent(json)));
+
+        var existing = null;
+        try {
+            var er = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/prsnet-drafts.json', {
+                headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+            });
+            if (er.ok) existing = await er.json();
+        } catch (e) {}
+
+        var body = { message: 'prsnet auto-sync ' + new Date().toISOString(), content: b64 };
+        if (existing && existing.sha) body.sha = existing.sha;
+
+        var pr = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/prsnet-drafts.json', {
+            method: 'PUT',
+            headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (pr.ok) {
+            setStatus('✅ Sync OK', 'ok');
+            document.getElementById('lastSync').textContent = new Date().toLocaleTimeString('fr-FR');
+            log('✅ ' + drafts.length + ' brouillons pushés (' + authorsFound + ' auteurs)', 'ok');
+        } else {
+            throw new Error('GitHub ' + pr.status);
+        }
+
+    } catch (e) {
+        setStatus('Erreur: ' + e.message, 'err');
+        log('❌ ' + e.message, 'err');
+    }
+
+    syncing = false;
+    remaining = INTERVAL;
+}
+
+// Démarrage
+log('PRSNET Auto-Sync démarré', 'ok');
+log('Interval: ' + INTERVAL / 60 + ' minutes', 'info');
+log('Repo: ' + GH_REPO, 'info');
+runSync(); // Première sync immédiate
+startTimer();
+</script>
+</body>
+</html>

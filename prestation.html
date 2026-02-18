@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prestations - Studio CIC</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #111118;
+            color: #e4e4e4;
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ===== FOND APPLE MUSIC ===== */
+        .album-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .album-bg .cover {
+            position: absolute;
+            top: -20%; left: -20%; right: -20%; bottom: -20%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(80px) saturate(1.8) brightness(0.4);
+            transition: opacity 2s ease-in-out;
+            opacity: 0;
+        }
+        .album-bg .cover.active { opacity: 1; }
+        .album-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 1;
+        }
+
+        .page-wrapper { max-width: 1024px; margin: 0 auto; position: relative; z-index: 2; }
+
+        .header { text-align: center; padding: 20px 0 30px; }
+        .header img { width: 242px; height: auto; margin-bottom: 8px; }
+
+        .fiches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 16px;
+        }
+
+        .fiche-card {
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            cursor: pointer;
+            transition: all 0.15s;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+        }
+        .fiche-card:hover {
+            border-color: rgba(0,200,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        .fiche-title {
+            font-size: 18px; font-weight: bold; color: #fff;
+            text-align: center; margin-bottom: 6px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .fiche-date {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .fiche-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .fiche-label {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .fiche-value {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .fiche-heure {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .heure-badge {
+            font-size: 0.72rem;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+        .heure-prep { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+        .heure-direct { background: rgba(0,200,255,0.15); color: #00d4ff; }
+
+        .fiche-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 8px;
+        }
+        .fiche-tag {
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.4);
+        }
+        .fiche-tag.on { background: rgba(0,200,255,0.12); color: #00d4ff; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.9rem;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .new-btn {
+            background: linear-gradient(135deg, #00d4ff, #007AFF);
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0,200,255,0.3);
+            transition: all 0.15s;
+        }
+        .new-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,200,255,0.4); }
+
+        .count-badge {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .sync-status {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .sync-ok { background: rgba(0,200,100,0.15); color: #00c864; }
+        .sync-err { background: rgba(255,60,60,0.15); color: #ff6060; }
+        .sync-loading { background: rgba(255,200,0,0.15); color: #ffc800; }
+
+        .nav-back {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #fda085; text-decoration: none;
+            font-size: 0.85rem; font-weight: 700;
+            padding: 10px 18px;
+            background: rgba(253,160,133,0.1);
+            border: 1px solid rgba(253,160,133,0.25);
+            border-radius: 10px;
+            transition: all 0.15s;
+            position: relative; z-index: 2;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif;
+        }
+        .nav-back:hover { color: #fdb99b; background: rgba(253,160,133,0.18); }
+
+        .delete-btn {
+            background: rgba(255,60,60,0.15);
+            color: #ff6060;
+            border: 1px solid rgba(255,60,60,0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            transition: all 0.15s;
+        }
+        .delete-btn:hover { background: rgba(255,60,60,0.3); }
+    </style>
+</head>
+<body>
+    <div class="album-bg" id="albumBg"></div>
+    <a href="index.html" class="nav-back">&larr; Retour Studio Manager</a>
+    <div class="page-wrapper">
+        <div class="header">
+            <img src="logo-cic.png" alt="CIC">
+        </div>
+
+        <div class="actions-bar">
+            <a href="#" class="new-btn" onclick="newFiche(); return false;">&#xFF0B; Nouvelle fiche</a>
+            <span>
+                <span class="count-badge" id="countBadge"></span>
+                <span class="sync-status sync-loading" id="syncStatus">&#x1F504; Chargement...</span>
+            </span>
+        </div>
+
+        <div class="fiches-grid" id="fichesGrid"></div>
+        <div class="empty-state" id="emptyState" style="display:none;">
+            Aucune prestation enregistr&eacute;e.<br>Cr&eacute;ez une nouvelle fiche pour commencer.
+        </div>
+    </div>
+
+    <script>
+    // ===== GITHUB SYNC =====
+    const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s=>s.split('').reverse().join('')).join('');
+    const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+    const GH_FILE = 'data/fiches.json';
+    const GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
+
+    let fichesData = {};
+    let fileSha = null;
+
+    function formatDateFR(d) {
+        if (!d) return '';
+        var p = d.split('-');
+        if (p.length === 3) return p[2] + '/' + p[1] + '/' + p[0];
+        return d;
+    }
+
+    async function loadFromGitHub() {
+        const status = document.getElementById('syncStatus');
+        status.className = 'sync-status sync-loading';
+        status.innerHTML = '&#x1F504; Sync...';
+
+        try {
+            const resp = await fetch(GH_API, {
+                headers: {
+                    'Authorization': 'token ' + GH_TOKEN,
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                cache: 'no-cache'
+            });
+
+            if (resp.status === 404) {
+                // Fichier n'existe pas encore, on le créera au premier save
+                fichesData = {};
+                fileSha = null;
+                status.className = 'sync-status sync-ok';
+                status.innerHTML = '&#x2705; Nouveau';
+                renderFiches();
+                return;
+            }
+
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+            const data = await resp.json();
+            fileSha = data.sha;
+            const raw = atob(data.content.replace(/\n/g, ''));
+            const content = decodeURIComponent(escape(raw));
+            fichesData = JSON.parse(content);
+
+            // Sync aussi en localStorage comme fallback
+            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+
+            status.className = 'sync-status sync-ok';
+            status.innerHTML = '&#x2705; Sync&eacute;';
+            renderFiches();
+        } catch (err) {
+            console.error('GitHub load error:', err);
+            // Fallback localStorage
+            fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+            status.className = 'sync-status sync-err';
+            status.innerHTML = '&#x26A0; Local';
+            renderFiches();
+        }
+    }
+
+    async function saveToGitHub() {
+        const status = document.getElementById('syncStatus');
+        try {
+            status.className = 'sync-status sync-loading';
+            status.innerHTML = '&#x1F504; Save...';
+
+            const content = btoa(unescape(encodeURIComponent(JSON.stringify(fichesData, null, 2))));
+
+            const body = {
+                message: 'Update fiches ' + new Date().toISOString(),
+                content: content,
+                branch: 'main'
+            };
+            if (fileSha) body.sha = fileSha;
+
+            const resp = await fetch(GH_API, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'token ' + GH_TOKEN,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+            const data = await resp.json();
+            fileSha = data.content.sha;
+
+            // Aussi en localStorage
+            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+
+            status.className = 'sync-status sync-ok';
+            status.innerHTML = '&#x2705; Sauv&eacute;';
+        } catch (err) {
+            console.error('GitHub save error:', err);
+            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+            status.className = 'sync-status sync-err';
+            status.innerHTML = '&#x26A0; Local only';
+        }
+    }
+
+    // Supprimer une fiche
+    async function deleteFiche(id, ev) {
+        var e = ev || window.event;
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        if (!confirm('Supprimer cette fiche ?')) return;
+        delete fichesData[id];
+        await saveToGitHub();
+        renderFiches();
+    }
+
+    function renderFiches() {
+        const grid = document.getElementById('fichesGrid');
+        const empty = document.getElementById('emptyState');
+        const count = document.getElementById('countBadge');
+        const entries = Object.values(fichesData).sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+
+        count.textContent = entries.length + ' prestation' + (entries.length > 1 ? 's' : '');
+
+        if (entries.length === 0) {
+            grid.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+        }
+
+        grid.style.display = 'grid';
+        empty.style.display = 'none';
+
+        grid.innerHTML = entries.map(function(f) {
+            var toggleTags = '';
+            if (f.toggles) {
+                Object.keys(f.toggles).forEach(function(k) {
+                    var v = f.toggles[k];
+                    toggleTags += '<span class="fiche-tag ' + (v === 'oui' ? 'on' : '') + '">' + k + ': ' + (v || '-') + '</span>';
+                });
+            }
+
+            return '<div class="fiche-card" onclick="openFiche(\'' + f.id + '\')">' +
+                '<button class="delete-btn" onclick="event.stopPropagation();deleteFiche(\'' + f.id + '\', event)">&#x2716; Supprimer</button>' +
+                '<div class="fiche-title">' + (f.titre || 'Sans titre') + '</div>' +
+                '<div class="fiche-date">' + formatDateFR(f.date) + '</div>' +
+                '<div class="fiche-field"><span class="fiche-label">Entit&eacute;</span><span class="fiche-value">' + (f.entite || '-') + '</span></div>' +
+                '<div class="fiche-field"><span class="fiche-label">Contact</span><span class="fiche-value">' + (f.contact || '-') + '</span></div>' +
+                '<div class="fiche-heure">' +
+                    '<span class="heure-badge heure-prep">Pr&eacute;pa: ' + (f.heurePrep || '--:--') + '</span>' +
+                    '<span class="heure-badge heure-direct">Direct: ' + (f.heureDirect || '--:--') + '</span>' +
+                '</div>' +
+                (f.application ? '<div class="fiche-field"><span class="fiche-label">App</span><span class="fiche-value">' + f.application + '</span></div>' : '') +
+                (f.intervenants && f.intervenants.length ? '<div class="fiche-field"><span class="fiche-label">Intervenants</span><span class="fiche-value">' + f.intervenants.length + ' personne(s)</span></div>' : '') +
+                '<div class="fiche-tags">' + toggleTags + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    function openFiche(id) {
+        localStorage.setItem('currentFicheId', id);
+        window.location.href = 'contact-studio.html?fiche=' + id;
+    }
+
+    function newFiche() {
+        const newId = Date.now().toString();
+        localStorage.removeItem('currentFicheId');
+        window.location.href = 'contact-studio.html?fiche=' + newId;
+    }
+
+    // Chargement initial
+    loadFromGitHub();
+    // Refresh toutes les 15s
+    setInterval(loadFromGitHub, 15000);
+    </script>
+
+    <script>
+    // ===== FOND APPLE MUSIC =====
+    const ALBUMS = [
+        'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228',
+        'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25',
+        'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2',
+        'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b',
+        'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0',
+        'https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e',
+        'https://i.scdn.co/image/ab67616d0000b273b0dd6a5cd1649c4a390f6f7a',
+        'https://i.scdn.co/image/ab67616d0000b2739a95e89d24214b94de36ccf7',
+        'https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72',
+        'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
+        'https://i.scdn.co/image/ab67616d0000b27390a50cfe99a4c19ff3cbfbdb',
+        'https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526',
+        'https://i.scdn.co/image/ab67616d0000b273de437d960dda1ac0a3ff0e47',
+        'https://i.scdn.co/image/ab67616d0000b2738399047ff71200928f5b6508',
+        'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424',
+        'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856',
+    ];
+    let currentAlbumIndex = 0;
+    const bg = document.getElementById('albumBg');
+    const layer1 = document.createElement('div');
+    const layer2 = document.createElement('div');
+    layer1.className = 'cover active';
+    layer2.className = 'cover';
+    bg.appendChild(layer1);
+    bg.appendChild(layer2);
+    for (let i = ALBUMS.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ALBUMS[i], ALBUMS[j]] = [ALBUMS[j], ALBUMS[i]];
+    }
+    layer1.style.backgroundImage = 'url(' + ALBUMS[0] + ')';
+    function nextAlbum() {
+        currentAlbumIndex = (currentAlbumIndex + 1) % ALBUMS.length;
+        const activeLayer = layer1.classList.contains('active') ? layer1 : layer2;
+        const nextLayer = activeLayer === layer1 ? layer2 : layer1;
+        nextLayer.style.backgroundImage = 'url(' + ALBUMS[currentAlbumIndex] + ')';
+        nextLayer.classList.add('active');
+        activeLayer.classList.remove('active');
+    }
+    setInterval(nextAlbum, 30000);
+    </script>
+</body>
+</html>

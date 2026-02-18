@@ -1,0 +1,3301 @@
+<!-- 
+========================================
+Graphique 3D Boursier - VERSION EMBED
+Version: 18.5 - 8 décembre 2025
+Description: Version intégrée dans widget-orbital.html via iframe
+             Fond transparent, écoute postMessage, boutons cachés
+========================================
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphique 3D Boursier - EMBED</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: transparent;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            min-width: 1920px;
+            min-height: 1080px;
+        }
+        
+        html {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        #container {
+            width: 1920px;
+            height: 1080px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* STATS COMPACTES EN HAUT (15% de hauteur) */
+        #stats {
+            display: none; /* Stats cachés pour l'embed */
+            height: 15%;
+            padding: 20px 40px;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 60px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .stat-label {
+            font-size: 28px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: normal;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 56px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .stat-value.positive {
+            color: #4ade80;
+        }
+
+        /* GRAPHIQUE OCCUPE 85% */
+        #chartContainer {
+            height: 85%;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            /* Ombre incurvée style Apple Keynote */
+            filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Effet d'ombre incurvée sous le canvas */
+        #chartContainer::after {
+            content: '';
+            position: absolute;
+            bottom: 5%;
+            left: 10%;
+            right: 10%;
+            height: 60px;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4) 0%, transparent 70%);
+            filter: blur(20px);
+            z-index: -1;
+            border-radius: 50%;
+            transform: scaleY(0.3); /* Aplatir pour effet incurvé */
+        }
+
+        #refreshButton {
+            display: none; /* Contrôle déplacé vers control.html */
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        #refreshButton:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        #applyButton {
+            display: none; /* Contrôle déplacé vers control.html */
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background: rgba(100, 255, 100, 0.3);
+            border: 2px solid #4ade80;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        #applyButton:hover {
+            background: rgba(100, 255, 100, 0.5);
+            transform: scale(1.05);
+        }
+
+        #applyButton.saved {
+            background: rgba(100, 255, 100, 0.8);
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        #yearLabels {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .year-label {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        #priceLabels {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .price-label {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        /* CONTRÔLEURS */
+        #controllers {
+            display: none; /* Contrôles déplacés vers control.html */
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            gap: 30px;
+            z-index: 1000;
+        }
+
+        .controller {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 12px;  /* Réduit de 20px à 12px */
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .controller h3 {
+            margin: 0 0 10px 0;  /* Réduit de 15px à 10px */
+            font-size: 14px;  /* Réduit de 18px à 14px */
+            text-align: center;
+        }
+
+        .joystick-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .joystick-row {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .joystick-btn {
+            width: 40px;   /* Réduit de 50px à 40px */
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;  /* Réduit de 20px à 16px */
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .joystick-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        .joystick-btn:active {
+            transform: scale(0.95);
+        }
+
+        .reset-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 100, 100, 0.8);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 100, 100, 1);
+        }
+
+        .info-display {
+            margin-top: 10px;
+            font-size: 12px;
+            text-align: center;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- STATS COMPACTES -->
+        <div id="stats"></div>
+        
+        <!-- GRAPHIQUE GRAND -->
+        <div id="chartContainer">
+            <canvas id="threeCanvas"></canvas>
+            <div id="yearLabels"></div>
+            <button id="applyButton" onclick="applySettings()">✓ Appliquer</button>
+            <button id="refreshButton" onclick="reloadAnimation()">🔄 Rafraîchir</button>
+            <button onclick="clearStorageAndReload()" style="display: none; position: absolute; top: 80px; right: 30px; padding: 12px 25px; background: rgba(255, 50, 50, 0.3); border: 2px solid #ff4444; color: white; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; z-index: 1000; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 50, 50, 0.5)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(255, 50, 50, 0.3)'; this.style.transform='scale(1)'">🗑️ Reset Tout</button>
+        </div>
+
+        <!-- CONTRÔLEURS -->
+        <div id="controllers">
+            <!-- Contrôleur Caméra Position -->
+            <div class="controller">
+                <h3>📹 Position Caméra</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveCamera('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveCamera('left')">←</button>
+                        <button class="joystick-btn" onclick="moveCamera('center')">●</button>
+                        <button class="joystick-btn" onclick="moveCamera('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveCamera('down')">↓</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px;">
+                        <button class="joystick-btn" onclick="rotateScene('up')" title="Rotation scène vers le haut">🔼</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="rotateScene('left')" title="Rotation scène vers la gauche">◀️</button>
+                        <button class="joystick-btn" onclick="rotateScene('center')" title="Reset rotation">⭕</button>
+                        <button class="joystick-btn" onclick="rotateScene('right')" title="Rotation scène vers la droite">▶️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="rotateScene('down')" title="Rotation scène vers le bas">🔽</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetCamera()">Reset Position</button>
+                    <div class="info-display" id="cameraInfo">X:0 Y:5 Z:32</div>
+                    <div class="info-display" id="sceneRotationInfo" style="margin-top: 5px;">🔄 X:0° Y:0°</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Angle Caméra -->
+            <div class="controller">
+                <h3>🎯 Angle Caméra</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="rotateCamera('up')" title="Plongée (regarder vers le bas)">▲</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="rotateCamera('left')" title="Tourner à gauche">◀</button>
+                        <button class="joystick-btn" onclick="rotateCamera('center')">●</button>
+                        <button class="joystick-btn" onclick="rotateCamera('right')" title="Tourner à droite">▶</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="rotateCamera('down')" title="Contre-plongée (regarder vers le haut)">▼</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetCameraAngle()">Reset Angle</button>
+                    <div class="info-display" id="angleInfo">H:0° V:-20°</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Graphique -->
+            <div class="controller">
+                <h3>📊 Graphique XY</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraph('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraph('left')">←</button>
+                        <button class="joystick-btn" onclick="moveGraph('center')">●</button>
+                        <button class="joystick-btn" onclick="moveGraph('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraph('down')">↓</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 10px;">
+                        <button class="joystick-btn" onclick="adjustGraphWidth('decrease')" title="Réduire largeur">−</button>
+                        <button class="joystick-btn" onclick="adjustGraphWidth('increase')" title="Augmenter largeur">+</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetGraph()">Reset</button>
+                    <div class="info-display" id="graphInfo">X:0 Y:0 Z:0</div>
+                    <div class="info-display" id="graphWidthInfo" style="margin-top: 5px;">L:100</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Profondeur Graphique (Z) -->
+            <div class="controller">
+                <h3>📊 Profondeur (Z)</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraph('forward')" title="Rapprocher">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraph('center')">●</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraph('backward')" title="Éloigner">⬇️</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetGraph()">Reset</button>
+                    <div class="info-display" id="graphZInfo">Z:0</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Lumière Position -->
+            <div class="controller">
+                <h3>💡 Position Lumière/Flare</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('up')" title="Déplacer lumière vers le haut">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('left')" title="Déplacer lumière vers la gauche">←</button>
+                        <button class="joystick-btn" onclick="moveLight('center')" title="Centrer lumière">●</button>
+                        <button class="joystick-btn" onclick="moveLight('right')" title="Déplacer lumière vers la droite">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('down')" title="Déplacer lumière vers le bas">↓</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLight()">Reset</button>
+                    <div class="info-display" id="lightInfo">X:5 Y:10 Z:7</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Intensité Lumière -->
+            <div class="controller">
+                <h3>🔆 Intensité</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="adjustIntensity('up')" style="font-size: 24px;">☀️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="adjustIntensity('center')" style="font-size: 18px;">●</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="adjustIntensity('down')" style="font-size: 24px;">🌙</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLight()">Reset</button>
+                    <div class="info-display" id="intensityInfo">60%</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Profondeur Lumière (Z) -->
+            <div class="controller">
+                <h3>💡 Profondeur (Z)</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('forward')" title="Rapprocher">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('center')">●</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLight('backward')" title="Éloigner">⬇️</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLight()">Reset</button>
+                    <div class="info-display" id="lightZInfo">Z:7</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Labels X (années) -->
+            <div class="controller">
+                <h3>🏷️ Labels X</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Annees('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Annees('left')">←</button>
+                        <button class="joystick-btn" onclick="moveLabels_Annees('center')">●</button>
+                        <button class="joystick-btn" onclick="moveLabels_Annees('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Annees('down')">↓</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 10px;">
+                        <button class="joystick-btn" onclick="adjustFontSizeX('down')" title="Réduire police">🅰️−</button>
+                        <button class="joystick-btn" onclick="adjustFontSizeX('up')" title="Augmenter police">🅰️+</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="adjustLabelsXSpacing('down')" title="Réduire espacement">↔️−</button>
+                        <button class="joystick-btn" onclick="adjustLabelsXSpacing('up')" title="Augmenter espacement">↔️+</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLabels()">Reset</button>
+                    <div class="info-display" id="labelsXInfo">X:0.0 Y:0.0</div>
+                    <div class="info-display" id="fontSizeXInfo" style="margin-top: 5px;">100px</div>
+                    <div class="info-display" id="labelsXSpacingInfo" style="margin-top: 5px;">100%</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Labels Y (prix) -->
+            <div class="controller">
+                <h3>🏷️ Labels Y</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Prix('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Prix('left')">←</button>
+                        <button class="joystick-btn" onclick="moveLabels_Prix('center')">●</button>
+                        <button class="joystick-btn" onclick="moveLabels_Prix('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLabels_Prix('down')">↓</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 10px;">
+                        <button class="joystick-btn" onclick="adjustFontSizeY('down')" title="Réduire police">🅰️−</button>
+                        <button class="joystick-btn" onclick="adjustFontSizeY('up')" title="Augmenter police">🅰️+</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLabels()">Reset</button>
+                    <div class="info-display" id="labelsYInfo">X:0.0 Y:0.0</div>
+                    <div class="info-display" id="fontSizeYInfo" style="margin-top: 5px;">128px</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Barre Rouge (Valorisation) -->
+            <div class="controller">
+                <h3>🔴 Barre Rouge</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveBarreRouge('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveBarreRouge('left')">←</button>
+                        <button class="joystick-btn" onclick="moveBarreRouge('center')">●</button>
+                        <button class="joystick-btn" onclick="moveBarreRouge('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveBarreRouge('down')">↓</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 10px;">
+                        <button class="joystick-btn" onclick="moveBarreRouge('forward')" title="Rapprocher">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveBarreRouge('backward')" title="Éloigner">⬇️</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 15px; gap: 10px;">
+                        <button class="joystick-btn" onclick="adjustBarreRougeIntensity('decrease')" title="Moins lumineux">💡-</button>
+                        <button class="joystick-btn" onclick="adjustBarreRougeIntensity('increase')" title="Plus lumineux">💡+</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 10px; gap: 10px;">
+                        <button class="joystick-btn" onclick="adjustBarreRougeSize('width', 'decrease')" title="Réduire largeur">⬅️</button>
+                        <button class="joystick-btn" onclick="adjustBarreRougeSize('width', 'increase')" title="Augmenter largeur">➡️</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px; gap: 10px;">
+                        <button class="joystick-btn" onclick="adjustBarreRougeSize('height', 'decrease')" title="Réduire hauteur">⬇️</button>
+                        <button class="joystick-btn" onclick="adjustBarreRougeSize('height', 'increase')" title="Augmenter hauteur">⬆️</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px; gap: 10px;">
+                        <button class="joystick-btn" onclick="adjustBarreRougeSize('depth', 'decrease')" title="Réduire profondeur">📦-</button>
+                        <button class="joystick-btn" onclick="adjustBarreRougeSize('depth', 'increase')" title="Augmenter profondeur">📦+</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px; gap: 10px;">
+                        <button class="joystick-btn" onclick="adjustBarreRougeSize('roundness', 'decrease')" title="Moins arrondi">◻️</button>
+                        <button class="joystick-btn" onclick="adjustBarreRougeSize('roundness', 'increase')" title="Plus arrondi">⬭</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetBarreRouge()">Reset</button>
+                    <div class="info-display" id="barreRougeInfo">X:0.0 Y:-7.5 Z:0.0 💡:1.5</div>
+                    <div class="info-display" id="barreRougeSizeInfo" style="margin-top: 5px;">L:9 H:0.3 P:8</div>
+                    <div class="info-display" id="barreRougeRoundInfo" style="margin-top: 5px;">⬭:0.2</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Ombre Graph -->
+            <div class="controller">
+                <h3>🌑 Ombre Graph</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraphShadow('up')" title="Déplacer vers le haut">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraphShadow('left')" title="Déplacer vers la gauche">←</button>
+                        <button class="joystick-btn" onclick="moveGraphShadow('center')" title="Centrer">●</button>
+                        <button class="joystick-btn" onclick="moveGraphShadow('right')" title="Déplacer vers la droite">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveGraphShadow('down')" title="Déplacer vers le bas">↓</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 8px; gap: 5px;">
+                        <button class="joystick-btn" onclick="adjustGraphShadow('size', 'decrease')" title="Réduire taille">📏-</button>
+                        <button class="joystick-btn" onclick="adjustGraphShadow('size', 'increase')" title="Augmenter taille">📏+</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 5px; gap: 5px;">
+                        <button class="joystick-btn" onclick="adjustGraphShadow('distance', 'decrease')" title="Rapprocher">📍-</button>
+                        <button class="joystick-btn" onclick="adjustGraphShadow('distance', 'increase')" title="Éloigner">📍+</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetGraphShadow()">Reset</button>
+                    <div class="info-display" id="graphShadowInfo">X:0 Z:0 📏:35 📍:-6.5</div>
+                </div>
+            </div>
+
+            <!-- Contrôleur Lignes Horizontales -->
+            <div class="controller">
+                <h3>📏 Lignes Fond</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLinesHorizontales('up')">↑</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLinesHorizontales('left')">←</button>
+                        <button class="joystick-btn" onclick="moveLinesHorizontales('center')">●</button>
+                        <button class="joystick-btn" onclick="moveLinesHorizontales('right')">→</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLinesHorizontales('down')">↓</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 10px;">
+                        <button class="joystick-btn" onclick="moveLinesHorizontales('forward')" title="Rapprocher">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button class="joystick-btn" onclick="moveLinesHorizontales('backward')" title="Éloigner">⬇️</button>
+                    </div>
+                    <div class="joystick-row" style="margin-top: 10px;">
+                        <button class="joystick-btn" onclick="adjustLinesExtension('down')" title="Réduire extension">➖</button>
+                        <button class="joystick-btn" onclick="adjustLinesExtension('up')" title="Augmenter extension">➕</button>
+                    </div>
+                    <button class="reset-btn" onclick="resetLinesHorizontales()">Reset</button>
+                    <div class="info-display" id="linesInfo">X:0.0 Y:0.0 Z:0.0</div>
+                    <div class="info-display" id="linesExtensionInfo" style="margin-top: 5px;">Ext: 0</div>
+                </div>
+            </div>
+            
+            <!-- Contrôleur Dégradé -->
+            <div class="controller">
+                <h3>🎨 Dégradé</h3>
+                <div class="joystick-container">
+                    <div class="joystick-row" style="flex-direction: column; gap: 10px;">
+                        <div style="display: flex; flex-direction: column; gap: 5px; width: 100%; margin-top: 5px;">
+                            <label style="font-size: 11px; text-align: center;">Dégradé opacité: <span id="gradientOpacityPercentage">100%</span></label>
+                            <input type="range" id="gradientOpacitySlider" min="0" max="100" value="100" 
+                                   style="width: 100%;" 
+                                   oninput="adjustGradientOpacityFromSlider()">
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 5px; width: 100%; margin-top: 10px;">
+                            <label style="font-size: 11px; text-align: center;">Chapeau opacité: <span id="capOpacityPercentage">100%</span></label>
+                            <input type="range" id="capOpacitySlider" min="0" max="100" value="100" 
+                                   style="width: 100%;" 
+                                   oninput="adjustCapOpacityFromSlider()">
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2);">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; width: 70px;">Haut:</span>
+                                <input type="color" id="colorTopPicker" value="#ffa500" style="width: 60px; height: 40px; border: none; cursor: pointer; border-radius: 5px;" onchange="syncColorFromPicker('top')">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; width: 70px;">Bas:</span>
+                                <input type="color" id="colorBottomPicker" value="#ffb380" style="width: 60px; height: 40px; border: none; cursor: pointer; border-radius: 5px;" onchange="syncColorFromPicker('bottom')">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; width: 70px;">Face haute:</span>
+                                <input type="color" id="topFaceColorPicker" value="#cccccc" style="width: 60px; height: 40px; border: none; cursor: pointer; border-radius: 5px;" onchange="syncTopFaceColorFromPicker()">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; width: 70px;">Barre 🔴:</span>
+                                <input type="color" id="barreColorPicker" value="#cc0000" style="width: 60px; height: 40px; border: none; cursor: pointer; border-radius: 5px;" onchange="syncBarreColorFromPicker()">
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 3px; width: 100%; margin-top: 10px;">
+                                <label style="font-size: 10px; text-align: center;">Zone transition: <span id="transitionPercent">50%</span></label>
+                                <input type="range" id="transitionSlider" min="0" max="100" value="50" 
+                                       style="width: 100%;" 
+                                       oninput="adjustGradientTransition()">
+                                <div style="font-size: 9px; color: rgba(255,255,255,0.6); text-align: center; margin-top: 3px;">
+                                    Couleurs: 0%=bas, 100%=haut
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 3px; width: 100%; margin-top: 10px;">
+                                <label style="font-size: 10px; text-align: center;">Zone opacité: <span id="opacityTransitionPercent">50%</span></label>
+                                <input type="range" id="opacityTransitionSlider" min="0" max="100" value="50" 
+                                       style="width: 100%;" 
+                                       oninput="adjustOpacityTransition()">
+                                <div style="font-size: 9px; color: rgba(255,255,255,0.6); text-align: center; margin-top: 3px;">
+                                    Opacité: 0%=bas, 100%=haut
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="reset-btn" onclick="resetGradient()">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // ========================================
+        // CONFIGURATION WEBSOCKET
+        // ========================================
+        const WS_URL = 'wss://ecamm-overlay-server.onrender.com';
+        let ws = null;
+        let reconnectTimeout = null;
+
+        // ========================================
+        // VARIABLES GLOBALES THREE.JS
+        // ========================================
+        let threeScene = null;
+        let threeCamera = null;
+        let threeRenderer = null;
+        let chartCurve = null;
+        let constructionProgress = 0;
+        let barreConstructionProgress = 0; // Animation de la barre rouge
+        let rotationStartTime = null;
+        let animationFrameId = null;
+        let mockData = null;
+        let valuationCube = null;
+        let valuationStartTime = null;
+        let chartMesh = null;  // Stocker le mesh pour l'animation
+        let directionalLight = null; // Référence à la lumière
+        let yearLabelsSprites = []; // Stocker les labels années (axe X)
+        let priceLabelsSprites = []; // Stocker les labels prix (axe Y)
+        let horizontalLines = []; // Stocker les lignes horizontales
+        let graphShadowMesh = null; // NOUVEAU : Mesh de l'ombre du graphique
+        let barreShadowMesh = null; // NOUVEAU : Mesh de l'ombre de la barre rouge
+        let topCapMesh = null; // NOUVEAU : Mesh de la surface grise du dessus
+
+        // Variables de position
+        let cameraOffset = { x: 0, y: 5, z: 32 };
+        let cameraAngle = { horizontal: 0, vertical: -20 }; // En degrés
+        let graphOffset = { x: 0, y: 0 };  // OBSOLÈTE : déplace toute la scène (gardé pour compatibilité)
+        let graphMeshOffset = { x: 0, y: 0, z: 0 }; // NOUVEAU : déplace uniquement le mesh 3D du graphique
+        let sceneRotation = { x: 0, y: 0 }; // Rotation de toute la scène en degrés
+        let lightPosition = { x: 5, y: 10, z: 7 }; // Position lumière
+        let lightIntensity = 0.6; // Intensité lumière
+        let labelsXOffset = { x: 0, y: 0 }; // Offset SEULEMENT pour labels X (années)
+        let labelsYOffset = { x: 0, y: 0 }; // Offset SEULEMENT pour labels Y (prix)
+        let barreRougeOffset = { x: 0, y: -7.5, z: 0 }; // Position barre rouge (z = offset seulement)
+        let barreRougeIntensity = 1.5; // Intensité émissive de la barre rouge (0.0 à 3.0)
+        let barreRougeSize = { width: 9, height: 0.325, depth: 8 }; // Taille barre rouge (largeur, hauteur, profondeur)
+        let barreRougeRoundness = 0.2; // Rayon des bords arrondis (0 = carré, max = height/2)
+        let barreRougeColor = '#CC0000'; // Couleur de la barre rouge
+        
+        // NOUVEAU : Paramètres d'ombres
+        let graphShadowSize = 35; // Taille de l'ombre du graphique (10 à 100)
+        let graphShadowDistance = -6.45; // Distance de l'ombre par rapport au graphique (-10 à 0)
+        let graphShadowPosition = { x: 0, z: 0 }; // NOUVEAU : Position X/Z de l'ombre du graphique
+        let barreShadowSize = 15; // Taille de l'ombre de la barre rouge (5 à 50)
+        let barreShadowDistance = -6.4; // Distance de l'ombre par rapport à la barre (-10 à 0)
+        let barreShadowPosition = { x: 0, z: 0 }; // NOUVEAU : Position X/Z de l'ombre de la barre
+        
+        let linesOffset = { x: 0, y: 0, z: 0 }; // NOUVEAU : Offset des lignes horizontales
+        let linesRightExtension = 0; // Extension des lignes vers la droite (0 à 20)
+        let fontSizeLabelsX = 100; // Taille police labels X (années)
+        let fontSizeLabelsY = 128; // Taille police labels Y (prix)
+        let labelsXSpacing = 1.0; // NOUVEAU : Espacement entre labels X (multiplicateur, 1.0 = normal)
+        
+        // NOUVEAU : Paramètres du dégradé
+        let gradientColors = {
+            top: '#ffa500',     // Orange vif en haut
+            bottom: '#ffb380'   // Orange clair en bas
+        };
+        let topCapOpacity = 1.0; // Conservé pour compatibilité settings
+        let topFaceColor = '#CCCCCC'; // NOUVEAU : Couleur de la face supérieure du graphique
+        let gradientOpacity = 1.0; // NOUVEAU : Opacité maximale du dégradé (0.0 à 1.0)
+        let gradientTransition = 0.5; // Position de transition entre couleurs (0 = tout bas, 1 = tout haut)
+        let opacityTransition = 0.5; // Position de transition de l'opacité (0 = tout bas, 1 = tout haut)
+        
+        // NOUVEAU : Largeur du graphique
+        let graphWidth = 100; // Largeur totale du graphique (20 à 200)
+        
+        const MOVE_STEP = 0.5; // Unités de déplacement par clic (réduit pour plus de précision)
+        const ANGLE_STEP = 1; // 1° de rotation par clic
+        const LIGHT_STEP = 1; // Pas de déplacement lumière
+        const INTENSITY_STEP = 0.1; // Pas d'intensité
+        const LABEL_STEP = 0.5; // Pas de déplacement labels
+        const BARRE_STEP = 0.5; // Pas de déplacement barre rouge
+        const SIZE_STEP = 0.5; // Pas de taille barre rouge
+
+        function moveCamera(direction) {
+            const step = MOVE_STEP;
+            switch(direction) {
+                case 'up': cameraOffset.y += step; break;
+                case 'down': cameraOffset.y -= step; break;
+                case 'left': cameraOffset.x -= step; break;
+                case 'right': cameraOffset.x += step; break;
+                case 'center': /* ne rien faire */ break;
+            }
+            updateCamera();
+        }
+
+        function rotateCamera(direction) {
+            const step = ANGLE_STEP;
+            switch(direction) {
+                case 'up': cameraAngle.vertical += step; break;
+                case 'down': cameraAngle.vertical -= step; break;
+                case 'left': cameraAngle.horizontal -= step; break;
+                case 'right': cameraAngle.horizontal += step; break;
+                case 'center': /* ne rien faire */ break;
+            }
+            updateCamera();
+        }
+
+        function moveGraph(direction) {
+            const step = MOVE_STEP;
+            switch(direction) {
+                case 'up': graphMeshOffset.y += step; break;
+                case 'down': graphMeshOffset.y -= step; break;
+                case 'left': graphMeshOffset.x -= step; break;
+                case 'right': graphMeshOffset.x += step; break;
+                case 'forward': graphMeshOffset.z += step; break;  // Rapprocher
+                case 'backward': graphMeshOffset.z -= step; break; // Éloigner
+                case 'center': graphMeshOffset = { x: 0, y: 0, z: 0 }; break;
+            }
+            updateGraphPosition();
+        }
+
+        function updateCamera() {
+            if (threeCamera) {
+                // Position
+                threeCamera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
+                
+                // Calculer le point lookAt avec les angles
+                const distance = 10;
+                const horizontalRad = (cameraAngle.horizontal * Math.PI) / 180;
+                const verticalRad = (cameraAngle.vertical * Math.PI) / 180;
+                
+                // Point de visée calculé avec les angles
+                const lookX = cameraOffset.x + Math.sin(horizontalRad) * distance * Math.cos(verticalRad);
+                const lookY = cameraOffset.y + Math.sin(verticalRad) * distance;
+                const lookZ = -Math.cos(horizontalRad) * distance * Math.cos(verticalRad);
+                
+                threeCamera.lookAt(lookX, lookY, lookZ);
+                
+                // Mise à jour affichage
+                document.getElementById('cameraInfo').textContent = 
+                    `X:${cameraOffset.x.toFixed(0)} Y:${cameraOffset.y.toFixed(0)} Z:${cameraOffset.z}`;
+                
+                document.getElementById('angleInfo').textContent = 
+                    `H:${cameraAngle.horizontal.toFixed(0)}° V:${cameraAngle.vertical.toFixed(0)}°`;
+                
+                // Log pour debug (uniquement toutes les 10 modifications)
+                if (!window.updateCount) window.updateCount = 0;
+                window.updateCount++;
+                if (window.updateCount % 10 === 0) {
+                    console.log('📹 Positions actuelles:', { cameraOffset, cameraAngle, graphOffset });
+                }
+            }
+        }
+
+        function updateGraphPosition() {
+            if (chartMesh) {
+                // Déplacer UNIQUEMENT le mesh du graphique, pas toute la scène
+                chartMesh.position.set(graphMeshOffset.x, graphMeshOffset.y, graphMeshOffset.z);
+                document.getElementById('graphInfo').textContent = 
+                    `X:${graphMeshOffset.x.toFixed(0)} Y:${graphMeshOffset.y.toFixed(0)} Z:${graphMeshOffset.z.toFixed(0)}`;
+                document.getElementById('graphZInfo').textContent = 
+                    `Z:${graphMeshOffset.z.toFixed(0)}`;
+                console.log('📊 Graph mesh position mise à jour:', graphMeshOffset);
+            } else {
+                console.log('⚠️ updateGraphPosition appelé mais chartMesh n\'existe pas encore');
+            }
+        }
+
+        function resetCamera() {
+            cameraOffset = { x: 0, y: 5, z: 32 };
+            updateCamera();
+        }
+
+        function resetCameraAngle() {
+            cameraAngle = { horizontal: 0, vertical: -20 };
+            updateCamera();
+        }
+
+        function resetGraph() {
+            graphMeshOffset = { x: 0, y: 0, z: 0 };
+            updateGraphPosition();
+        }
+
+        function rotateScene(direction) {
+            const step = 5; // 5 degrés par clic
+            switch(direction) {
+                case 'up': sceneRotation.x += step; break;
+                case 'down': sceneRotation.x -= step; break;
+                case 'left': sceneRotation.y -= step; break;
+                case 'right': sceneRotation.y += step; break;
+                case 'center': sceneRotation = { x: 0, y: 0 }; break;
+            }
+            updateSceneRotation();
+        }
+
+        function updateSceneRotation() {
+            if (threeScene) {
+                // Appliquer la rotation à toute la scène
+                threeScene.rotation.x = (sceneRotation.x * Math.PI) / 180;
+                threeScene.rotation.y = (sceneRotation.y * Math.PI) / 180;
+                
+                // Mettre à jour l'affichage
+                document.getElementById('sceneRotationInfo').textContent = 
+                    `🔄 X:${sceneRotation.x}° Y:${sceneRotation.y}°`;
+                
+                console.log('🔄 Rotation scène:', sceneRotation);
+            }
+        }
+
+        function moveLight(direction) {
+            const step = LIGHT_STEP;
+            switch(direction) {
+                case 'up': lightPosition.y += step; break;
+                case 'down': lightPosition.y -= step; break;
+                case 'left': lightPosition.x -= step; break;
+                case 'right': lightPosition.x += step; break;
+                case 'forward': lightPosition.z -= step; break; // Avant (se rapproche)
+                case 'backward': lightPosition.z += step; break; // Arrière (s'éloigne)
+                case 'center': /* ne rien faire */ break;
+            }
+            updateLight();
+        }
+
+        function adjustIntensity(direction) {
+            if (direction === 'up') {
+                lightIntensity = Math.min(2.0, lightIntensity + INTENSITY_STEP);
+            } else if (direction === 'down') {
+                lightIntensity = Math.max(0.0, lightIntensity - INTENSITY_STEP);
+            }
+            updateLight();
+        }
+
+        function adjustGraphWidth(action) {
+            if (action === 'increase') {
+                graphWidth = Math.min(200, graphWidth + 5); // Maximum 200
+            } else if (action === 'decrease') {
+                graphWidth = Math.max(20, graphWidth - 5); // Minimum 20
+            } else if (action === 'reset') {
+                graphWidth = 100; // Valeur par défaut
+            }
+            
+            // NOUVELLE APPROCHE : Modifier l'échelle X au lieu de tout recréer
+            if (chartMesh) {
+                const scaleX = graphWidth / 100; // 100 est la largeur par défaut
+                chartMesh.scale.x = scaleX;
+                
+                console.log('📏 Changement échelle X:', scaleX);
+            }
+            
+            // Mettre à jour l'affichage
+            document.getElementById('graphWidthInfo').textContent = `L:${graphWidth}`;
+            console.log('📏 Largeur graphique:', graphWidth);
+            
+            saveSettings();
+        }
+
+        function updateLight() {
+            if (directionalLight) {
+                directionalLight.position.set(lightPosition.x, lightPosition.y, lightPosition.z);
+                directionalLight.intensity = lightIntensity;
+                
+                // Mettre à jour les uniforms du shader du graphique
+                if (chartMesh && chartMesh.material && chartMesh.material.uniforms) {
+                    chartMesh.material.uniforms.directionalLightPosition.value.set(lightPosition.x, lightPosition.y, lightPosition.z);
+                    chartMesh.material.uniforms.directionalLightIntensity.value = lightIntensity;
+                }
+                
+                document.getElementById('lightInfo').textContent = 
+                    `X:${lightPosition.x.toFixed(0)} Y:${lightPosition.y.toFixed(0)} Z:${lightPosition.z}`;
+                
+                document.getElementById('lightZInfo').textContent = 
+                    `Z:${lightPosition.z.toFixed(0)}`;
+                
+                document.getElementById('intensityInfo').textContent = 
+                    `${(lightIntensity * 100).toFixed(0)}%`;
+            }
+        }
+
+        function resetLight() {
+            lightPosition = { x: 5, y: 10, z: 7 };
+            lightIntensity = 0.6;
+            updateLight();
+        }
+
+        function moveLabels_Annees(direction) {
+            // Contrôle SEULEMENT les labels X (années)
+            const step = LABEL_STEP;
+            switch(direction) {
+                case 'up': labelsXOffset.y += step; break;
+                case 'down': labelsXOffset.y -= step; break;
+                case 'left': labelsXOffset.x -= step; break;
+                case 'right': labelsXOffset.x += step; break;
+                case 'center': /* ne rien faire */ break;
+            }
+            updateLabels();
+        }
+
+        function moveLabels_Prix(direction) {
+            // Contrôle SEULEMENT les labels Y (prix)
+            const step = LABEL_STEP;
+            switch(direction) {
+                case 'up': labelsYOffset.y += step; break;
+                case 'down': labelsYOffset.y -= step; break;
+                case 'left': labelsYOffset.x -= step; break;
+                case 'right': labelsYOffset.x += step; break;
+                case 'center': /* ne rien faire */ break;
+            }
+            updateLabels();
+        }
+
+        function updateLabels() {
+            // Mettre à jour labels X (années) avec leur propre offset
+            yearLabelsSprites.forEach(sprite => {
+                sprite.position.x = sprite.userData.baseX + labelsXOffset.x;
+                sprite.position.y = sprite.userData.baseY + labelsXOffset.y;
+            });
+            
+            // Mettre à jour labels Y (prix) avec leur propre offset
+            priceLabelsSprites.forEach(sprite => {
+                sprite.position.x = sprite.userData.baseX + labelsYOffset.x;
+                sprite.position.y = sprite.userData.baseY + labelsYOffset.y;
+            });
+            
+            // Mettre à jour lignes horizontales (suivent les labels Y)
+            horizontalLines.forEach(line => {
+                line.position.y = line.userData.baseY + labelsYOffset.y;
+            });
+            
+            // Affichages séparés
+            document.getElementById('labelsXInfo').textContent = `X:${labelsXOffset.x.toFixed(1)} Y:${labelsXOffset.y.toFixed(1)}`;
+            document.getElementById('labelsYInfo').textContent = `X:${labelsYOffset.x.toFixed(1)} Y:${labelsYOffset.y.toFixed(1)}`;
+        }
+
+        function resetLabels() {
+            labelsXOffset = { x: 0, y: 0 };
+            labelsYOffset = { x: 0, y: 0 };
+            updateLabels();
+        }
+
+        // ========================================
+        // CONTRÔLE TAILLE POLICE LABELS
+        // ========================================
+
+        function adjustFontSizeX(direction) {
+            const STEP = 4; // Augmenter/diminuer de 4px
+            
+            if (direction === 'up') {
+                fontSizeLabelsX += STEP;
+            } else if (direction === 'down') {
+                fontSizeLabelsX = Math.max(20, fontSizeLabelsX - STEP); // Minimum 20px
+            }
+            
+            // Recréer les labels avec la nouvelle taille
+            regenerateLabels();
+            
+            // Mettre à jour l'affichage
+            document.getElementById('fontSizeXInfo').textContent = `${fontSizeLabelsX}px`;
+        }
+
+        function adjustFontSizeY(direction) {
+            const STEP = 4; // Augmenter/diminuer de 4px
+            
+            if (direction === 'up') {
+                fontSizeLabelsY += STEP;
+            } else if (direction === 'down') {
+                fontSizeLabelsY = Math.max(20, fontSizeLabelsY - STEP); // Minimum 20px
+            }
+            
+            // Recréer les labels avec la nouvelle taille
+            regenerateLabels();
+            
+            // Mettre à jour l'affichage
+            document.getElementById('fontSizeYInfo').textContent = `${fontSizeLabelsY}px`;
+        }
+
+        function regenerateLabels() {
+            // Supprimer tous les anciens labels
+            yearLabelsSprites.forEach(sprite => threeScene.remove(sprite));
+            priceLabelsSprites.forEach(sprite => threeScene.remove(sprite));
+            horizontalLines.forEach(line => threeScene.remove(line));
+            
+            yearLabelsSprites = [];
+            priceLabelsSprites = [];
+            horizontalLines = [];
+            
+            // Recréer les labels avec les nouvelles tailles
+            const mockData = generateMockData();
+            const minValue = Math.min(...mockData.map(d => d.value));
+            const maxValue = Math.max(...mockData.map(d => d.value));
+            const points = mockData.map((d, i) => ({
+                x: (i / (mockData.length - 1)) * 30 * labelsXSpacing - 15 * labelsXSpacing, // Multiplier par espacement
+                y: ((d.value - minValue) / (maxValue - minValue)) * 14 - 7,
+                z: 0
+            }));
+            
+            addAxisLabels(mockData, points, minValue, maxValue);
+            
+            // IMPORTANT : Réappliquer les offsets après régénération
+            updateLabels();
+        }
+        
+        function adjustLabelsXSpacing(direction) {
+            const STEP = 0.1; // Augmenter/diminuer de 10%
+            
+            if (direction === 'up') {
+                labelsXSpacing += STEP;
+            } else if (direction === 'down') {
+                labelsXSpacing = Math.max(0.1, labelsXSpacing - STEP); // Minimum 10%
+            }
+            
+            // Recréer les labels avec le nouveau espacement
+            regenerateLabels();
+            
+            // Mettre à jour l'affichage
+            document.getElementById('labelsXSpacingInfo').textContent = `${(labelsXSpacing * 100).toFixed(0)}%`;
+        }
+
+        // ========================================
+        // CONTRÔLE BARRE ROUGE
+        // ========================================
+
+        function moveBarreRouge(direction) {
+            const STEP = 0.5; // Pas de déplacement
+            
+            switch(direction) {
+                case 'up':
+                    barreRougeOffset.y += STEP;
+                    break;
+                case 'down':
+                    barreRougeOffset.y -= STEP;
+                    break;
+                case 'left':
+                    barreRougeOffset.x -= STEP;
+                    break;
+                case 'right':
+                    barreRougeOffset.x += STEP;
+                    break;
+                case 'forward':
+                    barreRougeOffset.z += STEP;
+                    // Pour Z, on modifie directement position.z sans passer par updateBarreRouge
+                    if (valuationCube) {
+                        valuationCube.position.z += STEP;
+                    }
+                    break;
+                case 'backward':
+                    barreRougeOffset.z -= STEP;
+                    // Pour Z, on modifie directement position.z sans passer par updateBarreRouge
+                    if (valuationCube) {
+                        valuationCube.position.z -= STEP;
+                    }
+                    break;
+                case 'center':
+                    barreRougeOffset = { x: 0, y: -7.5, z: 0 };
+                    break;
+            }
+            
+            updateBarreRouge();
+            
+            // Mettre à jour l'affichage
+            document.getElementById('barreRougeInfo').textContent = 
+                `X:${barreRougeOffset.x.toFixed(1)} Y:${barreRougeOffset.y.toFixed(1)} Z:${barreRougeOffset.z.toFixed(1)} 💡:${barreRougeIntensity.toFixed(1)}`;
+        }
+
+        function adjustBarreRougeIntensity(direction) {
+            const STEP = 0.1; // Pas d'ajustement de luminosité
+            
+            if (direction === 'increase') {
+                barreRougeIntensity = Math.min(3.0, barreRougeIntensity + STEP); // Max 3.0
+            } else if (direction === 'decrease') {
+                barreRougeIntensity = Math.max(0.3, barreRougeIntensity - STEP); // Min 0.3 (pour rester visible)
+            }
+            
+            console.log('💡 Ajustement intensité:', barreRougeIntensity.toFixed(1));
+            
+            // NOUVELLE APPROCHE : Modifier la couleur ET l'émissivité pour un effet visible
+            if (valuationCube) {
+                // Calculer une couleur plus claire/foncée selon l'intensité
+                const baseIntensity = barreRougeIntensity / 1.5; // Normaliser par rapport à 1.5 (valeur de base)
+                
+                // Rouge de base plus sombre (204, 0, 0) → variation selon intensité
+                const r = Math.min(255, 204 * baseIntensity);
+                const g = Math.min(80, 40 * (baseIntensity - 1)); // Légère clarté si intensité > 1.5
+                const b = Math.min(80, 40 * (baseIntensity - 1));
+                
+                // Convertir en hexadécimal
+                const newColor = (Math.floor(r) << 16) | (Math.floor(g) << 8) | Math.floor(b);
+                
+                // Émissif encore plus sombre
+                const emissiveR = Math.min(204, 153 * baseIntensity);
+                const emissiveColor = (Math.floor(emissiveR) << 16);
+                
+                // valuationCube est un Group, parcourir tous les meshes enfants
+                valuationCube.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material.color.setHex(newColor);
+                        child.material.emissive.setHex(emissiveColor);
+                        child.material.emissiveIntensity = Math.min(2.0, barreRougeIntensity);
+                        child.material.needsUpdate = true;
+                    }
+                });
+                
+                console.log('✅ Nouvelle couleur barre:', '#' + newColor.toString(16).padStart(6, '0'));
+            } else {
+                console.warn('⚠️ valuationCube non disponible');
+            }
+            
+            // Mettre à jour l'affichage
+            document.getElementById('barreRougeInfo').textContent = 
+                `X:${barreRougeOffset.x.toFixed(1)} Y:${barreRougeOffset.y.toFixed(1)} Z:${barreRougeOffset.z.toFixed(1)} 💡:${barreRougeIntensity.toFixed(1)}`;
+        }
+
+        function adjustBarreRougeSize(dimension, direction) {
+            const STEP_WIDTH = 0.5;
+            const STEP_HEIGHT = 0.025;
+            const STEP_DEPTH = 0.5;
+            const STEP_ROUNDNESS = 0.02;
+            
+            if (dimension === 'width') {
+                if (direction === 'increase') {
+                    barreRougeSize.width = Math.min(20, barreRougeSize.width + STEP_WIDTH);
+                } else {
+                    barreRougeSize.width = Math.max(2, barreRougeSize.width - STEP_WIDTH);
+                }
+            } else if (dimension === 'height') {
+                if (direction === 'increase') {
+                    barreRougeSize.height = Math.min(1.0, barreRougeSize.height + STEP_HEIGHT);
+                } else {
+                    barreRougeSize.height = Math.max(0.1, barreRougeSize.height - STEP_HEIGHT);
+                }
+            } else if (dimension === 'depth') {
+                if (direction === 'increase') {
+                    barreRougeSize.depth = Math.min(15, barreRougeSize.depth + STEP_DEPTH);
+                } else {
+                    barreRougeSize.depth = Math.max(2, barreRougeSize.depth - STEP_DEPTH);
+                }
+            } else if (dimension === 'roundness') {
+                const maxRoundness = Math.min(barreRougeSize.height, barreRougeSize.depth) / 2;
+                if (direction === 'increase') {
+                    barreRougeRoundness = Math.min(maxRoundness, barreRougeRoundness + STEP_ROUNDNESS);
+                } else {
+                    barreRougeRoundness = Math.max(0, barreRougeRoundness - STEP_ROUNDNESS);
+                }
+            }
+            
+            // Recréer la barre rouge avec la nouvelle taille
+            if (valuationCube && mockData) {
+                // Sauvegarder position actuelle
+                const currentPos = {
+                    x: valuationCube.position.x,
+                    y: valuationCube.position.y,
+                    z: valuationCube.position.z
+                };
+                
+                // Supprimer l'ancienne (c'est un Group maintenant)
+                threeScene.remove(valuationCube);
+                valuationCube.traverse(child => {
+                    if (child.geometry) child.geometry.dispose();
+                    if (child.material) child.material.dispose();
+                });
+                
+                // Recréer avec la fonction addValuationCube
+                const minValue = Math.min(...mockData.map(d => d.value)) - 2;
+                const maxValue = Math.max(...mockData.map(d => d.value)) + 2;
+                const range = maxValue - minValue;
+                
+                const ourValuation = 48.50;
+                const valuationY = ((ourValuation - minValue) / (maxValue - minValue)) * 14 - 7;
+                
+                // Créer le nouveau groupe
+                valuationCube = new THREE.Group();
+                
+                const material = new THREE.MeshStandardMaterial({
+                    color: barreRougeColor,
+                    metalness: 0.0,
+                    roughness: 1.0,
+                    emissive: new THREE.Color(barreRougeColor).multiplyScalar(0.6),
+                    emissiveIntensity: barreRougeIntensity
+                });
+                
+                if (barreRougeRoundness <= 0.01) {
+                    const geometry = new THREE.BoxGeometry(
+                        barreRougeSize.width,
+                        barreRougeSize.height,
+                        barreRougeSize.depth
+                    );
+                    const mesh = new THREE.Mesh(geometry, material);
+                    valuationCube.add(mesh);
+                } else {
+                    const maxRadius = Math.min(barreRougeSize.height, barreRougeSize.depth) / 2;
+                    const radius = Math.min(barreRougeRoundness, maxRadius);
+                    
+                    const bodyGeometry = new THREE.BoxGeometry(
+                        barreRougeSize.width - 2 * radius,
+                        barreRougeSize.height,
+                        barreRougeSize.depth
+                    );
+                    const bodyMesh = new THREE.Mesh(bodyGeometry, material);
+                    valuationCube.add(bodyMesh);
+                    
+                    const cylinderGeometry = new THREE.CylinderGeometry(
+                        radius, radius, barreRougeSize.height, 16
+                    );
+                    cylinderGeometry.rotateZ(Math.PI / 2);
+                    
+                    const leftCylinder = new THREE.Mesh(cylinderGeometry, material.clone());
+                    leftCylinder.position.x = -(barreRougeSize.width - 2 * radius) / 2;
+                    valuationCube.add(leftCylinder);
+                    
+                    const rightCylinder = new THREE.Mesh(cylinderGeometry.clone(), material.clone());
+                    rightCylinder.position.x = (barreRougeSize.width - 2 * radius) / 2;
+                    valuationCube.add(rightCylinder);
+                }
+                
+                valuationCube.position.set(currentPos.x, currentPos.y, currentPos.z);
+                valuationCube.scale.set(1, 1, 1); // Pas d'animation lors de l'ajustement
+                barreConstructionProgress = 1; // Animation déjà terminée
+                threeScene.add(valuationCube);
+            }
+            
+            // Mettre à jour l'affichage
+            document.getElementById('barreRougeSizeInfo').textContent = 
+                `L:${barreRougeSize.width.toFixed(1)} H:${barreRougeSize.height.toFixed(2)} P:${barreRougeSize.depth.toFixed(1)}`;
+            document.getElementById('barreRougeRoundInfo').textContent = 
+                `⬭:${barreRougeRoundness.toFixed(2)}`;
+            
+            saveSettings();
+        }
+
+        function resetBarreRouge() {
+            barreRougeOffset = { x: 0, y: -7.5, z: 0 };
+            barreRougeIntensity = 1.5;
+            barreRougeSize = { width: 9, height: 0.325, depth: 8 };
+            barreRougeRoundness = 0.2;
+            
+            // Recréer la barre avec la taille par défaut
+            adjustBarreRougeSize('width', 'reset'); // Force la recréation
+            
+            updateBarreRouge();
+            if (valuationCube) {
+                valuationCube.position.z = 1;
+            }
+            document.getElementById('barreRougeInfo').textContent = 'X:0.0 Y:-7.5 Z:0.0 💡:1.5';
+            document.getElementById('barreRougeSizeInfo').textContent = 'L:9.0 H:0.33 P:8.0';
+            document.getElementById('barreRougeRoundInfo').textContent = '⬭:0.20';
+        }
+
+        function updateBarreRouge() {
+            if (valuationCube) {
+                valuationCube.position.x = barreRougeOffset.x;
+                valuationCube.position.y = barreRougeOffset.y;
+                valuationCube.position.z = 1 + barreRougeOffset.z; // Position Z de base (1) + offset
+                console.log('🔴 Barre rouge mise à jour:', { offset: barreRougeOffset, positionZ: valuationCube.position.z });
+            }
+        }
+
+        // ========================================
+        // FONCTIONS CONTRÔLE OMBRES
+        // ========================================
+
+        function moveGraphShadow(direction) {
+            const STEP = 0.5;
+            
+            switch(direction) {
+                case 'up':
+                    graphShadowPosition.z -= STEP; // Z négatif = vers le haut
+                    break;
+                case 'down':
+                    graphShadowPosition.z += STEP; // Z positif = vers le bas
+                    break;
+                case 'left':
+                    graphShadowPosition.x -= STEP;
+                    break;
+                case 'right':
+                    graphShadowPosition.x += STEP;
+                    break;
+                case 'center':
+                    graphShadowPosition = { x: 0, z: 0 };
+                    break;
+            }
+            
+            updateGraphShadow();
+            document.getElementById('graphShadowInfo').textContent = 
+                `X:${graphShadowPosition.x.toFixed(1)} Z:${graphShadowPosition.z.toFixed(1)} 📏:${graphShadowSize} 📍:${graphShadowDistance.toFixed(1)}`;
+        }
+
+        function moveBarreShadow(direction) {
+            const STEP = 0.5;
+            
+            switch(direction) {
+                case 'up':
+                    barreShadowPosition.z -= STEP;
+                    break;
+                case 'down':
+                    barreShadowPosition.z += STEP;
+                    break;
+                case 'left':
+                    barreShadowPosition.x -= STEP;
+                    break;
+                case 'right':
+                    barreShadowPosition.x += STEP;
+                    break;
+                case 'center':
+                    barreShadowPosition = { x: 0, z: 0 };
+                    break;
+            }
+            
+            updateBarreShadow();
+            document.getElementById('barreShadowInfo').textContent = 
+                `X:${barreShadowPosition.x.toFixed(1)} Z:${barreShadowPosition.z.toFixed(1)} 📏:${barreShadowSize} 📍:${barreShadowDistance.toFixed(1)}`;
+        }
+
+        function adjustGraphShadow(type, direction) {
+            const SIZE_STEP = 5;
+            const DISTANCE_STEP = 0.5;
+            
+            if (type === 'size') {
+                if (direction === 'increase') {
+                    graphShadowSize = Math.min(100, graphShadowSize + SIZE_STEP);
+                } else {
+                    graphShadowSize = Math.max(10, graphShadowSize - SIZE_STEP);
+                }
+            } else if (type === 'distance') {
+                if (direction === 'increase') {
+                    graphShadowDistance = Math.min(0, graphShadowDistance + DISTANCE_STEP);
+                } else {
+                    graphShadowDistance = Math.max(-10, graphShadowDistance - DISTANCE_STEP);
+                }
+            }
+            
+            updateGraphShadow();
+            document.getElementById('graphShadowInfo').textContent = 
+                `X:${graphShadowPosition.x.toFixed(1)} Z:${graphShadowPosition.z.toFixed(1)} 📏:${graphShadowSize} 📍:${graphShadowDistance.toFixed(1)}`;
+        }
+
+        function adjustBarreShadow(type, direction) {
+            const SIZE_STEP = 2;
+            const DISTANCE_STEP = 0.5;
+            
+            if (type === 'size') {
+                if (direction === 'increase') {
+                    barreShadowSize = Math.min(50, barreShadowSize + SIZE_STEP);
+                } else {
+                    barreShadowSize = Math.max(5, barreShadowSize - SIZE_STEP);
+                }
+            } else if (type === 'distance') {
+                if (direction === 'increase') {
+                    barreShadowDistance = Math.min(0, barreShadowDistance + DISTANCE_STEP);
+                } else {
+                    barreShadowDistance = Math.max(-10, barreShadowDistance - DISTANCE_STEP);
+                }
+            }
+            
+            updateBarreShadow();
+            document.getElementById('barreShadowInfo').textContent = 
+                `X:${barreShadowPosition.x.toFixed(1)} Z:${barreShadowPosition.z.toFixed(1)} 📏:${barreShadowSize} 📍:${barreShadowDistance.toFixed(1)}`;
+        }
+
+        function updateGraphShadow() {
+            if (graphShadowMesh) {
+                graphShadowMesh.scale.set(graphShadowSize / 35, graphShadowSize / 35, 1);
+                graphShadowMesh.position.x = graphShadowPosition.x;
+                graphShadowMesh.position.y = graphShadowDistance;
+                graphShadowMesh.position.z = graphShadowPosition.z;
+            }
+        }
+
+        function updateBarreShadow() {
+            if (barreShadowMesh) {
+                barreShadowMesh.scale.set(barreShadowSize / 15, barreShadowSize / 15, 1);
+                barreShadowMesh.position.x = barreShadowPosition.x;
+                barreShadowMesh.position.y = barreShadowDistance;
+                barreShadowMesh.position.z = barreShadowPosition.z;
+            }
+        }
+
+        function resetGraphShadow() {
+            graphShadowSize = 35;
+            graphShadowDistance = -6.45;
+            graphShadowPosition = { x: 0, z: 0 };
+            updateGraphShadow();
+            document.getElementById('graphShadowInfo').textContent = 'X:0 Z:0 📏:35 📍:-6.5';
+        }
+
+        function resetBarreShadow() {
+            barreShadowSize = 15;
+            barreShadowDistance = -6.4;
+            barreShadowPosition = { x: 0, z: 0 };
+            updateBarreShadow();
+            document.getElementById('barreShadowInfo').textContent = 'X:0 Z:0 📏:15 📍:-6.4';
+        }
+
+        // ========================================
+        // CONTRÔLE LIGNES HORIZONTALES
+        // ========================================
+
+        function moveLinesHorizontales(direction) {
+            const STEP = 0.5; // Pas de déplacement
+            
+            switch(direction) {
+                case 'up':
+                    linesOffset.y += STEP;
+                    break;
+                case 'down':
+                    linesOffset.y -= STEP;
+                    break;
+                case 'left':
+                    linesOffset.x -= STEP;
+                    break;
+                case 'right':
+                    linesOffset.x += STEP;
+                    break;
+                case 'forward':
+                    linesOffset.z += STEP;
+                    break;
+                case 'backward':
+                    linesOffset.z -= STEP;
+                    break;
+                case 'center':
+                    linesOffset = { x: 0, y: 0, z: 0 };
+                    break;
+            }
+            
+            updateLinesHorizontales();
+            
+            // Mettre à jour l'affichage
+            document.getElementById('linesInfo').textContent = 
+                `X:${linesOffset.x.toFixed(1)} Y:${linesOffset.y.toFixed(1)} Z:${linesOffset.z.toFixed(1)}`;
+        }
+
+        function resetLinesHorizontales() {
+            linesOffset = { x: 0, y: 0, z: 0 };
+            linesRightExtension = 0;
+            updateLinesHorizontales();
+            regenerateLines();
+            document.getElementById('linesInfo').textContent = 'X:0.0 Y:0.0 Z:0.0';
+            document.getElementById('linesExtensionInfo').textContent = 'Ext: 0';
+        }
+
+        function updateLinesHorizontales() {
+            horizontalLines.forEach(line => {
+                const baseX = line.userData.baseX || 0;
+                const baseY = line.userData.baseY;
+                const baseZ = line.userData.baseZ || -5;
+                line.position.set(baseX + linesOffset.x, baseY + linesOffset.y, baseZ + linesOffset.z);
+            });
+            console.log('📏 Lignes horizontales déplacées:', linesOffset);
+        }
+        
+        function adjustLinesExtension(direction) {
+            const STEP = 2; // Pas de 2 unités
+            if (direction === 'up') {
+                linesRightExtension = Math.min(20, linesRightExtension + STEP);
+            } else {
+                linesRightExtension = Math.max(0, linesRightExtension - STEP);
+            }
+            
+            // Régénérer les lignes avec la nouvelle longueur
+            regenerateLines();
+            
+            // Mettre à jour l'affichage
+            document.getElementById('linesExtensionInfo').textContent = `Ext: ${linesRightExtension}`;
+            
+            console.log('📐 Extension lignes:', linesRightExtension);
+        }
+        
+        function regenerateLines() {
+            // Supprimer les anciennes lignes
+            horizontalLines.forEach(line => {
+                threeScene.remove(line);
+                if (line.geometry) line.geometry.dispose();
+                if (line.material) line.material.dispose();
+            });
+            horizontalLines = [];
+            
+            // Recréer les lignes avec la nouvelle extension
+            // On doit récupérer les positions Y des labels
+            if (priceLabelsSprites.length > 0) {
+                priceLabelsSprites.forEach(sprite => {
+                    const y = sprite.position.y;
+                    
+                    const lineLength = 40 + linesRightExtension;
+                    const lineGeometry = new THREE.CylinderGeometry(0.064, 0.064, lineLength, 16);
+                    
+                    const lineVertexShader = `
+                        varying vec3 vPosition;
+                        void main() {
+                            vPosition = position;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `;
+                    
+                    const lineFragmentShader = `
+                        uniform float lineLength;
+                        varying vec3 vPosition;
+                        void main() {
+                            // Pour un cylindre tourné de 90°, Y devient l'axe horizontal
+                            // Inverser pour fade à droite : normalizedX de -1 (gauche) à +1 (droite)
+                            float normalizedX = vPosition.y / (lineLength / 2.0);
+                            float opacity = 0.5;
+                            
+                            // Fade sur la partie droite (normalizedX positif)
+                            if (normalizedX > 0.4) {
+                                float fadeProgress = (normalizedX - 0.4) / 0.6;
+                                opacity = mix(0.5, 0.0, fadeProgress);
+                            }
+                            
+                            gl_FragColor = vec4(1.0, 1.0, 1.0, opacity);
+                        }
+                    `;
+                    
+                    const lineMaterial = new THREE.ShaderMaterial({
+                        vertexShader: lineVertexShader,
+                        fragmentShader: lineFragmentShader,
+                        transparent: true,
+                        depthTest: true,
+                        depthWrite: false,
+                        uniforms: {
+                            lineLength: { value: lineLength }
+                        }
+                    });
+                    
+                    const line = new THREE.Mesh(lineGeometry, lineMaterial);
+                    line.rotation.z = Math.PI / 2;
+                    const baseX = linesOffset.x;
+                    const baseY = y;
+                    const baseZ = -5 + linesOffset.z;
+                    line.position.set(baseX, baseY, baseZ);
+                    line.renderOrder = -10;
+                    line.userData = { baseX: 0, baseY: y, baseZ: -5 };
+                    horizontalLines.push(line);
+                    threeScene.add(line);
+                });
+            }
+        }
+
+        // ========================================
+        // CONTRÔLE DU DÉGRADÉ
+        // ========================================
+
+        function adjustGradientHeight(direction) {
+            const STEP = 0.05;
+            if (direction === 'up') {
+                gradientHeight = Math.min(1.0, gradientHeight + STEP);
+            } else {
+                gradientHeight = Math.max(0.0, gradientHeight - STEP);
+            }
+            updateGradient();
+            document.getElementById('gradientPercentage').textContent = `${Math.round(gradientHeight * 100)}%`;
+            document.getElementById('gradientSlider').value = Math.round(gradientHeight * 100);
+        }
+
+        function adjustCapOpacityFromSlider() {
+            const slider = document.getElementById('capOpacitySlider');
+            const percentage = parseInt(slider.value);
+            topCapOpacity = percentage / 100;
+            document.getElementById('capOpacityPercentage').textContent = `${percentage}%`;
+            
+            // Mettre à jour l'opacité du chapeau
+            if (topCapMesh && topCapMesh.material) {
+                topCapMesh.material.opacity = topCapOpacity;
+                topCapMesh.material.needsUpdate = true;
+            }
+        }
+
+        function adjustGradientOpacityFromSlider() {
+            const slider = document.getElementById('gradientOpacitySlider');
+            const percentage = parseInt(slider.value);
+            gradientOpacity = percentage / 100;
+            document.getElementById('gradientOpacityPercentage').textContent = `${percentage}%`;
+            
+            // Mettre à jour l'opacité du dégradé (shader uniform)
+            if (chartMesh && chartMesh.material && chartMesh.material.uniforms) {
+                chartMesh.material.uniforms.uGradientOpacity.value = gradientOpacity;
+            }
+        }
+
+        function adjustGradientTransition() {
+            const slider = document.getElementById('transitionSlider');
+            const percentage = parseInt(slider.value);
+            gradientTransition = percentage / 100;
+            document.getElementById('transitionPercent').textContent = `${percentage}%`;
+            console.log('🎚️ Transition ajustée:', gradientTransition, 'Couleurs:', gradientColors);
+            updateGradient();
+        }
+        
+        function adjustOpacityTransition() {
+            const slider = document.getElementById('opacityTransitionSlider');
+            const percentage = parseInt(slider.value);
+            opacityTransition = percentage / 100;
+            document.getElementById('opacityTransitionPercent').textContent = `${percentage}%`;
+            
+            // Mettre à jour l'uniform du shader
+            if (chartMesh && chartMesh.material && chartMesh.material.uniforms) {
+                chartMesh.material.uniforms.uOpacityTransition.value = opacityTransition;
+            }
+            
+            console.log('💧 Opacité transition ajustée:', opacityTransition);
+        }
+
+        function updateGradientColors() {
+            // Utiliser les variables directement (pas les inputs DOM)
+            updateGradient();
+        }
+
+        function syncColorFromPicker(position) {
+            const picker = position === 'top' 
+                ? document.getElementById('colorTopPicker')
+                : document.getElementById('colorBottomPicker');
+            
+            if (position === 'top') {
+                gradientColors.top = picker.value.toUpperCase();
+            } else {
+                gradientColors.bottom = picker.value.toUpperCase();
+            }
+            updateGradient();
+        }
+
+        
+        function syncTopFaceColorFromPicker() {
+            const picker = document.getElementById('topFaceColorPicker');
+            topFaceColor = picker.value.toUpperCase();
+            updateTopFaceColor();
+            saveSettings();
+        }
+        
+        function syncBarreColorFromPicker() {
+            const picker = document.getElementById('barreColorPicker');
+            barreRougeColor = picker.value.toUpperCase();
+            updateBarreColor();
+        }
+        
+        function updateBarreColor() {
+            if (valuationCube) {
+                const color = new THREE.Color(barreRougeColor);
+                // valuationCube est un Group, parcourir tous les meshes enfants
+                valuationCube.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material.color.copy(color);
+                        // Ajuster aussi l'émissif pour garder la cohérence
+                        child.material.emissive.copy(color).multiplyScalar(0.6);
+                        child.material.needsUpdate = true;
+                    }
+                });
+                console.log('🔴 Couleur barre rouge mise à jour:', barreRougeColor);
+            }
+        }
+        
+        function updateTopFaceColor() {
+            if (topCapMesh && topCapMesh.material) {
+                topCapMesh.material.color.setStyle(topFaceColor);
+                topCapMesh.material.needsUpdate = true;
+                console.log('🎨 Couleur face haute mise à jour:', topFaceColor);
+            }
+        }
+
+        function resetGradient() {
+            topCapOpacity = 1.0;
+            gradientOpacity = 1.0;
+            gradientColors = { top: '#FFA500', bottom: '#FFB380' };
+            document.getElementById('colorTopPicker').value = '#ffa500';
+            document.getElementById('colorBottomPicker').value = '#ffb380';
+            document.getElementById('capOpacitySlider').value = 100;
+            document.getElementById('capOpacityPercentage').textContent = '100%';
+            document.getElementById('gradientOpacitySlider').value = 100;
+            document.getElementById('gradientOpacityPercentage').textContent = '100%';
+            document.getElementById('transitionSlider').value = 50;
+            document.getElementById('transitionPercent').textContent = '50%';
+            gradientTransition = 0.5;
+            document.getElementById('opacityTransitionSlider').value = 50;
+            document.getElementById('opacityTransitionPercent').textContent = '50%';
+            opacityTransition = 0.5;
+            topFaceColor = '#CCCCCC';
+            document.getElementById('topFaceColorPicker').value = '#cccccc';
+            barreRougeColor = '#CC0000';
+            document.getElementById('barreColorPicker').value = '#cc0000';
+            
+            // Mettre à jour la couleur de la face haute
+            updateTopFaceColor();
+            
+            if (valuationCube && valuationCube.material) {
+                updateBarreColor();
+            }
+            
+            if (chartMesh && chartMesh.material && chartMesh.material.uniforms) {
+                chartMesh.material.uniforms.uGradientOpacity.value = gradientOpacity;
+                chartMesh.material.uniforms.uOpacityTransition.value = opacityTransition;
+            }
+            
+            updateGradient();
+        }
+
+        function updateGradient() {
+            if (!chartMesh) {
+                console.log('❌ updateGradient: chartMesh n\'existe pas encore');
+                return;
+            }
+            
+            console.log('🔄 updateGradient START:', { 
+                gradientColors, 
+                gradientTransition, 
+                hasGeometry: !!chartMesh.geometry,
+                hasPositions: !!chartMesh.geometry?.getAttribute('position')
+            });
+            
+            // Recréer le matériau avec les nouvelles couleurs et hauteur
+            const geometry = chartMesh.geometry;
+            const positions = geometry.getAttribute('position');
+            
+            if (!positions) {
+                console.log('❌ Pas d\'attribut position dans la géométrie');
+                return;
+            }
+            
+            const colorsArray = [];
+            
+            const colorTop = new THREE.Color(gradientColors.top);
+            const colorBottom = new THREE.Color(gradientColors.bottom);
+            
+            console.log('🎨 Couleurs THREE.js:', { 
+                top: colorTop, 
+                bottom: colorBottom 
+            });
+            
+            for (let i = 0; i < positions.count; i++) {
+                const y = positions.getY(i);
+                const normalizedY = Math.max(0, Math.min(1, (y + 7) / 14));
+                
+                let color;
+                // Utiliser gradientTransition pour créer une zone de transition
+                const transitionWidth = 0.2; // Largeur de la zone de transition
+                const transitionStart = Math.max(0, gradientTransition - transitionWidth / 2);
+                const transitionEnd = Math.min(1, gradientTransition + transitionWidth / 2);
+                
+                if (normalizedY <= transitionStart) {
+                    // En dessous de la transition : couleur du bas
+                    color = colorBottom.clone();
+                } else if (normalizedY >= transitionEnd) {
+                    // Au-dessus de la transition : couleur du haut
+                    color = colorTop.clone();
+                } else {
+                    // Dans la zone de transition : interpoler
+                    const t = (normalizedY - transitionStart) / (transitionEnd - transitionStart);
+                    color = new THREE.Color().lerpColors(colorBottom, colorTop, t);
+                }
+                
+                colorsArray.push(color.r, color.g, color.b);
+            }
+            
+            console.log('📊 Nombre de couleurs générées:', colorsArray.length / 3);
+            
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colorsArray, 3));
+            geometry.attributes.color.needsUpdate = true;
+            
+            // CRITIQUE : Forcer le rafraîchissement du material
+            if (chartMesh && chartMesh.material) {
+                chartMesh.material.needsUpdate = true;
+                chartMesh.geometry.attributes.color.needsUpdate = true;
+            }
+            
+            console.log('✅ updateGradient TERMINÉ');
+        }
+
+        // ========================================
+        // SAUVEGARDE PARAMÈTRES
+        // ========================================
+
+        function applySettings() {
+            // Préparer les paramètres
+            const settings = {
+                cameraOffset: { ...cameraOffset },
+                cameraAngle: { ...cameraAngle },
+                graphOffset: { ...graphOffset },  // Gardé pour compatibilité
+                graphMeshOffset: { ...graphMeshOffset },  // NOUVEAU
+                lightPosition: { ...lightPosition },
+                lightIntensity: lightIntensity,
+                labelsXOffset: { ...labelsXOffset },
+                labelsYOffset: { ...labelsYOffset },
+                fontSizeLabelsX: fontSizeLabelsX,  // NOUVEAU : taille police X
+                fontSizeLabelsY: fontSizeLabelsY,  // NOUVEAU : taille police Y
+                labelsXSpacing: labelsXSpacing,    // NOUVEAU : espacement labels X
+                barreRougeOffset: { ...barreRougeOffset },
+                barreRougeIntensity: barreRougeIntensity, // NOUVEAU : intensité lumière barre
+                barreRougeSize: { ...barreRougeSize },
+                barreRougeRoundness: barreRougeRoundness, // NOUVEAU : arrondi des bords
+                graphShadowSize: graphShadowSize, // NOUVEAU : taille ombre graph
+                graphShadowDistance: graphShadowDistance, // NOUVEAU : distance ombre graph
+                graphShadowPosition: { ...graphShadowPosition }, // NOUVEAU : position X/Z ombre graph
+                barreShadowSize: barreShadowSize, // NOUVEAU : taille ombre barre
+                barreShadowDistance: barreShadowDistance, // NOUVEAU : distance ombre barre
+                barreShadowPosition: { ...barreShadowPosition }, // NOUVEAU : position X/Z ombre barre
+                linesOffset: { ...linesOffset },  // NOUVEAU
+                linesRightExtension: linesRightExtension,  // NOUVEAU : extension lignes droite
+                gradientColors: { ...gradientColors },  // NOUVEAU : couleurs dégradé
+                topFaceColor: topFaceColor,  // NOUVEAU : couleur face haute
+                barreRougeColor: barreRougeColor,  // NOUVEAU : couleur barre rouge
+                topCapOpacity: topCapOpacity,  // CONSERVÉ pour compatibilité
+                gradientOpacity: gradientOpacity,  // NOUVEAU : opacité dégradé
+                gradientTransition: gradientTransition,  // NOUVEAU : position transition gradient
+                opacityTransition: opacityTransition,  // NOUVEAU : position transition opacité
+                graphWidth: graphWidth,  // NOUVEAU : largeur du graphique
+                sceneRotation: { ...sceneRotation }  // NOUVEAU : rotation de la scène
+            };
+            
+            const btn = document.getElementById('applyButton');
+            btn.textContent = '⏳ Sauvegarde...';
+            
+            console.log('💾 SAUVEGARDE - Couleurs:', gradientColors, 'Transition:', gradientTransition);
+            
+            try {
+                // 1. Sauvegarder localement (fallback)
+                localStorage.setItem('graphSettings_VORANGE', JSON.stringify(settings));
+                console.log('✅ Sauvegarde locale OK:', settings);
+                
+                // 2. Sauvegarder sur le serveur via HTTP POST
+                fetch(`${WS_URL.replace('wss:', 'https:')}/api/graph`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(settings)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('✅ Sauvegarde serveur OK:', data);
+                    
+                    // Animation visuelle du bouton
+                    btn.classList.add('saved');
+                    btn.textContent = '✓ Synchronisé !';
+                    
+                    setTimeout(() => {
+                        btn.classList.remove('saved');
+                        btn.textContent = '✓ Appliquer';
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('⚠️ Erreur sauvegarde serveur:', error);
+                    // Fallback sur localStorage uniquement
+                    btn.classList.add('saved');
+                    btn.textContent = '✓ Local seulement';
+                    
+                    setTimeout(() => {
+                        btn.classList.remove('saved');
+                        btn.textContent = '✓ Appliquer';
+                    }, 2000);
+                });
+                
+                // 3. Broadcaster via WebSocket si connecté
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'graph_settings',
+                        settings: settings
+                    }));
+                    console.log('📡 Settings broadcast via WebSocket');
+                }
+                
+            } catch(e) {
+                console.error('❌ Erreur sauvegarde:', e);
+                btn.textContent = '❌ Erreur';
+                setTimeout(() => {
+                    btn.textContent = '✓ Appliquer';
+                }, 2000);
+            }
+        }
+
+        function loadSettings() {
+            console.log('📥 Chargement des paramètres...');
+            
+            return new Promise((resolve) => {
+                // Tentative de chargement depuis le serveur
+                fetch(`${WS_URL.replace('wss:', 'https:')}/api/graph`)
+                    .then(response => response.json())
+                    .then(settings => {
+                        console.log('✅ Paramètres chargés depuis le serveur:', settings);
+                        applyLoadedSettings(settings);
+                        resolve();
+                    })
+                    .catch(error => {
+                        console.warn('⚠️ Serveur non disponible, chargement localStorage:', error);
+                        // Fallback sur localStorage
+                        const saved = localStorage.getItem('graphSettings_VORANGE');
+                        if (saved) {
+                            try {
+                                const settings = JSON.parse(saved);
+                                console.log('✅ Paramètres chargés depuis localStorage:', settings);
+                                applyLoadedSettings(settings);
+                            } catch(e) {
+                                console.log('⚠️ Erreur chargement localStorage:', e);
+                                useDefaultSettings();
+                            }
+                        } else {
+                            useDefaultSettings();
+                        }
+                        resolve();
+                    });
+            });
+        }
+
+        function applyLoadedSettings(settings) {
+            if (settings.cameraOffset) cameraOffset = settings.cameraOffset;
+            if (settings.cameraAngle) cameraAngle = settings.cameraAngle;
+            if (settings.graphOffset) graphOffset = settings.graphOffset;
+            if (settings.graphMeshOffset) graphMeshOffset = settings.graphMeshOffset;
+            if (settings.lightPosition) lightPosition = settings.lightPosition;
+            if (settings.lightIntensity !== undefined) lightIntensity = settings.lightIntensity;
+            
+            // Compatibilité v12 : si labelsOffset existe, le dupliquer
+            if (settings.labelsOffset) {
+                labelsXOffset = { ...settings.labelsOffset };
+                labelsYOffset = { ...settings.labelsOffset };
+            }
+            // v13+ : charger les offsets séparés si présents
+            if (settings.labelsXOffset) labelsXOffset = settings.labelsXOffset;
+            if (settings.labelsYOffset) labelsYOffset = settings.labelsYOffset;
+            if (settings.fontSizeLabelsX !== undefined) fontSizeLabelsX = settings.fontSizeLabelsX;  // NOUVEAU
+            if (settings.fontSizeLabelsY !== undefined) fontSizeLabelsY = settings.fontSizeLabelsY;  // NOUVEAU
+            if (settings.labelsXSpacing !== undefined) labelsXSpacing = settings.labelsXSpacing;    // NOUVEAU
+            if (settings.barreRougeOffset) barreRougeOffset = settings.barreRougeOffset;
+            if (settings.barreRougeIntensity !== undefined) barreRougeIntensity = settings.barreRougeIntensity; // NOUVEAU
+            if (settings.barreRougeSize) barreRougeSize = settings.barreRougeSize;
+            if (settings.barreRougeRoundness !== undefined) barreRougeRoundness = settings.barreRougeRoundness;
+            if (settings.graphShadowSize !== undefined) graphShadowSize = settings.graphShadowSize; // NOUVEAU
+            if (settings.graphShadowDistance !== undefined) graphShadowDistance = settings.graphShadowDistance; // NOUVEAU
+            if (settings.graphShadowPosition) graphShadowPosition = settings.graphShadowPosition; // NOUVEAU
+            if (settings.barreShadowSize !== undefined) barreShadowSize = settings.barreShadowSize; // NOUVEAU
+            if (settings.barreShadowDistance !== undefined) barreShadowDistance = settings.barreShadowDistance; // NOUVEAU
+            if (settings.barreShadowPosition) barreShadowPosition = settings.barreShadowPosition; // NOUVEAU
+            if (settings.linesOffset) linesOffset = settings.linesOffset;  // NOUVEAU
+            if (settings.linesRightExtension !== undefined) {
+                linesRightExtension = settings.linesRightExtension;
+                document.getElementById('linesExtensionInfo').textContent = `Ext: ${linesRightExtension}`;
+            }
+            if (settings.topCapOpacity !== undefined) {
+                topCapOpacity = settings.topCapOpacity;
+                document.getElementById('capOpacitySlider').value = Math.round(topCapOpacity * 100);
+                document.getElementById('capOpacityPercentage').textContent = `${Math.round(topCapOpacity * 100)}%`;
+            }
+            if (settings.gradientOpacity !== undefined) {
+                gradientOpacity = settings.gradientOpacity;
+                document.getElementById('gradientOpacitySlider').value = Math.round(gradientOpacity * 100);
+                document.getElementById('gradientOpacityPercentage').textContent = `${Math.round(gradientOpacity * 100)}%`;
+            }
+            if (settings.gradientTransition !== undefined) {
+                gradientTransition = settings.gradientTransition;
+                document.getElementById('transitionSlider').value = Math.round(gradientTransition * 100);
+                document.getElementById('transitionPercent').textContent = `${Math.round(gradientTransition * 100)}%`;
+                console.log('✅ Transition chargée:', gradientTransition);
+            }
+            if (settings.opacityTransition !== undefined) {
+                opacityTransition = settings.opacityTransition;
+                document.getElementById('opacityTransitionSlider').value = Math.round(opacityTransition * 100);
+                document.getElementById('opacityTransitionPercent').textContent = `${Math.round(opacityTransition * 100)}%`;
+                console.log('✅ Opacité transition chargée:', opacityTransition);
+            }
+            if (settings.graphWidth !== undefined) {
+                graphWidth = settings.graphWidth;
+                document.getElementById('graphWidthInfo').textContent = `L:${graphWidth}`;
+                console.log('✅ Largeur graphique chargée:', graphWidth);
+            }
+            if (settings.sceneRotation) {
+                sceneRotation = settings.sceneRotation;
+                console.log('✅ Rotation scène chargée:', sceneRotation);
+            }
+            if (settings.gradientColors) {
+                gradientColors = { ...settings.gradientColors }; // Clone pour éviter les références
+                // Mettre à jour les color pickers
+                document.getElementById('colorTopPicker').value = gradientColors.top.toLowerCase();
+                document.getElementById('colorBottomPicker').value = gradientColors.bottom.toLowerCase();
+                console.log('✅ Couleurs chargées:', gradientColors);
+            }
+            // Charger d'abord capColor (ancien nom) pour compatibilité, puis topFaceColor (nouveau nom)
+            if (settings.capColor) {
+                topFaceColor = settings.capColor;
+                document.getElementById('topFaceColorPicker').value = topFaceColor.toLowerCase();
+                console.log('✅ Couleur face haute chargée (ancien nom capColor):', topFaceColor);
+            }
+            if (settings.topFaceColor) {
+                topFaceColor = settings.topFaceColor;
+                document.getElementById('topFaceColorPicker').value = topFaceColor.toLowerCase();
+                console.log('✅ Couleur face haute chargée:', topFaceColor);
+            }
+            if (settings.barreRougeColor) {
+                barreRougeColor = settings.barreRougeColor;
+                document.getElementById('barreColorPicker').value = barreRougeColor.toLowerCase();
+                console.log('✅ Couleur barre rouge chargée:', barreRougeColor);
+            }
+            
+            console.log('📹 Camera:', cameraOffset, cameraAngle);
+            console.log('📊 Graph old:', graphOffset);
+            console.log('📊 Graph mesh:', graphMeshOffset);
+            console.log('💡 Light:', lightPosition, lightIntensity);
+            console.log('🏷️ Labels X:', labelsXOffset);
+            console.log('🏷️ Labels Y:', labelsYOffset);
+            console.log('🅰️ Font X:', fontSizeLabelsX);  // NOUVEAU
+            console.log('🅰️ Font Y:', fontSizeLabelsY);  // NOUVEAU
+            console.log('🔴 Barre:', barreRougeOffset, barreRougeSize);
+            console.log('📏 Lignes:', linesOffset);
+            console.log('🎨 Dégradé:', { transition: gradientTransition, colors: gradientColors });
+            
+            // Mettre à jour tous les affichages dans l'interface
+            updateAllDisplays();
+            // Appliquer les couleurs du dégradé chargées
+            setTimeout(() => {
+                console.log('🎨 Application gradient au chargement:', { gradientColors, gradientTransition, opacityTransition });
+                updateGradient();
+                if (chartMesh && chartMesh.material && chartMesh.material.uniforms) {
+                    chartMesh.material.uniforms.uGradientOpacity.value = gradientOpacity;
+                    chartMesh.material.uniforms.uOpacityTransition.value = opacityTransition;
+                }
+                if (topCapMesh && topCapMesh.material) {
+                    topCapMesh.material.opacity = topCapOpacity;
+                    topCapMesh.material.color.setStyle(capColor); // Appliquer la couleur
+                    topCapMesh.material.needsUpdate = true;
+                }
+                if (valuationCube && valuationCube.material) {
+                    updateBarreColor(); // Appliquer la couleur de la barre
+                }
+            }, 500);
+        }
+        
+        function updateFontSizeDisplays() {
+            const fontXElement = document.getElementById('fontSizeXInfo');
+            const fontYElement = document.getElementById('fontSizeYInfo');
+            if (fontXElement) fontXElement.textContent = `${fontSizeLabelsX}px`;
+            if (fontYElement) fontYElement.textContent = `${fontSizeLabelsY}px`;
+        }
+        
+        function updateLabelsScale() {
+            console.log('🔄 updateLabelsScale appelé avec:', { fontSizeLabelsX, fontSizeLabelsY });
+            console.log('📊 Nombre de sprites:', { X: yearLabelsSprites.length, Y: priceLabelsSprites.length });
+            
+            // Mettre à jour la scale des labels X
+            const scaleFactorX = fontSizeLabelsX / 100;
+            yearLabelsSprites.forEach((sprite, i) => {
+                sprite.scale.set(5 * scaleFactorX, 2.5 * scaleFactorX, 1);
+                if (i === 0) console.log('🏷️ Label X[0] scale après update:', sprite.scale.x, sprite.scale.y);
+            });
+            
+            // Mettre à jour la scale des labels Y
+            const scaleFactorY = fontSizeLabelsY / 128;
+            priceLabelsSprites.forEach((sprite, i) => {
+                sprite.scale.set(4.5 * scaleFactorY, 2.2 * scaleFactorY, 1);
+                if (i === 0) console.log('🏷️ Label Y[0] scale après update:', sprite.scale.x, sprite.scale.y);
+            });
+            
+            console.log('🔄 Scale labels mise à jour:', { 
+                X: `${(5 * scaleFactorX).toFixed(2)}×${(2.5 * scaleFactorX).toFixed(2)}`,
+                Y: `${(4.5 * scaleFactorY).toFixed(2)}×${(2.2 * scaleFactorY).toFixed(2)}`
+            });
+        }
+
+        function updateAllDisplays() {
+            // Mettre à jour tous les affichages de position
+            const labelsXInfo = document.getElementById('labelsXInfo');
+            const labelsYInfo = document.getElementById('labelsYInfo');
+            const barreRougeInfo = document.getElementById('barreRougeInfo');
+            const linesInfo = document.getElementById('linesInfo');
+            const labelsXSpacingInfo = document.getElementById('labelsXSpacingInfo');
+            const graphShadowInfo = document.getElementById('graphShadowInfo');
+            const barreShadowInfo = document.getElementById('barreShadowInfo');
+            
+            if (labelsXInfo) labelsXInfo.textContent = `X:${labelsXOffset.x.toFixed(1)} Y:${labelsXOffset.y.toFixed(1)}`;
+            if (labelsYInfo) labelsYInfo.textContent = `X:${labelsYOffset.x.toFixed(1)} Y:${labelsYOffset.y.toFixed(1)}`;
+            if (barreRougeInfo) barreRougeInfo.textContent = `X:${barreRougeOffset.x.toFixed(1)} Y:${barreRougeOffset.y.toFixed(1)} Z:${barreRougeOffset.z.toFixed(1)} 💡:${barreRougeIntensity.toFixed(1)}`;
+            if (linesInfo) linesInfo.textContent = `X:${linesOffset.x.toFixed(1)} Y:${linesOffset.y.toFixed(1)} Z:${linesOffset.z.toFixed(1)}`;
+            if (labelsXSpacingInfo) labelsXSpacingInfo.textContent = `${(labelsXSpacing * 100).toFixed(0)}%`;
+            
+            // NOUVEAU : Mettre à jour les affichages des ombres
+            if (graphShadowInfo) graphShadowInfo.textContent = `X:${graphShadowPosition.x.toFixed(1)} Z:${graphShadowPosition.z.toFixed(1)} 📏:${graphShadowSize} 📍:${graphShadowDistance.toFixed(1)}`;
+            if (barreShadowInfo) barreShadowInfo.textContent = `X:${barreShadowPosition.x.toFixed(1)} Z:${barreShadowPosition.z.toFixed(1)} 📏:${barreShadowSize} 📍:${barreShadowDistance.toFixed(1)}`;
+            
+            // Mettre à jour les tailles de police
+            updateFontSizeDisplays();
+        }
+
+        function useDefaultSettings() {
+            console.log('ℹ️ Aucune position sauvegardée, utilisation des valeurs par défaut');
+            console.log('📹 Camera défaut:', cameraOffset, cameraAngle);
+            console.log('📊 Graph défaut:', graphOffset);
+            console.log('💡 Light défaut:', lightPosition, lightIntensity);
+            console.log('🏷️ Labels X défaut:', labelsXOffset);
+            console.log('🏷️ Labels Y défaut:', labelsYOffset);
+            console.log('🔴 Barre défaut:', barreRougeOffset, barreRougeSize);
+        }
+
+        function reloadAnimation() {
+            console.log('🔄 Rechargement v13...');
+            
+            // SAUVEGARDER les positions avant de recharger
+            const savedCameraOffset = { ...cameraOffset };
+            const savedCameraAngle = { ...cameraAngle };
+            const savedGraphOffset = { ...graphOffset };
+            const savedLightPosition = { ...lightPosition };
+            const savedLightIntensity = lightIntensity;
+            const savedLabelsXOffset = { ...labelsXOffset };
+            const savedLabelsYOffset = { ...labelsYOffset };
+            const savedBarreRougeOffset = { ...barreRougeOffset }; // NOUVEAU
+            const savedBarreRougeSize = { ...barreRougeSize }; // NOUVEAU : profondeur Z
+            
+            console.log('💾 Positions sauvegardées pour reload:', {
+                cameraOffset: savedCameraOffset,
+                cameraAngle: savedCameraAngle,
+                graphOffset: savedGraphOffset
+            });
+            
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            
+            if (threeScene) {
+                while(threeScene.children.length > 0) { 
+                    threeScene.remove(threeScene.children[0]); 
+                }
+            }
+            
+            if (threeRenderer) {
+                threeRenderer.dispose();
+            }
+            
+            threeScene = null;
+            threeCamera = null;
+            threeRenderer = null;
+            chartCurve = null;
+            constructionProgress = 0;
+            rotationStartTime = null;
+            animationFrameId = null;
+            valuationCube = null;
+            valuationStartTime = null;
+            chartMesh = null;
+            directionalLight = null;
+            yearLabelsSprites = [];
+            priceLabelsSprites = [];
+            horizontalLines = [];
+            
+            // RESTAURER les positions
+            cameraOffset = savedCameraOffset;
+            cameraAngle = savedCameraAngle;
+            graphOffset = savedGraphOffset;
+            lightPosition = savedLightPosition;
+            lightIntensity = savedLightIntensity;
+            labelsXOffset = savedLabelsXOffset;
+            labelsYOffset = savedLabelsYOffset;
+            barreRougeOffset = savedBarreRougeOffset; // NOUVEAU
+            barreRougeSize = savedBarreRougeSize; // NOUVEAU : profondeur Z
+            
+            console.log('📥 Positions restaurées:', { cameraOffset, cameraAngle, graphOffset });
+            
+            mockData = generateMockData();
+            setTimeout(() => {
+                initThreeJS();
+                // Appliquer les positions APRÈS que la scène soit créée
+                setTimeout(() => {
+                    updateCamera();
+                    updateGraphPosition();
+                    updateLight();
+                    updateLabels();
+                    updateBarreRouge(); // NOUVEAU : appliquer position barre rouge
+                    console.log('🎯 Positions restaurées après reload');
+                }, 150);
+            }, 100);
+        }
+        
+        function clearStorageAndReload() {
+            if (confirm('⚠️ Ceci va EFFACER tous les réglages sauvegardés et revenir aux valeurs par défaut. Continuer ?')) {
+                localStorage.removeItem('graphSettings_VORANGE');
+                console.log('🗑️ localStorage effacé - rechargement...');
+                location.reload();
+            }
+        }
+
+        function generateMockData() {
+            // DONNÉES détaillées - 800 points (environ 3 ans trading days)
+            const data = [];
+            const numPoints = 800;
+            const startDate = new Date('2022-01-01');
+            
+            // Valeur de départ
+            let currentValue = 40.0;
+            
+            // Paramètres pour simulation réaliste
+            const dailyVolatility = 0.015; // 1.5% volatilité quotidienne moyenne
+            const trendStrength = 0.0002; // Tendance haussière légère
+            
+            let dayCount = 0;
+            let currentDate = new Date(startDate);
+            
+            while (dayCount < numPoints) {
+                // Sauter weekends (samedi = 6, dimanche = 0)
+                const dayOfWeek = currentDate.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    // Variation aléatoire (marche aléatoire avec tendance)
+                    const randomChange = (Math.random() - 0.48) * dailyVolatility; // Légèrement biaisé vers le haut
+                    const trend = trendStrength;
+                    currentValue = currentValue * (1 + randomChange + trend);
+                    
+                    // Ajouter des variations plus marquées occasionnellement (2% de chance)
+                    if (Math.random() < 0.02) {
+                        const bigMove = (Math.random() - 0.5) * 0.05; // ±5% mouvement
+                        currentValue = currentValue * (1 + bigMove);
+                    }
+                    
+                    // Limiter la plage pour éviter les valeurs extrêmes
+                    currentValue = Math.max(20, Math.min(65, currentValue));
+                    
+                    // Format date MM/DD
+                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(currentDate.getDate()).padStart(2, '0');
+                    const label = `${month}/${day}`;
+                    
+                    data.push({
+                        label: label,
+                        value: parseFloat(currentValue.toFixed(2)),
+                        date: new Date(currentDate)
+                    });
+                    
+                    dayCount++;
+                }
+                
+                // Passer au jour suivant
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            console.log('📊 Données générées:', data.length, 'points de', data[0].label, 'à', data[data.length - 1].label);
+            console.log('📈 Plage:', Math.min(...data.map(d => d.value)).toFixed(2), '→', Math.max(...data.map(d => d.value)).toFixed(2));
+            
+            return data;
+        }
+
+        function createSmoothCurve(points) {
+            // Avec 2500 points, on fait une interpolation légère (2x) pour lisser un peu
+            // tout en gardant les détails de la courbe daily
+            const smoothPoints = [];
+            
+            for (let i = 0; i < points.length - 1; i++) {
+                const p0 = points[i];
+                const p1 = points[i + 1];
+                
+                // Point actuel
+                smoothPoints.push(p0);
+                
+                // 1 point interpolé entre chaque paire
+                const mid = new THREE.Vector3(
+                    (p0.x + p1.x) / 2,
+                    (p0.y + p1.y) / 2,
+                    (p0.z + p1.z) / 2
+                );
+                smoothPoints.push(mid);
+            }
+            
+            // Dernier point
+            smoothPoints.push(points[points.length - 1]);
+            
+            console.log('🎨 Courbe:', points.length, '→', smoothPoints.length, 'points (interpolation 2x)');
+            return smoothPoints;
+        }
+
+        function initThreeJS() {
+            const canvas = document.getElementById('threeCanvas');
+            const container = canvas.parentElement;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            console.log('📐 Canvas:', width, 'x', height);
+
+            threeScene = new THREE.Scene();
+            threeScene.background = null;
+
+            // Camera - Contrôlée par les offsets et angles
+            threeCamera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
+            threeCamera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
+            
+            // Calculer lookAt avec les angles
+            const distance = 10;
+            const horizontalRad = (cameraAngle.horizontal * Math.PI) / 180;
+            const verticalRad = (cameraAngle.vertical * Math.PI) / 180;
+            
+            const lookX = cameraOffset.x + Math.sin(horizontalRad) * distance * Math.cos(verticalRad);
+            const lookY = cameraOffset.y + Math.sin(verticalRad) * distance;
+            const lookZ = -Math.cos(horizontalRad) * distance * Math.cos(verticalRad);
+            
+            threeCamera.lookAt(lookX, lookY, lookZ);
+
+            // Renderer ultra HD
+            threeRenderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                alpha: true,
+                antialias: true,
+                powerPreference: 'high-performance'
+            });
+            threeRenderer.setSize(width, height);
+            threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 3)); // Réduire à 3
+            // Système d'ombres désactivé car nous utilisons des ombres personnalisées avec gradient radial
+            threeRenderer.shadowMap.enabled = false;
+            
+            // IMPORTANT : Forcer le tri des objets transparents pour éviter la disparition
+            threeRenderer.sortObjects = true;
+            
+            // IMPORTANT : Activer tone mapping pour permettre des valeurs émissives > 1.0
+            threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+            threeRenderer.toneMappingExposure = 1.0;
+
+            // Lumière
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Plus de lumière ambiante
+            threeScene.add(ambientLight);
+
+            directionalLight = new THREE.DirectionalLight(0xffffff, lightIntensity);
+            directionalLight.position.set(lightPosition.x, lightPosition.y, lightPosition.z);
+            // castShadow désactivé car nous utilisons des ombres personnalisées
+            directionalLight.castShadow = false;
+            threeScene.add(directionalLight);
+
+            createChart3D();
+            
+            // NOUVEAU : Ombre "stand" style Keynote (double couche)
+            // Créer une texture canvas avec effet combiné : point central + dégradé
+            const shadowCanvas = document.createElement('canvas');
+            shadowCanvas.width = 512;
+            shadowCanvas.height = 512;
+            const shadowCtx = shadowCanvas.getContext('2d');
+            
+            // Couche 1 : Point central intense (effet stand/socle)
+            const centerGradient = shadowCtx.createRadialGradient(256, 256, 0, 256, 256, 80);
+            centerGradient.addColorStop(0, 'rgba(0, 0, 0, 0.9)'); // Noir intense au centre
+            centerGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            shadowCtx.fillStyle = centerGradient;
+            shadowCtx.fillRect(0, 0, 512, 512);
+            
+            // Couche 2 : Ombre portée plus large et douce
+            const outerGradient = shadowCtx.createRadialGradient(256, 256, 80, 256, 256, 256);
+            outerGradient.addColorStop(0, 'rgba(0, 0, 0, 0.5)');
+            outerGradient.addColorStop(0.6, 'rgba(0, 0, 0, 0.2)');
+            outerGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            shadowCtx.fillStyle = outerGradient;
+            shadowCtx.fillRect(0, 0, 512, 512);
+            
+            const shadowTexture = new THREE.CanvasTexture(shadowCanvas);
+            const curvedShadowGeometry = new THREE.PlaneGeometry(graphShadowSize, graphShadowSize);
+            const curvedShadowMaterial = new THREE.MeshBasicMaterial({
+                map: shadowTexture,
+                transparent: true,
+                opacity: 0.6, // Augmenter pour effet plus visible
+                depthWrite: false
+            });
+            graphShadowMesh = new THREE.Mesh(curvedShadowGeometry, curvedShadowMaterial);
+            graphShadowMesh.rotation.x = -Math.PI / 2;
+            graphShadowMesh.position.set(0, graphShadowDistance, 0);
+            graphShadowMesh.renderOrder = -1;
+            threeScene.add(graphShadowMesh);
+
+            animate();
+        }
+
+        function createChart3D() {
+            const data = mockData;
+            const rawPoints = [];
+
+            const minValue = Math.min(...data.map(d => d.value)) - 2;
+            const maxValue = Math.max(...data.map(d => d.value)) + 2;
+            const range = maxValue - minValue;
+
+            data.forEach((point, i) => {
+                // LARGEUR DYNAMIQUE : Utiliser la variable graphWidth
+                const totalWidth = graphWidth;
+                const spacing = totalWidth / (data.length - 1);
+                const x = (i - data.length / 2) * spacing;
+                
+                // Hauteur : 14 unités (de -7 à +7)
+                const y = ((point.value - minValue) / range) * 14 - 7;
+                const z = 0;
+                rawPoints.push(new THREE.Vector3(x, y, z));
+            });
+
+            const smoothPoints = createSmoothCurve(rawPoints);
+            chartCurve = smoothPoints;
+
+            // Dégradé vertical - ORANGE uniquement (pas de blanc/gris)
+            const colors = [];
+            const colorTop = new THREE.Color(0xffa500);    // Orange vif en haut
+            const colorMiddle = new THREE.Color(0xff8c42); // Orange moyen
+            const colorBottom = new THREE.Color(0xff7020); // Orange clair en bas (pour transparence)
+
+            for (let i = 0; i < smoothPoints.length; i++) {
+                const t = (smoothPoints[i].y + 5) / 10;
+                const color = new THREE.Color().lerpColors(colorBottom, colorTop, t);
+                colors.push(color.r, color.g, color.b);
+            }
+
+            // Forme 3D volumétrique
+            const shape = new THREE.Shape();
+            shape.moveTo(smoothPoints[0].x, smoothPoints[0].y);
+            
+            for (let i = 1; i < smoothPoints.length; i++) {
+                shape.lineTo(smoothPoints[i].x, smoothPoints[i].y);
+            }
+            
+            shape.lineTo(smoothPoints[smoothPoints.length - 1].x, -7); // -7
+            shape.lineTo(smoothPoints[0].x, -7);
+            shape.lineTo(smoothPoints[0].x, smoothPoints[0].y);
+
+            const extrudeSettings = {
+                depth: 4,
+                bevelEnabled: false
+            };
+
+            const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            
+            // IMPORTANT : Calculer les normales pour l'éclairage
+            geometry.computeVertexNormals();
+            
+            // Attribuer les couleurs - DÉGRADÉ pour tout le volume
+            const positions = geometry.getAttribute('position');
+            const colorsArray = [];
+            
+            for (let i = 0; i < positions.count; i++) {
+                const y = positions.getY(i);
+                const t = Math.max(0, Math.min(1, (y + 7) / 14)); // Normaliser Y entre 0 et 1
+                
+                let color;
+                if (t > 0.5) {
+                    // Haut : interpoler de orange moyen vers orange vif
+                    const localT = (t - 0.5) * 2;
+                    color = new THREE.Color().lerpColors(colorMiddle, colorTop, localT);
+                } else {
+                    // Bas : orange clair vers orange moyen
+                    const localT = t * 2;
+                    const colorBottomLight = new THREE.Color(0xffb380);
+                    color = new THREE.Color().lerpColors(colorBottomLight, colorMiddle, localT);
+                }
+                
+                colorsArray.push(color.r, color.g, color.b);
+            }
+            
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colorsArray, 3));
+
+            // SOLUTION : Créer un shader personnalisé pour transparence par vertex + éclairage
+            const vertexShader = `
+                varying vec3 vColor;
+                varying float vOpacity;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                varying float vOriginalY; // Y original avant transformation
+                uniform float uGradientOpacity;
+                uniform float uOpacityTransition; // Position de transition opacité (0.0 à 1.0)
+                
+                void main() {
+                    vColor = color;
+                    vNormal = normalize(normalMatrix * normal);
+                    vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+                    vOriginalY = position.y; // Stocker Y original
+                    
+                    // Calculer opacité basée sur Y ORIGINAL (avant rotation/transformation)
+                    float normalizedY = (vOriginalY + 7.0) / 14.0;
+                    
+                    if (normalizedY > uOpacityTransition) {
+                        // Au-dessus de la transition : TOUJOURS complètement opaque
+                        vOpacity = 1.0;
+                    } else {
+                        // En dessous de la transition : dégradé transparent
+                        float lowerHalf = normalizedY / uOpacityTransition; // Remapper 0-transition vers 0-1
+                        
+                        // Calculer l'opacité de base (de 0.02 à 1.0)
+                        float baseOpacity = mix(0.02, 1.0, pow(lowerHalf, 0.3));
+                        
+                        // Interpoler entre baseOpacity et 1.0 selon uGradientOpacity
+                        // À 100% (1.0) : tout opaque (vOpacity = 1.0)
+                        // À 0% (0.0) : transparence maximale (vOpacity = baseOpacity avec 0.02 au minimum)
+                        vOpacity = mix(baseOpacity, 1.0, uGradientOpacity);
+                    }
+                    
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `;
+            
+            const fragmentShader = `
+                varying vec3 vColor;
+                varying float vOpacity;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                
+                uniform vec3 directionalLightPosition;
+                uniform vec3 directionalLightColor;
+                uniform float directionalLightIntensity;
+                uniform vec3 ambientLightColor;
+                uniform float ambientLightIntensity;
+                
+                void main() {
+                    // Lumière ambiante
+                    vec3 ambient = ambientLightColor * ambientLightIntensity;
+                    
+                    // Lumière directionnelle (diffuse)
+                    vec3 lightDirection = normalize(directionalLightPosition - vPosition);
+                    float diff = max(dot(vNormal, lightDirection), 0.0);
+                    vec3 diffuse = directionalLightColor * directionalLightIntensity * diff;
+                    
+                    // Combiner couleur avec éclairage
+                    vec3 finalColor = vColor * (ambient + diffuse);
+                    
+                    gl_FragColor = vec4(finalColor, vOpacity);
+                }
+            `;
+
+            const material = new THREE.ShaderMaterial({
+                vertexShader: vertexShader,
+                fragmentShader: fragmentShader,
+                vertexColors: true,
+                transparent: false, // TEMPORAIRE: Test sans transparence
+                side: THREE.DoubleSide,
+                depthWrite: true, // Réactiver avec transparent=false
+                depthTest: true,
+                uniforms: {
+                    uGradientOpacity: { value: gradientOpacity },
+                    uOpacityTransition: { value: opacityTransition },
+                    directionalLightPosition: { value: new THREE.Vector3(lightPosition.x, lightPosition.y, lightPosition.z) },
+                    directionalLightColor: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
+                    directionalLightIntensity: { value: lightIntensity },
+                    ambientLightColor: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
+                    ambientLightIntensity: { value: 0.7 }
+                }
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            
+            // Animation : commencer écrasé (scale.y = 0.01)
+            mesh.scale.y = 0.01;
+            mesh.position.y = -7; // -7
+            
+            // IMPORTANT : Forcer l'ordre de rendu pour éviter disparition avec transparence
+            mesh.renderOrder = 1; // Rendre après les objets opaques
+            
+            chartMesh = mesh;
+            threeScene.add(mesh);
+
+            addAxisLabels(data, rawPoints, minValue, maxValue);
+            addValuationCube(minValue, maxValue, range);
+        }
+
+        function addAxisLabels(data, points, minValue, maxValue) {
+            console.log('🏷️ Création labels avec fontSizeX:', fontSizeLabelsX, 'fontSizeY:', fontSizeLabelsY);
+            
+            // Canvas SÉPARÉ pour labels X (années)
+            const canvasX = document.createElement('canvas');
+            canvasX.width = 1024;
+            canvasX.height = 512;
+            const contextX = canvasX.getContext('2d');
+            
+            // Canvas SÉPARÉ pour labels Y (prix)
+            const canvasY = document.createElement('canvas');
+            canvasY.width = 1024;
+            canvasY.height = 512;
+            const contextY = canvasY.getContext('2d');
+            
+            // Labels X (années) - Afficher seulement tous les ~250 jours (environ 1 an)
+            const labelInterval = Math.floor(data.length / 10); // 10 labels au total
+            console.log('🏷️ Affichage de labels X tous les', labelInterval, 'jours (', Math.ceil(data.length / labelInterval), 'labels au total)');
+            
+            data.forEach((point, i) => {
+                // N'afficher que certains labels (espacés régulièrement)
+                if (i % labelInterval !== 0 && i !== data.length - 1) {
+                    return; // Sauter ce label
+                }
+                
+                contextX.clearRect(0, 0, 1024, 512);
+                contextX.fillStyle = 'white';
+                contextX.font = `bold ${fontSizeLabelsX}px Arial`;
+                contextX.textAlign = 'center';
+                contextX.textBaseline = 'middle';
+                contextX.shadowColor = 'rgba(0, 0, 0, 1)';
+                contextX.shadowBlur = 20;
+                contextX.shadowOffsetX = 4;
+                contextX.shadowOffsetY = 4;
+                
+                // Format: "MM/AA" avec l'année si disponible
+                let labelText = point.label;
+                if (point.date) {
+                    const month = String(point.date.getMonth() + 1).padStart(2, '0');
+                    const year = String(point.date.getFullYear()).slice(-2);
+                    labelText = `${month}/${year}`;
+                }
+                
+                contextX.fillText(labelText, 512, 256);
+                
+                const texture = new THREE.CanvasTexture(canvasX);
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                const material = new THREE.SpriteMaterial({ 
+                    map: texture,
+                    depthTest: false,
+                    depthWrite: false
+                });
+                const sprite = new THREE.Sprite(material);
+                
+                // Scale proportionnelle à la taille de police (base: 100px = scale 5×2.5)
+                const scaleFactor = fontSizeLabelsX / 100;
+                sprite.position.set(points[i].x, -8.5, 6);
+                sprite.scale.set(5 * scaleFactor, 2.5 * scaleFactor, 1);
+                sprite.renderOrder = 1000;
+                
+                if (yearLabelsSprites.length === 0) console.log(`🏷️ Label X scale: ${(5 * scaleFactor).toFixed(2)}×${(2.5 * scaleFactor).toFixed(2)} (fontSizeX=${fontSizeLabelsX})`);
+                
+                sprite.userData = { baseX: points[i].x, baseY: -8.5 };
+                yearLabelsSprites.push(sprite);
+                threeScene.add(sprite);
+            });
+
+            // Labels Y (prix) - Format simple : 0, 20, 40, 60...
+            const range = maxValue - minValue;
+            
+            // Calculer les limites du graphique (hauteur = 14 unités, de -7 à +7)
+            const graphHeightUnits = 14;
+            const graphYMin = -7;
+            const graphYMax = 7;
+            
+            console.log('🏷️ Création de 11 labels Y (prix)');
+            console.log(`   Range données: ${minValue.toFixed(1)} à ${maxValue.toFixed(1)}`);
+            console.log(`   Range graphique Y: ${graphYMin} à ${graphYMax} (${graphHeightUnits} unités)`);
+            
+            // Créer 11 lignes espacées uniformément sur toute la hauteur du graphique
+            for (let i = 0; i <= 10; i++) {
+                // Position Y dans l'espace 3D (de -7 à +7)
+                const y = graphYMin + (i / 10) * graphHeightUnits;
+                
+                // Prix correspondant à cette position Y
+                const price = minValue + ((y - graphYMin) / graphHeightUnits) * range;
+                
+                console.log(`📊 Label ${i}: Prix=${Math.round(price)}, Y=${y.toFixed(2)}`);
+                
+                // IMPORTANT : Créer un NOUVEAU canvas pour CHAQUE label
+                const canvasPrice = document.createElement('canvas');
+                canvasPrice.width = 1024;
+                canvasPrice.height = 512;
+                const contextPrice = canvasPrice.getContext('2d');
+                
+                contextPrice.fillStyle = 'white';
+                contextPrice.font = `bold ${fontSizeLabelsY}px Arial`;
+                contextPrice.textAlign = 'right';
+                contextPrice.textBaseline = 'middle';
+                contextPrice.shadowColor = 'rgba(0, 0, 0, 1)';
+                contextPrice.shadowBlur = 15;
+                contextPrice.shadowOffsetX = 3;
+                contextPrice.shadowOffsetY = 3;
+                contextPrice.fillText(Math.round(price).toString(), 900, 256); // Format: "40", "60", etc.
+                
+                const texture = new THREE.CanvasTexture(canvasPrice);
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                const material = new THREE.SpriteMaterial({ 
+                    map: texture,
+                    depthTest: true,   // ACTIVER pour respecter la profondeur (être derrière le graph)
+                    depthWrite: false
+                });
+                const sprite = new THREE.Sprite(material);
+                
+                // Scale proportionnelle à la taille de police (base: 128px = scale 4.5×2.2)
+                const scaleFactor = fontSizeLabelsY / 128;
+                sprite.position.set(-12, y, -6); // z=-6 pour être BIEN DERRIÈRE le graph (graph à z=0-4) et lignes (z=-5)
+                sprite.scale.set(4.5 * scaleFactor, 2.2 * scaleFactor, 1);
+                sprite.renderOrder = -10;  // Ordre bas pour être rendu avant le graphique (derrière)
+                
+                sprite.userData = { baseX: -12, baseY: y }; // Stocker position de base
+                priceLabelsSprites.push(sprite);
+                threeScene.add(sprite);
+                
+                console.log(`✅ Label ${i} ajouté: "${Math.round(price)}" à position Y=${y.toFixed(2)}, Z=-3`);
+
+                // Lignes horizontales en arrière-plan avec dégradé de disparition
+                const lineLength = 40 + linesRightExtension; // Longueur variable
+                const lineGeometry = new THREE.CylinderGeometry(0.064, 0.064, lineLength, 16);
+                
+                // Shader pour dégradé de disparition à droite
+                const lineVertexShader = `
+                    varying vec3 vPosition;
+                    void main() {
+                        vPosition = position;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `;
+                
+                const lineFragmentShader = `
+                    uniform float lineLength;
+                    varying vec3 vPosition;
+                    void main() {
+                        // Pour un cylindre tourné de 90°, Y devient l'axe horizontal
+                        // normalizedX : -1 = gauche, +1 = droite
+                        float normalizedX = vPosition.y / (lineLength / 2.0);
+                        
+                        // Opacité : pleine à gauche (-1), dégradé vers la droite (+1)
+                        float opacity = 0.5; // Opacité de base
+                        
+                        // CORRECTION : Fade à DROITE (normalizedX positif)
+                        if (normalizedX > -0.2) {
+                            // Fade de -0.2 à 1.0 (vers la droite)
+                            float fadeProgress = (normalizedX + 0.2) / 1.2;
+                            opacity = mix(0.5, 0.0, fadeProgress);
+                        }
+                        
+                        gl_FragColor = vec4(1.0, 1.0, 1.0, opacity);
+                    }
+                `;
+                
+                const lineMaterial = new THREE.ShaderMaterial({
+                    vertexShader: lineVertexShader,
+                    fragmentShader: lineFragmentShader,
+                    transparent: true,
+                    depthTest: true,
+                    depthWrite: false,
+                    uniforms: {
+                        lineLength: { value: lineLength }
+                    }
+                });
+                
+                const line = new THREE.Mesh(lineGeometry, lineMaterial);
+                line.rotation.z = Math.PI / 2;
+                line.position.set(0, y, -5);  // Z=-5 pour être BIEN derrière le graph (Z=0-4)
+                line.renderOrder = -10;  // Ordre très bas = arrière-plan
+                line.userData = { baseX: 0, baseY: y, baseZ: -5 }; // Stocker position de base complète
+                horizontalLines.push(line); // Stocker pour déplacement synchronisé
+                threeScene.add(line);
+            }
+            
+            // Appliquer les offsets sauvegardés pour les lignes horizontales
+            updateLinesHorizontales();
+        }
+
+        function addValuationCube(minValue, maxValue, range) {
+            const ourValuation = 48.50;
+            const valuationY = ((ourValuation - minValue) / (maxValue - minValue)) * 14 - 7; // 14 et -7
+            
+            // Créer un groupe pour la barre avec bords arrondis
+            valuationCube = new THREE.Group();
+            
+            const material = new THREE.MeshStandardMaterial({
+                color: barreRougeColor,
+                metalness: 0.0,
+                roughness: 1.0,
+                emissive: new THREE.Color(barreRougeColor).multiplyScalar(0.6),
+                emissiveIntensity: barreRougeIntensity
+            });
+            
+            // Si roundness = 0, juste une box simple
+            if (barreRougeRoundness <= 0.01) {
+                const geometry = new THREE.BoxGeometry(
+                    barreRougeSize.width,
+                    barreRougeSize.height,
+                    barreRougeSize.depth
+                );
+                const mesh = new THREE.Mesh(geometry, material);
+                valuationCube.add(mesh);
+            } else {
+                // Limiter le rayon d'arrondi à la moitié de la plus petite dimension
+                const maxRadius = Math.min(barreRougeSize.height, barreRougeSize.depth) / 2;
+                const radius = Math.min(barreRougeRoundness, maxRadius);
+                
+                // Corps central (box)
+                const bodyGeometry = new THREE.BoxGeometry(
+                    barreRougeSize.width - 2 * radius,  // Largeur réduite
+                    barreRougeSize.height,
+                    barreRougeSize.depth
+                );
+                const bodyMesh = new THREE.Mesh(bodyGeometry, material.clone());
+                valuationCube.add(bodyMesh);
+                
+                // Cylindres aux extrémités (bords arrondis)
+                const cylinderGeometry = new THREE.CylinderGeometry(
+                    radius,  // Rayon haut
+                    radius,  // Rayon bas
+                    barreRougeSize.height,  // Hauteur
+                    16  // Segments
+                );
+                
+                // Rotation pour mettre le cylindre selon l'axe X
+                cylinderGeometry.rotateZ(Math.PI / 2);
+                
+                // Extrémité gauche
+                const leftCylinder = new THREE.Mesh(cylinderGeometry, material.clone());
+                leftCylinder.position.x = -(barreRougeSize.width - 2 * radius) / 2;
+                valuationCube.add(leftCylinder);
+                
+                // Extrémité droite
+                const rightCylinder = new THREE.Mesh(cylinderGeometry.clone(), material.clone());
+                rightCylinder.position.x = (barreRougeSize.width - 2 * radius) / 2;
+                valuationCube.add(rightCylinder);
+            }
+            
+            // Animation : commencer à scale 0.01 (comme le graphique)
+            valuationCube.scale.set(0.01, 0.01, 0.01);
+            valuationCube.position.set(0, valuationY - 7.5, 1);
+            threeScene.add(valuationCube);
+            
+            console.log('✅ Barre rouge créée:', valuationCube.children.length, 'meshes');
+
+            // Appliquer les offsets sauvegardés
+            updateBarreRouge();
+
+            // Le label sera dans les stats, pas sur le graphique
+            
+            console.log('✅ Barre valorisation ajoutée à Y:', valuationY - 7.5);
+        }
+
+        function updateStats(data) {
+            const currentValue = data[data.length - 1].value;
+            const firstValue = data[0].value;
+            const variation = currentValue - firstValue;
+            const highest = Math.max(...data.map(d => d.value));
+            const lowest = Math.min(...data.map(d => d.value));
+            const ourValuation = 48.50; // Notre valorisation
+
+            const statsHTML = `
+                <div class="stat-item">
+                    <div class="stat-label">Cours</div>
+                    <div class="stat-value">€${currentValue.toFixed(2)}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Variation</div>
+                    <div class="stat-value positive">+€${variation.toFixed(2)}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Plus haut</div>
+                    <div class="stat-value">€${highest.toFixed(2)}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Plus bas</div>
+                    <div class="stat-value">€${lowest.toFixed(2)}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Notre valorisation</div>
+                    <div class="stat-value" style="color: #ff4444;">€${ourValuation.toFixed(2)}</div>
+                </div>
+            `;
+
+            document.getElementById('stats').innerHTML = statsHTML;
+        }
+
+        function animate() {
+            animationFrameId = requestAnimationFrame(animate);
+
+            const now = Date.now();
+
+            // Initialiser rotationStartTime dès le début
+            if (!rotationStartTime) {
+                rotationStartTime = now;
+            }
+
+            const rotationElapsed = (now - rotationStartTime) / 1000;
+
+            // Animation construction graphique (2 secondes) - Monte du bas vers le haut
+            if (constructionProgress < 1) {
+                constructionProgress += 0.016 / 2; // 2 secondes au lieu de 3
+                constructionProgress = Math.min(1, constructionProgress);
+                
+                // Easing smooth (easeInOutQuad)
+                const progress = constructionProgress;
+                const eased = progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                
+                // Animer scale.y de 0.01 à 1
+                if (chartMesh) {
+                    chartMesh.scale.y = 0.01 + (eased * 0.99);
+                }
+            }
+
+            // Animation construction barre rouge (1 seconde, commence après le graphique à 2.5s)
+            if (barreConstructionProgress < 1 && rotationElapsed > 2.5) {
+                barreConstructionProgress += 0.016 / 1; // 1 seconde
+                barreConstructionProgress = Math.min(1, barreConstructionProgress);
+                
+                // Easing smooth
+                const progress = barreConstructionProgress;
+                const eased = progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                
+                // Animer scale de 0.01 à 1
+                if (valuationCube) {
+                    const scale = 0.01 + (eased * 0.99);
+                    valuationCube.scale.set(scale, scale, scale);
+                }
+            }
+
+            // Animation cube valorisation supprimée - la barre reste fixe et visible
+
+            // Rotation dès le début (commence pendant la construction)
+            const initialRotation = -0.15;
+            let currentRotation;
+            
+            if (rotationElapsed < 2) {
+                // Phase 1 : rotation initiale (2 secondes) - pendant la construction
+                const t = rotationElapsed / 2;
+                const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+                currentRotation = eased * initialRotation;
+            } else if (rotationElapsed < 15) {
+                // Phase 2 : rotation continue lente (2s à 15s)
+                const continuousElapsed = rotationElapsed - 2;
+                const continuousSpeed = 0.02;
+                currentRotation = initialRotation + (continuousElapsed * continuousSpeed);
+            } else {
+                // Phase 3 : oscillation gauche-droite TRÈS LENTE (après 15s)
+                const oscillationStart = rotationElapsed - 15;
+                const oscillationDuration = 40; // 40 secondes pour un cycle complet (2× plus lent)
+                const oscillationProgress = (oscillationStart % oscillationDuration) / oscillationDuration;
+                
+                const maxAngle = (20 * Math.PI) / 180; // 20° au lieu de 40°
+                const easedProgress = Math.sin(oscillationProgress * Math.PI * 2);
+                
+                const centerRotation = initialRotation + (13 * 0.02);
+                currentRotation = centerRotation + (easedProgress * maxAngle / 2);
+            }
+
+            threeScene.rotation.y = currentRotation;
+
+            // Effet de respiration (breathing) pour la barre rouge
+            // Cycle de 4 secondes (2s montée, 2s descente)
+            if (valuationCube) {
+                const breathingCycle = 4000; // 4 secondes
+                const breathingProgress = (now % breathingCycle) / breathingCycle;
+                
+                // Sin wave pour une respiration douce
+                const breathingIntensity = Math.sin(breathingProgress * Math.PI * 2);
+                
+                // Variation de 0.85 à 1.15 (±15% autour de la valeur de base)
+                const intensityMultiplier = 1.0 + (breathingIntensity * 0.15);
+                
+                // Appliquer à tous les matériaux du groupe
+                valuationCube.traverse(child => {
+                    if (child.material && child.material.emissiveIntensity !== undefined) {
+                        child.material.emissiveIntensity = barreRougeIntensity * intensityMultiplier;
+                    }
+                });
+            }
+
+            if (threeRenderer && threeScene && threeCamera) {
+                threeRenderer.render(threeScene, threeCamera);
+            }
+        }
+
+        window.addEventListener('load', async () => {
+            console.log('🚀 Démarrage v13...');
+            
+            // IMPORTANT : Attendre que les settings soient chargés AVANT d'initialiser
+            await loadSettings();
+            console.log('📊 Après loadSettings:', { cameraOffset, cameraAngle, graphOffset, lightPosition, labelsXOffset, labelsYOffset, fontSizeLabelsX, fontSizeLabelsY });
+            
+            mockData = generateMockData();
+            initThreeJS();
+            updateStats(mockData);
+            
+            // Appliquer les positions après initialisation avec délai plus long
+            setTimeout(() => {
+                console.log('⚙️ Application des positions...');
+                if (threeCamera) {
+                    updateCamera();
+                    console.log('✅ Caméra mise à jour');
+                }
+                if (threeScene) {
+                    updateGraphPosition();
+                    console.log('✅ Graphique mis à jour');
+                }
+                if (directionalLight) {
+                    updateLight();
+                    console.log('✅ Lumière mise à jour');
+                }
+                if (yearLabelsSprites.length > 0 || priceLabelsSprites.length > 0) {
+                    updateLabels();
+                    // Régénérer les labels pour appliquer les tailles de police chargées
+                    if (fontSizeLabelsX !== 100 || fontSizeLabelsY !== 128 || labelsXSpacing !== 1.0) {
+                        console.log('🔄 Régénération labels car tailles/espacement différents des défauts');
+                        regenerateLabels();
+                    }
+                    console.log('✅ Labels mis à jour');
+                }
+                // IMPORTANT : Appliquer les positions des ombres
+                if (graphShadowMesh) {
+                    updateGraphShadow();
+                    console.log('✅ Ombre graphique mise à jour');
+                }
+                if (barreShadowMesh) {
+                    updateBarreShadow();
+                    console.log('✅ Ombre barre mise à jour');
+                }
+                // Appliquer la rotation de scène
+                if (threeScene) {
+                    updateSceneRotation();
+                    console.log('✅ Rotation scène mise à jour');
+                }
+                // Mettre à jour les affichages des ombres
+                updateAllDisplays();
+                console.log('🎯 TOUTES les positions appliquées');
+            }, 300); // Augmenter délai à 300ms
+        });
+
+        // ========================================
+        // WEBSOCKET - SYNCHRONISATION TEMPS RÉEL
+        // ========================================
+
+        function connectWebSocket() {
+            console.log('🔌 Connexion WebSocket...');
+            
+            try {
+                ws = new WebSocket(WS_URL);
+                
+                ws.onopen = () => {
+                    console.log('✅ WebSocket connecté');
+                    if (reconnectTimeout) {
+                        clearTimeout(reconnectTimeout);
+                        reconnectTimeout = null;
+                    }
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        console.log('📨 Message WebSocket reçu:', message.type);
+                        
+                        if (message.type === 'init' && message.graphSettings) {
+                            // Charger les paramètres à la connexion initiale
+                            console.log('📥 Paramètres initiaux reçus:', message.graphSettings);
+                            applyLoadedSettings(message.graphSettings);
+                        }
+                        
+                        if (message.type === 'graph_settings') {
+                            // Synchronisation des paramètres depuis un autre client
+                            console.log('🔄 Synchronisation paramètres depuis autre client:', message.settings);
+                            applyLoadedSettings(message.settings);
+                            
+                            // Appliquer visuellement
+                            if (threeCamera) updateCamera();
+                            if (threeScene) updateGraphPosition();
+                            if (directionalLight) updateLight();
+                            if (yearLabelsSprites.length > 0 || priceLabelsSprites.length > 0) updateLabels();
+                        }
+                    } catch (error) {
+                        console.error('❌ Erreur parsing message WebSocket:', error);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('❌ Erreur WebSocket:', error);
+                };
+                
+                ws.onclose = () => {
+                    console.log('🔌 WebSocket déconnecté');
+                    ws = null;
+                    
+                    // Reconnexion automatique après 3 secondes
+                    if (!reconnectTimeout) {
+                        reconnectTimeout = setTimeout(() => {
+                            console.log('🔄 Tentative de reconnexion...');
+                            connectWebSocket();
+                        }, 3000);
+                    }
+                };
+            } catch (error) {
+                console.error('❌ Erreur création WebSocket:', error);
+            }
+        }
+
+        // Démarrer la connexion WebSocket
+        connectWebSocket();
+        
+        // ========================================
+        // MODE EMBED (iframe dans widget-orbital)
+        // ========================================
+        
+        const isEmbed = window.parent !== window;
+        
+        if (isEmbed) {
+            console.log('📦 Mode embed détecté');
+            
+            // Cacher les boutons Appliquer et Reset
+            const applyBtn = document.getElementById('applyButton');
+            if (applyBtn) applyBtn.style.display = 'none';
+            
+            // Cacher le bouton Reset Tout
+            document.querySelectorAll('button').forEach(btn => {
+                if (btn.textContent.includes('Reset Tout')) {
+                    btn.style.display = 'none';
+                }
+            });
+            
+            // Écouter les messages du parent
+            window.addEventListener('message', (event) => {
+                const data = event.data;
+                console.log('📨 Message reçu:', data);
+                
+                if (data.command === 'SHOW_GRAPH') {
+                    if (typeof resetAnimations === 'function') {
+                        resetAnimations();
+                    }
+                    console.log('📈 Graphique affiché');
+                }
+                
+                if (data.command === 'HIDE_GRAPH') {
+                    console.log('📈 Graphique masqué');
+                }
+                
+                // Commandes de contrôle du graphique
+                if (data.command === 'GRAPH_CONTROL') {
+                    const action = data.action;
+                    const value = data.value;
+                    
+                    // Position Caméra
+                    if (action === 'moveCamera') moveCamera(value);
+                    if (action === 'rotateScene') rotateScene(value);
+                    if (action === 'resetCamera') resetCamera();
+                    
+                    // Angle Caméra
+                    if (action === 'rotateCamera') rotateCamera(value);
+                    if (action === 'resetCameraAngle') resetCameraAngle();
+                    
+                    // Graphique Position
+                    if (action === 'moveGraph') moveGraph(value);
+                    if (action === 'adjustGraphWidth') adjustGraphWidth(value);
+                    if (action === 'resetGraph') resetGraph();
+                    
+                    // Lumière
+                    if (action === 'moveLight') moveLight(value);
+                    if (action === 'adjustIntensity') adjustIntensity(value);
+                    if (action === 'resetLight') resetLight();
+                    
+                    // Labels
+                    if (action === 'moveLabels_Annees') moveLabels_Annees(value);
+                    if (action === 'moveLabels_Prix') moveLabels_Prix(value);
+                    if (action === 'adjustFontSizeX') adjustFontSizeX(value);
+                    if (action === 'adjustFontSizeY') adjustFontSizeY(value);
+                    if (action === 'adjustLabelsXSpacing') adjustLabelsXSpacing(value);
+                    if (action === 'resetLabels') resetLabels();
+                    
+                    // Barre Rouge
+                    if (action === 'moveBarreRouge') moveBarreRouge(value);
+                    if (action === 'adjustBarreRougeSize') {
+                        // Parse 'width_decrease' -> dimension='width', direction='decrease'
+                        const parts = value.split('_');
+                        if (parts.length === 2) {
+                            adjustBarreRougeSize(parts[0], parts[1]);
+                        }
+                    }
+                    if (action === 'adjustBarreRougeIntensity') adjustBarreRougeIntensity(value);
+                    if (action === 'resetBarreRouge') resetBarreRouge();
+                    
+                    // Ombres
+                    if (action === 'adjustGraphShadow') adjustGraphShadow(data.param, value);
+                    if (action === 'moveGraphShadow') moveGraphShadow(value);
+                    if (action === 'adjustBarreShadow') adjustBarreShadow(data.param, value);
+                    if (action === 'moveBarreShadow') moveBarreShadow(value);
+                    if (action === 'resetShadows') { resetGraphShadow(); resetBarreShadow(); }
+                    
+                    // Lignes horizontales
+                    if (action === 'moveLines') moveLinesHorizontales(value);
+                    if (action === 'adjustLinesExtension') adjustLinesExtension(value);
+                    if (action === 'resetLines') resetLinesHorizontales();
+                    
+                    // Dégradé et couleurs
+                    if (action === 'setGradientColor') {
+                        const target = data.param;
+                        if (target === 'top') {
+                            gradientColors.top = value;
+                            updateGradientColors();
+                        }
+                        if (target === 'bottom') {
+                            gradientColors.bottom = value;
+                            updateGradientColors();
+                        }
+                        if (target === 'cap') {
+                            topFaceColor = value;
+                            updateTopFaceColor();
+                        }
+                        if (target === 'barre') {
+                            barreRougeColor = value;
+                            updateBarreRouge();
+                        }
+                    }
+                    
+                    // Sliders (opacité, transitions)
+                    if (action === 'setSlider') {
+                        const slider = data.param;
+                        const val = value / 100; // Convertir 0-100 en 0-1
+                        
+                        if (slider === 'gradientOpacity') {
+                            gradientOpacity = val;
+                            updateGradientColors();
+                        }
+                        if (slider === 'capOpacity') {
+                            topCapOpacity = val;
+                            updateGradientColors();
+                        }
+                        if (slider === 'transitionZone') {
+                            gradientTransition = val;
+                            updateGradientColors();
+                        }
+                        if (slider === 'opacityZone') {
+                            opacityTransition = val;
+                            updateGradientColors();
+                        }
+                    }
+                    
+                    if (action === 'resetGradient') resetGradient();
+                    
+                    // Appliquer / Sauvegarder
+                    if (action === 'applySettings') applySettings();
+                    if (action === 'reloadAnimation') reloadAnimation();
+                    
+                    console.log('✅ Action exécutée:', action, value);
+                }
+                
+                if (data.command === 'UPDATE_STATE' && data.state) {
+                    const s = data.state;
+                    
+                    if (s.graphValo !== undefined) {
+                        valorisationPrice = s.graphValo;
+                        updateValuationCubePosition();
+                    }
+                    
+                    if (s.graphRotY !== undefined) {
+                        sceneRotationY = s.graphRotY * Math.PI / 180;
+                        if (threeScene) threeScene.rotation.y = sceneRotationY;
+                    }
+                    
+                    if (s.graphZoom !== undefined && threeCamera) {
+                        threeCamera.position.z = s.graphZoom;
+                    }
+                    
+                    console.log('✅ État mis à jour depuis parent');
+                }
+            });
+            
+            // Informer le parent que le graphique est prêt
+            window.parent.postMessage({ type: 'GRAPH_READY' }, '*');
+        }
+    </script>
+</body>
+</html>

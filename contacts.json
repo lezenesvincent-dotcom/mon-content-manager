@@ -1,0 +1,322 @@
+[
+  {
+    "id": "c01",
+    "firstName": "Christian",
+    "lastName": "Devismes",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/christian-devismes.png"
+  },
+  {
+    "id": "c02",
+    "firstName": "Hervé",
+    "lastName": "Drouet",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/herve-drouet.png"
+  },
+  {
+    "id": "c03",
+    "firstName": "Eric",
+    "lastName": "Ravary",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/eric-ravary.png"
+  },
+  {
+    "id": "c04",
+    "firstName": "Emmanuel",
+    "lastName": "Chevalier",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/emmanuel-chevalier.png"
+  },
+  {
+    "id": "c05",
+    "firstName": "Ebrahim",
+    "lastName": "Homani",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/ebrahim-homani.png"
+  },
+  {
+    "id": "c06",
+    "firstName": "Éric",
+    "lastName": "Lemarié",
+    "speciality": "actions",
+    "function": "Analyste Biens d'équipement",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/eric-lemarie.png"
+  },
+  {
+    "id": "c07",
+    "firstName": "Arnaud",
+    "lastName": "Palliez",
+    "speciality": "eco",
+    "function": "Économiste",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/arnaud-palliez.png"
+  },
+  {
+    "id": "c08",
+    "firstName": "Jean-Luc",
+    "lastName": "Romain",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/jean-luc-romain.png"
+  },
+  {
+    "id": "c09",
+    "firstName": "Alexandre",
+    "lastName": "Plaud",
+    "speciality": "technique",
+    "function": "Analyste Technique",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/alexandre-plaud.png"
+  },
+  {
+    "id": "c10",
+    "firstName": "Virginie",
+    "lastName": "Royère",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/virginie-royere.png"
+  },
+  {
+    "firstName": "Arnaud",
+    "lastName": "Cadart",
+    "speciality": "actions",
+    "function": "Analyste ESG",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "id": "c11",
+    "photo": "contacts-photos/arnaud-cadart.png"
+  },
+  {
+    "id": "c12",
+    "firstName": "David",
+    "lastName": "Da Maia",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/david-da-maia.png"
+  },
+  {
+    "id": "c13",
+    "firstName": "Pierre",
+    "lastName": "Chédeville",
+    "speciality": "actions",
+    "function": "Analyste Construction & Matériaux",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/pierre-chedeville.png"
+  },
+  {
+    "id": "c14",
+    "firstName": "Dominique",
+    "lastName": "Descours",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/dominique-descours.png"
+  },
+  {
+    "id": "c15",
+    "firstName": "Alexandre",
+    "lastName": "Gérard",
+    "speciality": "technique",
+    "function": "Analyste Technique",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/alexandre-gerard.png"
+  },
+  {
+    "id": "c16",
+    "firstName": "Adrien",
+    "lastName": "Régnier-Laurent",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/adrien-regnier-laurent.png"
+  },
+  {
+    "id": "c17",
+    "firstName": "Anne-Lise",
+    "lastName": "Cornen",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/anne-lise-cornen.png"
+  },
+  {
+    "id": "c18",
+    "firstName": "Benoît",
+    "lastName": "Rodriguez",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/benoit-rodriguez.png"
+  },
+  {
+    "id": "c19",
+    "firstName": "Emmanuelle",
+    "lastName": "Thollon-Pommerol",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/emmanuelle-thollon-pommerol.png"
+  },
+  {
+    "id": "c20",
+    "firstName": "Eric",
+    "lastName": "Baron",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/eric-baron.png"
+  },
+  {
+    "id": "c21",
+    "firstName": "Eva",
+    "lastName": "Bellin",
+    "speciality": "eco",
+    "function": "Responsable Analyse Technique",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/eva-bellin.png"
+  },
+  {
+    "id": "c22",
+    "firstName": "Eva",
+    "lastName": "Zarbo",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/eva-zarbo.png"
+  },
+  {
+    "id": "c23",
+    "firstName": "Fabrissa",
+    "lastName": "Tassin",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/fabrissa-tassin.png"
+  },
+  {
+    "id": "c24",
+    "firstName": "François",
+    "lastName": "Duhen",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/francois-duhen.png"
+  },
+  {
+    "id": "c25",
+    "firstName": "Françoise",
+    "lastName": "Étienne",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/francoise-etienne.png"
+  },
+  {
+    "id": "c26",
+    "firstName": "Gabriel",
+    "lastName": "Corbassière",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/gabriel-corbassiere.png"
+  },
+  {
+    "id": "c27",
+    "firstName": "Marc",
+    "lastName": "Gontran",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/marc-gontran.png"
+  },
+  {
+    "id": "c28",
+    "firstName": "Martin",
+    "lastName": "Gicquiau",
+    "speciality": "credit",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/martin-gicquiau.png"
+  },
+  {
+    "id": "c29",
+    "firstName": "Nicolas",
+    "lastName": "Bouthors",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/nicolas-bouthors.png"
+  },
+  {
+    "id": "c30",
+    "firstName": "Nicolas",
+    "lastName": "Haese",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/nicolas-haese.png"
+  },
+  {
+    "id": "c31",
+    "firstName": "Stéphane",
+    "lastName": "Leandri",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/stephane-leandri.png"
+  },
+  {
+    "id": "c32",
+    "firstName": "William",
+    "lastName": "Honvo",
+    "speciality": "eco",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "contacts-photos/william-honvo.png"
+  }
+]

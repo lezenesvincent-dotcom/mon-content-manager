@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Orbital Production v4.35</title>
+    <!-- Version 4.35 Production - Fix graphique iframe - 8 décembre 2025 -->
+    <!-- FORCE UPDATE: 1733676000 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: transparent;
+            color: white;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Graphique 3D (iframe) */
+        #graphContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            z-index: 100;
+            background: transparent;
+        }
+        #graphContainer.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #graphFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .preview-zone {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: visible;
+        }
+        .overlay-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%; height: 100%;
+            transform-style: preserve-3d;
+            perspective: 1500px;
+        }
+        
+        .header-row {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            left: var(--header-x, 50px);
+            top: var(--header-y, 80px);
+            opacity: 0;
+            transform: translateY(-80px);
+        }
+        .header-row.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .main-title {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+        }
+        .subtitle-inline {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .subjects-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+        .orbit-center {
+            position: absolute;
+            left: var(--orbit-center-x, 50%);
+            top: var(--orbit-center-y, 50%);
+            transform-style: preserve-3d;
+        }
+        
+        .subject-box {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-style: preserve-3d;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+        .subject-title {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-size: var(--font-sujet, 1.2rem);
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        .subject-content-box {
+            background: linear-gradient(to bottom, rgba(60, 80, 130, 0.98) 0%, rgba(80, 100, 170, 0.98) 100%);
+            border-radius: 18px;
+            padding: 25px 20px;
+            width: 280px;
+            height: 380px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+        .subject-content {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-size: var(--font-contenu, 1.1rem);
+            font-weight: 600;
+            color: white;
+            line-height: 1.4;
+            white-space: pre-line;
+        }
+        
+        /* Panneau de contrôle Joystick */
+        .control-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 12px;
+            padding: 15px;
+            width: 280px;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 9999;
+            font-size: 12px;
+            display: none;
+        }
+        .control-panel.visible {
+            display: block;
+        }
+        .control-panel h3 {
+            color: #fff;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 8px;
+        }
+        .control-group {
+            margin-bottom: 12px;
+        }
+        .control-group label {
+            display: block;
+            color: #aaa;
+            margin-bottom: 4px;
+            font-size: 11px;
+        }
+        .control-group input[type="range"] {
+            width: 100%;
+            margin-bottom: 2px;
+        }
+        .control-group .value {
+            color: #0af;
+            font-weight: bold;
+            float: right;
+        }
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .btn-row button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .btn-in { background: #2ecc71; color: white; }
+        .btn-next { background: #3498db; color: white; }
+        .btn-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 10000;
+            font-size: 18px;
+        }
+        .control-panel.visible + .btn-toggle {
+            right: 300px;
+        }
+        .slot-controls {
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 5px;
+        }
+        .slot-title {
+            color: #fff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Conteneur du graphique 3D (iframe vers graph-embed.html) -->
+    <div id="graphContainer">
+        <iframe id="graphFrame" src="graph-embed.html" frameborder="0" allowtransparency="true"></iframe>
+    </div>
+    
+    <div class="preview-zone">
+        <div class="overlay-container">
+            <div class="header-row" id="header">
+                <span class="main-title" id="titre">MUSIC</span>
+                <span class="subtitle-inline" id="soustitre">En mars 2025</span>
+            </div>
+            <div class="subjects-container">
+                <div class="orbit-center" id="orbitCenter">
+                    <div class="subject-box" id="p1">
+                        <span class="subject-title" id="p1-sujet">Achat</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p1-contenu">Révision en hausse
+de notre objectif
+de cours</div>
+                        </div>
+                    </div>
+                    <div class="subject-box" id="p2">
+                        <span class="subject-title" id="p2-sujet">Distribution</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p2-contenu">Cession à RMC-BFM
+Media avec impact
+positif</div>
+                        </div>
+                    </div>
+                    <div class="subject-box" id="p3">
+                        <span class="subject-title" id="p3-sujet">Performance</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p3-contenu">Résultats T3
+au-dessus des
+attentes</div>
+                        </div>
+                    </div>
+                    <div class="subject-box" id="p4">
+                        <span class="subject-title" id="p4-sujet">Stratégie</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p4-contenu">Nouveau plan
+développement
+2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bouton toggle et Panneau de contrôle -->
+    <button class="btn-toggle" onclick="togglePanel()">⚙️</button>
+    <div class="control-panel" id="controlPanel">
+        <h3>🎮 Contrôles Widget Orbital</h3>
+        
+        <div class="control-group">
+            <label>Header X <span class="value" id="val-headerX">50</span>px</label>
+            <input type="range" id="ctrl-headerX" min="0" max="500" value="50" oninput="updateControl('headerX', this.value)">
+        </div>
+        <div class="control-group">
+            <label>Header Y <span class="value" id="val-headerY">80</span>px</label>
+            <input type="range" id="ctrl-headerY" min="0" max="300" value="80" oninput="updateControl('headerY', this.value)">
+        </div>
+        <div class="control-group">
+            <label>Centre Orbit X <span class="value" id="val-centerX">50</span>%</label>
+            <input type="range" id="ctrl-centerX" min="0" max="100" value="50" oninput="updateControl('centerX', this.value)">
+        </div>
+        <div class="control-group">
+            <label>Centre Orbit Y <span class="value" id="val-centerY">50</span>%</label>
+            <input type="range" id="ctrl-centerY" min="0" max="100" value="50" oninput="updateControl('centerY', this.value)">
+        </div>
+        
+        <div class="slot-controls">
+            <div class="slot-title">Slot 1 (Front)</div>
+            <div class="control-group">
+                <label>X <span class="value" id="val-slot0x">-40</span></label>
+                <input type="range" id="ctrl-slot0x" min="-200" max="400" value="-40" oninput="updateSlot(0, 'x', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Y <span class="value" id="val-slot0y">20</span></label>
+                <input type="range" id="ctrl-slot0y" min="-200" max="300" value="20" oninput="updateSlot(0, 'y', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Scale <span class="value" id="val-slot0s">1.0</span></label>
+                <input type="range" id="ctrl-slot0s" min="0.3" max="1.5" step="0.05" value="1.0" oninput="updateSlot(0, 'scale', this.value)">
+            </div>
+        </div>
+        
+        <div class="slot-controls">
+            <div class="slot-title">Slot 2</div>
+            <div class="control-group">
+                <label>X <span class="value" id="val-slot1x">160</span></label>
+                <input type="range" id="ctrl-slot1x" min="-200" max="400" value="160" oninput="updateSlot(1, 'x', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Y <span class="value" id="val-slot1y">-60</span></label>
+                <input type="range" id="ctrl-slot1y" min="-200" max="300" value="-60" oninput="updateSlot(1, 'y', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Scale <span class="value" id="val-slot1s">0.70</span></label>
+                <input type="range" id="ctrl-slot1s" min="0.3" max="1.5" step="0.05" value="0.70" oninput="updateSlot(1, 'scale', this.value)">
+            </div>
+        </div>
+        
+        <div class="slot-controls">
+            <div class="slot-title">Slot 3</div>
+            <div class="control-group">
+                <label>X <span class="value" id="val-slot2x">185</span></label>
+                <input type="range" id="ctrl-slot2x" min="-200" max="400" value="185" oninput="updateSlot(2, 'x', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Y <span class="value" id="val-slot2y">30</span></label>
+                <input type="range" id="ctrl-slot2y" min="-200" max="300" value="30" oninput="updateSlot(2, 'y', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Scale <span class="value" id="val-slot2s">0.66</span></label>
+                <input type="range" id="ctrl-slot2s" min="0.3" max="1.5" step="0.05" value="0.66" oninput="updateSlot(2, 'scale', this.value)">
+            </div>
+        </div>
+        
+        <div class="slot-controls">
+            <div class="slot-title">Slot 4 (Back)</div>
+            <div class="control-group">
+                <label>X <span class="value" id="val-slot3x">210</span></label>
+                <input type="range" id="ctrl-slot3x" min="-200" max="400" value="210" oninput="updateSlot(3, 'x', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Y <span class="value" id="val-slot3y">110</span></label>
+                <input type="range" id="ctrl-slot3y" min="-200" max="300" value="110" oninput="updateSlot(3, 'y', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Scale <span class="value" id="val-slot3s">0.62</span></label>
+                <input type="range" id="ctrl-slot3s" min="0.3" max="1.5" step="0.05" value="0.62" oninput="updateSlot(3, 'scale', this.value)">
+            </div>
+        </div>
+        
+        <div class="btn-row">
+            <button class="btn-in" onclick="animateIN()">▶ IN</button>
+            <button class="btn-next" onclick="nextFocus()">⏭ NEXT</button>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration WebSocket (identique à widget.html)
+        const WS_URL = 'wss://ecamm-overlay-server.onrender.com';
+        let ws = null;
+        let reconnectTimeout = null;
+        
+        const state = { 
+            headerX: 50, headerY: 80, 
+            centerX: 50, centerY: 50,
+            slots: [
+                { x: -40, y: 20, scale: 1.0, z: 50 },
+                { x: 160, y: -60, scale: 0.70, z: -50 },
+                { x: 185, y: 30, scale: 0.66, z: -100 },
+                { x: 210, y: 110, scale: 0.62, z: -150 }
+            ],
+            cardInSlot: [1, 2, 3, 4],
+            speedIN: 3.5,
+            speedNEXT: 2.2,
+            speedLev: 25,
+            fontSujet: 1.2,
+            fontContenu: 1.1
+        };
+        
+        // Fonction pour mettre à jour le contenu
+        function updateContent(data) {
+            if (!data) return;
+            
+            // Titre et sous-titre
+            if (data.titre) {
+                document.getElementById('titre').textContent = data.titre;
+            }
+            if (data.soustitre) {
+                document.getElementById('soustitre').textContent = data.soustitre;
+            }
+            
+            // P1 à P4
+            ['p1', 'p2', 'p3', 'p4'].forEach(key => {
+                if (data[key]) {
+                    const sujetEl = document.getElementById(`${key}-sujet`);
+                    const contenuEl = document.getElementById(`${key}-contenu`);
+                    
+                    if (sujetEl && data[key].sujet) {
+                        sujetEl.textContent = data[key].sujet;
+                    }
+                    
+                    if (contenuEl && data[key].contenu) {
+                        // Joindre les lignes avec des retours à la ligne
+                        contenuEl.textContent = data[key].contenu.join('\n');
+                    }
+                }
+            });
+            
+            console.log('✅ Contenu mis à jour:', data);
+        }
+        
+        // Connexion WebSocket (identique à widget.html)
+        function connect() {
+            console.log('🔌 Connexion au serveur WebSocket...');
+            
+            try {
+                ws = new WebSocket(WS_URL);
+
+                ws.onopen = () => {
+                    console.log('✅ Connecté au serveur WebSocket');
+                    
+                    if (reconnectTimeout) {
+                        clearTimeout(reconnectTimeout);
+                        reconnectTimeout = null;
+                    }
+                };
+
+                ws.onmessage = (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        console.log('📨 Message reçu:', message.type);
+                        
+                        if (message.type === 'initial' || message.type === 'update') {
+                            updateContent(message.data);
+                        } else if (message.type === 'focus') {
+                            // Déclencher NEXT sur focus
+                            console.log('🎯 Focus reçu:', message.subjectIndex);
+                            nextFocus();
+                        } else if (message.type === 'control') {
+                            // Commandes du joystick control.html
+                            console.log('🎮 Commande control reçue:', message.command);
+                            
+                          // Mettre à jour l'état depuis control.html (UPDATE_STATE ou SYNC_STATE)
+                            if (message.state && message.state.headerX !== undefined) {
+                                // Stopper la lévitation AVANT de modifier les positions
+                                stopLevitation();
+                                
+                                state.headerX = message.state.headerX;
+                                state.headerY = message.state.headerY;
+                                state.centerX = message.state.centerX;
+                                state.centerY = message.state.centerY;
+                                state.speedIN = message.state.speedIN;
+                                state.speedNEXT = message.state.speedNEXT;
+                                state.speedLev = message.state.speedLev;
+                                
+                                // Mettre à jour les slots (position + scale)
+                                if (message.state.slots && Array.isArray(message.state.slots)) {
+                                    for (let i = 0; i < 4; i++) {
+                                        if (message.state.slots[i]) {
+                                            state.slots[i].x = message.state.slots[i].x;
+                                            state.slots[i].y = message.state.slots[i].y;
+                                            state.slots[i].scale = message.state.slots[i].scale;
+                                            if (message.state.slots[i].z !== undefined) {
+                                                state.slots[i].z = message.state.slots[i].z;
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                // Mettre à jour les tailles de police
+                                if (message.state.fontSujet !== undefined) {
+                                    state.fontSujet = message.state.fontSujet;
+                                    document.documentElement.style.setProperty('--font-sujet', state.fontSujet + 'rem');
+                                }
+                                if (message.state.fontContenu !== undefined) {
+                                    state.fontContenu = message.state.fontContenu;
+                                    document.documentElement.style.setProperty('--font-contenu', state.fontContenu + 'rem');
+                                }
+                                
+                                // Appliquer les changements visuels - header et centre
+                                document.getElementById('header').style.left = state.headerX + 'px';
+                                document.getElementById('header').style.top = state.headerY + 'px';
+                                document.getElementById('orbitCenter').style.left = state.centerX + '%';
+                                document.getElementById('orbitCenter').style.top = state.centerY + '%';
+                                
+                                // Appliquer les nouvelles positions des cartes
+                                for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                                    const cardNum = state.cardInSlot[slotIdx];
+                                    const el = document.getElementById('p' + cardNum);
+                                    if (el) {
+                                        el.style.transform = getSlotTransform(slotIdx);
+                                    }
+                                }
+                                
+                                // Mettre à jour le panneau de contrôle local aussi
+                                try {
+                                    for (let i = 0; i < 4; i++) {
+                                        const ctrlX = document.getElementById('ctrl-slot' + i + 'x');
+                                        const ctrlY = document.getElementById('ctrl-slot' + i + 'y');
+                                        const ctrlS = document.getElementById('ctrl-slot' + i + 's');
+                                        const valX = document.getElementById('val-slot' + i + 'x');
+                                        const valY = document.getElementById('val-slot' + i + 'y');
+                                        const valS = document.getElementById('val-slot' + i + 's');
+                                        if (ctrlX) ctrlX.value = state.slots[i].x;
+                                        if (ctrlY) ctrlY.value = state.slots[i].y;
+                                        if (ctrlS) ctrlS.value = state.slots[i].scale;
+                                        if (valX) valX.textContent = state.slots[i].x;
+                                        if (valY) valY.textContent = state.slots[i].y;
+                                        if (valS) valS.textContent = state.slots[i].scale;
+                                    }
+                                } catch(e) {}
+                                
+                                console.log('✅ Positions mises à jour - slots:', state.slots.map(s => `(${s.x},${s.y},s:${s.scale})`).join(' '));
+                                
+                                // Relancer la lévitation si elle tournait
+                                 if (!isAnimating) {
+                                    setTimeout(startLevitation, 10);
+                                }
+                            }
+                            
+                            // Exécuter les commandes
+                            if (message.command === 'ANIMATE_IN') {
+                                animateIN();
+                            } else if (message.command === 'NEXT_FOCUS') {
+                                nextFocus();
+                            } else if (message.command === 'HIDE') {
+                                hideCards();
+                                hideGraph(); // Aussi cacher le graphique
+                            } else if (message.command === 'SHOW_GRAPH') {
+                                console.log('📈 SHOW_GRAPH reçu');
+                                showGraph();
+                            } else if (message.command === 'HIDE_GRAPH') {
+                                hideGraph();
+                            } else if (message.command === 'GRAPH_CONTROL') {
+                                // Transférer les commandes de contrôle au graphique
+                                const frame = document.getElementById('graphFrame');
+                                if (frame && frame.contentWindow && message.state) {
+                                    frame.contentWindow.postMessage({
+                                        command: 'GRAPH_CONTROL',
+                                        action: message.state.graphAction,
+                                        value: message.state.graphValue,
+                                        param: message.state.graphParam
+                                    }, '*');
+                                    console.log('📈 Commande graphique transférée:', message.state.graphAction);
+                                } else {
+                                    console.warn('⚠️ iframe ou state manquant');
+                                }
+                            } else if (message.command === 'UPDATE_GRAPH_STATE') {
+                                // Transférer les paramètres au graphique via postMessage
+                                if (message.state && graphVisible) {
+                                    const frame = document.getElementById('graphFrame');
+                                    if (frame && frame.contentWindow) {
+                                        frame.contentWindow.postMessage({ 
+                                            command: 'UPDATE_STATE', 
+                                            state: message.state 
+                                        }, '*');
+                                    }
+                                    console.log('📈 État graphique transféré');
+                                }
+                            } else if (message.command === 'SYNC_STATE') {
+                                console.log('🔄 État synchronisé depuis control.html');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('❌ Erreur parsing message:', error);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    console.error('❌ Erreur WebSocket:', error);
+                };
+
+                ws.onclose = () => {
+                    console.log('🔌 Connexion fermée - Reconnexion dans 3s...');
+                    
+                    reconnectTimeout = setTimeout(connect, 3000);
+                };
+
+            } catch (error) {
+                console.error('❌ Erreur de connexion:', error);
+                reconnectTimeout = setTimeout(connect, 3000);
+            }
+        }
+
+        
+        let isAnimating = false, levitateRAF = null, levitatePhases = [0, 1.5, 3, 4.5], levitationEnabled = false;
+
+        function getTransform(x, y, z, scale, rotY = 0, rotX = 0) {
+            return `translateX(-50%) translateY(-50%) translateX(${x}px) translateY(${y}px) translateZ(${z}px) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${scale})`;
+        }
+
+        function getSlotTransform(slotIdx) {
+            const s = state.slots[slotIdx];
+            return getTransform(s.x, s.y, s.z, s.scale, 0, 0);
+        }
+
+        function startLevitation() {
+            if (isAnimating) return; // Ne pas démarrer si animation en cours
+            levitationEnabled = true;
+            if (levitateRAF) cancelAnimationFrame(levitateRAF);
+            
+            let lastTime = performance.now();
+            const startFadeTime = performance.now();
+            const fadeDuration = 2000;
+            
+            function animate(now) {
+                if (!levitationEnabled) return;
+                
+                const delta = (now - lastTime) / 1000;
+                lastTime = now;
+                const speed = 1 / state.speedLev;
+                
+                const fadeProgress = Math.min(1, (now - startFadeTime) / fadeDuration);
+                const amplitudeFactor = fadeProgress * fadeProgress;
+                
+                for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                    const cardNum = state.cardInSlot[slotIdx];
+                    const el = document.getElementById('p' + cardNum);
+                    if (el.style.opacity !== '1') continue;
+                    
+                    levitatePhases[slotIdx] += delta * speed * Math.PI * 2;
+                    
+                    const s = state.slots[slotIdx];
+                    const dx = Math.sin(levitatePhases[slotIdx]) * 4 * amplitudeFactor;
+                    const dy = Math.cos(levitatePhases[slotIdx] * 0.7) * 2.5 * amplitudeFactor;
+                    const ds = 1 + Math.sin(levitatePhases[slotIdx] * 0.5) * 0.008 * amplitudeFactor;
+                    
+                    el.style.transform = getTransform(s.x + dx, s.y + dy, s.z, s.scale * ds, 0, 0);
+                }
+                
+                levitateRAF = requestAnimationFrame(animate);
+            }
+            
+            levitateRAF = requestAnimationFrame(animate);
+        }
+
+        function stopLevitation() {
+            levitationEnabled = false;
+            if (levitateRAF) {
+                cancelAnimationFrame(levitateRAF);
+                levitateRAF = null;
+            }
+        }
+
+        function animateIN() {
+            if (isAnimating) return;
+            isAnimating = true;
+            stopLevitation();
+            
+            const speed = state.speedIN;
+            const totalFrames = Math.round(60 * speed);
+            
+            for (let i = 1; i <= 4; i++) document.getElementById('p' + i).style.opacity = '0';
+            document.getElementById('header').classList.remove('visible');
+            
+            setTimeout(() => {
+                document.getElementById('header').classList.add('visible');
+                
+                let frame = 0;
+                const startPositions = [
+                    { x: -300, y: 100, z: -2000, rotY: -90 },
+                    { x: 400, y: -150, z: -1800, rotY: 120 },
+                    { x: 350, y: 200, z: -1600, rotY: 90 },
+                    { x: 0, y: -200, z: -2200, rotY: 180 }
+                ];
+                
+                function animateFrame() {
+                    frame++;
+                    const progress = frame / totalFrames;
+                    const eased = 1 - Math.pow(1 - progress, 4);
+                    const opacity = Math.min(1, progress * 1.8);
+                    
+                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                        const cardNum = state.cardInSlot[slotIdx];
+                        const el = document.getElementById('p' + cardNum);
+                        const target = state.slots[slotIdx];
+                        const start = startPositions[slotIdx];
+                        const arcPhase = progress * Math.PI;
+                        
+                        let crossX = 0, crossZ = 0;
+                        if (slotIdx === 0) { crossX = Math.sin(arcPhase) * 150; crossZ = Math.sin(arcPhase * 2) * 100; }
+                        else if (slotIdx === 1) { crossX = -Math.sin(arcPhase) * 100; crossZ = Math.sin(arcPhase) * 200; }
+                        else if (slotIdx === 2) { crossX = Math.sin(arcPhase) * 80; crossZ = -Math.sin(arcPhase) * 150; }
+                        else { crossX = Math.sin(arcPhase * 1.5) * 120; crossZ = Math.sin(arcPhase) * 100; }
+                        
+                        const x = start.x + (target.x - start.x) * eased + crossX * (1 - eased);
+                        const y = start.y + (target.y - start.y) * eased;
+                        const z = start.z + (target.z - start.z) * eased + crossZ * (1 - eased);
+                        const scale = 0.15 + (target.scale - 0.15) * eased;
+                        const rotY = start.rotY * (1 - eased);
+                        const rotX = Math.sin(arcPhase) * 10 * (1 - eased);
+                        
+                        el.style.opacity = opacity;
+                        el.style.zIndex = Math.round(100 + z / 10);
+                        el.style.transform = getTransform(x, y, z, scale, rotY, rotX);
+                    }
+                    
+                    if (frame < totalFrames) {
+                        requestAnimationFrame(animateFrame);
+                    } else {
+                        // Fin de l'animation - on garde les dernières positions calculées
+                        // et on ajuste juste l'opacité et z-index
+                        for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                            const cardNum = state.cardInSlot[slotIdx];
+                            const el = document.getElementById('p' + cardNum);
+                            el.style.opacity = '1';
+                            el.style.zIndex = (100 - slotIdx * 20);
+                            // PAS de reset du transform ici - la lévitation s'en charge
+                        }
+                        isAnimating = false;
+                        setTimeout(startLevitation, 50);
+                    }
+                }
+                requestAnimationFrame(animateFrame);
+            }, 200);
+        }
+
+        function nextFocus() {
+            if (isAnimating) return;
+            isAnimating = true;
+            stopLevitation();
+            
+            const duration = state.speedNEXT;
+            const totalFrames = Math.round(60 * duration);
+            const oldCardInSlot = [...state.cardInSlot];
+            
+            // Nouvelle rotation: [1,2,3,4] → [2,3,4,1]
+            state.cardInSlot = [oldCardInSlot[1], oldCardInSlot[2], oldCardInSlot[3], oldCardInSlot[0]];
+            
+            // Carte qui sort (slot 0 → slot 3, passe par l'arrière)
+            const cardOut = document.getElementById('p' + oldCardInSlot[0]);
+            const startOut = { ...state.slots[0] }, endOut = { ...state.slots[3] };
+            
+            // Carte qui entre en focus (slot 1 → slot 0)
+            const cardIn = document.getElementById('p' + oldCardInSlot[1]);
+            const startIn = { ...state.slots[1] }, endIn = { ...state.slots[0] };
+            
+            // Cartes qui glissent
+            const card3 = document.getElementById('p' + oldCardInSlot[2]);
+            const start3 = { ...state.slots[2] }, end3 = { ...state.slots[1] };
+            const card4 = document.getElementById('p' + oldCardInSlot[3]);
+            const start4 = { ...state.slots[3] }, end4 = { ...state.slots[2] };
+            
+            let frame = 0;
+            function animateFrame() {
+                frame++;
+                const progress = frame / totalFrames;
+                // Easing cubique in-out
+                const eased = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                
+                // Phase pour les arcs (0 → π sur toute l'animation)
+                const phase = progress * Math.PI;
+                
+                // === CARTE QUI SORT (fait un arc vers l'arrière-droite) ===
+                // Arc qui atteint son max à mi-animation puis disparaît
+                const outArcX = Math.sin(phase) * 250;  // Part vers la droite
+                const outArcZ = -Math.sin(phase) * 800; // Part vers l'arrière
+                const outArcY = -Math.sin(phase) * 50;  // Monte légèrement
+                // Rotation qui fait un demi-tour (0 → 180 → 0)
+                const outRotY = Math.sin(phase) * 180;
+                const outRotX = Math.sin(phase * 2) * 15;
+                
+                cardOut.style.zIndex = '10';
+                cardOut.style.transform = getTransform(
+                    startOut.x + (endOut.x - startOut.x) * eased + outArcX,
+                    startOut.y + (endOut.y - startOut.y) * eased + outArcY,
+                    startOut.z + (endOut.z - startOut.z) * eased + outArcZ,
+                    startOut.scale + (endOut.scale - startOut.scale) * eased,
+                    outRotY,
+                    outRotX
+                );
+                
+                // === CARTE QUI ENTRE EN FOCUS (vient de slot 1 vers slot 0) ===
+                const inArcX = -Math.sin(phase) * 80;   // Légère courbe vers la gauche
+                const inArcZ = Math.sin(phase) * 150;   // Vient vers l'avant
+                const inArcY = -Math.sin(phase) * 30;   // Monte légèrement
+                // Rotation: 2 tours vers la gauche (-720°), reste de face au début et à la fin
+                const inRotY = -eased * 720;  // 0° → -720° (2 tours complets vers la gauche)
+                const inRotX = -Math.sin(phase) * 10;
+                
+                cardIn.style.zIndex = '150';
+                cardIn.style.transform = getTransform(
+                    startIn.x + (endIn.x - startIn.x) * eased + inArcX,
+                    startIn.y + (endIn.y - startIn.y) * eased + inArcY,
+                    startIn.z + (endIn.z - startIn.z) * eased + inArcZ,
+                    startIn.scale + (endIn.scale - startIn.scale) * eased,
+                    inRotY,
+                    inRotX
+                );
+                
+                // === CARTE 3 (glisse de slot 2 → slot 1) ===
+                const arc3X = Math.sin(phase) * 40;
+                const arc3Z = Math.sin(phase) * 60;
+                
+                card3.style.zIndex = '30';
+                card3.style.transform = getTransform(
+                    start3.x + (end3.x - start3.x) * eased + arc3X,
+                    start3.y + (end3.y - start3.y) * eased,
+                    start3.z + (end3.z - start3.z) * eased + arc3Z,
+                    start3.scale + (end3.scale - start3.scale) * eased,
+                    Math.sin(phase) * 10,
+                    0
+                );
+                
+                // === CARTE 4 (glisse de slot 3 → slot 2) ===
+                const arc4X = Math.sin(phase) * 30;
+                const arc4Z = Math.sin(phase) * 40;
+                
+                card4.style.zIndex = '20';
+                card4.style.transform = getTransform(
+                    start4.x + (end4.x - start4.x) * eased + arc4X,
+                    start4.y + (end4.y - start4.y) * eased,
+                    start4.z + (end4.z - start4.z) * eased + arc4Z,
+                    start4.scale + (end4.scale - start4.scale) * eased,
+                    Math.sin(phase) * 8,
+                    0
+                );
+                
+                if (frame < totalFrames) {
+                    requestAnimationFrame(animateFrame);
+                } else {
+                    // Fin de l'animation - on garde les dernières positions calculées
+                    // et on ajuste juste les z-index
+                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                        const el = document.getElementById('p' + state.cardInSlot[slotIdx]);
+                        el.style.zIndex = (100 - slotIdx * 20);
+                        // PAS de reset du transform ici - la lévitation s'en charge
+                    }
+                    isAnimating = false;
+                    setTimeout(startLevitation, 50);
+                }
+            }
+            requestAnimationFrame(animateFrame);
+        }
+
+        // Auto-start désactivé - contrôle via control.html
+        // window.addEventListener('load', () => setTimeout(animateIN, 500));
+        
+        // Fonction pour cacher les cartes (MASQUER)
+        function hideCards() {
+            console.log('🙈 Masquage des cartes');
+            stopLevitation();
+            
+            // Cacher le header
+            document.getElementById('header').classList.remove('visible');
+            
+            // Cacher toutes les cartes avec animation
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById('p' + i);
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                el.style.opacity = '0';
+                el.style.transform = getTransform(0, 0, -500, 0.5, 0, 0);
+            }
+        }
+        
+        // Contrôle externe via messages
+        window.addEventListener('message', e => {
+            if (e.data === 'ANIMATE_IN') animateIN();
+            else if (e.data === 'NEXT_FOCUS') nextFocus();
+        });
+        
+        // Contrôle via page remote (localStorage)
+        const COMMAND_KEY = 'widgetOrbital_command';
+        const REMOTE_STATE_KEY = 'widgetOrbital_remote_v416';
+        
+        window.addEventListener('storage', (e) => {
+            if (e.key === COMMAND_KEY) {
+                try {
+                    const data = JSON.parse(localStorage.getItem(COMMAND_KEY));
+                    if (!data) return;
+                    
+                    // Mettre à jour l'état depuis la remote
+                    if (data.state) {
+                        state.headerX = data.state.headerX;
+                        state.headerY = data.state.headerY;
+                        state.centerX = data.state.centerX;
+                        state.centerY = data.state.centerY;
+                        state.slots = data.state.slots;
+                        state.speedIN = data.state.speedIN;
+                        state.speedNEXT = data.state.speedNEXT;
+                        state.speedLev = data.state.speedLev;
+                        
+                        // Appliquer les changements visuels
+                        document.getElementById('header').style.left = state.headerX + 'px';
+                        document.getElementById('header').style.top = state.headerY + 'px';
+                        document.getElementById('orbitCenter').style.left = state.centerX + '%';
+                        document.getElementById('orbitCenter').style.top = state.centerY + '%';
+                        
+                        // Mettre à jour les positions des cartes (si pas en animation)
+                        if (!isAnimating && levitationEnabled) {
+                            stopLevitation();
+                            for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                                const cardNum = state.cardInSlot[slotIdx];
+                                const el = document.getElementById('p' + cardNum);
+                                el.style.transform = getSlotTransform(slotIdx);
+                            }
+                            setTimeout(startLevitation, 100);
+                        }
+                    }
+                    
+                    // Exécuter les commandes
+                    if (data.command === 'ANIMATE_IN') animateIN();
+                    else if (data.command === 'NEXT_FOCUS') nextFocus();
+                    
+                } catch (err) {
+                    console.error('Error parsing remote command:', err);
+                }
+            }
+        });
+        
+        // Charger l'état initial depuis la remote si disponible
+        try {
+            const remoteState = localStorage.getItem(REMOTE_STATE_KEY);
+            if (remoteState) {
+                const saved = JSON.parse(remoteState);
+                Object.assign(state, saved);
+                document.getElementById('header').style.left = state.headerX + 'px';
+                document.getElementById('header').style.top = state.headerY + 'px';
+                document.getElementById('orbitCenter').style.left = state.centerX + '%';
+                document.getElementById('orbitCenter').style.top = state.centerY + '%';
+            }
+        } catch (e) {}
+        
+        // Initialiser la connexion WebSocket
+        connect();
+        
+        window.triggerIN = animateIN;
+        window.triggerNEXT = nextFocus;
+        
+        // Fonctions du panneau de contrôle
+        function togglePanel() {
+            document.getElementById('controlPanel').classList.toggle('visible');
+        }
+        
+        function updateControl(prop, value) {
+            value = parseFloat(value);
+            state[prop] = value;
+            document.getElementById('val-' + prop).textContent = value;
+            
+            if (prop === 'headerX') {
+                document.getElementById('header').style.left = value + 'px';
+            } else if (prop === 'headerY') {
+                document.getElementById('header').style.top = value + 'px';
+            } else if (prop === 'centerX') {
+                document.getElementById('orbitCenter').style.left = value + '%';
+            } else if (prop === 'centerY') {
+                document.getElementById('orbitCenter').style.top = value + '%';
+            }
+            
+            applySlotPositions();
+            saveState();
+        }
+        
+        function updateSlot(slotIdx, prop, value) {
+            value = parseFloat(value);
+            state.slots[slotIdx][prop] = value;
+            document.getElementById('val-slot' + slotIdx + prop.charAt(0)).textContent = value;
+            applySlotPositions();
+            saveState();
+        }
+        
+        function applySlotPositions() {
+            if (isAnimating) return;
+            stopLevitation();
+            for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                const cardNum = state.cardInSlot[slotIdx];
+                const el = document.getElementById('p' + cardNum);
+                el.style.transform = getSlotTransform(slotIdx);
+            }
+            setTimeout(startLevitation, 100);
+        }
+        
+        function saveState() {
+            localStorage.setItem('widgetOrbital_state_v420', JSON.stringify(state));
+        }
+        
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('widgetOrbital_state_v420');
+                if (saved) {
+                    const s = JSON.parse(saved);
+                    Object.assign(state, s);
+                    
+                    // Mettre à jour les contrôles
+                    document.getElementById('ctrl-headerX').value = state.headerX;
+                    document.getElementById('val-headerX').textContent = state.headerX;
+                    document.getElementById('ctrl-headerY').value = state.headerY;
+                    document.getElementById('val-headerY').textContent = state.headerY;
+                    document.getElementById('ctrl-centerX').value = state.centerX;
+                    document.getElementById('val-centerX').textContent = state.centerX;
+                    document.getElementById('ctrl-centerY').value = state.centerY;
+                    document.getElementById('val-centerY').textContent = state.centerY;
+                    
+                    for (let i = 0; i < 4; i++) {
+                        document.getElementById('ctrl-slot' + i + 'x').value = state.slots[i].x;
+                        document.getElementById('val-slot' + i + 'x').textContent = state.slots[i].x;
+                        document.getElementById('ctrl-slot' + i + 'y').value = state.slots[i].y;
+                        document.getElementById('val-slot' + i + 'y').textContent = state.slots[i].y;
+                        document.getElementById('ctrl-slot' + i + 's').value = state.slots[i].scale;
+                        document.getElementById('val-slot' + i + 's').textContent = state.slots[i].scale;
+                    }
+                    
+                    document.getElementById('header').style.left = state.headerX + 'px';
+                    document.getElementById('header').style.top = state.headerY + 'px';
+                    document.getElementById('orbitCenter').style.left = state.centerX + '%';
+                    document.getElementById('orbitCenter').style.top = state.centerY + '%';
+                }
+            } catch (e) {}
+        }
+        
+        // Charger l'état sauvegardé
+        loadState();
+
+        // ============================================
+        // GRAPHIQUE 3D (via iframe graph-embed.html)
+        // ============================================
+        
+        let graphVisible = false;
+        
+        function showGraph() {
+            console.log('📈 Affichage graphique');
+            
+            // Cacher les cartes P1-P4
+            hideCards();
+            
+            const graphFrame = document.getElementById('graphFrame');
+            
+            // Charger le graphique dans l'iframe si pas déjà chargé
+            if (!graphFrame.src || graphFrame.src === '' || graphFrame.src === window.location.href || graphFrame.src.endsWith('/')) {
+                console.log('📈 Chargement graph-embed.html');
+                graphFrame.src = 'graph-embed.html';
+            }
+            
+            // Afficher le container
+            document.getElementById('graphContainer').classList.add('visible');
+            
+            // Envoyer commande SHOW au graphique après chargement
+            setTimeout(() => {
+                if (graphFrame.contentWindow) {
+                    graphFrame.contentWindow.postMessage({ command: 'SHOW_GRAPH' }, '*');
+                }
+            }, 1000);
+            
+            graphVisible = true;
+        }
+        
+        function hideGraph() {
+            console.log('📈 Masquage graphique');
+            
+            const container = document.getElementById('graphContainer');
+            const graphFrame = document.getElementById('graphFrame');
+            
+            container.classList.remove('visible');
+            
+            // Envoyer commande HIDE au graphique
+            if (graphFrame && graphFrame.contentWindow) {
+                graphFrame.contentWindow.postMessage({ command: 'HIDE_GRAPH' }, '*');
+            }
+            
+            graphVisible = false;
+        }
+        
+        // Écouter les messages du graphique
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'GRAPH_READY') {
+                console.log('✅ Graphique prêt');
+            }
+        });
+    </script>
+</body>
+</html>

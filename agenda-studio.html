@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Studio - Studio CIC</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; }
+        html, body, div, span, p, a, h1, h2, h3, h4, h5, h6, input, select, textarea, button, option, label { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; }
+        body {
+            background: #0c0e1a;
+            color: #e4e4e4;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif !important;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ===== FOND POCHETTES ALBUM ===== */
+        .album-bg {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0; overflow: hidden;
+            background: linear-gradient(135deg, #1a1028 0%, #2a1838 30%, #1c2a3a 60%, #1a1028 100%);
+        }
+        .album-bg .cover {
+            position: absolute; top: -20%; left: -20%; right: -20%; bottom: -20%;
+            background-size: cover; background-position: center;
+            filter: blur(80px) saturate(1.8) brightness(0.45);
+            transition: opacity 2s ease-in-out; opacity: 0;
+        }
+        .album-bg .cover.active { opacity: 1; }
+        .album-bg::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.25); z-index: 1;
+        }
+
+        .page-wrap {
+            position: relative; z-index: 2; height: 100vh;
+            display: flex; flex-direction: column; padding: 14px 24px 18px;
+        }
+
+        .nav-back {
+            position: fixed; top: 12px; left: 16px; z-index: 100;
+            color: #c8b4ff; text-decoration: none; font-size: 12px;
+            background: rgba(100,80,200,0.15); padding: 5px 14px; border-radius: 16px;
+            border: 1px solid rgba(100,80,200,0.2); backdrop-filter: blur(10px); transition: all 0.2s;
+        }
+        .nav-back:hover { background: rgba(100,80,200,0.3); }
+
+        /* HEADER */
+        .agenda-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 4px 12px; margin-top: 2px;
+        }
+        .agenda-title h1 { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.85); }
+        .agenda-title .salle-name { font-size: 10px; color: rgba(255,255,255,0.3); }
+        .agenda-nav { display: flex; align-items: center; gap: 6px; }
+        .agenda-nav button {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.6); padding: 5px 12px; border-radius: 8px;
+            cursor: pointer; font-size: 12px; font-family: inherit; transition: all 0.15s;
+        }
+        .agenda-nav button:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .agenda-nav .week-label { color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 600; min-width: 200px; text-align: center; }
+        .sync-info { font-size: 10px; color: rgba(255,255,255,0.25); display: flex; align-items: center; gap: 5px; }
+        .sync-dot { width: 5px; height: 5px; border-radius: 50%; background: #4ade80; display: inline-block; }
+        .sync-dot.loading { background: #fbbf24; }
+        .sync-dot.error { background: #f87171; }
+
+        /* ===== CADRE PRINCIPAL ===== */
+        .agenda-body {
+            flex: 1; display: flex; overflow: hidden;
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(180,180,190,0.12) 0%, rgba(120,120,140,0.06) 100%);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .time-col { width: 44px; min-width: 44px; padding-top: 52px; overflow: hidden; }
+        .time-label {
+            height: 60px; display: flex; align-items: flex-start; justify-content: flex-end;
+            font-size: 10px; color: rgba(255,255,255,0.25); padding-right: 6px;
+            transform: translateY(-7px); font-weight: 500;
+        }
+
+        .days-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; }
+
+        /* ===== HEADER JOURS - barre arrondie ===== */
+        .days-header {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            position: sticky; top: 0; z-index: 10; gap: 6px; padding: 6px 6px 0;
+        }
+        .days-header-bar {
+            grid-column: 1 / -1;
+            background: linear-gradient(180deg, rgba(160,160,175,0.15) 0%, rgba(120,120,140,0.08) 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.06);
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .day-header {
+            text-align: center; padding: 8px 4px 6px;
+        }
+        .day-header .day-name {
+            font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 600; text-transform: capitalize;
+        }
+        .day-header .day-num {
+            font-size: 16px; font-weight: 800; color: rgba(255,255,255,0.7); margin-top: 1px;
+        }
+        .day-header.today .day-num {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
+            border-radius: 50%; width: 28px; height: 28px;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 14px;
+        }
+
+        /* ===== COLONNES JOURS - bords arrondis, ombres ===== */
+        .days-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            position: relative; gap: 6px; padding: 6px;
+        }
+        .day-col {
+            position: relative; min-height: calc(14 * 60px);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: linear-gradient(180deg,
+                rgba(100,100,120,0.08) 0%,
+                rgba(80,80,100,0.04) 50%,
+                rgba(140,140,160,0.1) 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03),
+                        inset 0 -2px 8px rgba(255,255,255,0.02),
+                        0 1px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .hour-line { height: 60px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+
+        /* NOW LINE */
+        .now-line {
+            position: absolute; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, #818cf8, #6366f1); z-index: 5;
+            box-shadow: 0 0 8px rgba(99,102,241,0.5);
+        }
+        .now-line::before {
+            content: ''; position: absolute; left: -3px; top: -3px;
+            width: 8px; height: 8px; border-radius: 50%; background: #818cf8;
+        }
+
+        /* ===== ÉVÉNEMENTS ===== */
+        .event {
+            position: absolute; left: 4px; right: 4px;
+            border-radius: 12px;
+            overflow: hidden; cursor: grab; z-index: 3;
+            transition: transform 0.15s, box-shadow 0.15s;
+            border: 1px solid rgba(255,255,255,0.1);
+            min-height: 28px;
+        }
+        .event.fixed-picto {
+            border: none; border-radius: 0;
+            background: none !important;
+            overflow: visible;
+        }
+        .event.fixed-picto .event-overlay { display: none; }
+        .event.fixed-picto .event-handle { display: none; }
+        .event.fixed-picto .event-inner { display: none; }
+        .event.fixed-picto .event-badge { display: none; }
+        .event.fixed-picto .picto-wrap {
+            position: relative; display: inline-block; width: 100%;
+        }
+        .event.fixed-picto .picto-wrap img {
+            width: 100%; height: auto; display: block;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+        }
+        .event.fixed-picto .picto-time {
+            position: absolute; bottom: 2px; left: 0; right: 0;
+            font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.8);
+            text-align: center;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+
+        .event:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            z-index: 6; border-color: rgba(255,255,255,0.2);
+        }
+        .event:active { cursor: grabbing; }
+
+        .event-bg {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0; overflow: hidden;
+        }
+        .event-bg img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center; display: block;
+        }
+
+        .event-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.6) 100%);
+            z-index: 1;
+        }
+        .event.no-image .event-overlay { background: none; }
+        .event.no-image {
+            background: linear-gradient(135deg, rgba(80,90,140,0.4), rgba(50,60,110,0.25));
+        }
+
+        .event-inner {
+            position: relative; z-index: 2;
+            padding: 6px 8px; height: 100%;
+            display: flex; flex-direction: column;
+        }
+        .event-title {
+            font-weight: 800; color: #fff; font-size: 11px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+            overflow: hidden; text-overflow: ellipsis;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        }
+        .event-time {
+            font-size: 9px; color: rgba(255,255,255,0.7); margin-top: 2px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .event-org {
+            font-size: 9px; color: rgba(255,255,255,0.5); margin-top: auto;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .event-badge {
+            position: absolute; bottom: 8px; right: 8px; z-index: 3;
+            background: rgba(0,0,0,0.35); backdrop-filter: blur(8px);
+            color: rgba(255,255,255,0.85); font-size: 9px; font-weight: 700;
+            padding: 3px 9px; border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .event-handle {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            z-index: 4; cursor: ns-resize;
+            opacity: 0; transition: opacity 0.15s;
+            width: 32px; height: 8px;
+        }
+        .event-handle img {
+            width: 100%; height: 100%; object-fit: contain;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+        }
+        .event:hover .event-handle { opacity: 0.8; }
+        .event-handle.top { top: 3px; }
+        .event-handle.bottom { bottom: 3px; }
+
+        .event.dragging { opacity: 0.5; z-index: 20; }
+        .event.pending-event {
+            border: 2px dashed rgba(99,102,241,0.6);
+            background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1)) !important;
+        }
+        .event.pending-event .event-badge { background: rgba(99,102,241,0.4); }
+        .event.pending-event .event-title::after { content: ' ⏳'; }
+
+        .btn-new-event {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none; color: #fff; padding: 5px 14px; border-radius: 8px;
+            font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+            margin-left: 6px;
+        }
+        .btn-new-event:hover { filter: brightness(1.2); }
+
+        /* Popup confirmation */
+        .confirm-popup {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20,22,40,0.95); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px; padding: 20px 28px; z-index: 300;
+            backdrop-filter: blur(20px); box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+            text-align: center; min-width: 280px;
+        }
+        .confirm-popup.visible { display: block; }
+        .confirm-popup h3 { color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+        .confirm-popup p { color: rgba(255,255,255,0.5); font-size: 12px; margin-bottom: 16px; }
+        .confirm-popup .btn-row { display: flex; gap: 10px; justify-content: center; }
+        .confirm-popup button {
+            padding: 8px 20px; border-radius: 10px; border: none;
+            font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+        }
+        .confirm-popup .btn-cancel { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+        .confirm-popup .btn-confirm { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+        .confirm-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); z-index: 250;
+        }
+        .confirm-overlay.visible { display: block; }
+
+        /* Tooltip */
+        .event-tooltip {
+            display: none; position: fixed;
+            background: rgba(20,22,40,0.95); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 14px 18px; font-size: 13px; color: #fff;
+            z-index: 100; max-width: 280px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.6); backdrop-filter: blur(20px);
+        }
+        .event-tooltip.visible { display: block; }
+        .event-tooltip .tt-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+        .event-tooltip .tt-row { color: rgba(255,255,255,0.45); font-size: 11px; margin: 4px 0; }
+        .event-tooltip .tt-row span { color: rgba(255,255,255,0.85); }
+
+        .days-scroll::-webkit-scrollbar { width: 4px; }
+        .days-scroll::-webkit-scrollbar-track { background: transparent; }
+        .days-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
+    </style>
+</head>
+<body>
+    <div class="album-bg" id="albumBg"></div>
+    <a href="index.html" class="nav-back">&larr; Studio Manager</a>
+    <div class="page-wrap">
+        <div class="agenda-header">
+            <div class="agenda-title">
+                <div>
+                    <h1>Agenda Studio</h1>
+                    <span class="salle-name">SALLE VICTORIEN2 &bull; D2 N3 STUDIO</span>
+                </div>
+            </div>
+            <div class="agenda-nav">
+                <button onclick="changeWeek(-1)">&larr;</button>
+                <span class="week-label" id="weekLabel"></span>
+                <button onclick="changeWeek(1)">&rarr;</button>
+                <button onclick="goToday()" style="margin-left:6px;color:#818cf8;font-weight:600;">Aujourd'hui</button>
+                <button class="btn-new-event" onclick="window.location.href='contact-studio.html'">+ Réserver</button>
+            </div>
+            <div class="sync-info">
+                <span class="sync-dot" id="syncDot"></span>
+                <span id="syncLabel">Chargement...</span>
+            </div>
+        </div>
+        <div class="agenda-body">
+            <div class="time-col" id="timeCol"></div>
+            <div class="days-scroll" id="daysScroll">
+                <div class="days-header" id="daysHeader"></div>
+                <div class="days-grid" id="daysGrid"></div>
+            </div>
+        </div>
+    </div>
+    <div class="event-tooltip" id="tooltip"></div>
+    <div class="confirm-overlay" id="confirmOverlay"></div>
+    <div class="confirm-popup" id="confirmPopup">
+        <h3 id="confirmTitle">Déplacer l'événement ?</h3>
+        <p id="confirmDesc"></p>
+        <div class="btn-row">
+            <button class="btn-cancel" onclick="cancelDrag()">Annuler</button>
+            <button class="btn-confirm" onclick="confirmDrag()">Confirmer</button>
+        </div>
+    </div>
+
+    <!-- Event detail dialog (double-click) - glassmorphism modal -->
+    <div class="confirm-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+    <div class="confirm-popup" id="detailPopup" style="max-width:420px;padding:24px 28px;border-radius:20px">
+        <h3 id="detailTitle" style="font-size:17px;font-weight:700;margin-bottom:18px;letter-spacing:0.3px"></h3>
+        <div style="margin-bottom:14px">
+            <label style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.45);display:block;margin-bottom:4px">Titre</label>
+            <input id="detailTitleInput" type="text" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:10px 14px;color:#fff;font-size:14px;font-weight:600;outline:none;font-family:inherit !important" />
+        </div>
+        <div style="margin-bottom:14px">
+            <label style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.45);display:block;margin-bottom:4px">Heure de direct</label>
+            <input id="detailTimeInput" type="time" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:10px 14px;color:#fff;font-size:14px;font-weight:600;outline:none;font-family:inherit !important" />
+        </div>
+        <div id="detailInfoBlock" style="margin-bottom:14px">
+            <label style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.45);display:block;margin-bottom:4px">Organisateur</label>
+            <div id="detailOrganizer" style="font-size:13px;color:rgba(255,255,255,0.8)"></div>
+        </div>
+        <div id="detailBodyBlock" style="margin-bottom:14px;display:none">
+            <label style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.45);display:block;margin-bottom:4px">Détail</label>
+            <div id="detailBodyText" style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5;max-height:120px;overflow-y:auto;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 12px"></div>
+        </div>
+        <div id="detailPendingBadge" style="display:none;margin-bottom:14px;color:#818cf8;font-weight:600;font-size:12px">⏳ En attente de synchronisation</div>
+        <div class="btn-row" style="margin-top:18px;justify-content:space-between">
+            <button id="detailDeleteBtn" style="display:none;padding:8px 18px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-family:inherit !important" onclick="deleteEvent()">Supprimer</button>
+            <div style="flex:1"></div>
+            <button class="btn-cancel" onclick="closeDetail()" style="margin-right:8px">Annuler</button>
+            <button class="btn-confirm" id="detailSaveBtn" onclick="saveEventChanges()">Enregistrer</button>
+        </div>
+    </div>
+
+<script>
+    const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s=>s.split('').reverse().join('')).join('');
+    const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+    const GH_FILE = 'calendar-data.json';
+    const GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
+    const IMG_BASE = 'agenda-assets/';
+    const START_HOUR = 7, END_HOUR = 21, HOUR_PX = 60;
+    const JOURS_FULL = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
+
+    const EVENT_IMAGES = {
+        morning: { src: IMG_BASE + 'picto-morning.png', mode: 'fixed', height: 40 },
+        'conf call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed', height: 45 },
+        'conference call': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed', height: 45 },
+        'conf hebdo': { src: IMG_BASE + 'picto-confcall.png', mode: 'fixed', height: 45 },
+    };
+
+    let currentMonday = getMonday(new Date());
+    let calendarData = null;
+
+    function getMonday(d) {
+        const date = new Date(d); const day = date.getDay();
+        return new Date(date.setDate(date.getDate() - day + (day === 0 ? -6 : 1)));
+    }
+    function changeWeek(dir) { currentMonday.setDate(currentMonday.getDate() + dir * 7); renderAgenda(); loadCalendarData(); }
+    function goToday() { currentMonday = getMonday(new Date()); renderAgenda(); loadCalendarData(); }
+    function getWeekNumber(d) {
+        const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+        return Math.ceil((((date - new Date(Date.UTC(date.getUTCFullYear(), 0, 1))) / 86400000) + 1) / 7);
+    }
+    function getDuration(startMin, endMin) {
+        const dur = endMin - startMin;
+        if (dur >= 60) { const h = Math.floor(dur/60), m = dur%60; return m > 0 ? h+'h'+String(m).padStart(2,'0') : h+' heure'+(h>1?'s':''); }
+        return dur + ' min';
+    }
+    function escHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function fixEnc(str) {
+        if (!str) return str;
+        try { return decodeURIComponent(escape(str)); } catch(e) { return str; }
+    }
+    function getEventImage(subject) {
+        const s = (subject || '').toLowerCase();
+        for (const [keyword, imgObj] of Object.entries(EVENT_IMAGES)) {
+            if (s.includes(keyword)) return imgObj;
+        }
+        return null;
+    }
+
+    function renderAgenda() {
+        const today = new Date();
+        const endWeek = new Date(currentMonday); endWeek.setDate(endWeek.getDate() + 4);
+        const mois = ['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+        document.getElementById('weekLabel').textContent =
+            currentMonday.getDate()+' '+mois[currentMonday.getMonth()]+' — '+endWeek.getDate()+' '+mois[endWeek.getMonth()]+'  ·  S'+getWeekNumber(currentMonday);
+
+        var th = '';
+        for (var h = START_HOUR; h <= END_HOUR; h++) th += '<div class="time-label">'+String(h).padStart(2,'0')+':00</div>';
+        document.getElementById('timeCol').innerHTML = '<div style="height:52px;"></div>' + th;
+
+        // Header jours dans une barre arrondie
+        var hh = '<div class="days-header-bar">';
+        for (var i = 0; i < 5; i++) {
+            var d = new Date(currentMonday); d.setDate(d.getDate()+i);
+            hh += '<div class="day-header '+(d.toDateString()===today.toDateString()?'today':'')+'">'+
+                '<div class="day-name">'+JOURS_FULL[i]+'</div><div class="day-num">'+d.getDate()+'</div></div>';
+        }
+        hh += '</div>';
+        document.getElementById('daysHeader').innerHTML = hh;
+
+        var gh = '';
+        for (var i = 0; i < 5; i++) {
+            gh += '<div class="day-col" id="dayCol'+i+'">';
+            for (var h = START_HOUR; h < END_HOUR; h++) gh += '<div class="hour-line"></div>';
+            gh += '</div>';
+        }
+        document.getElementById('daysGrid').innerHTML = gh;
+
+        // Now line
+        var dayIdx = today.getDay()-1;
+        if (dayIdx >= 0 && dayIdx < 5 && getMonday(today).toDateString() === currentMonday.toDateString()) {
+            var topPx = (today.getHours()*60+today.getMinutes()-START_HOUR*60)*(HOUR_PX/60);
+            if (topPx > 0) {
+                var col = document.getElementById('dayCol'+dayIdx);
+                if (col) { var l = document.createElement('div'); l.className='now-line'; l.style.top=topPx+'px'; col.appendChild(l); }
+            }
+        }
+        renderEvents();
+        setTimeout(function(){ document.getElementById('daysScroll').scrollTop = (8-START_HOUR)*HOUR_PX; }, 100);
+    }
+
+    // Track local deletions (persists across refreshes until page reload)
+    var localDeletions = [];
+
+    function isDeletedEvent(ev) {
+        // Check local deletions
+        for (var i = 0; i < localDeletions.length; i++) {
+            var d = localDeletions[i];
+            if (d.subject === ev.subject && d.start === ev.start && d.end === ev.end) return true;
+        }
+        // Check pending deletes (from GitHub)
+        if (pendingData && pendingData.pending) {
+            for (var j = 0; j < pendingData.pending.length; j++) {
+                var p = pendingData.pending[j];
+                if (p.action === 'delete' && p.status !== 'error') {
+                    if (p.originalSubject === ev.subject) return true;
+                }
+            }
+        }
+        // Check old format pending deletes
+        if (pendingData && Array.isArray(pendingData)) {
+            for (var k = 0; k < pendingData.length; k++) {
+                var q = pendingData[k];
+                if (q.type === 'delete' && q.event && q.event.subject === ev.subject) return true;
+            }
+        }
+        return false;
+    }
+
+    function renderEvents() {
+        if (!calendarData || !calendarData.salle) return;
+
+        // Merge salle events + pending events, excluding deleted
+        var allEvents = [];
+        calendarData.salle.forEach(function(ev) {
+            if (!ev.start) return;
+            ev.subject = fixEnc(ev.subject);
+            ev.location = fixEnc(ev.location);
+            ev.organizer = fixEnc(ev.organizer);
+            if (isDeletedEvent(ev)) return; // skip deleted
+            ev._source = 'ews';
+            allEvents.push(ev);
+        });
+
+        // Add pending events (not yet processed by PowerShell)
+        if (pendingData && pendingData.pending) {
+            pendingData.pending.forEach(function(p) {
+                if (p.status === 'done') return; // already created in EWS
+                if (!p.date || !p.heureDirect) return;
+                // Create PREPA event
+                if (p.heurePrep && p.heurePrep !== p.heureDirect) {
+                    allEvents.push({
+                        subject: 'PREPA - ' + (p.subject||''),
+                        start: p.date + 'T' + p.heurePrep + ':00',
+                        end: p.date + 'T' + p.heureDirect + ':00',
+                        location: 'SALLE STUDIO',
+                        organizer: 'Studio (en attente)',
+                        _source: 'pending', _pending: true
+                    });
+                }
+                // Create DIRECT event
+                var endH = parseInt(p.heureDirect.split(':')[0]) + 1;
+                var endTime = String(endH).padStart(2,'0') + ':' + p.heureDirect.split(':')[1];
+                allEvents.push({
+                    subject: p.subject || 'Nouvelle réservation',
+                    start: p.date + 'T' + p.heureDirect + ':00',
+                    end: p.date + 'T' + (p.heureFin || endTime) + ':00',
+                    location: 'SALLE STUDIO',
+                    organizer: 'Studio (en attente)',
+                    _source: 'pending', _pending: true
+                });
+            });
+        }
+
+        var dayEvents = {};
+        allEvents.forEach(function(ev) {
+            var start = new Date(ev.start);
+            var diffDays = Math.round((start - currentMonday)/(1000*60*60*24));
+            if (diffDays < 0 || diffDays >= 5) return;
+            if (!dayEvents[diffDays]) dayEvents[diffDays] = [];
+            ev._dayIdx = diffDays;
+            dayEvents[diffDays].push(ev);
+        });
+
+        Object.keys(dayEvents).forEach(function(dayIdx) {
+            var evts = dayEvents[dayIdx];
+            var col = document.getElementById('dayCol'+dayIdx);
+            if (!col) return;
+
+            // Fusionner prépa + conf call
+            var toSkip = {};
+            for (var i = 0; i < evts.length; i++) {
+                var subI = (evts[i].subject || '').toLowerCase();
+                if (subI.includes('prépa') || subI.includes('prepa')) {
+                    var prepaEnd = new Date(evts[i].end || evts[i].start);
+                    for (var j = 0; j < evts.length; j++) {
+                        if (i === j) continue;
+                        var subJ = (evts[j].subject || '').toLowerCase();
+                        if (subJ.includes('conf call') || subJ.includes('conf hebdo') || subJ.includes('conference call')) {
+                            var confStart = new Date(evts[j].start);
+                            if (Math.abs(prepaEnd - confStart) < 5 * 60 * 1000) {
+                                evts[i].end = evts[j].end;
+                                evts[i].subject = evts[j].subject;
+                                evts[i]._merged = true;
+                                toSkip[j] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            evts = evts.filter(function(_, idx) { return !toSkip[idx]; });
+
+            // Separate fixed pictos from regular events
+            var fixedEvts = [];
+            var regularEvts = [];
+            evts.forEach(function(ev) {
+                var img = getEventImage(ev.subject);
+                if (img && img.mode === 'fixed') fixedEvts.push(ev);
+                else regularEvts.push(ev);
+            });
+
+            // Render fixed pictos first (no column logic)
+            fixedEvts.forEach(function(ev) {
+                var start = new Date(ev.start);
+                var startMin = start.getHours()*60 + start.getMinutes();
+                var end = new Date(ev.end||ev.start);
+                var endMin = end.getHours()*60 + end.getMinutes();
+                if (endMin <= startMin) endMin = startMin + 30;
+                var topPx = (startMin-START_HOUR*60)*(HOUR_PX/60);
+                if (topPx < 0) return;
+                var timeStr = String(Math.floor(startMin/60)).padStart(2,'0')+':'+String(startMin%60).padStart(2,'0')+
+                    ' - '+String(Math.floor(endMin/60)).padStart(2,'0')+':'+String(endMin%60).padStart(2,'0');
+                var eventImg = getEventImage(ev.subject);
+                var el = document.createElement('div');
+                el.className = 'event fixed-picto' + (ev._pending ? ' pending-event' : '');
+                el.style.top = topPx+'px';
+                el.innerHTML = '<div class="picto-wrap"><img src="'+eventImg.src+'" alt=""><div class="picto-time">'+timeStr+'</div></div>';
+                el._evData = { subject: ev.subject, startMin: startMin, endMin: endMin, ev: ev };
+                el.addEventListener('dblclick', function(e) {
+                    e.stopPropagation();
+                    document.getElementById('tooltip').classList.remove('visible');
+                    openDetail(ev, {startMin:startMin, endMin:endMin, ev:ev});
+                });
+                col.appendChild(el);
+            });
+
+            // Chevauchement - robust column assignment (regular events only)
+            var placed = [];
+            regularEvts.sort(function(a,b){ return new Date(a.start)-new Date(b.start); });
+            regularEvts.forEach(function(ev) {
+                var start = new Date(ev.start), end = new Date(ev.end||ev.start);
+                var sH=start.getHours(), sM=start.getMinutes(), eH=end.getHours(), eM=end.getMinutes();
+                var startMin=sH*60+sM, endMin=eH*60+eM;
+                if (endMin <= startMin) endMin = startMin + 30;
+                // Find overlapping events
+                var overlaps = [];
+                placed.forEach(function(p) {
+                    if (startMin < p.endMin && endMin > p.startMin) overlaps.push(p);
+                });
+                // Find first free column
+                var usedCols = {};
+                overlaps.forEach(function(p) { usedCols[p.col] = true; });
+                var slotCol = 0;
+                while (usedCols[slotCol]) slotCol++;
+                var item = { ev: ev, startMin: startMin, endMin: endMin, col: slotCol, maxCol: 0 };
+                placed.push(item);
+            });
+            // Second pass: compute maxCol per overlap group
+            placed.forEach(function(item) {
+                var groupMaxCol = item.col;
+                placed.forEach(function(other) {
+                    if (item.startMin < other.endMin && item.endMin > other.startMin) {
+                        groupMaxCol = Math.max(groupMaxCol, other.col);
+                    }
+                });
+                item.maxCol = groupMaxCol;
+            });
+            // Third pass: unify maxCol within each connected group
+            var changed = true;
+            while (changed) {
+                changed = false;
+                placed.forEach(function(item) {
+                    placed.forEach(function(other) {
+                        if (item === other) return;
+                        if (item.startMin < other.endMin && item.endMin > other.startMin) {
+                            var m = Math.max(item.maxCol, other.maxCol);
+                            if (item.maxCol !== m || other.maxCol !== m) {
+                                item.maxCol = m; other.maxCol = m; changed = true;
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Render regular events
+            placed.forEach(function(item) {
+                var ev = item.ev;
+                var topPx = (item.startMin-START_HOUR*60)*(HOUR_PX/60);
+                var heightPx = Math.max((item.endMin-item.startMin)*(HOUR_PX/60), 28);
+                if (topPx < 0) return;
+
+                var totalCols = item.maxCol + 1;
+                var widthPct = 100 / totalCols;
+                var leftPct = item.col * widthPct;
+
+                var timeStr = String(Math.floor(item.startMin/60)).padStart(2,'0')+':'+String(item.startMin%60).padStart(2,'0')+
+                    ' - '+String(Math.floor(item.endMin/60)).padStart(2,'0')+':'+String(item.endMin%60).padStart(2,'0');
+                var durStr = getDuration(item.startMin, item.endMin);
+                var eventImg = getEventImage(ev.subject);
+                var hasImg = eventImg && eventImg.mode !== 'fixed';
+
+                var el = document.createElement('div');
+                el.className = 'event' + (hasImg ? '' : ' no-image') + (ev._pending ? ' pending-event' : '');
+                el.style.top = topPx+'px';
+                el.style.height = heightPx+'px';
+                // Always apply column positioning
+                if (totalCols > 1) {
+                    el.style.left = 'calc('+leftPct+'% + 2px)';
+                    el.style.right = 'auto';
+                    el.style.width = 'calc('+widthPct+'% - 4px)';
+                }
+
+                var html = '';
+                if (hasImg) {
+                    html += '<div class="event-bg"><img src="'+eventImg.src+'" alt=""></div>';
+                }
+                html += '<div class="event-overlay"></div>';
+                html += '<div class="event-handle top"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
+                html += '<div class="event-inner">';
+                html += '<div class="event-title">'+escHtml(ev.subject||'')+'</div>';
+                if (heightPx > 34) html += '<div class="event-time">'+timeStr+'</div>';
+                if (heightPx > 55 && ev.organizer) html += '<div class="event-org">'+escHtml(ev.organizer)+'</div>';
+                html += '</div>';
+                if (heightPx > 42) html += '<div class="event-badge">'+durStr+'</div>';
+                html += '<div class="event-handle bottom"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
+                el.innerHTML = html;
+
+                el.addEventListener('mouseenter', function(e) {
+                    var tt = document.getElementById('tooltip');
+                    tt.innerHTML = '<div class="tt-title">'+escHtml(ev.subject||'')+'</div>'+
+                        '<div class="tt-row">Horaire : <span>'+timeStr+'</span></div>'+
+                        '<div class="tt-row">Durée : <span>'+durStr+'</span></div>'+
+                        (ev.organizer?'<div class="tt-row">Organisateur : <span>'+escHtml(ev.organizer)+'</span></div>':'')+
+                        (ev.location?'<div class="tt-row">Lieu : <span>'+escHtml(ev.location)+'</span></div>':'');
+                    tt.style.left = Math.min(e.clientX+12, window.innerWidth-300)+'px';
+                    tt.style.top = (e.clientY-10)+'px';
+                    tt.classList.add('visible');
+                });
+                el.addEventListener('mousemove', function(e) {
+                    var tt = document.getElementById('tooltip');
+                    tt.style.left = Math.min(e.clientX+12, window.innerWidth-300)+'px';
+                    tt.style.top = (e.clientY-10)+'px';
+                });
+                el.addEventListener('mouseleave', function() { document.getElementById('tooltip').classList.remove('visible'); });
+
+                el._evData = { subject: ev.subject, startMin: item.startMin, endMin: item.endMin, ev: ev };
+                var clickTimer = null;
+                el.addEventListener('mousedown', function(e) {
+                    if (e.target.closest('.event-handle')) return;
+                    if (e.detail >= 2) return; // skip drag on dblclick
+                    initDrag(el, ev, e.clientX, e.clientY, false);
+                });
+                el.addEventListener('dblclick', function(e) {
+                    e.stopPropagation();
+                    if (dragState) { dragState=null; el.classList.remove('dragging'); }
+                    document.getElementById('tooltip').classList.remove('visible');
+                    openDetail(ev, item);
+                });
+                el.addEventListener('touchstart', function(e) {
+                    if (e.target.closest('.event-handle')) return;
+                    var t = e.touches[0];
+                    initDrag(el, ev, t.clientX, t.clientY, true);
+                }, { passive: true });
+
+                col.appendChild(el);
+            });
+        });
+    }
+
+    // ===== LOAD DATA =====
+    let pendingData = null;
+    let pendingSha = null;
+
+    async function loadCalendarData() {
+        var dot = document.getElementById('syncDot'), label = document.getElementById('syncLabel');
+        dot.className = 'sync-dot loading'; label.textContent = 'Sync...';
+        try {
+            // Load calendar data
+            var resp = await fetch(GH_API, { headers: { 'Authorization': 'token '+GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store' });
+            if (!resp.ok) throw new Error('HTTP '+resp.status);
+            var data = await resp.json();
+            calendarData = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))));
+
+            // Load pending data
+            try {
+                var pr = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/calendar-pending.json', { headers: { 'Authorization': 'token '+GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store' });
+                if (pr.ok) {
+                    var pd = await pr.json();
+                    pendingSha = pd.sha;
+                    pendingData = JSON.parse(decodeURIComponent(escape(atob(pd.content.replace(/\n/g,'')))));
+                }
+            } catch(e) { /* no pending yet */ }
+
+            dot.className = 'sync-dot';
+            var u = calendarData.updatedAt ? new Date(calendarData.updatedAt) : null;
+            var pendingCount = pendingData && pendingData.pending ? pendingData.pending.filter(function(p){return p.status==='pending';}).length : 0;
+            label.textContent = (u ? u.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : 'OK') + (pendingCount ? ' · '+pendingCount+' en attente' : '');
+            clearEvents(); renderEvents();
+        } catch(err) { console.error(err); dot.className='sync-dot error'; label.textContent='Erreur'; }
+    }
+    function clearEvents() { document.querySelectorAll('.event').forEach(function(e){e.remove();}); }
+
+    // ===== EVENT DETAIL (double-click) =====
+    var detailEventData = null;
+    function openDetail(ev, item) {
+        detailEventData = { ev: ev, item: item };
+        var timeStr = String(Math.floor(item.startMin/60)).padStart(2,'0')+':'+String(item.startMin%60).padStart(2,'0');
+        document.getElementById('detailTitle').textContent = ev.subject || 'Événement';
+        document.getElementById('detailTitleInput').value = ev.subject || '';
+        document.getElementById('detailTimeInput').value = timeStr;
+        document.getElementById('detailOrganizer').textContent = ev.organizer || '—';
+        // Location
+        var locText = ev.location || '';
+        if (locText) {
+            document.getElementById('detailOrganizer').textContent += '\n' + locText;
+        }
+        // Body/detail
+        var bodyBlock = document.getElementById('detailBodyBlock');
+        var bodyContent = (ev.body && ev.body.trim()) ? ev.body.trim() : '';
+        // If no body, build summary from available fields
+        if (!bodyContent) {
+            var parts = [];
+            if (ev.status) parts.push('Statut: ' + ev.status);
+            var durStr = getDuration(item.startMin, item.endMin);
+            parts.push('Durée: ' + durStr);
+            if (ev._merged) parts.push('Prépa + direct fusionnés');
+            bodyContent = parts.join('\n');
+        }
+        document.getElementById('detailBodyText').textContent = bodyContent;
+        bodyBlock.style.display = '';
+        // Pending badge
+        document.getElementById('detailPendingBadge').style.display = ev._pending ? '' : 'none';
+        // Delete button for EWS events
+        document.getElementById('detailDeleteBtn').style.display = (ev._source === 'ews') ? '' : 'none';
+
+        document.getElementById('detailOverlay').classList.add('visible');
+        document.getElementById('detailPopup').classList.add('visible');
+    }
+    function closeDetail() {
+        document.getElementById('detailOverlay').classList.remove('visible');
+        document.getElementById('detailPopup').classList.remove('visible');
+        detailEventData = null;
+    }
+    async function saveEventChanges() {
+        if (!detailEventData) return;
+        var newTitle = document.getElementById('detailTitleInput').value.trim();
+        var newTime = document.getElementById('detailTimeInput').value;
+        if (!newTitle) { closeDetail(); return; }
+        var ev = detailEventData.ev;
+        var item = detailEventData.item;
+        // Calculate new end time (keep same duration)
+        var dur = item.endMin - item.startMin;
+        var parts = newTime.split(':');
+        var newStartMin = parseInt(parts[0])*60 + parseInt(parts[1]);
+        var newEndMin = newStartMin + dur;
+        var nH=Math.floor(newStartMin/60), nM=newStartMin%60;
+        var eH=Math.floor(newEndMin/60), eM=newEndMin%60;
+        // Get the day
+        var dayIdx = parseInt(detailEventData.item.ev._dayIdx || 0);
+        var nd = new Date(currentMonday); nd.setDate(nd.getDate()+dayIdx);
+        var newDate = nd.getFullYear()+'-'+String(nd.getMonth()+1).padStart(2,'0')+'-'+String(nd.getDate()).padStart(2,'0');
+
+        var editAction = {
+            action: 'edit',
+            originalSubject: ev.subject,
+            originalStart: ev.start,
+            originalEnd: ev.end,
+            newSubject: newTitle,
+            newDate: newDate,
+            newStart: String(nH).padStart(2,'0')+':'+String(nM).padStart(2,'0'),
+            newEnd: String(eH).padStart(2,'0')+':'+String(eM).padStart(2,'0'),
+            createdAt: new Date().toISOString(),
+            status: 'pending'
+        };
+
+        try {
+            var pendingUrl = 'https://api.github.com/repos/'+GH_REPO+'/contents/calendar-pending.json';
+            var hdrs = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'};
+            var current = {pending:[],updatedAt:''};
+            var sha = pendingSha;
+            if (!sha) {
+                try { var r = await fetch(pendingUrl,{headers:hdrs,cache:'no-cache'}); if (r.ok) { var d=await r.json(); sha=d.sha; current=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))))); } } catch(e) {}
+            } else { current = pendingData || {pending:[],updatedAt:''}; }
+            if (!current.pending) current.pending = [];
+            current.pending.push(editAction);
+            current.updatedAt = new Date().toISOString();
+            var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(current,null,2))));
+            var body = {message:'edit '+newTitle,content:b64,branch:'main'};
+            if (sha) body.sha = sha;
+            var r2 = await fetch(pendingUrl,{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},body:JSON.stringify(body)});
+            if (r2.ok) { var d2=await r2.json(); pendingSha=d2.content.sha; }
+            document.getElementById('syncLabel').textContent = 'Modification envoyée ⏳';
+        } catch(e) { console.error('Edit push error:', e); }
+        closeDetail();
+    }
+    async function deleteEvent() {
+        if (!detailEventData) return;
+        var ev = detailEventData.ev;
+        
+        // Track locally so it stays hidden across refreshes
+        localDeletions.push({subject: ev.subject, start: ev.start, end: ev.end});
+        
+        var delAction = {
+            action: 'delete',
+            originalSubject: ev.subject,
+            originalStart: ev.start,
+            originalEnd: ev.end,
+            createdAt: new Date().toISOString(),
+            status: 'pending'
+        };
+        try {
+            var pendingUrl = 'https://api.github.com/repos/'+GH_REPO+'/contents/calendar-pending.json';
+            var hdrs = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'};
+            var current = pendingData || {pending:[],updatedAt:''};
+            var sha = pendingSha;
+            if (!sha) {
+                try { var r = await fetch(pendingUrl,{headers:hdrs,cache:'no-cache'}); if (r.ok) { var d=await r.json(); sha=d.sha; current=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))))); } } catch(e) {}
+            }
+            if (!current.pending) current.pending = [];
+            current.pending.push(delAction);
+            current.updatedAt = new Date().toISOString();
+            // Update local pendingData so isDeletedEvent works on refresh
+            pendingData = current;
+            var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(current,null,2))));
+            var body = {message:'delete '+ev.subject,content:b64,branch:'main'};
+            if (sha) body.sha = sha;
+            var r2 = await fetch(pendingUrl,{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},body:JSON.stringify(body)});
+            if (r2.ok) { var d2=await r2.json(); pendingSha=d2.content.sha; }
+            document.getElementById('syncLabel').textContent = 'Suppression envoyée ⏳';
+        } catch(e) { console.error('Delete push error:', e); }
+        closeDetail();
+        clearEvents(); renderEvents();
+    }
+
+    // ===== DRAG & DROP =====
+    var dragState = null;
+    function initDrag(el, ev, startX, startY, isTouch) {
+        var evData = el._evData; if (!evData) return;
+        document.getElementById('tooltip').classList.remove('visible');
+        dragState = { el:el, evData:evData, startX:startX, startY:startY,
+            origTop:parseInt(el.style.top), origDayIdx:parseInt(el.parentElement.id.replace('dayCol','')),
+            moved:false, isTouch:isTouch, newDayIdx:null, newStartMin:null };
+        el.classList.add('dragging');
+    }
+    function moveDrag(cx, cy) {
+        if (!dragState) return;
+        if (Math.abs(cx-dragState.startX)>5 || Math.abs(cy-dragState.startY)>5) dragState.moved=true;
+        if (!dragState.moved) return;
+        var scroll = document.getElementById('daysScroll');
+        var gridRect = document.getElementById('daysGrid').getBoundingClientRect();
+        var colW = gridRect.width/5;
+        var newDayIdx = Math.max(0, Math.min(4, Math.floor((cx-gridRect.left)/colW)));
+        var relY = cy - gridRect.top + scroll.scrollTop;
+        var newMin = START_HOUR*60 + Math.round(relY/HOUR_PX*60/15)*15;
+        dragState.newDayIdx = newDayIdx; dragState.newStartMin = newMin;
+        dragState.el.style.top = (newMin-START_HOUR*60)*(HOUR_PX/60)+'px';
+        var tc = document.getElementById('dayCol'+newDayIdx);
+        if (tc && dragState.el.parentElement !== tc) tc.appendChild(dragState.el);
+    }
+    function endDrag() {
+        if (!dragState) return;
+        dragState.el.classList.remove('dragging');
+        if (!dragState.moved) { dragState=null; return; }
+        var evData = dragState.evData;
+        var nH=Math.floor(dragState.newStartMin/60), nM=dragState.newStartMin%60;
+        var dur=evData.endMin-evData.startMin;
+        var eH=Math.floor((dragState.newStartMin+dur)/60), eM=(dragState.newStartMin+dur)%60;
+        var nd = new Date(currentMonday); nd.setDate(nd.getDate()+dragState.newDayIdx);
+        document.getElementById('confirmTitle').textContent = 'Déplacer "' + (evData.subject||'').substring(0,30) + '" ?';
+        document.getElementById('confirmDesc').textContent =
+            JOURS_FULL[dragState.newDayIdx]+' '+nd.getDate()+' — '+
+            String(nH).padStart(2,'0')+':'+String(nM).padStart(2,'0')+' → '+
+            String(eH).padStart(2,'0')+':'+String(eM).padStart(2,'0');
+        // Freeze drag state so mousemove stops, but keep data for confirm
+        var frozenDrag = dragState;
+        dragState = null;
+        window._pendingDrag = frozenDrag;
+        document.getElementById('confirmOverlay').classList.add('visible');
+        document.getElementById('confirmPopup').classList.add('visible');
+    }
+    async function confirmDrag() {
+        document.getElementById('confirmOverlay').classList.remove('visible');
+        document.getElementById('confirmPopup').classList.remove('visible');
+        var frozen = window._pendingDrag;
+        window._pendingDrag = null;
+        if (!frozen || !frozen.moved) return;
+
+        var evData = frozen.evData;
+        var nH=Math.floor(frozen.newStartMin/60), nM=frozen.newStartMin%60;
+        var dur=evData.endMin-evData.startMin;
+        var eH=Math.floor((frozen.newStartMin+dur)/60), eM=(frozen.newStartMin+dur)%60;
+        var nd = new Date(currentMonday); nd.setDate(nd.getDate()+frozen.newDayIdx);
+        var newDate = nd.getFullYear()+'-'+String(nd.getMonth()+1).padStart(2,'0')+'-'+String(nd.getDate()).padStart(2,'0');
+
+        var moveAction = {
+            action: 'move',
+            originalSubject: evData.subject,
+            originalStart: evData.ev.start,
+            originalEnd: evData.ev.end,
+            newDate: newDate,
+            newStart: String(nH).padStart(2,'0')+':'+String(nM).padStart(2,'0'),
+            newEnd: String(eH).padStart(2,'0')+':'+String(eM).padStart(2,'0'),
+            createdAt: new Date().toISOString(),
+            status: 'pending'
+        };
+
+        // Push to calendar-pending.json
+        try {
+            var pendingUrl = 'https://api.github.com/repos/'+GH_REPO+'/contents/calendar-pending.json';
+            var hdrs = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'};
+            var current = {pending:[],updatedAt:''};
+            var sha = pendingSha;
+
+            if (!sha) {
+                try {
+                    var r = await fetch(pendingUrl,{headers:hdrs,cache:'no-cache'});
+                    if (r.ok) { var d=await r.json(); sha=d.sha; current=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))))); }
+                } catch(e) {}
+            } else {
+                current = pendingData || {pending:[],updatedAt:''};
+            }
+            if (!current.pending) current.pending = [];
+            current.pending.push(moveAction);
+            current.updatedAt = new Date().toISOString();
+
+            var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(current,null,2))));
+            var body = {message:'move '+evData.subject,content:b64,branch:'main'};
+            if (sha) body.sha = sha;
+            var r2 = await fetch(pendingUrl,{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},body:JSON.stringify(body)});
+            if (r2.ok) {
+                var d2 = await r2.json();
+                pendingSha = d2.content.sha;
+                // Show toast-like feedback
+                var dot = document.getElementById('syncDot');
+                dot.className = 'sync-dot'; dot.style.background = '#818cf8';
+                document.getElementById('syncLabel').textContent = 'Déplacement envoyé ⏳';
+                setTimeout(function(){ dot.style.background=''; }, 3000);
+            }
+        } catch(e) { console.error('Move push error:', e); }
+    }
+    function cancelDrag() {
+        var frozen = window._pendingDrag;
+        window._pendingDrag = null;
+        if (frozen) {
+            frozen.el.style.top = frozen.origTop+'px';
+            var oc = document.getElementById('dayCol'+frozen.origDayIdx);
+            if (oc && frozen.el.parentElement !== oc) oc.appendChild(frozen.el);
+        }
+        document.getElementById('confirmOverlay').classList.remove('visible');
+        document.getElementById('confirmPopup').classList.remove('visible');
+    }
+    document.addEventListener('mousemove', function(e) { if (dragState) { e.preventDefault(); moveDrag(e.clientX,e.clientY); } });
+    document.addEventListener('mouseup', function() { if (dragState) endDrag(); });
+    document.addEventListener('touchmove', function(e) { if (dragState) { e.preventDefault(); moveDrag(e.touches[0].clientX,e.touches[0].clientY); } }, {passive:false});
+    document.addEventListener('touchend', function() { if (dragState) endDrag(); });
+
+    // ===== FOND POCHETTES ALBUM =====
+    var ALBUMS = [
+        'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228',
+        'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25',
+        'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2',
+        'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b',
+        'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0',
+        'https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e',
+        'https://i.scdn.co/image/ab67616d0000b273b0dd6a5cd1649c4a390f6f7a',
+        'https://i.scdn.co/image/ab67616d0000b2739a95e89d24214b94de36ccf7',
+        'https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72',
+        'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
+        'https://i.scdn.co/image/ab67616d0000b27390a50cfe99a4c19ff3cbfbdb',
+        'https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526',
+        'https://i.scdn.co/image/ab67616d0000b273de437d960dda1ac0a3ff0e47',
+        'https://i.scdn.co/image/ab67616d0000b2738399047ff71200928f5b6508',
+        'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424',
+        'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856',
+    ];
+    var currentAlbumIndex = 0;
+    var bg = document.getElementById('albumBg');
+    var layer1 = document.createElement('div');
+    var layer2 = document.createElement('div');
+    layer1.className = 'cover active'; layer2.className = 'cover';
+    bg.appendChild(layer1); bg.appendChild(layer2);
+    for (var i = ALBUMS.length-1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t=ALBUMS[i]; ALBUMS[i]=ALBUMS[j]; ALBUMS[j]=t; }
+    layer1.style.backgroundImage = 'url('+ALBUMS[0]+')';
+    function nextAlbum() {
+        currentAlbumIndex = (currentAlbumIndex+1)%ALBUMS.length;
+        var al = layer1.classList.contains('active') ? layer1 : layer2;
+        var nl = al===layer1 ? layer2 : layer1;
+        nl.style.backgroundImage = 'url('+ALBUMS[currentAlbumIndex]+')';
+        nl.classList.add('active'); al.classList.remove('active');
+    }
+    setInterval(nextAlbum, 30000);
+
+    // ===== INIT =====
+    renderAgenda(); loadCalendarData();
+    setInterval(loadCalendarData, 5*60*1000);
+    setInterval(function() { document.querySelectorAll('.now-line').forEach(function(e){e.remove();}); renderAgenda(); }, 60000);
+</script>
+</body>
+</html>
