@@ -10,14 +10,14 @@
     "photo": "contacts-photos/christian-devismes.png"
   },
   {
-    "id": "c02",
     "firstName": "Hervé",
     "lastName": "Drouet",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Aéronautique",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/herve-drouet.png"
+    "photo": "contacts-photos/herve-drouet.png",
+    "id": "c02"
   },
   {
     "id": "c03",
