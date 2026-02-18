@@ -243,56 +243,12 @@
     let alarmActive = false;
 
     function startAlarm() {
-        if (alarmActive) return;
-        alarmActive = true;
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-
-        // Dual oscillator for maximum urgency
-        function createAlarmOsc(freq, type) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.value = freq;
-            osc.type = type;
-            gain.gain.value = 1.0; // MAX volume
-            osc.start();
-            return { osc, gain };
-        }
-
-        // High pitch siren
-        const siren1 = createAlarmOsc(880, 'square');
-        const siren2 = createAlarmOsc(1200, 'sawtooth');
-        alarmNodes.push(siren1, siren2);
-
-        // Siren effect: oscillate frequency
-        let up = true;
-        const sirenInterval = setInterval(() => {
-            if (!alarmActive) { clearInterval(sirenInterval); return; }
-            siren1.osc.frequency.value = up ? 1100 : 700;
-            siren2.osc.frequency.value = up ? 1400 : 900;
-            up = !up;
-        }, 300);
-
-        // Pulsating volume for urgency
-        const pulseInterval = setInterval(() => {
-            if (!alarmActive) { clearInterval(pulseInterval); return; }
-            alarmNodes.forEach(n => {
-                n.gain.gain.setValueAtTime(1.0, audioCtx.currentTime);
-                n.gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.15);
-                n.gain.gain.linearRampToValueAtTime(1.0, audioCtx.currentTime + 0.3);
-            });
-        }, 300);
-
-        // Show fullscreen red overlay
         showAlarmOverlay();
     }
 
     function stopAlarm() {
         alarmActive = false;
-        alarmNodes.forEach(n => {
-            try { n.osc.stop(); } catch(e) {}
-        });
+        alarmNodes.forEach(n => { try { n.osc.stop(); } catch(e) {} });
         alarmNodes = [];
         hideAlarmOverlay();
     }
@@ -319,23 +275,89 @@
             ov.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,0,0,0.85);animation:alarmFlash 0.5s infinite;cursor:pointer;';
             ov.innerHTML = '<div style="font-size:72px;margin-bottom:20px;">&#x1F6A8;</div>' +
                 '<div style="font-size:28px;font-weight:800;color:#fff;text-align:center;margin-bottom:12px;">ALERTE STUDIO</div>' +
-                '<div style="font-size:16px;color:rgba(255,255,255,0.8);margin-bottom:30px;" id="alarmMsg"></div>' +
+                '<div style="font-size:16px;color:rgba(255,255,255,0.8);margin-bottom:10px;" id="alarmMsg"></div>' +
+                '<div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:30px;" id="alarmNoSound">&#x1F50A; Cliquez n\'importe o&ugrave; pour activer le son</div>' +
                 '<button onclick="acknowledgeAlarm()" style="padding:18px 50px;font-size:18px;font-weight:800;background:#fff;color:#ff0000;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-transform:uppercase;letter-spacing:1px;">&#x2705; PRISE EN CHARGE</button>';
             document.body.appendChild(ov);
-            // Add flash animation
             if (!document.getElementById('alarmStyle')) {
                 const style = document.createElement('style');
                 style.id = 'alarmStyle';
                 style.textContent = '@keyframes alarmFlash { 0%,100% { background:rgba(255,0,0,0.85); } 50% { background:rgba(180,0,0,0.95); } }';
                 document.head.appendChild(style);
             }
+            // Any click on overlay (not on button) will start sound
+            ov.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'BUTTON') {
+                    forceStartSound();
+                }
+            });
         }
         ov.style.display = 'flex';
-        // Show last alert title
         const lastNew = alerts.find(a => a.status === 'sent');
         if (lastNew) {
             document.getElementById('alarmMsg').textContent = lastNew.title + (lastNew.emitter ? ' — ' + lastNew.emitter.name : '');
         }
+        // Try to start sound immediately
+        forceStartSound();
+        // Also send browser notification
+        sendBrowserNotification(lastNew);
+    }
+
+    function forceStartSound() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().then(() => {
+                if (!alarmActive) startAlarmOscillators();
+                const el = document.getElementById('alarmNoSound');
+                if (el) el.style.display = 'none';
+            });
+        } else {
+            if (!alarmActive) startAlarmOscillators();
+            const el = document.getElementById('alarmNoSound');
+            if (el) el.style.display = 'none';
+        }
+    }
+
+    function startAlarmOscillators() {
+        alarmActive = true;
+        function createAlarmOsc(freq, type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.value = freq; osc.type = type; gain.gain.value = 1.0;
+            osc.start(); return { osc, gain };
+        }
+        const siren1 = createAlarmOsc(880, 'square');
+        const siren2 = createAlarmOsc(1200, 'sawtooth');
+        alarmNodes.push(siren1, siren2);
+        let up = true;
+        const si = setInterval(() => {
+            if (!alarmActive) { clearInterval(si); return; }
+            siren1.osc.frequency.value = up ? 1100 : 700;
+            siren2.osc.frequency.value = up ? 1400 : 900;
+            up = !up;
+        }, 300);
+    }
+
+    // ===== BROWSER NOTIFICATIONS (work even when tab is in background) =====
+    function requestNotifPermission() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }
+    requestNotifPermission();
+
+    function sendBrowserNotification(alert) {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        try {
+            const n = new Notification('🚨 ALERTE STUDIO', {
+                body: (alert ? alert.title : 'Nouvelle alerte') + (alert && alert.emitter ? ' — ' + alert.emitter.name : ''),
+                icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>',
+                requireInteraction: true,
+                tag: 'studio-alert'
+            });
+            n.onclick = function() { window.focus(); n.close(); };
+        } catch(e) {}
     }
 
     function hideAlarmOverlay() {
