@@ -148,6 +148,32 @@
         .modal-btn-save { background: linear-gradient(135deg, #0070f3, #0050c8); color: #fff; }
         .modal-btn-delete { background: rgba(220,38,38,0.8); color: #fff; }
 
+        .photo-upload-zone {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 4px;
+        }
+        .photo-preview {
+            width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,0.06);
+            border: 2px dashed rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center;
+            overflow: hidden; flex-shrink: 0; cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .photo-preview:hover { border-color: rgba(0,140,255,0.5); background: rgba(0,140,255,0.05); }
+        .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-preview svg { opacity: 0.25; }
+        .photo-preview .photo-hover-text {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center;
+            justify-content: center; opacity: 0; transition: opacity 0.2s; font-size: 10px; font-weight: 600;
+        }
+        .photo-preview:hover .photo-hover-text { opacity: 1; }
+        .photo-actions { display: flex; flex-direction: column; gap: 6px; }
+        .photo-actions button {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; padding: 6px 14px; color: rgba(255,255,255,0.6); font-size: 12px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left;
+        }
+        .photo-actions button:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .photo-actions .btn-remove-photo { color: rgba(220,80,80,0.7); }
+        .photo-actions .btn-remove-photo:hover { color: #ff5555; }
+
         .count-label { font-size: 12px; color: rgba(255,255,255,0.3); padding: 0 32px 8px; font-weight: 500; }
     </style>
 </head>
@@ -183,6 +209,19 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <h3 id="modalTitle">Ajouter un contact</h3>
+            <div class="field"><label>Photo</label>
+                <div class="photo-upload-zone">
+                    <div class="photo-preview" id="photoPreview" onclick="document.getElementById('photoInput').click()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        <div class="photo-hover-text">Changer</div>
+                    </div>
+                    <div class="photo-actions">
+                        <button type="button" onclick="document.getElementById('photoInput').click()">&#x1F4F7; Choisir une photo</button>
+                        <button type="button" class="btn-remove-photo" id="btnRemovePhoto" style="display:none" onclick="removePhoto()">&#x2715; Supprimer la photo</button>
+                    </div>
+                    <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+                </div>
+            </div>
             <div class="field"><label>Prénom</label><input type="text" id="mFirstName" placeholder="Ex: Éric"></div>
             <div class="field"><label>Nom</label><input type="text" id="mLastName" placeholder="Ex: Lemarié"></div>
             <div class="field"><label>Spécialité</label>
@@ -216,6 +255,48 @@
     var contactsSha = null;
     var currentFilter = 'all';
     var editingId = null;
+    var pendingPhoto = null; // base64 or path
+
+    function handlePhotoUpload(input) {
+        if (!input.files || !input.files[0]) return;
+        var file = input.files[0];
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            // Compress via canvas
+            var img = new Image();
+            img.onload = function() {
+                var canvas = document.createElement('canvas');
+                var maxSize = 300;
+                var w = img.width, h = img.height;
+                if (w > h) { if (w > maxSize) { h = h * maxSize / w; w = maxSize; } }
+                else { if (h > maxSize) { w = w * maxSize / h; h = maxSize; } }
+                canvas.width = w; canvas.height = h;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, w, h);
+                pendingPhoto = canvas.toDataURL('image/jpeg', 0.75);
+                updatePhotoPreview();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function removePhoto() {
+        pendingPhoto = '';
+        updatePhotoPreview();
+    }
+
+    function updatePhotoPreview() {
+        var preview = document.getElementById('photoPreview');
+        var removeBtn = document.getElementById('btnRemovePhoto');
+        if (pendingPhoto && pendingPhoto.length > 10) {
+            preview.innerHTML = '<img src="' + pendingPhoto + '"><div class="photo-hover-text">Changer</div>';
+            removeBtn.style.display = 'block';
+        } else {
+            preview.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><div class="photo-hover-text">Changer</div>';
+            removeBtn.style.display = 'none';
+        }
+    }
 
     var SPEC_LABELS = {
         actions: 'RECHERCHE ACTIONS',
@@ -361,6 +442,8 @@
             document.getElementById('mFunction').value = c.function || '';
             document.getElementById('mCompany').value = c.company || '';
             document.getElementById('mEmail').value = c.email || '';
+            pendingPhoto = c.photo || '';
+            updatePhotoPreview();
             document.getElementById('modalBtns').innerHTML =
                 '<button class="modal-btn-delete" onclick="deleteContact(\''+id+'\');closeModal()">Supprimer</button>' +
                 '<div style="flex:1"></div>' +
@@ -374,10 +457,13 @@
             document.getElementById('mFunction').value = '';
             document.getElementById('mCompany').value = 'CIC Corporate & Institutional Banking';
             document.getElementById('mEmail').value = '';
+            pendingPhoto = '';
+            updatePhotoPreview();
             document.getElementById('modalBtns').innerHTML =
                 '<button class="modal-btn-cancel" onclick="closeModal()">Annuler</button>' +
                 '<button class="modal-btn-save" onclick="saveContact()">Enregistrer</button>';
         }
+        document.getElementById('photoInput').value = '';
         document.getElementById('modalOverlay').classList.add('visible');
         setTimeout(function() { document.getElementById('mFirstName').focus(); }, 50);
     }
@@ -398,14 +484,16 @@
             speciality: document.getElementById('mSpeciality').value,
             function: document.getElementById('mFunction').value.trim(),
             company: document.getElementById('mCompany').value.trim(),
-            email: document.getElementById('mEmail').value.trim()
+            email: document.getElementById('mEmail').value.trim(),
+            photo: pendingPhoto || ''
         };
 
         if (editingId) {
             var idx = contacts.findIndex(function(c) { return c.id === editingId; });
             if (idx > -1) {
                 data.id = editingId;
-                data.photo = contacts[idx].photo || '';
+                // Keep old photo if no new one was set and pendingPhoto is a path
+                if (!pendingPhoto && contacts[idx].photo) data.photo = contacts[idx].photo;
                 contacts[idx] = data;
             }
         } else {
