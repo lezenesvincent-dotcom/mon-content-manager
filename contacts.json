@@ -318,5 +318,14 @@
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
     "photo": "contacts-photos/william-honvo.png"
+  },
+  {
+    "firstName": "Gaëlle",
+    "lastName": "Marques",
+    "speciality": "actions",
+    "function": "Editic",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "id": "c_1771406239469"
   }
 ]
