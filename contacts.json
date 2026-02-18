@@ -120,14 +120,14 @@
     "photo": "contacts-photos/david-da-maia.png"
   },
   {
-    "id": "c13",
     "firstName": "Pierre",
     "lastName": "Chédeville",
     "speciality": "actions",
-    "function": "Analyste Construction & Matériaux",
+    "function": "Analyste Secteurs Banques et Assurances",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/pierre-chedeville.png"
+    "photo": "contacts-photos/pierre-chedeville.png",
+    "id": "c13"
   },
   {
     "id": "c14",
