@@ -237,10 +237,20 @@
         renderEmitterGrid();
     }
 
-    // ===== ALARM SOUND - CONTINUOUS UNTIL ACKNOWLEDGED =====
+    // ===== ALARM SOUND - MP3 CHIME + VOICE =====
     let audioCtx = null;
-    let alarmNodes = []; // track active oscillators
+    let alarmNodes = [];
     let alarmActive = false;
+    let chimeAudio = null;
+    let chimeLoopTimer = null;
+
+    // Précharger le MP3
+    function preloadChime() {
+        chimeAudio = new Audio('alert-chime.mp3');
+        chimeAudio.preload = 'auto';
+        chimeAudio.volume = 1.0;
+    }
+    preloadChime();
 
     function startAlarm() {
         showAlarmOverlay();
@@ -248,6 +258,9 @@
 
     function stopAlarm() {
         alarmActive = false;
+        if (chimeAudio) { chimeAudio.pause(); chimeAudio.currentTime = 0; }
+        if (chimeLoopTimer) { clearTimeout(chimeLoopTimer); chimeLoopTimer = null; }
+        window.speechSynthesis && window.speechSynthesis.cancel();
         alarmNodes.forEach(n => { try { n.osc.stop(); } catch(e) {} });
         alarmNodes = [];
         hideAlarmOverlay();
@@ -255,15 +268,10 @@
 
     function playAlertSound() { startAlarm(); }
     function testSound() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.frequency.value = 880; osc.type = 'square';
-        gain.gain.value = 0.5;
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
-        osc.start(); osc.stop(audioCtx.currentTime + 1);
+        if (chimeAudio) {
+            chimeAudio.currentTime = 0;
+            chimeAudio.play().catch(() => {});
+        }
     }
 
     // ===== ALARM OVERLAY (red flashing fullscreen) =====
@@ -304,87 +312,65 @@
     }
 
     function forceStartSound() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume().then(() => {
-                if (!alarmActive) startAlarmOscillators();
-                const el = document.getElementById('alarmNoSound');
-                if (el) el.style.display = 'none';
-            });
-        } else {
-            if (!alarmActive) startAlarmOscillators();
-            const el = document.getElementById('alarmNoSound');
-            if (el) el.style.display = 'none';
-        }
+        if (!alarmActive) startAlarmLoop();
+        const el = document.getElementById('alarmNoSound');
+        if (el) el.style.display = 'none';
     }
 
-    function startAlarmOscillators() {
+    function startAlarmLoop() {
         alarmActive = true;
-        // Carillon style annonce SNCF - 4 notes puis voix
-        const sncfNotes = [
-            { freq: 587.33, dur: 0.35 },  // Ré5
-            { freq: 880.00, dur: 0.35 },  // La5
-            { freq: 739.99, dur: 0.35 },  // Fa#5
-            { freq: 293.66, dur: 0.7 }    // Ré4 (longue)
-        ];
-        const chimeDur = sncfNotes.reduce((s, n) => s + n.dur, 0);
 
-        function playChime() {
+        function playSequence() {
             if (!alarmActive) return;
-            let t = audioCtx.currentTime;
-            sncfNotes.forEach(note => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.type = 'sine';
-                osc.frequency.value = note.freq;
-                gain.gain.setValueAtTime(0.6, t);
-                gain.gain.exponentialRampToValueAtTime(0.001, t + note.dur - 0.02);
-                osc.start(t);
-                osc.stop(t + note.dur);
-                alarmNodes.push({ osc, gain });
-                t += note.dur;
-            });
-            // Voix après le carillon
-            setTimeout(() => {
+            // 1) Jouer le MP3 chime
+            if (chimeAudio) {
+                chimeAudio.currentTime = 0;
+                chimeAudio.volume = 1.0;
+                chimeAudio.play().catch(() => {});
+            }
+            // 2) Après le chime (~8s pour être safe), lancer la voix
+            chimeLoopTimer = setTimeout(() => {
                 if (!alarmActive) return;
                 speakAlert();
-            }, chimeDur * 1000 + 200);
+            }, 8800);
         }
 
         function speakAlert() {
             if (!('speechSynthesis' in window)) { scheduleNext(); return; }
             const lastNew = alerts.find(a => a.status === 'sent');
-            let text = 'Alerte studio';
+            let text = 'Attention, alerte studio.';
             if (lastNew) {
                 const prenom = lastNew.emitter ? lastNew.emitter.name.split(' ')[0] : '';
                 const desc = lastNew.title || lastNew.description || '';
                 if (prenom && desc) text = prenom + ' signale : ' + desc;
                 else if (prenom) text = 'Alerte de ' + prenom;
-                else if (desc) text = desc;
+                else if (desc) text = 'Attention : ' + desc;
             }
             window.speechSynthesis.cancel();
             const utt = new SpeechSynthesisUtterance(text);
             utt.lang = 'fr-FR';
-            utt.rate = 0.95;
-            utt.pitch = 1.0;
+            utt.rate = 0.9;
+            utt.pitch = 1.05;
             utt.volume = 1.0;
-            // Choisir une voix française si disponible
+            // Préférer une voix féminine française de qualité
             const voices = window.speechSynthesis.getVoices();
-            const frVoice = voices.find(v => v.lang.startsWith('fr'));
-            if (frVoice) utt.voice = frVoice;
-            utt.onend = () => { setTimeout(() => { if (alarmActive) playChime(); }, 1500); };
+            const preferred = voices.find(v => v.lang === 'fr-FR' && v.name.includes('Amelie')) ||
+                              voices.find(v => v.lang === 'fr-FR' && v.name.includes('Thomas')) ||
+                              voices.find(v => v.lang === 'fr-FR' && !v.localService) ||
+                              voices.find(v => v.lang.startsWith('fr'));
+            if (preferred) utt.voice = preferred;
+            utt.onend = () => { scheduleNext(); };
             utt.onerror = () => { scheduleNext(); };
             window.speechSynthesis.speak(utt);
         }
 
         function scheduleNext() {
-            setTimeout(() => { if (alarmActive) playChime(); }, 3000);
+            chimeLoopTimer = setTimeout(() => { if (alarmActive) playSequence(); }, 2000);
         }
 
         // Preload voices
         if ('speechSynthesis' in window) window.speechSynthesis.getVoices();
-        playChime();
+        playSequence();
     }
 
     // ===== BROWSER NOTIFICATIONS (work even when tab is in background) =====

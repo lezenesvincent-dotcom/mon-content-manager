@@ -504,64 +504,57 @@
         }
     }
 
+    var alertChimeAudio = new Audio('alert-chime.mp3');
+    alertChimeAudio.preload = 'auto'; alertChimeAudio.volume = 1.0;
+    var alertLoopTimer = null;
+
     function startOsc() {
         alertActive = true;
-        var sncfNotes = [
-            { freq: 587.33, dur: 0.35 },
-            { freq: 880.00, dur: 0.35 },
-            { freq: 739.99, dur: 0.35 },
-            { freq: 293.66, dur: 0.7 }
-        ];
-        var chimeDur = 0; sncfNotes.forEach(function(n){ chimeDur += n.dur; });
-
-        function playChime() {
+        function playSequence() {
             if (!alertActive) return;
-            var t = alertAudioCtx.currentTime;
-            sncfNotes.forEach(function(note) {
-                var o = alertAudioCtx.createOscillator(), g = alertAudioCtx.createGain();
-                o.connect(g); g.connect(alertAudioCtx.destination);
-                o.type = 'sine'; o.frequency.value = note.freq;
-                g.gain.setValueAtTime(0.6, t);
-                g.gain.exponentialRampToValueAtTime(0.001, t + note.dur - 0.02);
-                o.start(t); o.stop(t + note.dur);
-                alertNodes.push({osc:o, gain:g});
-                t += note.dur;
-            });
-            setTimeout(function(){ if (!alertActive) return; speakAlert(); }, chimeDur * 1000 + 200);
+            alertChimeAudio.currentTime = 0; alertChimeAudio.volume = 1.0;
+            alertChimeAudio.play().catch(function(){});
+            alertLoopTimer = setTimeout(function(){ if (!alertActive) return; speakAlert(); }, 8800);
         }
-
         function speakAlert() {
             if (!('speechSynthesis' in window)) { scheduleNext(); return; }
             var stored = [];
             try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(e){}
             var lastNew = null;
             for (var i=0;i<stored.length;i++) { if (stored[i].status === 'sent') { lastNew = stored[i]; break; } }
-            var text = 'Alerte studio';
+            var text = 'Attention, alerte studio.';
             if (lastNew) {
                 var prenom = lastNew.emitter ? lastNew.emitter.name.split(' ')[0] : '';
                 var desc = lastNew.title || lastNew.description || '';
                 if (prenom && desc) text = prenom + ' signale : ' + desc;
                 else if (prenom) text = 'Alerte de ' + prenom;
-                else if (desc) text = desc;
+                else if (desc) text = 'Attention : ' + desc;
             }
             window.speechSynthesis.cancel();
             var utt = new SpeechSynthesisUtterance(text);
-            utt.lang = 'fr-FR'; utt.rate = 0.95; utt.pitch = 1.0; utt.volume = 1.0;
+            utt.lang = 'fr-FR'; utt.rate = 0.9; utt.pitch = 1.05; utt.volume = 1.0;
             var voices = window.speechSynthesis.getVoices();
-            for (var v=0;v<voices.length;v++) { if (voices[v].lang.indexOf('fr')===0) { utt.voice = voices[v]; break; } }
-            utt.onend = function(){ setTimeout(function(){ if (alertActive) playChime(); }, 1500); };
+            var pref = null;
+            for (var v=0;v<voices.length;v++) {
+                if (voices[v].lang==='fr-FR' && voices[v].name.indexOf('Amelie')>-1) { pref=voices[v]; break; }
+                if (voices[v].lang==='fr-FR' && voices[v].name.indexOf('Thomas')>-1 && !pref) pref=voices[v];
+                if (voices[v].lang.indexOf('fr')===0 && !pref) pref=voices[v];
+            }
+            if (pref) utt.voice = pref;
+            utt.onend = function(){ scheduleNext(); };
             utt.onerror = function(){ scheduleNext(); };
             window.speechSynthesis.speak(utt);
         }
-
-        function scheduleNext() { setTimeout(function(){ if (alertActive) playChime(); }, 3000); }
-
+        function scheduleNext() { alertLoopTimer = setTimeout(function(){ if (alertActive) playSequence(); }, 2000); }
         if ('speechSynthesis' in window) window.speechSynthesis.getVoices();
-        playChime();
+        playSequence();
     }
 
     function stopSound() {
         alertActive = false;
+        if (alertChimeAudio) { alertChimeAudio.pause(); alertChimeAudio.currentTime = 0; }
+        if (alertLoopTimer) { clearTimeout(alertLoopTimer); alertLoopTimer = null; }
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
         alertNodes.forEach(function(n){ try{n.osc.stop();}catch(e){} });
         alertNodes = [];
         hideBanner();
