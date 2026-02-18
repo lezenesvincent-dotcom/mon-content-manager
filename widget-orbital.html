@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Orbital Production v4.17</title>
+    <!-- Version 4.17 Production - WebSocket connecté à Manage pour contenu dynamique - 2 décembre 2025 14:45 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: transparent;
+            color: white;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .preview-zone {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: visible;
+        }
+        .overlay-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%; height: 100%;
+            transform-style: preserve-3d;
+            perspective: 1500px;
+        }
+        
+        .header-row {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            left: var(--header-x, 50px);
+            top: var(--header-y, 80px);
+            opacity: 0;
+            transform: translateY(-80px);
+        }
+        .header-row.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+        }
+        .subtitle-inline {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .subjects-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+        .orbit-center {
+            position: absolute;
+            left: var(--orbit-center-x, 50%);
+            top: var(--orbit-center-y, 50%);
+            transform-style: preserve-3d;
+        }
+        
+        .subject-box {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-style: preserve-3d;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+        .subject-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        .subject-content-box {
+            background: linear-gradient(to bottom, rgba(60, 80, 130, 0.98) 0%, rgba(80, 100, 170, 0.98) 100%);
+            border-radius: 18px;
+            padding: 25px 20px;
+            width: 280px;
+            height: 380px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+        .subject-content {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            line-height: 1.4;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-zone">
+        <div class="overlay-container">
+            <div class="header-row" id="header">
+                <span class="main-title" id="titre">MUSIC</span>
+                <span class="subtitle-inline" id="soustitre">En mars 2025</span>
+            </div>
+            <div class="subjects-container">
+                <div class="orbit-center" id="orbitCenter">
+                    <div class="subject-box" id="p1">
+                        <span class="subject-title" id="p1-sujet">Achat</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p1-contenu">Révision en hausse
+de notre objectif
+de cours</div>
+                        </div>
+                    </div>
+                    <div class="subject-box" id="p2">
+                        <span class="subject-title" id="p2-sujet">Distribution</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p2-contenu">Cession à RMC-BFM
+Media avec impact
+positif</div>
+                        </div>
+                    </div>
+                    <div class="subject-box" id="p3">
+                        <span class="subject-title" id="p3-sujet">Performance</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p3-contenu">Résultats T3
+au-dessus des
+attentes</div>
+                        </div>
+                    </div>
+                    <div class="subject-box" id="p4">
+                        <span class="subject-title" id="p4-sujet">Stratégie</span>
+                        <div class="subject-content-box">
+                            <div class="subject-content" id="p4-contenu">Nouveau plan
+développement
+2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Configuration WebSocket
+        const WS_SERVER_URL = 'https://ecamm-overlay-server.onrender.com';
+        let ws = null;
+        let reconnectInterval = null;
+        
+        const state = { 
+            headerX: 50, headerY: 80, 
+            centerX: 50, centerY: 50,
+            slots: [
+                { x: -40, y: 20, scale: 1.0, z: 50 },
+                { x: 160, y: -60, scale: 0.70, z: -50 },
+                { x: 185, y: 30, scale: 0.66, z: -100 },
+                { x: 210, y: 110, scale: 0.62, z: -150 }
+            ],
+            cardInSlot: [1, 2, 3, 4],
+            speedIN: 3.5,
+            speedNEXT: 2.2,
+            speedLev: 25
+        };
+        
+        // Fonction pour mettre à jour le contenu
+        function updateContent(data) {
+            if (!data) return;
+            
+            // Titre et sous-titre
+            if (data.titre) {
+                document.getElementById('titre').textContent = data.titre;
+            }
+            if (data.soustitre) {
+                document.getElementById('soustitre').textContent = data.soustitre;
+            }
+            
+            // P1 à P4
+            ['p1', 'p2', 'p3', 'p4'].forEach(key => {
+                if (data[key]) {
+                    const sujetEl = document.getElementById(`${key}-sujet`);
+                    const contenuEl = document.getElementById(`${key}-contenu`);
+                    
+                    if (sujetEl && data[key].sujet) {
+                        sujetEl.textContent = data[key].sujet;
+                    }
+                    
+                    if (contenuEl && data[key].contenu) {
+                        // Joindre les lignes avec des retours à la ligne
+                        contenuEl.textContent = data[key].contenu.join('\n');
+                    }
+                }
+            });
+            
+            console.log('✅ Contenu mis à jour:', data);
+        }
+        
+        // Connexion WebSocket
+        function connectWebSocket() {
+            const wsUrl = WS_SERVER_URL.replace('https://', 'wss://').replace('http://', 'ws://');
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = () => {
+                    console.log('🔗 WebSocket connecté');
+                    if (reconnectInterval) {
+                        clearInterval(reconnectInterval);
+                        reconnectInterval = null;
+                    }
+                    // Demander les données initiales
+                    fetchInitialData();
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('📩 Message reçu:', data);
+                        updateContent(data);
+                    } catch (e) {
+                        console.error('Erreur parsing message:', e);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('❌ Erreur WebSocket:', error);
+                };
+                
+                ws.onclose = () => {
+                    console.log('🔌 WebSocket déconnecté, reconnexion dans 5s...');
+                    ws = null;
+                    if (!reconnectInterval) {
+                        reconnectInterval = setInterval(() => {
+                            console.log('🔄 Tentative de reconnexion...');
+                            connectWebSocket();
+                        }, 5000);
+                    }
+                };
+            } catch (e) {
+                console.error('❌ Erreur création WebSocket:', e);
+            }
+        }
+        
+        // Récupérer les données initiales via HTTP
+        async function fetchInitialData() {
+            try {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📦 Données initiales chargées:', data);
+                    updateContent(data);
+                }
+            } catch (e) {
+                console.error('❌ Erreur chargement données:', e);
+            }
+        }
+
+        
+        let isAnimating = false, levitateRAF = null, levitatePhases = [0, 1.5, 3, 4.5], levitationEnabled = false;
+
+        function getTransform(x, y, z, scale, rotY = 0, rotX = 0) {
+            return `translateX(-50%) translateY(-50%) translateX(${x}px) translateY(${y}px) translateZ(${z}px) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${scale})`;
+        }
+
+        function getSlotTransform(slotIdx) {
+            const s = state.slots[slotIdx];
+            return getTransform(s.x, s.y, s.z, s.scale, 0, 0);
+        }
+
+        function startLevitation() {
+            levitationEnabled = true;
+            if (levitateRAF) cancelAnimationFrame(levitateRAF);
+            
+            let lastTime = performance.now();
+            const startFadeTime = performance.now();
+            const fadeDuration = 2000;
+            
+            function animate(now) {
+                if (!levitationEnabled) return;
+                
+                const delta = (now - lastTime) / 1000;
+                lastTime = now;
+                const speed = 1 / state.speedLev;
+                
+                const fadeProgress = Math.min(1, (now - startFadeTime) / fadeDuration);
+                const amplitudeFactor = fadeProgress * fadeProgress;
+                
+                for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                    const cardNum = state.cardInSlot[slotIdx];
+                    const el = document.getElementById('p' + cardNum);
+                    if (el.style.opacity !== '1') continue;
+                    
+                    levitatePhases[slotIdx] += delta * speed * Math.PI * 2;
+                    
+                    const s = state.slots[slotIdx];
+                    const dx = Math.sin(levitatePhases[slotIdx]) * 4 * amplitudeFactor;
+                    const dy = Math.cos(levitatePhases[slotIdx] * 0.7) * 2.5 * amplitudeFactor;
+                    const ds = 1 + Math.sin(levitatePhases[slotIdx] * 0.5) * 0.008 * amplitudeFactor;
+                    
+                    el.style.transform = getTransform(s.x + dx, s.y + dy, s.z, s.scale * ds, 0, 0);
+                }
+                
+                levitateRAF = requestAnimationFrame(animate);
+            }
+            
+            levitateRAF = requestAnimationFrame(animate);
+        }
+
+        function stopLevitation() {
+            levitationEnabled = false;
+            if (levitateRAF) {
+                cancelAnimationFrame(levitateRAF);
+                levitateRAF = null;
+            }
+        }
+
+        function animateIN() {
+            if (isAnimating) return;
+            isAnimating = true;
+            stopLevitation();
+            
+            const speed = state.speedIN;
+            const totalFrames = Math.round(60 * speed);
+            
+            for (let i = 1; i <= 4; i++) document.getElementById('p' + i).style.opacity = '0';
+            document.getElementById('header').classList.remove('visible');
+            
+            setTimeout(() => {
+                document.getElementById('header').classList.add('visible');
+                
+                let frame = 0;
+                const startPositions = [
+                    { x: -300, y: 100, z: -2000, rotY: -90 },
+                    { x: 400, y: -150, z: -1800, rotY: 120 },
+                    { x: 350, y: 200, z: -1600, rotY: 90 },
+                    { x: 0, y: -200, z: -2200, rotY: 180 }
+                ];
+                
+                function animateFrame() {
+                    frame++;
+                    const progress = frame / totalFrames;
+                    const eased = 1 - Math.pow(1 - progress, 4);
+                    const opacity = Math.min(1, progress * 1.8);
+                    
+                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                        const cardNum = state.cardInSlot[slotIdx];
+                        const el = document.getElementById('p' + cardNum);
+                        const target = state.slots[slotIdx];
+                        const start = startPositions[slotIdx];
+                        const arcPhase = progress * Math.PI;
+                        
+                        let crossX = 0, crossZ = 0;
+                        if (slotIdx === 0) { crossX = Math.sin(arcPhase) * 150; crossZ = Math.sin(arcPhase * 2) * 100; }
+                        else if (slotIdx === 1) { crossX = -Math.sin(arcPhase) * 100; crossZ = Math.sin(arcPhase) * 200; }
+                        else if (slotIdx === 2) { crossX = Math.sin(arcPhase) * 80; crossZ = -Math.sin(arcPhase) * 150; }
+                        else { crossX = Math.sin(arcPhase * 1.5) * 120; crossZ = Math.sin(arcPhase) * 100; }
+                        
+                        const x = start.x + (target.x - start.x) * eased + crossX * (1 - eased);
+                        const y = start.y + (target.y - start.y) * eased;
+                        const z = start.z + (target.z - start.z) * eased + crossZ * (1 - eased);
+                        const scale = 0.15 + (target.scale - 0.15) * eased;
+                        const rotY = start.rotY * (1 - eased);
+                        const rotX = Math.sin(arcPhase) * 10 * (1 - eased);
+                        
+                        el.style.opacity = opacity;
+                        el.style.zIndex = Math.round(100 + z / 10);
+                        el.style.transform = getTransform(x, y, z, scale, rotY, rotX);
+                    }
+                    
+                    if (frame < totalFrames) {
+                        requestAnimationFrame(animateFrame);
+                    } else {
+                        for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                            const cardNum = state.cardInSlot[slotIdx];
+                            const el = document.getElementById('p' + cardNum);
+                            el.style.opacity = '1';
+                            el.style.zIndex = (100 - slotIdx * 20);
+                            el.style.transform = getSlotTransform(slotIdx);
+                        }
+                        isAnimating = false;
+                        setTimeout(startLevitation, 100);
+                    }
+                }
+                requestAnimationFrame(animateFrame);
+            }, 200);
+        }
+
+        function nextFocus() {
+            if (isAnimating) return;
+            isAnimating = true;
+            stopLevitation();
+            
+            const duration = state.speedNEXT;
+            const totalFrames = Math.round(60 * duration);
+            const oldCardInSlot = [...state.cardInSlot];
+            
+            state.cardInSlot = [oldCardInSlot[1], oldCardInSlot[2], oldCardInSlot[3], oldCardInSlot[0]];
+            
+            const cardOut = document.getElementById('p' + oldCardInSlot[0]);
+            const startOut = { ...state.slots[0] }, endOut = { ...state.slots[3] };
+            const cardIn = document.getElementById('p' + oldCardInSlot[1]);
+            const startIn = { ...state.slots[1] }, endIn = { ...state.slots[0] };
+            const card3 = document.getElementById('p' + oldCardInSlot[2]);
+            const start3 = { ...state.slots[2] }, end3 = { ...state.slots[1] };
+            const card4 = document.getElementById('p' + oldCardInSlot[3]);
+            const start4 = { ...state.slots[3] }, end4 = { ...state.slots[2] };
+            
+            let frame = 0;
+            function animateFrame() {
+                frame++;
+                const progress = frame / totalFrames;
+                const eased = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                const outPhase = progress * Math.PI;
+                
+                const outArcX = (-Math.sin(outPhase * 0.7) * 280 + Math.pow(progress, 2) * 350) * (1 - eased);
+                const outArcZ = -Math.sin(outPhase) * 1500 * (1 - eased);
+                const outArcY = Math.sin(outPhase * 0.5) * 40 * (1 - eased);
+                
+                cardOut.style.zIndex = '15';
+                cardOut.style.transform = getTransform(
+                    startOut.x + (endOut.x - startOut.x) * eased + outArcX,
+                    startOut.y + (endOut.y - startOut.y) * eased + outArcY,
+                    startOut.z + (endOut.z - startOut.z) * eased + outArcZ,
+                    startOut.scale + (endOut.scale - startOut.scale) * eased,
+                    -(progress * 360),
+                    Math.sin(outPhase) * 25 * (1 - eased)
+                );
+                
+                const inPhase = progress * Math.PI;
+                const inArcX = -Math.sin(inPhase) * 120 * (1 - eased);
+                const inArcZ = Math.sin(inPhase) * 200 * (1 - eased);
+                const inArcY = Math.sin(inPhase) * 20 * (1 - eased);
+                
+                cardIn.style.zIndex = '150';
+                cardIn.style.transform = getTransform(
+                    startIn.x + (endIn.x - startIn.x) * eased + inArcX,
+                    startIn.y + (endIn.y - startIn.y) * eased + inArcY,
+                    startIn.z + (endIn.z - startIn.z) * eased + inArcZ,
+                    startIn.scale + (endIn.scale - startIn.scale) * eased,
+                    -(progress * 360),
+                    -Math.sin(inPhase) * 15 * (1 - eased)
+                );
+                
+                card3.style.zIndex = '30';
+                card3.style.transform = getTransform(
+                    start3.x + (end3.x - start3.x) * eased,
+                    start3.y + (end3.y - start3.y) * eased,
+                    start3.z + (end3.z - start3.z) * eased,
+                    start3.scale + (end3.scale - start3.scale) * eased, 0, 0
+                );
+                
+                card4.style.zIndex = '20';
+                card4.style.transform = getTransform(
+                    start4.x + (end4.x - start4.x) * eased,
+                    start4.y + (end4.y - start4.y) * eased,
+                    start4.z + (end4.z - start4.z) * eased,
+                    start4.scale + (end4.scale - start4.scale) * eased, 0, 0
+                );
+                
+                if (frame < totalFrames) {
+                    requestAnimationFrame(animateFrame);
+                } else {
+                    for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                        const el = document.getElementById('p' + state.cardInSlot[slotIdx]);
+                        el.style.zIndex = (100 - slotIdx * 20);
+                        el.style.transform = getSlotTransform(slotIdx);
+                    }
+                    isAnimating = false;
+                    setTimeout(startLevitation, 100);
+                }
+            }
+            requestAnimationFrame(animateFrame);
+        }
+
+        // Auto-start
+        window.addEventListener('load', () => setTimeout(animateIN, 500));
+        
+        // Contrôle externe via messages
+        window.addEventListener('message', e => {
+            if (e.data === 'ANIMATE_IN') animateIN();
+            else if (e.data === 'NEXT_FOCUS') nextFocus();
+        });
+        
+        // Contrôle via page remote (localStorage)
+        const COMMAND_KEY = 'widgetOrbital_command';
+        const REMOTE_STATE_KEY = 'widgetOrbital_remote_v416';
+        
+        window.addEventListener('storage', (e) => {
+            if (e.key === COMMAND_KEY) {
+                try {
+                    const data = JSON.parse(localStorage.getItem(COMMAND_KEY));
+                    if (!data) return;
+                    
+                    // Mettre à jour l'état depuis la remote
+                    if (data.state) {
+                        state.headerX = data.state.headerX;
+                        state.headerY = data.state.headerY;
+                        state.centerX = data.state.centerX;
+                        state.centerY = data.state.centerY;
+                        state.slots = data.state.slots;
+                        state.speedIN = data.state.speedIN;
+                        state.speedNEXT = data.state.speedNEXT;
+                        state.speedLev = data.state.speedLev;
+                        
+                        // Appliquer les changements visuels
+                        document.getElementById('header').style.left = state.headerX + 'px';
+                        document.getElementById('header').style.top = state.headerY + 'px';
+                        document.getElementById('orbitCenter').style.left = state.centerX + '%';
+                        document.getElementById('orbitCenter').style.top = state.centerY + '%';
+                        
+                        // Mettre à jour les positions des cartes (si pas en animation)
+                        if (!isAnimating && levitationEnabled) {
+                            stopLevitation();
+                            for (let slotIdx = 0; slotIdx < 4; slotIdx++) {
+                                const cardNum = state.cardInSlot[slotIdx];
+                                const el = document.getElementById('p' + cardNum);
+                                el.style.transform = getSlotTransform(slotIdx);
+                            }
+                            setTimeout(startLevitation, 100);
+                        }
+                    }
+                    
+                    // Exécuter les commandes
+                    if (data.command === 'ANIMATE_IN') animateIN();
+                    else if (data.command === 'NEXT_FOCUS') nextFocus();
+                    
+                } catch (err) {
+                    console.error('Error parsing remote command:', err);
+                }
+            }
+        });
+        
+        // Charger l'état initial depuis la remote si disponible
+        try {
+            const remoteState = localStorage.getItem(REMOTE_STATE_KEY);
+            if (remoteState) {
+                const saved = JSON.parse(remoteState);
+                Object.assign(state, saved);
+                document.getElementById('header').style.left = state.headerX + 'px';
+                document.getElementById('header').style.top = state.headerY + 'px';
+                document.getElementById('orbitCenter').style.left = state.centerX + '%';
+                document.getElementById('orbitCenter').style.top = state.centerY + '%';
+            }
+        } catch (e) {}
+        
+        // Initialiser la connexion WebSocket
+        connectWebSocket();
+        
+        window.triggerIN = animateIN;
+        window.triggerNEXT = nextFocus;
+    </script>
+</body>
+</html>
