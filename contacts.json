@@ -60,14 +60,14 @@
     "photo": "contacts-photos/eric-lemarie.png"
   },
   {
-    "id": "c07",
     "firstName": "Arnaud",
     "lastName": "Palliez",
-    "speciality": "eco",
-    "function": "Économiste",
+    "speciality": "actions",
+    "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/arnaud-palliez.png"
+    "photo": "contacts-photos/arnaud-palliez.png",
+    "id": "c07"
   },
   {
     "id": "c08",
