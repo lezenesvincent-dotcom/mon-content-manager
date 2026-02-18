@@ -429,14 +429,36 @@
         broadcastDevLog();
     }
 
+    // ===== LOAD PHOTOS FROM CONTACTS =====
+    var DEV_NAMES = {
+        DL: ['david lang'],
+        TJ: ['thomas jumentier'],
+        VL: ['vincent lezenes', 'vincent lezène', 'vincent lézénès']
+    };
+
+    function loadContactPhotos() {
+        fetch('contacts.json').then(function(r) { return r.json(); }).then(function(data) {
+            data.forEach(function(c) {
+                var fullName = (c.firstName + ' ' + c.lastName).toLowerCase();
+                ['DL','TJ','VL'].forEach(function(who) {
+                    DEV_NAMES[who].forEach(function(name) {
+                        if (fullName === name && c.photo && c.photo.length > 10 && !avatars[who]) {
+                            avatars[who] = c.photo;
+                            document.getElementById('avatar' + who).innerHTML = '<img src="' + avatars[who] + '"><input type="file" id="photo' + who + '" accept="image/*" onchange="uploadAvatar(\'' + who + '\',this)">';
+                        }
+                    });
+                });
+            });
+        }).catch(function(e) { console.log('Contacts photo load error:', e); });
+    }
+
     // ===== INIT =====
     loadDevData();
     renderAll();
     connectWS();
     loadFromServer();
-    // Fetch GitHub commits after small delay
+    loadContactPhotos();
     setTimeout(fetchGitHubCommits, 1000);
-    // Auto refresh every 5 min
     setInterval(refreshAll, 300000);
     </script>
 </body>
