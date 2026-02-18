@@ -190,14 +190,14 @@
     "photo": "contacts-photos/emmanuelle-thollon-pommerol.png"
   },
   {
-    "id": "c20",
     "firstName": "Eric",
     "lastName": "Baron",
     "speciality": "eco",
-    "function": "",
+    "function": "Responsable Stratégie Action & Matières Premières",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/eric-baron.png"
+    "photo": "contacts-photos/eric-baron.png",
+    "id": "c20"
   },
   {
     "firstName": "Eva",
