@@ -70,14 +70,14 @@
     "id": "c07"
   },
   {
-    "id": "c08",
     "firstName": "Jean-Luc",
     "lastName": "Romain",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteurs Energie,  Services Parapétroliers",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/jean-luc-romain.png"
+    "photo": "contacts-photos/jean-luc-romain.png",
+    "id": "c08"
   },
   {
     "firstName": "Alexandre",
