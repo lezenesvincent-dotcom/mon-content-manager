@@ -60,14 +60,14 @@
     "photo": "contacts-photos/eric-lemarie.png"
   },
   {
-    "id": "c07",
     "firstName": "Arnaud",
     "lastName": "Palliez",
-    "speciality": "eco",
-    "function": "Économiste",
+    "speciality": "actions",
+    "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/arnaud-palliez.png"
+    "photo": "contacts-photos/arnaud-palliez.png",
+    "id": "c07"
   },
   {
     "id": "c08",
@@ -150,34 +150,34 @@
     "photo": "contacts-photos/alexandre-gerard.png"
   },
   {
-    "id": "c16",
     "firstName": "Adrien",
     "lastName": "Régnier-Laurent",
     "speciality": "eco",
-    "function": "",
+    "function": "Économiste",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/adrien-regnier-laurent.png"
+    "photo": "contacts-photos/adrien-regnier-laurent.png",
+    "id": "c16"
   },
   {
-    "id": "c17",
     "firstName": "Anne-Lise",
     "lastName": "Cornen",
     "speciality": "eco",
-    "function": "",
+    "function": "Économiste",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/anne-lise-cornen.png"
+    "photo": "contacts-photos/anne-lise-cornen.png",
+    "id": "c17"
   },
   {
-    "id": "c18",
     "firstName": "Benoît",
     "lastName": "Rodriguez",
     "speciality": "eco",
-    "function": "",
+    "function": "Responsable Recherche Économique",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/benoit-rodriguez.png"
+    "photo": "contacts-photos/benoit-rodriguez.png",
+    "id": "c18"
   },
   {
     "id": "c19",
@@ -250,14 +250,14 @@
     "photo": "contacts-photos/francoise-etienne.png"
   },
   {
-    "id": "c26",
     "firstName": "Gabriel",
     "lastName": "Corbassière",
     "speciality": "eco",
-    "function": "",
+    "function": "Économiste",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/gabriel-corbassiere.png"
+    "photo": "contacts-photos/gabriel-corbassiere.png",
+    "id": "c26"
   },
   {
     "id": "c27",
@@ -310,14 +310,14 @@
     "photo": "contacts-photos/stephane-leandri.png"
   },
   {
-    "id": "c32",
     "firstName": "William",
     "lastName": "Honvo",
     "speciality": "eco",
-    "function": "",
+    "function": "Économiste",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/william-honvo.png"
+    "photo": "contacts-photos/william-honvo.png",
+    "id": "c32"
   },
   {
     "firstName": "Gaëlle",
@@ -458,5 +458,15 @@
     "email": "",
     "photo": "data:image/jpeg;base64,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",
     "id": "c_1771409763688"
+  },
+  {
+    "firstName": "Marie",
+    "lastName": "Birg",
+    "speciality": "eco",
+    "function": "Économiste",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "",
+    "id": "c_1771420698270"
   }
 ]
