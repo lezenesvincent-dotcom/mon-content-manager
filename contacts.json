@@ -220,14 +220,14 @@
     "id": "c22"
   },
   {
-    "id": "c23",
     "firstName": "Fabrissa",
     "lastName": "Tassin",
-    "speciality": "eco",
+    "speciality": "technique",
     "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/fabrissa-tassin.png"
+    "photo": "contacts-photos/fabrissa-tassin.png",
+    "id": "c23"
   },
   {
     "id": "c24",
