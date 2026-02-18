@@ -38,5 +38,32 @@
     ],
     "mode": "studio",
     "updatedAt": "2026-02-17T13:38:43.688Z"
+  },
+  "1771422579195": {
+    "id": "1771422579195",
+    "titre": "Direct corporate",
+    "date": "",
+    "entite": "",
+    "contact": "",
+    "heureDirect": "13:00",
+    "heurePrep": "12:30",
+    "prepDuration": 30,
+    "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "toggles": {
+      "diffIBM": true,
+      "replay": true,
+      "chat": true,
+      "qr": false,
+      "masquerQR": false,
+      "synthes": true,
+      "diffGen": true,
+      "fournisGen": true,
+      "studioGen": false,
+      "visite": true
+    },
+    "application": null,
+    "intervenants": [],
+    "mode": "studio",
+    "updatedAt": "2026-02-18T13:49:54.796Z"
   }
 }
