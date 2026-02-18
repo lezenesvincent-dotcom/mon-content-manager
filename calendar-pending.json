@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-18T13:39:56Z",
+  "updatedAt": "2026-02-18T14:29:56Z",
   "pending": [
     {
       "action": "delete",
@@ -11,58 +11,33 @@
       "processedAt": "2026-02-17T09:40:24Z"
     },
     {
-      "action": "delete",
-      "originalSubject": "PRET MACBOOK LAURE / CHARLOTTE",
-      "originalStart": "2026-02-17T07:30:00Z",
-      "originalEnd": "2026-02-17T11:00:00Z",
-      "createdAt": "2026-02-17T09:47:11.829Z",
+      "ficheId": "1771422579195",
+      "subject": "CIC IDF",
+      "date": "2026-02-18",
+      "heurePrep": "14:30",
+      "heureDirect": "15:00",
+      "heureFin": null,
+      "entite": "",
+      "contact": "",
+      "mode": "studio",
+      "ibmChaine": "https://video.ibm.com/channel/wgYXBRG5D89",
+      "application": "",
+      "intervenants": [],
+      "toggles": {
+        "diffIBM": true,
+        "replay": true,
+        "chat": true,
+        "qr": false,
+        "masquerQR": false,
+        "synthes": true,
+        "diffGen": true,
+        "fournisGen": true,
+        "studioGen": false,
+        "visite": true
+      },
+      "createdAt": "2026-02-18T13:50:24.258Z",
       "status": "done",
-      "processedAt": "2026-02-17T09:47:58Z"
-    },
-    {
-      "action": "delete",
-      "originalSubject": "ABSENCE THOMAS",
-      "originalStart": "2026-02-17T07:30:00Z",
-      "originalEnd": "2026-02-17T16:00:00Z",
-      "createdAt": "2026-02-17T09:47:15.162Z",
-      "status": "done",
-      "processedAt": "2026-02-17T09:47:58Z"
-    },
-    {
-      "action": "delete",
-      "originalSubject": "ABSENCE THOMAS",
-      "originalStart": "2026-02-17T07:30:00Z",
-      "originalEnd": "2026-02-17T16:00:00Z",
-      "createdAt": "2026-02-17T09:59:17.349Z",
-      "status": "done",
-      "processedAt": "2026-02-17T09:59:59Z"
-    },
-    {
-      "action": "delete",
-      "originalSubject": "PRET MACBOOK LAURE / CHARLOTTE",
-      "originalStart": "2026-02-17T07:30:00Z",
-      "originalEnd": "2026-02-17T11:00:00Z",
-      "createdAt": "2026-02-17T09:59:20.813Z",
-      "status": "done",
-      "processedAt": "2026-02-17T09:59:59Z"
-    },
-    {
-      "action": "delete",
-      "originalSubject": "PRET MACBOOK LAURE / CHARLOTTE",
-      "originalStart": "2026-02-16T13:00:00Z",
-      "originalEnd": "2026-02-16T16:00:00Z",
-      "createdAt": "2026-02-17T10:22:45.424Z",
-      "status": "done",
-      "processedAt": "2026-02-17T10:24:57Z"
-    },
-    {
-      "action": "delete",
-      "originalSubject": "TEST",
-      "originalStart": "2026-02-17T12:30:00Z",
-      "originalEnd": "2026-02-17T12:45:00Z",
-      "createdAt": "2026-02-17T13:30:33.476Z",
-      "status": "done",
-      "processedAt": "2026-02-17T13:34:56Z"
+      "processedAt": "2026-02-18T13:54:57Z"
     }
   ]
 }
