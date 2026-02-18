@@ -164,6 +164,9 @@
             </select>
         </div>
         <div class="form-row">
+            <select id="alertContact" style="flex:1;">
+                <option value="">-- Contact concern&eacute; --</option>
+            </select>
             <input type="text" id="alertDesc" placeholder="Description (optionnel)..." style="flex:2;" />
         </div>
         <div class="form-actions">
@@ -187,6 +190,7 @@
     const API_URL = 'https://ecamm-overlay-server.onrender.com';
     let ws = null;
     let alerts = [];
+    let contacts = [];
     let weekContent = { vignettes: [], agenda: [] };
 
     // ===== WEEK LABEL =====
@@ -234,11 +238,14 @@
     function sendAlert() {
         const title = document.getElementById('alertTitle').value.trim();
         if (!title) { document.getElementById('alertTitle').style.borderColor = '#ff4444'; return; }
+        const contactId = document.getElementById('alertContact').value;
+        const contact = contacts.find(c => c.id === contactId);
         const alert = {
             id: Date.now().toString(),
             title: title,
             description: document.getElementById('alertDesc').value.trim(),
             priority: document.getElementById('alertPriority').value,
+            contact: contact ? { id: contact.id, name: contact.firstName + ' ' + contact.lastName, photo: contact.photo } : null,
             status: 'new',
             createdAt: new Date().toISOString(),
             createdBy: 'Studio'
@@ -249,6 +256,7 @@
         toggleAlertForm();
         document.getElementById('alertTitle').value = '';
         document.getElementById('alertDesc').value = '';
+        document.getElementById('alertContact').value = '';
         renderAlerts();
     }
 
@@ -316,10 +324,12 @@
             if (a.status === 'new') actions = '<button class="btn-handle" onclick="handleAlert(\'' + a.id + '\')">Prise en charge</button>';
             if (a.status === 'new' || a.status === 'handled') actions += '<button class="btn-resolve" onclick="resolveAlert(\'' + a.id + '\')">OK</button>';
             actions += '<button class="btn-delete" onclick="deleteAlert(\'' + a.id + '\')">&#x2715;</button>';
+            const contactHtml = a.contact ? '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><img src="' + a.contact.photo + '" style="width:20px;height:20px;border-radius:50%;object-fit:cover;" onerror="this.style.display=\'none\'"><span style="font-size:11px;color:rgba(255,255,255,0.5);">' + a.contact.name + '</span></div>' : '';
             return '<div class="alert-card ' + a.priority + '">' +
                 '<div class="alert-status ' + a.status + '"></div>' +
                 '<div class="alert-info">' +
                     '<div class="alert-title">' + a.title + (a.description ? ' <span style="font-weight:400;color:rgba(255,255,255,0.3);font-size:12px;">— ' + a.description + '</span>' : '') + '</div>' +
+                    contactHtml +
                     '<div class="alert-meta"><span>' + dateStr + ' &agrave; ' + timeStr + '</span><span>' + a.createdBy + '</span>' +
                     (a.status === 'handled' ? '<span style="color:#ffaa00;">En cours</span>' : '') +
                     (a.status === 'resolved' ? '<span style="color:#44cc66;">R&eacute;solu</span>' : '') +
@@ -464,12 +474,28 @@
         }).catch(() => {});
     }
 
+    // ===== LOAD CONTACTS =====
+    function loadContacts() {
+        fetch('contacts.json').then(r => r.json()).then(data => {
+            contacts = data;
+            const sel = document.getElementById('alertContact');
+            contacts.sort((a, b) => a.lastName.localeCompare(b.lastName));
+            contacts.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.firstName + ' ' + c.lastName + (c.speciality ? ' (' + c.speciality + ')' : '');
+                sel.appendChild(opt);
+            });
+        }).catch(e => console.log('Contacts load error:', e));
+    }
+
     // ===== INIT =====
     loadAlerts();
     renderAlerts();
     renderWeekView();
     connectWS();
     loadFromServer();
+    loadContacts();
     </script>
 </body>
 </html>
