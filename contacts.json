@@ -280,14 +280,14 @@
     "photo": "contacts-photos/martin-gicquiau.png"
   },
   {
-    "id": "c29",
     "firstName": "Nicolas",
     "lastName": "Bouthors",
     "speciality": "eco",
-    "function": "",
+    "function": "Stratégiste Actions & Matières Premières",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/nicolas-bouthors.png"
+    "photo": "contacts-photos/nicolas-bouthors.png",
+    "id": "c29"
   },
   {
     "firstName": "Nicolas",
