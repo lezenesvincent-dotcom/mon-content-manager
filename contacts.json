@@ -170,14 +170,14 @@
     "photo": "contacts-photos/anne-lise-cornen.png"
   },
   {
-    "id": "c18",
     "firstName": "Benoît",
     "lastName": "Rodriguez",
     "speciality": "eco",
-    "function": "",
+    "function": "Responsable Recherche Économique",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/benoit-rodriguez.png"
+    "photo": "contacts-photos/benoit-rodriguez.png",
+    "id": "c18"
   },
   {
     "id": "c19",
