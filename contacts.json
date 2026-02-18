@@ -180,14 +180,14 @@
     "id": "c18"
   },
   {
-    "id": "c19",
     "firstName": "Emmanuelle",
     "lastName": "Thollon-Pommerol",
     "speciality": "eco",
-    "function": "",
+    "function": "Responsable Stratégie Crédit",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/emmanuelle-thollon-pommerol.png"
+    "photo": "contacts-photos/emmanuelle-thollon-pommerol.png",
+    "id": "c19"
   },
   {
     "firstName": "Eric",
