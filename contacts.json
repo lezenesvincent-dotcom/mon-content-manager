@@ -150,14 +150,14 @@
     "photo": "contacts-photos/alexandre-gerard.png"
   },
   {
-    "id": "c16",
     "firstName": "Adrien",
     "lastName": "Régnier-Laurent",
     "speciality": "eco",
-    "function": "",
+    "function": "Économiste",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/adrien-regnier-laurent.png"
+    "photo": "contacts-photos/adrien-regnier-laurent.png",
+    "id": "c16"
   },
   {
     "firstName": "Anne-Lise",
