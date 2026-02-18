@@ -290,14 +290,14 @@
     "photo": "contacts-photos/nicolas-bouthors.png"
   },
   {
-    "id": "c30",
     "firstName": "Nicolas",
     "lastName": "Haese",
-    "speciality": "eco",
+    "speciality": "esg",
     "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/nicolas-haese.png"
+    "photo": "contacts-photos/nicolas-haese.png",
+    "id": "c30"
   },
   {
     "id": "c31",
