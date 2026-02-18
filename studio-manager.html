@@ -100,7 +100,7 @@
                 <div class="tool-description">G&eacute;n&eacute;rateur de vignettes visuelles</div>
                 <span class="badge">NOUVEAU</span>
             </a>
-            <div class="tool-card red" onclick="openPin()">
+            <div class="tool-card red" onclick="openPin('streaming.html')">
                 <svg class="lock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 <div class="tool-icon-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>
                 <div class="tool-title">Streaming</div>
@@ -149,6 +149,13 @@
                 <div class="tool-description">Alertes &amp; notifications en temps r&eacute;el</div>
                 <span class="badge">ALERTES</span>
             </a>
+            <div class="tool-card dark" onclick="openPin('dev-dashboard.html')" style="cursor:pointer;">
+                <svg class="lock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <div class="tool-icon-wrap"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+                <div class="tool-title">Dev</div>
+                <div class="tool-description">Dashboard d&eacute;veloppement &amp; modifications</div>
+                <span class="badge">PROT&Eacute;G&Eacute;</span>
+            </div>
         </div>
         <div class="footer">eCamm Live &bull; Studio CIC Paris</div>
     </div>
@@ -165,9 +172,10 @@
         </div>
     </div>
     <script>
-    function openPin(){document.getElementById('pinOverlay').classList.add('visible');document.getElementById('pinInput').value='';document.getElementById('pinError').textContent='';setTimeout(function(){document.getElementById('pinInput').focus();},50);}
+    var pinTarget='streaming.html';
+    function openPin(target){pinTarget=target||'streaming.html';document.getElementById('pinOverlay').classList.add('visible');document.getElementById('pinInput').value='';document.getElementById('pinError').textContent='';document.querySelector('#pinOverlay h3').textContent=pinTarget==='dev-dashboard.html'?'Dev':'Streaming';setTimeout(function(){document.getElementById('pinInput').focus();},50);}
     function closePin(){document.getElementById('pinOverlay').classList.remove('visible');}
-    function checkPin(){var c=document.getElementById('pinInput').value;if(c==='0153'){closePin();window.location.href='streaming.html';}else{document.getElementById('pinError').textContent='Code incorrect';document.getElementById('pinInput').value='';document.getElementById('pinInput').focus();}}
+    function checkPin(){var c=document.getElementById('pinInput').value;if(c==='0153'){closePin();window.location.href=pinTarget;}else{document.getElementById('pinError').textContent='Code incorrect';document.getElementById('pinInput').value='';document.getElementById('pinInput').focus();}}
     document.addEventListener('keydown',function(e){if(!document.getElementById('pinOverlay').classList.contains('visible'))return;if(e.key==='Enter')checkPin();if(e.key==='Escape')closePin();});
     var ALBUMS=['https://i.scdn.co/image/ab67616d0000b273b1c4b76e23414c9f20f43b14','https://i.scdn.co/image/ab67616d0000b2738b52c6b9bc4e43d873869699','https://i.scdn.co/image/ab67616d0000b273e2e352d89826aef6dbd5ff8f','https://i.scdn.co/image/ab67616d0000b2739e1cfc756886ac782e363d79','https://i.scdn.co/image/ab67616d0000b27368384dd85fd5e95831252f60','https://i.scdn.co/image/ab67616d0000b273879e9318cb9f4e05ee552ac9','https://i.scdn.co/image/ab67616d0000b273b46f74097655d7f353caab14','https://i.scdn.co/image/ab67616d0000b2730b51f8d91f3a21e8426361ae','https://i.scdn.co/image/ab67616d0000b2734718e2b124f79258be7571c1','https://i.scdn.co/image/ab67616d0000b27395f754318336a07e85ec59bc','https://i.scdn.co/image/ab67616d0000b273d9985092cd88bffd97653b58','https://i.scdn.co/image/ab67616d0000b2738940ac99f49e44f59e6f7fb3','https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96','https://i.scdn.co/image/ab67616d0000b2734637341b9f507521afa9a778','https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647'];
     var idx=0,bg=document.getElementById('albumBg'),l1=document.createElement('div'),l2=document.createElement('div');
