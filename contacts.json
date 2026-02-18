@@ -130,14 +130,14 @@
     "id": "c13"
   },
   {
-    "id": "c14",
     "firstName": "Dominique",
     "lastName": "Descours",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteurs Auto et Équipementiers",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/dominique-descours.png"
+    "photo": "contacts-photos/dominique-descours.png",
+    "id": "c14"
   },
   {
     "firstName": "Alexandre",
