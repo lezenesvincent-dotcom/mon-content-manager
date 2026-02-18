@@ -1,4 +1,4 @@
-<!-- deploy: 2026-02-18 -->
+<!-- deploy: 2026-02-18 v2 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,140 +7,70 @@
     <title>Studio 2027 - Suivi Travaux</title>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; }
-        body {
-            background: #111118; min-height: 100vh; color: #fff;
-            padding: 0; margin: 0;
-        }
+        body { background: #111118; min-height: 100vh; color: #fff; padding: 0; margin: 0; }
         .album-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; overflow: hidden; }
-        .album-bg .cover {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover; background-position: center;
-            filter: blur(60px) saturate(2.5) brightness(0.5);
-            transition: opacity 2s ease-in-out; opacity: 0; transform: scale(1.4);
-        }
+        .album-bg .cover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(60px) saturate(2.5) brightness(0.5); transition: opacity 2s ease-in-out; opacity: 0; transform: scale(1.4); }
         .album-bg .cover.active { opacity: 1; }
         .album-bg::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.25); z-index: 1; }
-
         .page-wrap { position: relative; z-index: 2; min-height: 100vh; padding: 30px 40px; }
-
         .top-bar { display: flex; align-items: center; margin-bottom: 30px; }
-        .back-btn {
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 8px 16px; color: rgba(255,255,255,0.6);
-            font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
-            transition: all 0.2s; display: flex; align-items: center; gap: 6px;
-        }
+        .back-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px 16px; color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
         .back-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
         .page-title { flex: 1; text-align: center; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
         .page-title span { color: rgba(0,200,255,0.8); }
-        .save-indicator {
-            font-size: 11px; color: rgba(255,255,255,0.3); padding: 6px 14px;
-            background: rgba(255,255,255,0.05); border-radius: 20px;
-        }
+        .save-indicator { font-size: 11px; color: rgba(255,255,255,0.3); padding: 6px 14px; background: rgba(255,255,255,0.05); border-radius: 20px; }
         .save-indicator.saving { color: #f6d365; }
         .save-indicator.saved { color: #43e97b; }
-
-        .columns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-
-        .col {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        .col-header {
-            padding: 16px 18px 12px;
-            font-size: 15px; font-weight: 700;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .col-header .col-count {
-            font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 10px;
-        }
+        .columns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+        .col { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+        .col-header { padding: 14px 14px 10px; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .col-header .col-count { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 10px; }
         .col.regie .col-header { color: #ff416c; }
         .col.bureau .col-header { color: #00d2ff; }
         .col.ccs .col-header { color: #43e97b; }
         .col.axians .col-header { color: #f6d365; }
-
-        .col-body { padding: 8px; flex: 1; overflow-y: auto; max-height: calc(100vh - 180px); }
+        .col.studio .col-header { color: #c084fc; }
+        .col-body { padding: 6px; flex: 1; overflow-y: auto; max-height: calc(100vh - 180px); }
         .col-body::-webkit-scrollbar { width: 3px; }
         .col-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-
-        .item {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            margin-bottom: 6px;
-            transition: all 0.2s;
-        }
+        .item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; margin-bottom: 5px; transition: all 0.2s; }
         .item:hover { background: rgba(255,255,255,0.06); }
         .item.checked { opacity: 0.5; }
         .item.checked .item-title { text-decoration: line-through; }
-
-        .item-header {
-            display: flex; align-items: center; gap: 10px;
-            padding: 12px 14px; cursor: pointer;
-        }
-        .item-check {
-            width: 20px; height: 20px; border-radius: 6px;
-            border: 2px solid rgba(255,255,255,0.2);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; transition: all 0.2s; cursor: pointer;
-        }
+        .item-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; cursor: pointer; }
+        .item-check { width: 18px; height: 18px; border-radius: 5px; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; cursor: pointer; }
         .item-check:hover { border-color: rgba(255,255,255,0.4); }
         .item.checked .item-check { background: #43e97b; border-color: #43e97b; }
-        .item.checked .item-check::after { content: '✓'; color: #000; font-size: 12px; font-weight: 800; }
-
-        .item-title {
-            flex: 1; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8);
-            outline: none; border: none; background: none;
-            min-width: 0; cursor: text;
-        }
-        .item-title:empty::before {
-            content: 'Nouveau point...'; color: rgba(255,255,255,0.2);
-        }
-
-        .item-arrow {
-            font-size: 10px; color: rgba(255,255,255,0.2);
-            transition: transform 0.2s; flex-shrink: 0;
-        }
+        .item.checked .item-check::after { content: '✓'; color: #000; font-size: 11px; font-weight: 800; }
+        .item-title { flex: 1; font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); outline: none; border: none; background: none; min-width: 0; cursor: text; }
+        .item-title:empty::before { content: 'Nouveau point...'; color: rgba(255,255,255,0.2); }
+        .item-arrow { font-size: 9px; color: rgba(255,255,255,0.2); transition: transform 0.2s; flex-shrink: 0; cursor: pointer; }
         .item.open .item-arrow { transform: rotate(90deg); }
-
-        .item-body {
-            max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
-        }
-        .item.open .item-body { max-height: 300px; }
-
-        .item-textarea {
-            width: 100%; min-height: 80px; padding: 0 14px 12px;
-            background: none; border: none; color: rgba(255,255,255,0.6);
-            font-size: 12px; line-height: 1.6; resize: vertical; outline: none;
-            font-family: inherit;
-        }
+        .item-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .item.open .item-body { max-height: 600px; overflow-y: auto; }
+        .item-textarea { width: 100%; min-height: 60px; padding: 0 12px 8px; background: none; border: none; color: rgba(255,255,255,0.6); font-size: 11px; line-height: 1.5; resize: vertical; outline: none; font-family: inherit; }
         .item-textarea::placeholder { color: rgba(255,255,255,0.15); }
-
-        .add-btn {
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            padding: 10px; margin: 4px 8px 8px;
-            background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1);
-            border-radius: 10px; color: rgba(255,255,255,0.25);
-            font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-        }
+        .photo-zone { padding: 4px 12px 10px; }
+        .photo-upload-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; background: rgba(255,255,255,0.06); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .photo-upload-btn:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+        .photo-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .photo-thumb-wrap { position: relative; }
+        .photo-thumb { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; }
+        .photo-thumb:hover { border-color: rgba(255,255,255,0.3); transform: scale(1.05); }
+        .photo-delete { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; border-radius: 50%; background: #ff416c; color: #fff; font-size: 10px; font-weight: 800; display: none; align-items: center; justify-content: center; cursor: pointer; line-height: 1; }
+        .photo-thumb-wrap:hover .photo-delete { display: flex; }
+        .add-btn { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px; margin: 4px 6px 6px; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px; color: rgba(255,255,255,0.25); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .add-btn:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.2); }
-
-        .delete-btn {
-            opacity: 0; width: 18px; height: 18px; border-radius: 4px;
-            display: flex; align-items: center; justify-content: center;
-            color: rgba(255,255,255,0.3); font-size: 14px; cursor: pointer;
-            flex-shrink: 0; transition: all 0.2s;
-        }
+        .delete-btn { opacity: 0; width: 16px; height: 16px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.3); font-size: 13px; cursor: pointer; flex-shrink: 0; transition: all 0.2s; }
         .item-header:hover .delete-btn { opacity: 1; }
         .delete-btn:hover { color: #ff416c; background: rgba(255,65,108,0.15); }
-
-        @media (max-width: 900px) { .columns { grid-template-columns: repeat(2, 1fr); } }
+        .lightbox { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .lightbox.visible { display: flex; }
+        .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .lightbox-close { position: absolute; top: 20px; right: 24px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .lightbox-close:hover { background: rgba(255,255,255,0.2); }
+        @media (max-width: 1100px) { .columns { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 700px) { .columns { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 500px) { .columns { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -148,13 +78,13 @@
     <div class="album-bg" id="albumBg"></div>
     <div class="page-wrap">
         <div class="top-bar">
-            <a href="studio-manager.html" class="back-btn">← Retour</a>
+            <a href="studio-manager.html" class="back-btn">&larr; Retour</a>
             <div class="page-title">Studio <span>2027</span></div>
-            <div class="save-indicator" id="saveStatus">●&nbsp; Synchronisé</div>
+            <div class="save-indicator" id="saveStatus">&bull; Synchronis&eacute;</div>
         </div>
         <div class="columns" id="columns">
             <div class="col regie" data-col="regie">
-                <div class="col-header">Régie <span class="col-count" id="count-regie">0</span></div>
+                <div class="col-header">R&eacute;gie <span class="col-count" id="count-regie">0</span></div>
                 <div class="col-body" id="body-regie"></div>
                 <div class="add-btn" onclick="addItem('regie')">+ Ajouter</div>
             </div>
@@ -169,147 +99,175 @@
                 <div class="add-btn" onclick="addItem('ccs')">+ Ajouter</div>
             </div>
             <div class="col axians" data-col="axians">
-                <div class="col-header">Axians-Atrait Consulting <span class="col-count" id="count-axians">0</span></div>
+                <div class="col-header">Axians-Atrait <span class="col-count" id="count-axians">0</span></div>
                 <div class="col-body" id="body-axians"></div>
                 <div class="add-btn" onclick="addItem('axians')">+ Ajouter</div>
             </div>
+            <div class="col studio" data-col="studio">
+                <div class="col-header">Studio <span class="col-count" id="count-studio">0</span></div>
+                <div class="col-body" id="body-studio"></div>
+                <div class="add-btn" onclick="addItem('studio')">+ Ajouter</div>
+            </div>
         </div>
     </div>
-
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img id="lightboxImg" src="" alt="">
+    </div>
+    <input type="file" id="photoInput" accept="image/*" style="display:none" multiple>
 <script>
 var WS_SERVER = 'https://ecamm-overlay-server.onrender.com';
 var STORE_KEY = 'studio2027';
-var data = { regie: [], bureau: [], ccs: [], axians: [] };
+var COLS = ['regie', 'bureau', 'ccs', 'axians', 'studio'];
+var data = { regie: [], bureau: [], ccs: [], axians: [], studio: [] };
 var saveTimer = null;
+var pendingPhotoCol = null;
+var pendingPhotoIdx = null;
 
-// ===== LOAD DATA =====
 function loadData() {
     fetch(WS_SERVER + '/api/studio2027')
         .then(function(r) { return r.ok ? r.json() : null; })
         .then(function(d) {
-            if (d && d.data) {
-                data = d.data;
-            } else {
-                var local = localStorage.getItem(STORE_KEY);
-                if (local) data = JSON.parse(local);
-            }
+            if (d && d.data) { data = d.data; }
+            else { var local = localStorage.getItem(STORE_KEY); if (local) data = JSON.parse(local); }
+            COLS.forEach(function(c) { if (!data[c]) data[c] = []; });
             renderAll();
         })
         .catch(function() {
-            var local = localStorage.getItem(STORE_KEY);
-            if (local) data = JSON.parse(local);
+            var local = localStorage.getItem(STORE_KEY); if (local) data = JSON.parse(local);
+            COLS.forEach(function(c) { if (!data[c]) data[c] = []; });
             renderAll();
         });
 }
 
-// ===== SAVE DATA =====
 function saveData() {
     clearTimeout(saveTimer);
     var status = document.getElementById('saveStatus');
-    status.textContent = '● Enregistrement...';
+    status.textContent = '\u25cf Enregistrement...';
     status.className = 'save-indicator saving';
-
     localStorage.setItem(STORE_KEY, JSON.stringify(data));
-
     saveTimer = setTimeout(function() {
         fetch(WS_SERVER + '/api/studio2027', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ data: data })
-        })
-        .then(function() {
-            status.textContent = '● Synchronisé';
+        }).then(function() {
+            status.textContent = '\u25cf Synchronis\u00e9';
             status.className = 'save-indicator saved';
             setTimeout(function() { status.className = 'save-indicator'; }, 2000);
-        })
-        .catch(function() {
-            status.textContent = '● Local uniquement';
+        }).catch(function() {
+            status.textContent = '\u25cf Local uniquement';
             status.className = 'save-indicator';
         });
     }, 500);
 }
 
-// ===== RENDER =====
-function renderAll() {
-    ['regie', 'bureau', 'ccs', 'axians'].forEach(function(col) {
-        renderCol(col);
-    });
-}
+function renderAll() { COLS.forEach(function(col) { renderCol(col); }); }
 
 function renderCol(col) {
     var body = document.getElementById('body-' + col);
     var items = data[col] || [];
     body.innerHTML = '';
-
     var checkedCount = 0;
     items.forEach(function(item, i) {
         if (item.checked) checkedCount++;
+        if (!item.photos) item.photos = [];
+        var photosHtml = '';
+        item.photos.forEach(function(photo, pi) {
+            photosHtml += '<div class="photo-thumb-wrap"><img class="photo-thumb" src="' + photo + '" onclick="openLightbox(this.src)"><div class="photo-delete" onclick="event.stopPropagation();deletePhoto(\'' + col + '\',' + i + ',' + pi + ')">\u00d7</div></div>';
+        });
         var div = document.createElement('div');
         div.className = 'item' + (item.checked ? ' checked' : '') + (item.open ? ' open' : '');
         div.innerHTML =
             '<div class="item-header">' +
                 '<div class="item-check" onclick="toggleCheck(\'' + col + '\',' + i + ')"></div>' +
                 '<div class="item-title" contenteditable="true" oninput="updateTitle(\'' + col + '\',' + i + ',this)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();}">' + (item.title || '') + '</div>' +
-                '<div class="delete-btn" onclick="event.stopPropagation();deleteItem(\'' + col + '\',' + i + ')">×</div>' +
-                '<div class="item-arrow" onclick="toggleOpen(\'' + col + '\',' + i + ')">▶</div>' +
+                '<div class="delete-btn" onclick="event.stopPropagation();deleteItem(\'' + col + '\',' + i + ')">\u00d7</div>' +
+                '<div class="item-arrow" onclick="toggleOpen(\'' + col + '\',' + i + ')">\u25b6</div>' +
             '</div>' +
             '<div class="item-body">' +
-                '<textarea class="item-textarea" placeholder="Notes, détails, commentaires..." oninput="updateNote(\'' + col + '\',' + i + ',this)">' + (item.note || '') + '</textarea>' +
+                '<textarea class="item-textarea" placeholder="Notes, d\u00e9tails, commentaires..." oninput="updateNote(\'' + col + '\',' + i + ',this)">' + (item.note || '') + '</textarea>' +
+                '<div class="photo-zone">' +
+                    '<div class="photo-upload-btn" onclick="triggerPhoto(\'' + col + '\',' + i + ')">\ud83d\udcf7 Photo</div>' +
+                    '<div class="photo-grid">' + photosHtml + '</div>' +
+                '</div>' +
             '</div>';
         body.appendChild(div);
     });
-
     document.getElementById('count-' + col).textContent = checkedCount + '/' + items.length;
 }
 
-// ===== ACTIONS =====
 function addItem(col) {
     if (!data[col]) data[col] = [];
-    data[col].push({ title: '', note: '', checked: false, open: false, id: Date.now() });
+    data[col].push({ title: '', note: '', checked: false, open: false, photos: [], id: Date.now() });
     renderCol(col);
     saveData();
-    // Focus le nouveau titre
     var body = document.getElementById('body-' + col);
     var titles = body.querySelectorAll('.item-title');
     if (titles.length > 0) titles[titles.length - 1].focus();
 }
-
-function toggleCheck(col, i) {
-    data[col][i].checked = !data[col][i].checked;
-    renderCol(col);
-    saveData();
-}
-
+function toggleCheck(col, i) { data[col][i].checked = !data[col][i].checked; renderCol(col); saveData(); }
 function toggleOpen(col, i) {
     data[col][i].open = !data[col][i].open;
     renderCol(col);
     if (data[col][i].open) {
         var body = document.getElementById('body-' + col);
-        var textareas = body.querySelectorAll('.item-textarea');
-        if (textareas[i]) textareas[i].focus();
+        var ta = body.querySelectorAll('.item-textarea');
+        if (ta[i]) ta[i].focus();
     }
 }
+function updateTitle(col, i, el) { data[col][i].title = el.textContent; saveData(); }
+function updateNote(col, i, el) { data[col][i].note = el.value; saveData(); }
+function deleteItem(col, i) { data[col].splice(i, 1); renderCol(col); saveData(); }
 
-function updateTitle(col, i, el) {
-    data[col][i].title = el.textContent;
-    saveData();
+function triggerPhoto(col, i) {
+    pendingPhotoCol = col;
+    pendingPhotoIdx = i;
+    document.getElementById('photoInput').click();
 }
+document.getElementById('photoInput').addEventListener('change', function(e) {
+    var files = e.target.files;
+    if (!files.length || pendingPhotoCol === null) return;
+    var col = pendingPhotoCol, idx = pendingPhotoIdx;
+    if (!data[col][idx].photos) data[col][idx].photos = [];
+    var remaining = files.length;
+    for (var f = 0; f < files.length; f++) {
+        (function(file) {
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var maxW = 800, w = img.width, h = img.height;
+                    if (w > maxW) { h = h * maxW / w; w = maxW; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    var compressed = canvas.toDataURL('image/jpeg', 0.7);
+                    data[col][idx].photos.push(compressed);
+                    remaining--;
+                    if (remaining === 0) { renderCol(col); saveData(); }
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        })(files[f]);
+    }
+    e.target.value = '';
+});
+function deletePhoto(col, i, pi) { data[col][i].photos.splice(pi, 1); renderCol(col); saveData(); }
 
-function updateNote(col, i, el) {
-    data[col][i].note = el.value;
-    saveData();
+function openLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('visible');
 }
-
-function deleteItem(col, i) {
-    data[col].splice(i, 1);
-    renderCol(col);
-    saveData();
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('visible');
+    document.getElementById('lightboxImg').src = '';
 }
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
 
-// ===== INIT =====
 loadData();
 
-// Background albums (same as studio-manager)
 var ALBUMS=['https://i.scdn.co/image/ab67616d0000b273b1c4b76e23414c9f20f43b14','https://i.scdn.co/image/ab67616d0000b2738b52c6b9bc4e43d873869699','https://i.scdn.co/image/ab67616d0000b273e2e352d89826aef6dbd5ff8f','https://i.scdn.co/image/ab67616d0000b2739e1cfc756886ac782e363d79','https://i.scdn.co/image/ab67616d0000b27368384dd85fd5e95831252f60','https://i.scdn.co/image/ab67616d0000b273879e9318cb9f4e05ee552ac9','https://i.scdn.co/image/ab67616d0000b273b46f74097655d7f353caab14','https://i.scdn.co/image/ab67616d0000b2730b51f8d91f3a21e8426361ae','https://i.scdn.co/image/ab67616d0000b2734718e2b124f79258be7571c1','https://i.scdn.co/image/ab67616d0000b27395f754318336a07e85ec59bc','https://i.scdn.co/image/ab67616d0000b273d9985092cd88bffd97653b58','https://i.scdn.co/image/ab67616d0000b2738940ac99f49e44f59e6f7fb3','https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96','https://i.scdn.co/image/ab67616d0000b2734637341b9f507521afa9a778','https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647'];
 var idx=0,bg=document.getElementById('albumBg'),l1=document.createElement('div'),l2=document.createElement('div');
 l1.className='cover active';l2.className='cover';bg.appendChild(l1);bg.appendChild(l2);
