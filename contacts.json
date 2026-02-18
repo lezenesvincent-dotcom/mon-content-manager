@@ -250,14 +250,14 @@
     "photo": "contacts-photos/francoise-etienne.png"
   },
   {
-    "id": "c26",
     "firstName": "Gabriel",
     "lastName": "Corbassière",
     "speciality": "eco",
-    "function": "",
+    "function": "Économiste",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/gabriel-corbassiere.png"
+    "photo": "contacts-photos/gabriel-corbassiere.png",
+    "id": "c26"
   },
   {
     "id": "c27",
