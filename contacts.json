@@ -230,14 +230,14 @@
     "id": "c23"
   },
   {
-    "id": "c24",
     "firstName": "François",
     "lastName": "Duhen",
     "speciality": "eco",
-    "function": "",
+    "function": "Directeur de la Recherche Économique et Marchés Financiers",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/francois-duhen.png"
+    "photo": "contacts-photos/francois-duhen.png",
+    "id": "c24"
   },
   {
     "firstName": "Françoise",
