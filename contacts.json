@@ -200,34 +200,34 @@
     "photo": "contacts-photos/eric-baron.png"
   },
   {
-    "id": "c21",
     "firstName": "Eva",
     "lastName": "Bellin",
-    "speciality": "eco",
+    "speciality": "technique",
     "function": "Responsable Analyse Technique",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/eva-bellin.png"
+    "photo": "contacts-photos/eva-bellin.png",
+    "id": "c21"
   },
   {
-    "id": "c22",
     "firstName": "Eva",
     "lastName": "Zarbo",
-    "speciality": "eco",
+    "speciality": "esg",
     "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/eva-zarbo.png"
+    "photo": "contacts-photos/eva-zarbo.png",
+    "id": "c22"
   },
   {
-    "id": "c23",
     "firstName": "Fabrissa",
     "lastName": "Tassin",
-    "speciality": "eco",
+    "speciality": "technique",
     "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/fabrissa-tassin.png"
+    "photo": "contacts-photos/fabrissa-tassin.png",
+    "id": "c23"
   },
   {
     "id": "c24",
@@ -240,14 +240,14 @@
     "photo": "contacts-photos/francois-duhen.png"
   },
   {
-    "id": "c25",
     "firstName": "Françoise",
     "lastName": "Étienne",
-    "speciality": "eco",
+    "speciality": "esg",
     "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/francoise-etienne.png"
+    "photo": "contacts-photos/francoise-etienne.png",
+    "id": "c25"
   },
   {
     "firstName": "Gabriel",
@@ -290,14 +290,14 @@
     "photo": "contacts-photos/nicolas-bouthors.png"
   },
   {
-    "id": "c30",
     "firstName": "Nicolas",
     "lastName": "Haese",
-    "speciality": "eco",
+    "speciality": "esg",
     "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/nicolas-haese.png"
+    "photo": "contacts-photos/nicolas-haese.png",
+    "id": "c30"
   },
   {
     "id": "c31",
