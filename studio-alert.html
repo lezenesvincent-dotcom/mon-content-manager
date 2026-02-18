@@ -1,0 +1,475 @@
+<!-- studio-alert v1.0 - 2026-02-18 -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Alert</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; }
+        body { background: #0f0f15; color: #fff; min-height: 100vh; padding: 20px; }
+
+        .header { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto 24px; }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+        .header h1 span { color: #ff4444; }
+        .back-btn { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 13px; padding: 6px 14px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s; }
+        .back-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .week-label { font-size: 13px; color: rgba(255,255,255,0.35); }
+
+        /* ALERTE BUTTON */
+        .alert-trigger-zone { max-width: 1100px; margin: 0 auto 30px; text-align: center; }
+        .alert-big-btn {
+            display: inline-flex; align-items: center; gap: 12px;
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: #fff; font-size: 16px; font-weight: 700; padding: 16px 40px;
+            border: none; border-radius: 14px; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255,65,108,0.4);
+            transition: all 0.2s; letter-spacing: 0.3px;
+        }
+        .alert-big-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,65,108,0.5); }
+        .alert-big-btn:active { transform: scale(0.97); }
+        .alert-big-btn svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* NEW ALERT FORM */
+        .alert-form { display: none; max-width: 1100px; margin: 0 auto 30px; background: rgba(255,65,108,0.08); border: 1px solid rgba(255,65,108,0.2); border-radius: 16px; padding: 20px 24px; }
+        .alert-form.visible { display: block; }
+        .alert-form h3 { font-size: 15px; margin-bottom: 14px; color: #ff416c; }
+        .form-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
+        .form-row input, .form-row select { flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+        .form-row input:focus, .form-row select:focus { border-color: rgba(255,65,108,0.5); }
+        .form-row select option { background: #1a1a24; }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .btn-cancel { padding: 9px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-send { padding: 9px 20px; background: linear-gradient(135deg, #ff416c, #ff4b2b); border: none; border-radius: 10px; color: #fff; cursor: pointer; font-size: 13px; font-weight: 700; }
+
+        /* TABS */
+        .tabs { display: flex; gap: 4px; max-width: 1100px; margin: 0 auto 20px; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 4px; }
+        .tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.4); border-radius: 9px; cursor: pointer; transition: all 0.2s; position: relative; }
+        .tab.active { background: rgba(255,255,255,0.08); color: #fff; }
+        .tab .count { display: inline-block; background: rgba(255,65,108,0.3); color: #ff6b6b; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; margin-left: 6px; }
+
+        /* ALERTS LIST */
+        .alerts-container { max-width: 1100px; margin: 0 auto; }
+        .alert-card {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px; padding: 16px 20px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 16px; transition: all 0.2s;
+        }
+        .alert-card:hover { background: rgba(255,255,255,0.05); }
+        .alert-card.urgent { border-left: 3px solid #ff4444; }
+        .alert-card.warning { border-left: 3px solid #ffaa00; }
+        .alert-card.info { border-left: 3px solid #00aaff; }
+
+        .alert-status {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+            animation: pulse-dot 2s infinite;
+        }
+        .alert-status.new { background: #ff4444; }
+        .alert-status.handled { background: #ffaa00; animation: none; }
+        .alert-status.resolved { background: #44cc66; animation: none; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .alert-info { flex: 1; }
+        .alert-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+        .alert-meta { font-size: 11px; color: rgba(255,255,255,0.3); display: flex; gap: 12px; }
+        .alert-priority { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; }
+        .alert-priority.urgent { background: rgba(255,68,68,0.2); color: #ff6666; }
+        .alert-priority.warning { background: rgba(255,170,0,0.2); color: #ffcc44; }
+        .alert-priority.info { background: rgba(0,170,255,0.2); color: #44bbff; }
+
+        .alert-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .alert-actions button {
+            padding: 7px 14px; border-radius: 8px; border: none; font-size: 11px;
+            font-weight: 600; cursor: pointer; transition: all 0.15s;
+        }
+        .btn-handle { background: rgba(255,170,0,0.15); color: #ffcc44; }
+        .btn-handle:hover { background: rgba(255,170,0,0.25); }
+        .btn-resolve { background: rgba(68,204,102,0.15); color: #66dd88; }
+        .btn-resolve:hover { background: rgba(68,204,102,0.25); }
+        .btn-delete { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.25); }
+        .btn-delete:hover { background: rgba(255,68,68,0.15); color: #ff6666; }
+
+        /* WEEKLY SUMMARY */
+        .summary-section { margin-bottom: 24px; }
+        .summary-title { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.8px; }
+        .summary-item {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px; padding: 12px 16px; margin-bottom: 6px; font-size: 13px;
+        }
+        .summary-icon { font-size: 16px; }
+        .summary-item-title { flex: 1; }
+        .summary-item-date { font-size: 11px; color: rgba(255,255,255,0.25); }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.2); font-size: 14px; }
+        .empty-state svg { width: 48px; height: 48px; stroke: rgba(255,255,255,0.1); fill: none; stroke-width: 1.5; margin-bottom: 12px; }
+
+        /* AUDIO */
+        .sound-test { font-size: 11px; color: rgba(255,255,255,0.3); cursor: pointer; margin-left: 12px; }
+        .sound-test:hover { color: #fff; }
+
+        /* STATUS BAR */
+        .status-bar { max-width: 1100px; margin: 0 auto 20px; display: flex; gap: 16px; }
+        .stat-box { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 18px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: 700; }
+        .stat-number.red { color: #ff4444; }
+        .stat-number.orange { color: #ffaa00; }
+        .stat-number.green { color: #44cc66; }
+        .stat-label { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 2px; }
+
+        /* SYNC INDICATOR */
+        .sync-status { font-size: 11px; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 6px; }
+        .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #44cc66; }
+        .sync-dot.offline { background: #ff4444; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="studio-manager.html" class="back-btn">&larr; Studio</a>
+            <h1>&#x1F6A8; Studio <span>Alert</span></h1>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+            <div class="week-label" id="weekLabel"></div>
+            <div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncText">Connexion...</span></div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="status-bar">
+        <div class="stat-box"><div class="stat-number red" id="countNew">0</div><div class="stat-label">Nouvelles</div></div>
+        <div class="stat-box"><div class="stat-number orange" id="countHandled">0</div><div class="stat-label">En cours</div></div>
+        <div class="stat-box"><div class="stat-number green" id="countResolved">0</div><div class="stat-label">R&eacute;solues</div></div>
+    </div>
+
+    <!-- ALERT TRIGGER -->
+    <div class="alert-trigger-zone">
+        <button class="alert-big-btn" onclick="toggleAlertForm()">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            D&Eacute;CLENCHER UNE ALERTE
+        </button>
+        <span class="sound-test" onclick="testSound()">&#x1F50A; Tester le son</span>
+    </div>
+
+    <!-- NEW ALERT FORM -->
+    <div class="alert-form" id="alertForm">
+        <h3>&#x26A0;&#xFE0F; Nouvelle alerte</h3>
+        <div class="form-row">
+            <input type="text" id="alertTitle" placeholder="Titre de l'alerte..." />
+            <select id="alertPriority">
+                <option value="urgent">&#x1F534; Urgent</option>
+                <option value="warning">&#x1F7E0; Attention</option>
+                <option value="info">&#x1F535; Info</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <input type="text" id="alertDesc" placeholder="Description (optionnel)..." style="flex:2;" />
+        </div>
+        <div class="form-actions">
+            <button class="btn-cancel" onclick="toggleAlertForm()">Annuler</button>
+            <button class="btn-send" onclick="sendAlert()">&#x1F6A8; Envoyer l'alerte</button>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('alerts')" id="tabAlerts">Alertes <span class="count" id="alertCount">0</span></div>
+        <div class="tab" onclick="switchTab('week')" id="tabWeek">Semaine</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="alerts-container" id="alertsView"></div>
+    <div class="alerts-container" id="weekView" style="display:none;"></div>
+
+    <script>
+    const WS_URL = 'wss://ecamm-overlay-server.onrender.com';
+    const API_URL = 'https://ecamm-overlay-server.onrender.com';
+    let ws = null;
+    let alerts = [];
+    let weekContent = { vignettes: [], agenda: [] };
+
+    // ===== WEEK LABEL =====
+    function updateWeekLabel() {
+        const now = new Date();
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+        const friday = new Date(monday);
+        friday.setDate(monday.getDate() + 4);
+        const fmt = d => d.getDate() + '/' + (d.getMonth()+1);
+        document.getElementById('weekLabel').textContent = 'Semaine du ' + fmt(monday) + ' au ' + fmt(friday);
+    }
+    updateWeekLabel();
+
+    // ===== ALERT FORM =====
+    function toggleAlertForm() {
+        const form = document.getElementById('alertForm');
+        form.classList.toggle('visible');
+        if (form.classList.contains('visible')) document.getElementById('alertTitle').focus();
+    }
+
+    // ===== SOUND =====
+    let audioCtx = null;
+    function playAlertSound() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // Triple beep urgent
+        [0, 200, 400].forEach(delay => {
+            setTimeout(() => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = 880;
+                osc.type = 'square';
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.3);
+            }, delay);
+        });
+    }
+    function testSound() { playAlertSound(); }
+
+    // ===== SEND ALERT =====
+    function sendAlert() {
+        const title = document.getElementById('alertTitle').value.trim();
+        if (!title) { document.getElementById('alertTitle').style.borderColor = '#ff4444'; return; }
+        const alert = {
+            id: Date.now().toString(),
+            title: title,
+            description: document.getElementById('alertDesc').value.trim(),
+            priority: document.getElementById('alertPriority').value,
+            status: 'new',
+            createdAt: new Date().toISOString(),
+            createdBy: 'Studio'
+        };
+        alerts.unshift(alert);
+        saveAlerts();
+        broadcastAlert(alert);
+        toggleAlertForm();
+        document.getElementById('alertTitle').value = '';
+        document.getElementById('alertDesc').value = '';
+        renderAlerts();
+    }
+
+    // ===== BROADCAST VIA WS =====
+    function broadcastAlert(alert) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'studio-alert', data: alert }));
+        }
+        // Also save to server
+        fetch(API_URL + '/api/studio-alerts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(alerts)
+        }).catch(e => console.log('Save error:', e));
+    }
+
+    // ===== STATUS CHANGE =====
+    function handleAlert(id) {
+        const a = alerts.find(x => x.id === id);
+        if (a) { a.status = 'handled'; a.handledAt = new Date().toISOString(); }
+        saveAlerts();
+        renderAlerts();
+        if (ws && ws.readyState === WebSocket.OPEN)
+            ws.send(JSON.stringify({ type: 'studio-alert-update', data: { id, status: 'handled' } }));
+    }
+
+    function resolveAlert(id) {
+        const a = alerts.find(x => x.id === id);
+        if (a) { a.status = 'resolved'; a.resolvedAt = new Date().toISOString(); }
+        saveAlerts();
+        renderAlerts();
+        if (ws && ws.readyState === WebSocket.OPEN)
+            ws.send(JSON.stringify({ type: 'studio-alert-update', data: { id, status: 'resolved' } }));
+    }
+
+    function deleteAlert(id) {
+        if (!confirm('Supprimer cette alerte ?')) return;
+        alerts = alerts.filter(x => x.id !== id);
+        saveAlerts();
+        renderAlerts();
+    }
+
+    // ===== RENDER =====
+    function renderAlerts() {
+        const container = document.getElementById('alertsView');
+        const newCount = alerts.filter(a => a.status === 'new').length;
+        const handledCount = alerts.filter(a => a.status === 'handled').length;
+        const resolvedCount = alerts.filter(a => a.status === 'resolved').length;
+
+        document.getElementById('countNew').textContent = newCount;
+        document.getElementById('countHandled').textContent = handledCount;
+        document.getElementById('countResolved').textContent = resolvedCount;
+        document.getElementById('alertCount').textContent = newCount + handledCount;
+
+        if (alerts.length === 0) {
+            container.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><p>Aucune alerte</p></div>';
+            return;
+        }
+
+        container.innerHTML = alerts.map(a => {
+            const time = new Date(a.createdAt);
+            const timeStr = time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = time.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+            let actions = '';
+            if (a.status === 'new') actions = '<button class="btn-handle" onclick="handleAlert(\'' + a.id + '\')">Prise en charge</button>';
+            if (a.status === 'new' || a.status === 'handled') actions += '<button class="btn-resolve" onclick="resolveAlert(\'' + a.id + '\')">OK</button>';
+            actions += '<button class="btn-delete" onclick="deleteAlert(\'' + a.id + '\')">&#x2715;</button>';
+            return '<div class="alert-card ' + a.priority + '">' +
+                '<div class="alert-status ' + a.status + '"></div>' +
+                '<div class="alert-info">' +
+                    '<div class="alert-title">' + a.title + (a.description ? ' <span style="font-weight:400;color:rgba(255,255,255,0.3);font-size:12px;">— ' + a.description + '</span>' : '') + '</div>' +
+                    '<div class="alert-meta"><span>' + dateStr + ' &agrave; ' + timeStr + '</span><span>' + a.createdBy + '</span>' +
+                    (a.status === 'handled' ? '<span style="color:#ffaa00;">En cours</span>' : '') +
+                    (a.status === 'resolved' ? '<span style="color:#44cc66;">R&eacute;solu</span>' : '') +
+                    '</div>' +
+                '</div>' +
+                '<span class="alert-priority ' + a.priority + '">' + (a.priority === 'urgent' ? 'URGENT' : a.priority === 'warning' ? 'ATTENTION' : 'INFO') + '</span>' +
+                '<div class="alert-actions">' + actions + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    // ===== WEEK VIEW =====
+    function renderWeekView() {
+        const container = document.getElementById('weekView');
+        let html = '';
+
+        // Vignettes créées cette semaine
+        html += '<div class="summary-section"><div class="summary-title">&#x1F3A8; Vignettes cr&eacute;&eacute;es cette semaine</div>';
+        if (weekContent.vignettes.length === 0) {
+            html += '<div class="summary-item" style="color:rgba(255,255,255,0.2);">Aucune vignette cette semaine</div>';
+        } else {
+            weekContent.vignettes.forEach(v => {
+                html += '<div class="summary-item"><span class="summary-icon">&#x1F5BC;</span><span class="summary-item-title">' + v.title + '</span><span class="summary-item-date">' + v.date + '</span></div>';
+            });
+        }
+        html += '</div>';
+
+        // Événements agenda
+        html += '<div class="summary-section"><div class="summary-title">&#x1F4C5; &Eacute;v&eacute;nements agenda cette semaine</div>';
+        if (weekContent.agenda.length === 0) {
+            html += '<div class="summary-item" style="color:rgba(255,255,255,0.2);">Aucun &eacute;v&eacute;nement cette semaine</div>';
+        } else {
+            weekContent.agenda.forEach(e => {
+                html += '<div class="summary-item"><span class="summary-icon">&#x1F4CC;</span><span class="summary-item-title">' + e.title + '</span><span class="summary-item-date">' + e.date + '</span></div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    // ===== TABS =====
+    function switchTab(tab) {
+        document.getElementById('tabAlerts').classList.toggle('active', tab === 'alerts');
+        document.getElementById('tabWeek').classList.toggle('active', tab === 'week');
+        document.getElementById('alertsView').style.display = tab === 'alerts' ? 'block' : 'none';
+        document.getElementById('weekView').style.display = tab === 'week' ? 'block' : 'none';
+        if (tab === 'week') { loadWeekContent(); renderWeekView(); }
+    }
+
+    // ===== PERSISTENCE =====
+    function saveAlerts() {
+        localStorage.setItem('studioAlerts', JSON.stringify(alerts));
+    }
+    function loadAlerts() {
+        try {
+            alerts = JSON.parse(localStorage.getItem('studioAlerts')) || [];
+        } catch(e) { alerts = []; }
+    }
+
+    // ===== LOAD WEEK CONTENT FROM CALENDAR =====
+    function loadWeekContent() {
+        const now = new Date();
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+        monday.setHours(0,0,0,0);
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        sunday.setHours(23,59,59,999);
+
+        // Load from calendar-data.json
+        fetch(API_URL + '/api/studio-alerts-week').then(r => r.json()).then(data => {
+            if (data.vignettes) weekContent.vignettes = data.vignettes;
+            if (data.agenda) weekContent.agenda = data.agenda;
+            renderWeekView();
+        }).catch(() => {
+            // Fallback: try to parse calendar-data.json locally
+            fetch('calendar-data.json').then(r => r.json()).then(cal => {
+                weekContent.agenda = (cal.events || []).filter(e => {
+                    const d = new Date(e.start || e.date);
+                    return d >= monday && d <= sunday;
+                }).map(e => ({
+                    title: e.subject || e.title || 'Sans titre',
+                    date: new Date(e.start || e.date).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+                }));
+                renderWeekView();
+            }).catch(() => {});
+        });
+    }
+
+    // ===== WEBSOCKET =====
+    function connectWS() {
+        ws = new WebSocket(WS_URL);
+        ws.onopen = function() {
+            document.getElementById('syncDot').classList.remove('offline');
+            document.getElementById('syncText').textContent = 'Connect\u00e9';
+        };
+        ws.onmessage = function(e) {
+            try {
+                const msg = JSON.parse(e.data);
+                if (msg.type === 'studio-alert') {
+                    // New alert from another client
+                    const exists = alerts.find(a => a.id === msg.data.id);
+                    if (!exists) {
+                        alerts.unshift(msg.data);
+                        saveAlerts();
+                        renderAlerts();
+                        playAlertSound();
+                    }
+                }
+                if (msg.type === 'studio-alert-update') {
+                    const a = alerts.find(x => x.id === msg.data.id);
+                    if (a) {
+                        a.status = msg.data.status;
+                        saveAlerts();
+                        renderAlerts();
+                    }
+                }
+                if (msg.type === 'studio-alerts-sync') {
+                    alerts = msg.data || [];
+                    saveAlerts();
+                    renderAlerts();
+                }
+            } catch(err) {}
+        };
+        ws.onclose = function() {
+            document.getElementById('syncDot').classList.add('offline');
+            document.getElementById('syncText').textContent = 'D\u00e9connect\u00e9';
+            setTimeout(connectWS, 3000);
+        };
+        ws.onerror = function() { ws.close(); };
+    }
+
+    // ===== LOAD FROM SERVER =====
+    function loadFromServer() {
+        fetch(API_URL + '/api/studio-alerts').then(r => r.json()).then(data => {
+            if (Array.isArray(data) && data.length > 0) {
+                alerts = data;
+                saveAlerts();
+                renderAlerts();
+            }
+        }).catch(() => {});
+    }
+
+    // ===== INIT =====
+    loadAlerts();
+    renderAlerts();
+    renderWeekView();
+    connectWS();
+    loadFromServer();
+    </script>
+</body>
+</html>
