@@ -42,7 +42,7 @@
   "1771422579195": {
     "id": "1771422579195",
     "titre": "CIC IDF",
-    "date": "",
+    "date": "2026-02-18",
     "entite": "",
     "contact": "",
     "heureDirect": "15:00",
@@ -64,6 +64,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-18T13:50:14.540Z"
+    "updatedAt": "2026-02-18T13:50:23.513Z"
   }
 }
