@@ -1,4 +1,4 @@
-<!-- dev-dashboard v1.0 - 2026-02-18 -->
+<!-- dev-dashboard v2.0 - 2026-02-18 - checklists + date vert fluo -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -59,8 +59,9 @@
             border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; transition: all 0.15s;
         }
         .entry:hover { background: rgba(255,255,255,0.06); }
-        .entry-time { font-size: 10px; color: rgba(255,255,255,0.2); margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+        .entry-time { font-size: 10px; color: #39ff14; font-weight: 600; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
         .entry-time .tag { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
+        .entry-time .repo-name { color: rgba(255,255,255,0.15); font-weight: 400; }
         .tag-commit { background: rgba(0,112,243,0.15); color: #4da8ff; }
         .tag-claude { background: rgba(168,85,247,0.15); color: #c084fc; }
         .tag-file { background: rgba(234,179,8,0.15); color: #fbbf24; }
@@ -91,6 +92,42 @@
         }
 
         @media (max-width: 900px) { .columns-wrap { grid-template-columns: 1fr; height: auto; } .dev-column { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); max-height: 500px; } }
+
+        /* CHECKLIST */
+        .checklist-section { border-top: 1px solid rgba(255,255,255,0.06); padding: 10px 12px; flex-shrink: 0; }
+        .checklist-title { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+        .checklist-title .count { color: #39ff14; }
+        .checklist-items { max-height: 160px; overflow-y: auto; }
+        .checklist-items::-webkit-scrollbar { width: 3px; }
+        .checklist-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .check-item {
+            display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 6px;
+            cursor: pointer; transition: all 0.1s; font-size: 12px;
+        }
+        .check-item:hover { background: rgba(255,255,255,0.04); }
+        .check-item.done { opacity: 0.35; }
+        .check-item.done .check-text { text-decoration: line-through; }
+        .check-box {
+            width: 16px; height: 16px; border-radius: 4px; border: 2px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s;
+        }
+        .check-item.done .check-box { background: #39ff14; border-color: #39ff14; }
+        .check-item.done .check-box::after { content: '✓'; color: #0a0c14; font-size: 10px; font-weight: 800; }
+        .check-text { flex: 1; line-height: 1.3; }
+        .check-delete { opacity: 0; font-size: 10px; color: rgba(255,255,255,0.2); cursor: pointer; padding: 2px 4px; }
+        .check-item:hover .check-delete { opacity: 1; }
+        .check-delete:hover { color: #ff4444; }
+        .checklist-add { display: flex; gap: 4px; margin-top: 6px; }
+        .checklist-add input {
+            flex: 1; padding: 6px 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 6px; color: #fff; font-size: 11px; outline: none;
+        }
+        .checklist-add input:focus { border-color: rgba(57,255,20,0.3); }
+        .checklist-add input::placeholder { color: rgba(255,255,255,0.15); }
+        .checklist-add button {
+            padding: 6px 10px; background: rgba(57,255,20,0.1); border: 1px solid rgba(57,255,20,0.2);
+            border-radius: 6px; color: #39ff14; font-size: 11px; font-weight: 700; cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -117,6 +154,14 @@
                 </div>
             </div>
             <div class="dev-entries" id="entriesDL"></div>
+            <div class="checklist-section">
+                <div class="checklist-title">Missions <span class="count" id="checkCountDL">0/0</span></div>
+                <div class="checklist-items" id="checklistDL"></div>
+                <div class="checklist-add">
+                    <input type="text" id="checkInputDL" placeholder="Nouvelle mission..." onkeydown="if(event.key==='Enter')addCheckItem('DL')">
+                    <button onclick="addCheckItem('DL')">+</button>
+                </div>
+            </div>
             <div class="add-entry-bar">
                 <div class="add-entry-row">
                     <input type="text" id="inputDL" placeholder="Ajouter une note..." onkeydown="if(event.key==='Enter')addManualEntry('DL')">
@@ -136,6 +181,14 @@
                 </div>
             </div>
             <div class="dev-entries" id="entriesTJ"></div>
+            <div class="checklist-section">
+                <div class="checklist-title">Missions <span class="count" id="checkCountTJ">0/0</span></div>
+                <div class="checklist-items" id="checklistTJ"></div>
+                <div class="checklist-add">
+                    <input type="text" id="checkInputTJ" placeholder="Nouvelle mission..." onkeydown="if(event.key==='Enter')addCheckItem('TJ')">
+                    <button onclick="addCheckItem('TJ')">+</button>
+                </div>
+            </div>
             <div class="add-entry-bar">
                 <div class="add-entry-row">
                     <input type="text" id="inputTJ" placeholder="Ajouter une note..." onkeydown="if(event.key==='Enter')addManualEntry('TJ')">
@@ -155,6 +208,14 @@
                 </div>
             </div>
             <div class="dev-entries" id="entriesVL"></div>
+            <div class="checklist-section">
+                <div class="checklist-title">Missions <span class="count" id="checkCountVL">0/0</span></div>
+                <div class="checklist-items" id="checklistVL"></div>
+                <div class="checklist-add">
+                    <input type="text" id="checkInputVL" placeholder="Nouvelle mission..." onkeydown="if(event.key==='Enter')addCheckItem('VL')">
+                    <button onclick="addCheckItem('VL')">+</button>
+                </div>
+            </div>
             <div class="add-entry-bar">
                 <div class="add-entry-row">
                     <input type="text" id="inputVL" placeholder="Ajouter une note..." onkeydown="if(event.key==='Enter')addManualEntry('VL')">
@@ -171,6 +232,7 @@
     var GH_REPOS = ['mon-content-manager', 'ecamm-overlay-server', 'regie-video', 'overlay-manager2', 'overlay-backend'];
 
     var devLog = { DL: [], TJ: [], VL: [] };
+    var checklists = { DL: [], TJ: [], VL: [] };
     var avatars = {};
     var ws = null;
 
@@ -219,7 +281,7 @@
             }
 
             var linkHtml = e.url ? '<a href="' + e.url + '" target="_blank" class="entry-link">Voir &rarr;</a>' : '';
-            var repoHtml = e.repo ? '<span style="color:rgba(255,255,255,0.15);">' + e.repo + '</span>' : '';
+            var repoHtml = e.repo ? '<span class="repo-name">' + e.repo + '</span>' : '';
 
             return '<div class="entry">' +
                 '<div class="entry-time"><span class="tag ' + tagClass + '">' + tagLabel + '</span> ' + timeStr + ' ' + repoHtml + '</div>' +
@@ -233,12 +295,58 @@
         renderEntries('DL');
         renderEntries('TJ');
         renderEntries('VL');
+        renderChecklist('DL');
+        renderChecklist('TJ');
+        renderChecklist('VL');
         // Restore avatars
         ['DL','TJ','VL'].forEach(function(w) {
             if (avatars[w]) {
                 document.getElementById('avatar' + w).innerHTML = '<img src="' + avatars[w] + '"><input type="file" id="photo' + w + '" accept="image/*" onchange="uploadAvatar(\'' + w + '\',this)">';
             }
         });
+    }
+
+    // ===== CHECKLIST =====
+    function renderChecklist(who) {
+        var container = document.getElementById('checklist' + who);
+        var items = checklists[who] || [];
+        var done = items.filter(function(i) { return i.done; }).length;
+        document.getElementById('checkCount' + who).textContent = done + '/' + items.length;
+
+        container.innerHTML = items.map(function(item, idx) {
+            return '<div class="check-item ' + (item.done ? 'done' : '') + '" onclick="toggleCheck(\'' + who + '\',' + idx + ')">' +
+                '<div class="check-box"></div>' +
+                '<span class="check-text">' + item.text + '</span>' +
+                '<span class="check-delete" onclick="event.stopPropagation();deleteCheck(\'' + who + '\',' + idx + ')">✕</span>' +
+            '</div>';
+        }).join('');
+    }
+
+    function addCheckItem(who) {
+        var input = document.getElementById('checkInput' + who);
+        var text = input.value.trim();
+        if (!text) return;
+        checklists[who].push({ text: text, done: false, createdAt: new Date().toISOString() });
+        input.value = '';
+        saveDevData();
+        renderChecklist(who);
+        broadcastDevLog();
+    }
+
+    function toggleCheck(who, idx) {
+        if (checklists[who][idx]) {
+            checklists[who][idx].done = !checklists[who][idx].done;
+            saveDevData();
+            renderChecklist(who);
+            broadcastDevLog();
+        }
+    }
+
+    function deleteCheck(who, idx) {
+        checklists[who].splice(idx, 1);
+        saveDevData();
+        renderChecklist(who);
+        broadcastDevLog();
     }
 
     // ===== MANUAL ENTRY =====
@@ -323,9 +431,8 @@
 
     // ===== PERSISTENCE =====
     function saveDevData() {
-        var data = { devLog: devLog, avatars: avatars };
+        var data = { devLog: devLog, avatars: avatars, checklists: checklists };
         localStorage.setItem('devDashboard', JSON.stringify(data));
-        // Also save to server
         fetch(API_URL + '/api/dev-dashboard', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -339,6 +446,7 @@
             if (saved) {
                 if (saved.devLog) devLog = saved.devLog;
                 if (saved.avatars) avatars = saved.avatars;
+                if (saved.checklists) checklists = saved.checklists;
             }
         } catch(e) {}
     }
@@ -360,6 +468,11 @@
                 if (data.avatars) {
                     ['DL','TJ','VL'].forEach(function(w) {
                         if (data.avatars[w] && !avatars[w]) avatars[w] = data.avatars[w];
+                    });
+                }
+                if (data.checklists) {
+                    ['DL','TJ','VL'].forEach(function(w) {
+                        if (data.checklists[w]) checklists[w] = data.checklists[w];
                     });
                 }
                 saveDevData();
@@ -393,6 +506,12 @@
                         saveDevData();
                         renderAll();
                     }
+                    if (msg.data && msg.data.checklists) {
+                        ['DL','TJ','VL'].forEach(function(w) {
+                            if (msg.data.checklists[w]) checklists[w] = msg.data.checklists[w];
+                        });
+                        renderAll();
+                    }
                 }
             } catch(err) {}
         };
@@ -406,7 +525,7 @@
 
     function broadcastDevLog() {
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'dev-dashboard-update', data: { devLog: devLog, avatars: avatars } }));
+            ws.send(JSON.stringify({ type: 'dev-dashboard-update', data: { devLog: devLog, avatars: avatars, checklists: checklists } }));
         }
     }
 
