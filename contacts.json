@@ -40,14 +40,14 @@
     "photo": "contacts-photos/emmanuel-chevalier.png"
   },
   {
-    "id": "c05",
     "firstName": "Ebrahim",
     "lastName": "Homani",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteurs Industrie, et Immobilier",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/ebrahim-homani.png"
+    "photo": "contacts-photos/ebrahim-homani.png",
+    "id": "c05"
   },
   {
     "id": "c06",
