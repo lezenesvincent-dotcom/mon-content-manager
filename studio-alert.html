@@ -1,4 +1,4 @@
-<!-- studio-alert v1.0 - 2026-02-18 -->
+<!-- studio-alert v3.0 - 2026-02-18 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -17,35 +17,67 @@
         .back-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
         .week-label { font-size: 13px; color: rgba(255,255,255,0.35); }
 
-        /* ALERTE BUTTON */
         .alert-trigger-zone { max-width: 1100px; margin: 0 auto 30px; text-align: center; }
         .alert-big-btn {
             display: inline-flex; align-items: center; gap: 12px;
             background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
             color: #fff; font-size: 16px; font-weight: 700; padding: 16px 40px;
             border: none; border-radius: 14px; cursor: pointer;
-            box-shadow: 0 4px 20px rgba(255,65,108,0.4);
-            transition: all 0.2s; letter-spacing: 0.3px;
+            box-shadow: 0 4px 20px rgba(255,65,108,0.4); transition: all 0.2s;
         }
         .alert-big-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,65,108,0.5); }
         .alert-big-btn:active { transform: scale(0.97); }
         .alert-big-btn svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .sound-test { font-size: 11px; color: rgba(255,255,255,0.3); cursor: pointer; margin-left: 12px; }
+        .sound-test:hover { color: #fff; }
 
-        /* NEW ALERT FORM */
-        .alert-form { display: none; max-width: 1100px; margin: 0 auto 30px; background: rgba(255,65,108,0.08); border: 1px solid rgba(255,65,108,0.2); border-radius: 16px; padding: 20px 24px; }
+        /* FORM */
+        .alert-form { display: none; max-width: 1100px; margin: 0 auto 30px; background: rgba(255,65,108,0.08); border: 1px solid rgba(255,65,108,0.2); border-radius: 16px; padding: 24px; }
         .alert-form.visible { display: block; }
-        .alert-form h3 { font-size: 15px; margin-bottom: 14px; color: #ff416c; }
-        .form-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
-        .form-row input, .form-row select { flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
-        .form-row input:focus, .form-row select:focus { border-color: rgba(255,65,108,0.5); }
-        .form-row select option { background: #1a1a24; }
+        .alert-form h3 { font-size: 15px; margin-bottom: 16px; color: #ff416c; }
+
+        /* EMITTER PICKER */
+        .emitter-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+        .emitter-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; max-height: 200px; overflow-y: auto; padding: 4px; }
+        .emitter-card {
+            display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 10px;
+            border-radius: 12px; cursor: pointer; transition: all 0.15s; border: 2px solid transparent;
+            background: rgba(255,255,255,0.03); min-width: 72px;
+        }
+        .emitter-card:hover { background: rgba(255,255,255,0.08); }
+        .emitter-card.selected { border-color: #ff416c; background: rgba(255,65,108,0.12); }
+        .emitter-avatar {
+            width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.08);
+            display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+            overflow: hidden; color: rgba(255,255,255,0.4);
+        }
+        .emitter-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .emitter-name { font-size: 9px; color: rgba(255,255,255,0.5); text-align: center; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .form-row { margin-bottom: 12px; }
+        .form-row input, .form-row textarea {
+            width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; color: #fff; font-size: 14px; outline: none; resize: vertical;
+        }
+        .form-row input:focus, .form-row textarea:focus { border-color: rgba(255,65,108,0.5); }
+        .form-row input::placeholder, .form-row textarea::placeholder { color: rgba(255,255,255,0.2); }
         .form-actions { display: flex; gap: 10px; justify-content: flex-end; }
         .btn-cancel { padding: 9px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 13px; font-weight: 600; }
         .btn-send { padding: 9px 20px; background: linear-gradient(135deg, #ff416c, #ff4b2b); border: none; border-radius: 10px; color: #fff; cursor: pointer; font-size: 13px; font-weight: 700; }
 
+        /* STATUS BAR */
+        .status-bar { max-width: 1100px; margin: 0 auto 20px; display: flex; gap: 12px; }
+        .stat-box { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px 14px; text-align: center; }
+        .stat-number { font-size: 24px; font-weight: 700; }
+        .stat-number.c1 { color: #ff4444; }
+        .stat-number.c2 { color: #ffaa00; }
+        .stat-number.c3 { color: #0070f3; }
+        .stat-number.c4 { color: #44cc66; }
+        .stat-label { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
         /* TABS */
         .tabs { display: flex; gap: 4px; max-width: 1100px; margin: 0 auto 20px; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 4px; }
-        .tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.4); border-radius: 9px; cursor: pointer; transition: all 0.2s; position: relative; }
+        .tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.4); border-radius: 9px; cursor: pointer; transition: all 0.2s; }
         .tab.active { background: rgba(255,255,255,0.08); color: #fff; }
         .tab .count { display: inline-block; background: rgba(255,65,108,0.3); color: #ff6b6b; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; margin-left: 6px; }
 
@@ -53,72 +85,49 @@
         .alerts-container { max-width: 1100px; margin: 0 auto; }
         .alert-card {
             background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 14px; padding: 16px 20px; margin-bottom: 10px;
-            display: flex; align-items: center; gap: 16px; transition: all 0.2s;
+            border-radius: 14px; padding: 16px 20px; margin-bottom: 10px; transition: all 0.2s;
         }
         .alert-card:hover { background: rgba(255,255,255,0.05); }
-        .alert-card.urgent { border-left: 3px solid #ff4444; }
-        .alert-card.warning { border-left: 3px solid #ffaa00; }
-        .alert-card.info { border-left: 3px solid #00aaff; }
-
-        .alert-status {
-            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
-            animation: pulse-dot 2s infinite;
-        }
-        .alert-status.new { background: #ff4444; }
-        .alert-status.handled { background: #ffaa00; animation: none; }
-        .alert-status.resolved { background: #44cc66; animation: none; }
-        @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
+        .alert-top { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+        .alert-emitter-photo { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; background: rgba(255,255,255,0.08); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.3); }
+        .alert-emitter-photo img { width: 100%; height: 100%; object-fit: cover; }
         .alert-info { flex: 1; }
-        .alert-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
-        .alert-meta { font-size: 11px; color: rgba(255,255,255,0.3); display: flex; gap: 12px; }
-        .alert-priority { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; }
-        .alert-priority.urgent { background: rgba(255,68,68,0.2); color: #ff6666; }
-        .alert-priority.warning { background: rgba(255,170,0,0.2); color: #ffcc44; }
-        .alert-priority.info { background: rgba(0,170,255,0.2); color: #44bbff; }
+        .alert-title { font-size: 14px; font-weight: 600; }
+        .alert-meta { font-size: 11px; color: rgba(255,255,255,0.3); display: flex; gap: 12px; margin-top: 2px; }
+        .alert-desc { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 6px; padding: 8px 12px; background: rgba(255,255,255,0.02); border-radius: 8px; line-height: 1.5; }
 
-        .alert-actions { display: flex; gap: 8px; flex-shrink: 0; }
-        .alert-actions button {
-            padding: 7px 14px; border-radius: 8px; border: none; font-size: 11px;
-            font-weight: 600; cursor: pointer; transition: all 0.15s;
+        /* STATUS PIPELINE */
+        .status-pipeline { display: flex; align-items: center; gap: 0; margin-top: 12px; }
+        .pipeline-step {
+            flex: 1; text-align: center; padding: 8px 4px; font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.4px; cursor: pointer; transition: all 0.15s;
+            border: 1px solid rgba(255,255,255,0.06); position: relative;
         }
-        .btn-handle { background: rgba(255,170,0,0.15); color: #ffcc44; }
-        .btn-handle:hover { background: rgba(255,170,0,0.25); }
-        .btn-resolve { background: rgba(68,204,102,0.15); color: #66dd88; }
-        .btn-resolve:hover { background: rgba(68,204,102,0.25); }
-        .btn-delete { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.25); }
+        .pipeline-step:first-child { border-radius: 8px 0 0 8px; }
+        .pipeline-step:last-child { border-radius: 0 8px 8px 0; }
+        .pipeline-step.inactive { background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.2); }
+        .pipeline-step.active-sent { background: rgba(255,68,68,0.15); color: #ff6666; border-color: rgba(255,68,68,0.3); }
+        .pipeline-step.active-handled { background: rgba(255,170,0,0.15); color: #ffcc44; border-color: rgba(255,170,0,0.3); }
+        .pipeline-step.active-modif { background: rgba(0,112,243,0.15); color: #4da8ff; border-color: rgba(0,112,243,0.3); }
+        .pipeline-step.active-fixed { background: rgba(68,204,102,0.15); color: #66dd88; border-color: rgba(68,204,102,0.3); }
+        .pipeline-step:hover:not(.done) { background: rgba(255,255,255,0.06); }
+        .pipeline-step.done { opacity: 0.5; }
+
+        .alert-footer { display: flex; justify-content: flex-end; margin-top: 8px; }
+        .btn-delete { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.2); border: none; padding: 5px 12px; border-radius: 6px; font-size: 10px; cursor: pointer; font-weight: 600; }
         .btn-delete:hover { background: rgba(255,68,68,0.15); color: #ff6666; }
 
-        /* WEEKLY SUMMARY */
+        .empty-state { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.2); font-size: 14px; }
+        .empty-state svg { width: 48px; height: 48px; stroke: rgba(255,255,255,0.1); fill: none; stroke-width: 1.5; margin-bottom: 12px; display: block; margin: 0 auto 12px; }
+
+        /* WEEKLY */
         .summary-section { margin-bottom: 24px; }
         .summary-title { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.8px; }
-        .summary-item {
-            display: flex; align-items: center; gap: 12px;
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 10px; padding: 12px 16px; margin-bottom: 6px; font-size: 13px;
-        }
+        .summary-item { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 12px 16px; margin-bottom: 6px; font-size: 13px; }
         .summary-icon { font-size: 16px; }
         .summary-item-title { flex: 1; }
         .summary-item-date { font-size: 11px; color: rgba(255,255,255,0.25); }
 
-        .empty-state { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.2); font-size: 14px; }
-        .empty-state svg { width: 48px; height: 48px; stroke: rgba(255,255,255,0.1); fill: none; stroke-width: 1.5; margin-bottom: 12px; }
-
-        /* AUDIO */
-        .sound-test { font-size: 11px; color: rgba(255,255,255,0.3); cursor: pointer; margin-left: 12px; }
-        .sound-test:hover { color: #fff; }
-
-        /* STATUS BAR */
-        .status-bar { max-width: 1100px; margin: 0 auto 20px; display: flex; gap: 16px; }
-        .stat-box { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 18px; text-align: center; }
-        .stat-number { font-size: 28px; font-weight: 700; }
-        .stat-number.red { color: #ff4444; }
-        .stat-number.orange { color: #ffaa00; }
-        .stat-number.green { color: #44cc66; }
-        .stat-label { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 2px; }
-
-        /* SYNC INDICATOR */
         .sync-status { font-size: 11px; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 6px; }
         .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #44cc66; }
         .sync-dot.offline { background: #ff4444; }
@@ -136,14 +145,13 @@
         </div>
     </div>
 
-    <!-- STATS -->
     <div class="status-bar">
-        <div class="stat-box"><div class="stat-number red" id="countNew">0</div><div class="stat-label">Nouvelles</div></div>
-        <div class="stat-box"><div class="stat-number orange" id="countHandled">0</div><div class="stat-label">En cours</div></div>
-        <div class="stat-box"><div class="stat-number green" id="countResolved">0</div><div class="stat-label">R&eacute;solues</div></div>
+        <div class="stat-box"><div class="stat-number c1" id="countSent">0</div><div class="stat-label">Envoy&eacute;es</div></div>
+        <div class="stat-box"><div class="stat-number c2" id="countHandled">0</div><div class="stat-label">Prises en charge</div></div>
+        <div class="stat-box"><div class="stat-number c3" id="countModif">0</div><div class="stat-label">Modification</div></div>
+        <div class="stat-box"><div class="stat-number c4" id="countFixed">0</div><div class="stat-label">R&eacute;par&eacute;</div></div>
     </div>
 
-    <!-- ALERT TRIGGER -->
     <div class="alert-trigger-zone">
         <button class="alert-big-btn" onclick="toggleAlertForm()">
             <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -152,22 +160,15 @@
         <span class="sound-test" onclick="testSound()">&#x1F50A; Tester le son</span>
     </div>
 
-    <!-- NEW ALERT FORM -->
     <div class="alert-form" id="alertForm">
         <h3>&#x26A0;&#xFE0F; Nouvelle alerte</h3>
+        <div class="emitter-label">&Eacute;metteur</div>
+        <div class="emitter-grid" id="emitterGrid"></div>
         <div class="form-row">
             <input type="text" id="alertTitle" placeholder="Titre de l'alerte..." />
-            <select id="alertPriority">
-                <option value="urgent">&#x1F534; Urgent</option>
-                <option value="warning">&#x1F7E0; Attention</option>
-                <option value="info">&#x1F535; Info</option>
-            </select>
         </div>
         <div class="form-row">
-            <select id="alertContact" style="flex:1;">
-                <option value="">-- Contact concern&eacute; --</option>
-            </select>
-            <input type="text" id="alertDesc" placeholder="Description (optionnel)..." style="flex:2;" />
+            <textarea id="alertDesc" placeholder="Description d&eacute;taill&eacute;e..." rows="4"></textarea>
         </div>
         <div class="form-actions">
             <button class="btn-cancel" onclick="toggleAlertForm()">Annuler</button>
@@ -175,13 +176,11 @@
         </div>
     </div>
 
-    <!-- TABS -->
     <div class="tabs">
         <div class="tab active" onclick="switchTab('alerts')" id="tabAlerts">Alertes <span class="count" id="alertCount">0</span></div>
         <div class="tab" onclick="switchTab('week')" id="tabWeek">Semaine</div>
     </div>
 
-    <!-- CONTENT -->
     <div class="alerts-container" id="alertsView"></div>
     <div class="alerts-container" id="weekView" style="display:none;"></div>
 
@@ -191,7 +190,12 @@
     let ws = null;
     let alerts = [];
     let contacts = [];
+    let selectedEmitter = null;
     let weekContent = { vignettes: [], agenda: [] };
+
+    const STATUSES = ['sent','handled','modif','fixed'];
+    const STATUS_LABELS = { sent: 'Envoyé', handled: 'Prise en charge', modif: 'Modification', fixed: 'Réparé' };
+    const STATUS_CLASSES = { sent: 'active-sent', handled: 'active-handled', modif: 'active-modif', fixed: 'active-fixed' };
 
     // ===== WEEK LABEL =====
     function updateWeekLabel() {
@@ -205,111 +209,212 @@
     }
     updateWeekLabel();
 
-    // ===== ALERT FORM =====
+    // ===== FORM =====
     function toggleAlertForm() {
         const form = document.getElementById('alertForm');
         form.classList.toggle('visible');
         if (form.classList.contains('visible')) document.getElementById('alertTitle').focus();
     }
 
-    // ===== SOUND =====
-    let audioCtx = null;
-    function playAlertSound() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        // Triple beep urgent
-        [0, 200, 400].forEach(delay => {
-            setTimeout(() => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = 880;
-                osc.type = 'square';
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-                osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + 0.3);
-            }, delay);
-        });
+    // ===== EMITTER GRID =====
+    function renderEmitterGrid() {
+        const grid = document.getElementById('emitterGrid');
+        grid.innerHTML = EMITTERS.map(c => {
+            const initials = (c.firstName[0] || '') + (c.lastName[0] || '');
+            const photoHtml = c.photo && c.photo.length > 10
+                ? '<img src="' + c.photo + '" onerror="this.parentElement.textContent=\'' + initials + '\'">'
+                : initials;
+            const sel = selectedEmitter === c.id ? ' selected' : '';
+            return '<div class="emitter-card' + sel + '" onclick="selectEmitter(\'' + c.id + '\')">' +
+                '<div class="emitter-avatar">' + photoHtml + '</div>' +
+                '<div class="emitter-name">' + c.firstName + '</div>' +
+            '</div>';
+        }).join('');
     }
-    function testSound() { playAlertSound(); }
 
-    // ===== SEND ALERT =====
+    function selectEmitter(id) {
+        selectedEmitter = selectedEmitter === id ? null : id;
+        renderEmitterGrid();
+    }
+
+    // ===== ALARM SOUND - CONTINUOUS UNTIL ACKNOWLEDGED =====
+    let audioCtx = null;
+    let alarmNodes = []; // track active oscillators
+    let alarmActive = false;
+
+    function startAlarm() {
+        if (alarmActive) return;
+        alarmActive = true;
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        // Dual oscillator for maximum urgency
+        function createAlarmOsc(freq, type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.value = freq;
+            osc.type = type;
+            gain.gain.value = 1.0; // MAX volume
+            osc.start();
+            return { osc, gain };
+        }
+
+        // High pitch siren
+        const siren1 = createAlarmOsc(880, 'square');
+        const siren2 = createAlarmOsc(1200, 'sawtooth');
+        alarmNodes.push(siren1, siren2);
+
+        // Siren effect: oscillate frequency
+        let up = true;
+        const sirenInterval = setInterval(() => {
+            if (!alarmActive) { clearInterval(sirenInterval); return; }
+            siren1.osc.frequency.value = up ? 1100 : 700;
+            siren2.osc.frequency.value = up ? 1400 : 900;
+            up = !up;
+        }, 300);
+
+        // Pulsating volume for urgency
+        const pulseInterval = setInterval(() => {
+            if (!alarmActive) { clearInterval(pulseInterval); return; }
+            alarmNodes.forEach(n => {
+                n.gain.gain.setValueAtTime(1.0, audioCtx.currentTime);
+                n.gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.15);
+                n.gain.gain.linearRampToValueAtTime(1.0, audioCtx.currentTime + 0.3);
+            });
+        }, 300);
+
+        // Show fullscreen red overlay
+        showAlarmOverlay();
+    }
+
+    function stopAlarm() {
+        alarmActive = false;
+        alarmNodes.forEach(n => {
+            try { n.osc.stop(); } catch(e) {}
+        });
+        alarmNodes = [];
+        hideAlarmOverlay();
+    }
+
+    function playAlertSound() { startAlarm(); }
+    function testSound() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.frequency.value = 880; osc.type = 'square';
+        gain.gain.value = 0.5;
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+        osc.start(); osc.stop(audioCtx.currentTime + 1);
+    }
+
+    // ===== ALARM OVERLAY (red flashing fullscreen) =====
+    function showAlarmOverlay() {
+        let ov = document.getElementById('alarmOverlay');
+        if (!ov) {
+            ov = document.createElement('div');
+            ov.id = 'alarmOverlay';
+            ov.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,0,0,0.85);animation:alarmFlash 0.5s infinite;cursor:pointer;';
+            ov.innerHTML = '<div style="font-size:72px;margin-bottom:20px;">&#x1F6A8;</div>' +
+                '<div style="font-size:28px;font-weight:800;color:#fff;text-align:center;margin-bottom:12px;">ALERTE STUDIO</div>' +
+                '<div style="font-size:16px;color:rgba(255,255,255,0.8);margin-bottom:30px;" id="alarmMsg"></div>' +
+                '<button onclick="acknowledgeAlarm()" style="padding:18px 50px;font-size:18px;font-weight:800;background:#fff;color:#ff0000;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-transform:uppercase;letter-spacing:1px;">&#x2705; PRISE EN CHARGE</button>';
+            document.body.appendChild(ov);
+            // Add flash animation
+            if (!document.getElementById('alarmStyle')) {
+                const style = document.createElement('style');
+                style.id = 'alarmStyle';
+                style.textContent = '@keyframes alarmFlash { 0%,100% { background:rgba(255,0,0,0.85); } 50% { background:rgba(180,0,0,0.95); } }';
+                document.head.appendChild(style);
+            }
+        }
+        ov.style.display = 'flex';
+        // Show last alert title
+        const lastNew = alerts.find(a => a.status === 'sent');
+        if (lastNew) {
+            document.getElementById('alarmMsg').textContent = lastNew.title + (lastNew.emitter ? ' — ' + lastNew.emitter.name : '');
+        }
+    }
+
+    function hideAlarmOverlay() {
+        const ov = document.getElementById('alarmOverlay');
+        if (ov) ov.style.display = 'none';
+    }
+
+    function acknowledgeAlarm() {
+        // Set all 'sent' alerts to 'handled'
+        alerts.forEach(a => {
+            if (a.status === 'sent') {
+                a.status = 'handled';
+                a.handledAt = new Date().toISOString();
+                if (ws && ws.readyState === WebSocket.OPEN)
+                    ws.send(JSON.stringify({ type: 'studio-alert-update', data: { id: a.id, status: 'handled' } }));
+            }
+        });
+        stopAlarm();
+        saveAlerts();
+        renderAlerts();
+    }
+
+    // ===== SEND =====
     function sendAlert() {
         const title = document.getElementById('alertTitle').value.trim();
         if (!title) { document.getElementById('alertTitle').style.borderColor = '#ff4444'; return; }
-        const contactId = document.getElementById('alertContact').value;
-        const contact = contacts.find(c => c.id === contactId);
-        const alert = {
+        const emitter = EMITTERS.find(c => c.id === selectedEmitter);
+        const a = {
             id: Date.now().toString(),
             title: title,
             description: document.getElementById('alertDesc').value.trim(),
-            priority: document.getElementById('alertPriority').value,
-            contact: contact ? { id: contact.id, name: contact.firstName + ' ' + contact.lastName, photo: contact.photo } : null,
-            status: 'new',
-            createdAt: new Date().toISOString(),
-            createdBy: 'Studio'
+            emitter: emitter ? { id: emitter.id, name: emitter.firstName + ' ' + emitter.lastName, photo: emitter.photo || '' } : null,
+            status: 'sent',
+            createdAt: new Date().toISOString()
         };
-        alerts.unshift(alert);
-        saveAlerts();
-        broadcastAlert(alert);
-        toggleAlertForm();
+        alerts.unshift(a);
+        saveAlerts(); broadcastAlert(a); toggleAlertForm();
         document.getElementById('alertTitle').value = '';
         document.getElementById('alertDesc').value = '';
-        document.getElementById('alertContact').value = '';
-        renderAlerts();
-    }
-
-    // ===== BROADCAST VIA WS =====
-    function broadcastAlert(alert) {
-        if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'studio-alert', data: alert }));
-        }
-        // Also save to server
-        fetch(API_URL + '/api/studio-alerts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(alerts)
-        }).catch(e => console.log('Save error:', e));
+        selectedEmitter = null; renderEmitterGrid(); renderAlerts();
     }
 
     // ===== STATUS CHANGE =====
-    function handleAlert(id) {
+    function setStatus(id, status) {
         const a = alerts.find(x => x.id === id);
-        if (a) { a.status = 'handled'; a.handledAt = new Date().toISOString(); }
-        saveAlerts();
-        renderAlerts();
+        if (!a) return;
+        a.status = status;
+        a[status + 'At'] = new Date().toISOString();
+        saveAlerts(); renderAlerts();
         if (ws && ws.readyState === WebSocket.OPEN)
-            ws.send(JSON.stringify({ type: 'studio-alert-update', data: { id, status: 'handled' } }));
-    }
-
-    function resolveAlert(id) {
-        const a = alerts.find(x => x.id === id);
-        if (a) { a.status = 'resolved'; a.resolvedAt = new Date().toISOString(); }
-        saveAlerts();
-        renderAlerts();
-        if (ws && ws.readyState === WebSocket.OPEN)
-            ws.send(JSON.stringify({ type: 'studio-alert-update', data: { id, status: 'resolved' } }));
+            ws.send(JSON.stringify({ type: 'studio-alert-update', data: { id, status } }));
     }
 
     function deleteAlert(id) {
         if (!confirm('Supprimer cette alerte ?')) return;
         alerts = alerts.filter(x => x.id !== id);
-        saveAlerts();
-        renderAlerts();
+        saveAlerts(); renderAlerts();
+    }
+
+    // ===== BROADCAST =====
+    function broadcastAlert(alert) {
+        if (ws && ws.readyState === WebSocket.OPEN)
+            ws.send(JSON.stringify({ type: 'studio-alert', data: alert }));
+        fetch(API_URL + '/api/studio-alerts', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(alerts)
+        }).catch(() => {});
     }
 
     // ===== RENDER =====
     function renderAlerts() {
         const container = document.getElementById('alertsView');
-        const newCount = alerts.filter(a => a.status === 'new').length;
-        const handledCount = alerts.filter(a => a.status === 'handled').length;
-        const resolvedCount = alerts.filter(a => a.status === 'resolved').length;
-
-        document.getElementById('countNew').textContent = newCount;
-        document.getElementById('countHandled').textContent = handledCount;
-        document.getElementById('countResolved').textContent = resolvedCount;
-        document.getElementById('alertCount').textContent = newCount + handledCount;
+        const counts = { sent: 0, handled: 0, modif: 0, fixed: 0 };
+        alerts.forEach(a => { if (counts[a.status] !== undefined) counts[a.status]++; });
+        document.getElementById('countSent').textContent = counts.sent;
+        document.getElementById('countHandled').textContent = counts.handled;
+        document.getElementById('countModif').textContent = counts.modif;
+        document.getElementById('countFixed').textContent = counts.fixed;
+        document.getElementById('alertCount').textContent = counts.sent + counts.handled + counts.modif;
 
         if (alerts.length === 0) {
             container.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><p>Aucune alerte</p></div>';
@@ -320,23 +425,43 @@
             const time = new Date(a.createdAt);
             const timeStr = time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             const dateStr = time.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
-            let actions = '';
-            if (a.status === 'new') actions = '<button class="btn-handle" onclick="handleAlert(\'' + a.id + '\')">Prise en charge</button>';
-            if (a.status === 'new' || a.status === 'handled') actions += '<button class="btn-resolve" onclick="resolveAlert(\'' + a.id + '\')">OK</button>';
-            actions += '<button class="btn-delete" onclick="deleteAlert(\'' + a.id + '\')">&#x2715;</button>';
-            const contactHtml = a.contact ? '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><img src="' + a.contact.photo + '" style="width:20px;height:20px;border-radius:50%;object-fit:cover;" onerror="this.style.display=\'none\'"><span style="font-size:11px;color:rgba(255,255,255,0.5);">' + a.contact.name + '</span></div>' : '';
-            return '<div class="alert-card ' + a.priority + '">' +
-                '<div class="alert-status ' + a.status + '"></div>' +
-                '<div class="alert-info">' +
-                    '<div class="alert-title">' + a.title + (a.description ? ' <span style="font-weight:400;color:rgba(255,255,255,0.3);font-size:12px;">— ' + a.description + '</span>' : '') + '</div>' +
-                    contactHtml +
-                    '<div class="alert-meta"><span>' + dateStr + ' &agrave; ' + timeStr + '</span><span>' + a.createdBy + '</span>' +
-                    (a.status === 'handled' ? '<span style="color:#ffaa00;">En cours</span>' : '') +
-                    (a.status === 'resolved' ? '<span style="color:#44cc66;">R&eacute;solu</span>' : '') +
+
+            // Emitter photo
+            let emitterHtml = '<div class="alert-emitter-photo">?</div>';
+            if (a.emitter && a.emitter.photo && a.emitter.photo.length > 10) {
+                emitterHtml = '<div class="alert-emitter-photo"><img src="' + a.emitter.photo + '" onerror="this.parentElement.textContent=\'' + (a.emitter.name || '?').substring(0,2) + '\'"></div>';
+            } else if (a.emitter) {
+                const ini = a.emitter.name ? a.emitter.name.split(' ').map(n=>n[0]).join('') : '?';
+                emitterHtml = '<div class="alert-emitter-photo">' + ini + '</div>';
+            }
+
+            // Pipeline
+            const statusIdx = STATUSES.indexOf(a.status);
+            const pipelineHtml = STATUSES.map((s, i) => {
+                let cls = 'pipeline-step';
+                if (i < statusIdx) cls += ' done ' + STATUS_CLASSES[s];
+                else if (i === statusIdx) cls += ' ' + STATUS_CLASSES[s];
+                else cls += ' inactive';
+                return '<div class="' + cls + '" onclick="setStatus(\'' + a.id + '\',\'' + s + '\')">' + STATUS_LABELS[s] + '</div>';
+            }).join('');
+
+            // Description
+            const descHtml = a.description ? '<div class="alert-desc">' + a.description + '</div>' : '';
+
+            return '<div class="alert-card">' +
+                '<div class="alert-top">' +
+                    emitterHtml +
+                    '<div class="alert-info">' +
+                        '<div class="alert-title">' + a.title + '</div>' +
+                        '<div class="alert-meta">' +
+                            '<span>' + dateStr + ' à ' + timeStr + '</span>' +
+                            (a.emitter ? '<span>' + a.emitter.name + '</span>' : '') +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
-                '<span class="alert-priority ' + a.priority + '">' + (a.priority === 'urgent' ? 'URGENT' : a.priority === 'warning' ? 'ATTENTION' : 'INFO') + '</span>' +
-                '<div class="alert-actions">' + actions + '</div>' +
+                descHtml +
+                '<div class="status-pipeline">' + pipelineHtml + '</div>' +
+                '<div class="alert-footer"><button class="btn-delete" onclick="deleteAlert(\'' + a.id + '\')">Supprimer</button></div>' +
             '</div>';
         }).join('');
     }
@@ -345,33 +470,17 @@
     function renderWeekView() {
         const container = document.getElementById('weekView');
         let html = '';
-
-        // Vignettes créées cette semaine
-        html += '<div class="summary-section"><div class="summary-title">&#x1F3A8; Vignettes cr&eacute;&eacute;es cette semaine</div>';
-        if (weekContent.vignettes.length === 0) {
-            html += '<div class="summary-item" style="color:rgba(255,255,255,0.2);">Aucune vignette cette semaine</div>';
-        } else {
-            weekContent.vignettes.forEach(v => {
-                html += '<div class="summary-item"><span class="summary-icon">&#x1F5BC;</span><span class="summary-item-title">' + v.title + '</span><span class="summary-item-date">' + v.date + '</span></div>';
-            });
-        }
+        html += '<div class="summary-section"><div class="summary-title">&#x1F3A8; Vignettes cette semaine</div>';
+        if (weekContent.vignettes.length === 0) html += '<div class="summary-item" style="color:rgba(255,255,255,0.2);">Aucune vignette</div>';
+        else weekContent.vignettes.forEach(v => { html += '<div class="summary-item"><span class="summary-icon">&#x1F5BC;</span><span class="summary-item-title">' + v.title + '</span><span class="summary-item-date">' + v.date + '</span></div>'; });
         html += '</div>';
-
-        // Événements agenda
-        html += '<div class="summary-section"><div class="summary-title">&#x1F4C5; &Eacute;v&eacute;nements agenda cette semaine</div>';
-        if (weekContent.agenda.length === 0) {
-            html += '<div class="summary-item" style="color:rgba(255,255,255,0.2);">Aucun &eacute;v&eacute;nement cette semaine</div>';
-        } else {
-            weekContent.agenda.forEach(e => {
-                html += '<div class="summary-item"><span class="summary-icon">&#x1F4CC;</span><span class="summary-item-title">' + e.title + '</span><span class="summary-item-date">' + e.date + '</span></div>';
-            });
-        }
+        html += '<div class="summary-section"><div class="summary-title">&#x1F4C5; Agenda cette semaine</div>';
+        if (weekContent.agenda.length === 0) html += '<div class="summary-item" style="color:rgba(255,255,255,0.2);">Aucun événement</div>';
+        else weekContent.agenda.forEach(e => { html += '<div class="summary-item"><span class="summary-icon">&#x1F4CC;</span><span class="summary-item-title">' + e.title + '</span><span class="summary-item-date">' + e.date + '</span></div>'; });
         html += '</div>';
-
         container.innerHTML = html;
     }
 
-    // ===== TABS =====
     function switchTab(tab) {
         document.getElementById('tabAlerts').classList.toggle('active', tab === 'alerts');
         document.getElementById('tabWeek').classList.toggle('active', tab === 'week');
@@ -381,121 +490,88 @@
     }
 
     // ===== PERSISTENCE =====
-    function saveAlerts() {
-        localStorage.setItem('studioAlerts', JSON.stringify(alerts));
-    }
-    function loadAlerts() {
-        try {
-            alerts = JSON.parse(localStorage.getItem('studioAlerts')) || [];
-        } catch(e) { alerts = []; }
-    }
+    function saveAlerts() { localStorage.setItem('studioAlerts', JSON.stringify(alerts)); }
+    function loadAlerts() { try { alerts = JSON.parse(localStorage.getItem('studioAlerts')) || []; } catch(e) { alerts = []; } }
 
-    // ===== LOAD WEEK CONTENT FROM CALENDAR =====
     function loadWeekContent() {
         const now = new Date();
-        const monday = new Date(now);
-        monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-        monday.setHours(0,0,0,0);
-        const sunday = new Date(monday);
-        sunday.setDate(monday.getDate() + 6);
-        sunday.setHours(23,59,59,999);
-
-        // Load from calendar-data.json
-        fetch(API_URL + '/api/studio-alerts-week').then(r => r.json()).then(data => {
-            if (data.vignettes) weekContent.vignettes = data.vignettes;
-            if (data.agenda) weekContent.agenda = data.agenda;
+        const monday = new Date(now); monday.setDate(now.getDate() - ((now.getDay() + 6) % 7)); monday.setHours(0,0,0,0);
+        const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6); sunday.setHours(23,59,59,999);
+        fetch('calendar-data.json').then(r => r.json()).then(cal => {
+            weekContent.agenda = (cal.events || []).filter(e => { const d = new Date(e.start || e.date); return d >= monday && d <= sunday; })
+                .map(e => ({ title: e.subject || e.title || 'Sans titre', date: new Date(e.start || e.date).toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) }));
             renderWeekView();
-        }).catch(() => {
-            // Fallback: try to parse calendar-data.json locally
-            fetch('calendar-data.json').then(r => r.json()).then(cal => {
-                weekContent.agenda = (cal.events || []).filter(e => {
-                    const d = new Date(e.start || e.date);
-                    return d >= monday && d <= sunday;
-                }).map(e => ({
-                    title: e.subject || e.title || 'Sans titre',
-                    date: new Date(e.start || e.date).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
-                }));
-                renderWeekView();
-            }).catch(() => {});
-        });
+        }).catch(() => {});
+    }
+
+    // ===== EMITTERS (fixed list) =====
+    const EMITTERS = [
+        { id: 'e_vincent', firstName: 'Vincent', lastName: 'Lezenes', email: 'vincent.lezenes@cic.fr' },
+        { id: 'e_manon', firstName: 'Manon', lastName: 'Lignier', email: 'manon.lignier@cic.fr' },
+        { id: 'e_anissa', firstName: 'Anissa', lastName: 'Aiouaz', email: 'anissa.aiouaz@cic.fr' },
+        { id: 'e_josephine', firstName: 'Joséphine', lastName: 'Weber', email: 'josephine.weber@cic.fr' },
+        { id: 'e_charlotte', firstName: 'Charlotte', lastName: 'Douet-Dupouet', email: 'charlotte.douetdupouet@cic.fr' },
+        { id: 'e_juliette', firstName: 'Juliette', lastName: 'Cordoba Millan', email: 'juliette.cordobamillan@cic.fr' },
+        { id: 'e_emeline', firstName: 'Emeline', lastName: 'Ferreira', email: 'emeline.ferreira@cic.fr' },
+        { id: 'e_pauline', firstName: 'Pauline', lastName: 'Valaize', email: 'pauline.valaize@cic.fr' },
+        { id: 'e_stephanie', firstName: 'Stéphanie', lastName: 'Stahr', email: 'stephanie.stahr@cic.fr' },
+        { id: 'e_segolene', firstName: 'Ségolène', lastName: 'Bergeron', email: 'segolene.bergeron@cic.fr' },
+        { id: 'e_melanie', firstName: 'Mélanie', lastName: 'Gillet', email: 'melanie.gillet@cic.fr' }
+    ];
+
+    // ===== CONTACTS (for photo matching) =====
+    function loadContacts() {
+        fetch('contacts.json').then(r => r.json()).then(data => {
+            contacts = data;
+            // Match photos to emitters
+            EMITTERS.forEach(em => {
+                const match = contacts.find(c =>
+                    c.firstName.toLowerCase() === em.firstName.toLowerCase() &&
+                    c.lastName.toLowerCase() === em.lastName.toLowerCase()
+                );
+                if (match && match.photo) em.photo = match.photo;
+            });
+            renderEmitterGrid();
+        }).catch(() => { renderEmitterGrid(); });
     }
 
     // ===== WEBSOCKET =====
     function connectWS() {
         ws = new WebSocket(WS_URL);
-        ws.onopen = function() {
-            document.getElementById('syncDot').classList.remove('offline');
-            document.getElementById('syncText').textContent = 'Connect\u00e9';
-        };
-        ws.onmessage = function(e) {
+        ws.onopen = () => { document.getElementById('syncDot').classList.remove('offline'); document.getElementById('syncText').textContent = 'Connecté'; };
+        ws.onmessage = e => {
             try {
                 const msg = JSON.parse(e.data);
                 if (msg.type === 'studio-alert') {
-                    // New alert from another client
-                    const exists = alerts.find(a => a.id === msg.data.id);
-                    if (!exists) {
+                    if (!alerts.find(a => a.id === msg.data.id)) {
                         alerts.unshift(msg.data);
-                        saveAlerts();
-                        renderAlerts();
-                        playAlertSound();
+                        saveAlerts(); renderAlerts();
+                        // Start alarm on ALL pages receiving the alert
+                        if (msg.data.status === 'sent') startAlarm();
                     }
                 }
                 if (msg.type === 'studio-alert-update') {
                     const a = alerts.find(x => x.id === msg.data.id);
-                    if (a) {
-                        a.status = msg.data.status;
-                        saveAlerts();
-                        renderAlerts();
-                    }
-                }
-                if (msg.type === 'studio-alerts-sync') {
-                    alerts = msg.data || [];
-                    saveAlerts();
-                    renderAlerts();
+                    if (a) { a.status = msg.data.status; saveAlerts(); renderAlerts(); }
+                    // Stop alarm if no more 'sent' alerts
+                    if (!alerts.some(x => x.status === 'sent')) stopAlarm();
                 }
             } catch(err) {}
         };
-        ws.onclose = function() {
-            document.getElementById('syncDot').classList.add('offline');
-            document.getElementById('syncText').textContent = 'D\u00e9connect\u00e9';
-            setTimeout(connectWS, 3000);
-        };
-        ws.onerror = function() { ws.close(); };
+        ws.onclose = () => { document.getElementById('syncDot').classList.add('offline'); document.getElementById('syncText').textContent = 'Déconnecté'; setTimeout(connectWS, 3000); };
+        ws.onerror = () => { ws.close(); };
     }
 
-    // ===== LOAD FROM SERVER =====
     function loadFromServer() {
         fetch(API_URL + '/api/studio-alerts').then(r => r.json()).then(data => {
-            if (Array.isArray(data) && data.length > 0) {
-                alerts = data;
-                saveAlerts();
-                renderAlerts();
-            }
+            if (Array.isArray(data) && data.length > 0) { alerts = data; saveAlerts(); renderAlerts(); }
         }).catch(() => {});
     }
 
-    // ===== LOAD CONTACTS =====
-    function loadContacts() {
-        fetch('contacts.json').then(r => r.json()).then(data => {
-            contacts = data;
-            const sel = document.getElementById('alertContact');
-            contacts.sort((a, b) => a.lastName.localeCompare(b.lastName));
-            contacts.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c.id;
-                opt.textContent = c.firstName + ' ' + c.lastName + (c.speciality ? ' (' + c.speciality + ')' : '');
-                sel.appendChild(opt);
-            });
-        }).catch(e => console.log('Contacts load error:', e));
-    }
-
     // ===== INIT =====
-    loadAlerts();
-    renderAlerts();
-    renderWeekView();
-    connectWS();
-    loadFromServer();
-    loadContacts();
+    loadAlerts(); renderAlerts(); renderWeekView(); connectWS(); loadFromServer(); loadContacts();
+    // Check if there are unacknowledged alerts
+    setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
 </body>
 </html>
