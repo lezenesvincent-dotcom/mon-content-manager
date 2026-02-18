@@ -240,14 +240,14 @@
     "photo": "contacts-photos/francois-duhen.png"
   },
   {
-    "id": "c25",
     "firstName": "Françoise",
     "lastName": "Étienne",
-    "speciality": "eco",
+    "speciality": "esg",
     "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/francoise-etienne.png"
+    "photo": "contacts-photos/francoise-etienne.png",
+    "id": "c25"
   },
   {
     "firstName": "Gabriel",
