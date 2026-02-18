@@ -140,14 +140,14 @@
     "photo": "contacts-photos/dominique-descours.png"
   },
   {
-    "id": "c15",
     "firstName": "Alexandre",
     "lastName": "Gérard",
-    "speciality": "technique",
-    "function": "Analyste Technique",
+    "speciality": "actions",
+    "function": "Responsable de la Recherche Actions",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/alexandre-gerard.png"
+    "photo": "contacts-photos/alexandre-gerard.png",
+    "id": "c15"
   },
   {
     "firstName": "Adrien",
