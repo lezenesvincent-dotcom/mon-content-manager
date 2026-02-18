@@ -1,13 +1,13 @@
 [
   {
-    "id": "c01",
     "firstName": "Christian",
     "lastName": "Devismes",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Distribution et Services aux Entreprises",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/christian-devismes.png"
+    "photo": "contacts-photos/christian-devismes.png",
+    "id": "c01"
   },
   {
     "firstName": "Hervé",
