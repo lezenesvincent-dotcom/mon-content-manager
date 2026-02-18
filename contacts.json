@@ -10,24 +10,24 @@
     "photo": "contacts-photos/christian-devismes.png"
   },
   {
-    "id": "c02",
     "firstName": "Hervé",
     "lastName": "Drouet",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Aéronautique",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/herve-drouet.png"
+    "photo": "contacts-photos/herve-drouet.png",
+    "id": "c02"
   },
   {
-    "id": "c03",
     "firstName": "Eric",
     "lastName": "Ravary",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteurs Médias et Télécoms",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/eric-ravary.png"
+    "photo": "contacts-photos/eric-ravary.png",
+    "id": "c03"
   },
   {
     "id": "c04",
@@ -40,14 +40,14 @@
     "photo": "contacts-photos/emmanuel-chevalier.png"
   },
   {
-    "id": "c05",
     "firstName": "Ebrahim",
     "lastName": "Homani",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteurs Industrie, et Immobilier",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/ebrahim-homani.png"
+    "photo": "contacts-photos/ebrahim-homani.png",
+    "id": "c05"
   },
   {
     "id": "c06",
@@ -63,51 +63,51 @@
     "firstName": "Arnaud",
     "lastName": "Palliez",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteur Utilities",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
     "photo": "contacts-photos/arnaud-palliez.png",
     "id": "c07"
   },
   {
-    "id": "c08",
     "firstName": "Jean-Luc",
     "lastName": "Romain",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteurs Energie,  Services Parapétroliers",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/jean-luc-romain.png"
+    "photo": "contacts-photos/jean-luc-romain.png",
+    "id": "c08"
   },
   {
-    "id": "c09",
     "firstName": "Alexandre",
     "lastName": "Plaud",
-    "speciality": "technique",
-    "function": "Analyste Technique",
+    "speciality": "actions",
+    "function": "Analyste Secteur Technologies",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/alexandre-plaud.png"
+    "photo": "contacts-photos/alexandre-plaud.png",
+    "id": "c09"
   },
   {
-    "id": "c10",
     "firstName": "Virginie",
     "lastName": "Royère",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteurs Agroalimentaire",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/virginie-royere.png"
+    "photo": "contacts-photos/virginie-royere.png",
+    "id": "c10"
   },
   {
     "firstName": "Arnaud",
     "lastName": "Cadart",
     "speciality": "actions",
-    "function": "Analyste ESG",
+    "function": "Analyste Secteur Santé",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "id": "c11",
-    "photo": "contacts-photos/arnaud-cadart.png"
+    "photo": "contacts-photos/arnaud-cadart.png",
+    "id": "c11"
   },
   {
     "id": "c12",
@@ -120,14 +120,14 @@
     "photo": "contacts-photos/david-da-maia.png"
   },
   {
-    "id": "c13",
     "firstName": "Pierre",
     "lastName": "Chédeville",
     "speciality": "actions",
-    "function": "Analyste Construction & Matériaux",
+    "function": "Analyste Secteurs Banques et Assurances",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/pierre-chedeville.png"
+    "photo": "contacts-photos/pierre-chedeville.png",
+    "id": "c13"
   },
   {
     "id": "c14",
@@ -180,29 +180,29 @@
     "id": "c18"
   },
   {
-    "id": "c19",
     "firstName": "Emmanuelle",
     "lastName": "Thollon-Pommerol",
     "speciality": "eco",
-    "function": "",
+    "function": "Responsable Stratégie Crédit",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/emmanuelle-thollon-pommerol.png"
+    "photo": "contacts-photos/emmanuelle-thollon-pommerol.png",
+    "id": "c19"
   },
   {
-    "id": "c20",
     "firstName": "Eric",
     "lastName": "Baron",
     "speciality": "eco",
-    "function": "",
+    "function": "Responsable Stratégie Action & Matières Premières",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/eric-baron.png"
+    "photo": "contacts-photos/eric-baron.png",
+    "id": "c20"
   },
   {
     "firstName": "Eva",
     "lastName": "Bellin",
-    "speciality": "technique",
+    "speciality": "eco",
     "function": "Responsable Analyse Technique",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
@@ -222,22 +222,22 @@
   {
     "firstName": "Fabrissa",
     "lastName": "Tassin",
-    "speciality": "technique",
-    "function": "",
+    "speciality": "eco",
+    "function": "Analyste Technique",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
     "photo": "contacts-photos/fabrissa-tassin.png",
     "id": "c23"
   },
   {
-    "id": "c24",
     "firstName": "François",
     "lastName": "Duhen",
     "speciality": "eco",
-    "function": "",
+    "function": "Directeur de la Recherche Économique et Marchés Financiers",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/francois-duhen.png"
+    "photo": "contacts-photos/francois-duhen.png",
+    "id": "c24"
   },
   {
     "firstName": "Françoise",
@@ -280,14 +280,14 @@
     "photo": "contacts-photos/martin-gicquiau.png"
   },
   {
-    "id": "c29",
     "firstName": "Nicolas",
     "lastName": "Bouthors",
     "speciality": "eco",
-    "function": "",
+    "function": "Stratégiste Actions & Matières Premières",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/nicolas-bouthors.png"
+    "photo": "contacts-photos/nicolas-bouthors.png",
+    "id": "c29"
   },
   {
     "firstName": "Nicolas",
@@ -468,5 +468,25 @@
     "email": "",
     "photo": "",
     "id": "c_1771420698270"
+  },
+  {
+    "firstName": "Maxime",
+    "lastName": "Garcia",
+    "speciality": "eco",
+    "function": "Stratégiste Actions & Matières Premières",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "",
+    "id": "c_1771421369107"
+  },
+  {
+    "firstName": "Yassine",
+    "lastName": "Naitssi",
+    "speciality": "eco",
+    "function": "Stratégie Crédit",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": "",
+    "id": "c_1771421510619"
   }
 ]
