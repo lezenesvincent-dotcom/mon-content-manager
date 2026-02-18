@@ -48,7 +48,7 @@
     "heureDirect": "15:00",
     "heurePrep": "14:30",
     "prepDuration": 30,
-    "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "ibmChaine": "https://video.ibm.com/channel/wgYXBRG5D89",
     "toggles": {
       "diffIBM": true,
       "replay": true,
@@ -64,6 +64,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-18T13:50:10.197Z"
+    "updatedAt": "2026-02-18T13:50:14.540Z"
   }
 }
