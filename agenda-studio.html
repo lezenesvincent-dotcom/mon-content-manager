@@ -1070,5 +1070,133 @@
     setInterval(loadCalendarData, 5*60*1000);
     setInterval(function() { document.querySelectorAll('.now-line').forEach(function(e){e.remove();}); renderAgenda(); }, 60000);
 </script>
+<script>
+(function(){
+    var ALERT_WS_URL = 'wss://ecamm-overlay-server.onrender.com';
+    var alertWs = null;
+    var alertAudioCtx = null;
+    var alertNodes = [];
+    var alertActive = false;
+    var alertBanner = null;
+
+    function createAlertBanner() {
+        if (alertBanner) return;
+        alertBanner = document.createElement('div');
+        alertBanner.id = 'studioAlertBanner';
+        alertBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff;padding:0;overflow:hidden;transition:max-height 0.3s;max-height:0;box-shadow:0 4px 20px rgba(255,0,0,0.5);';
+        alertBanner.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;">' +
+            '<div style="display:flex;align-items:center;gap:12px;">' +
+                '<span style="font-size:24px;animation:alertPulse 0.5s infinite alternate;">&#x1F6A8;</span>' +
+                '<div><div style="font-weight:800;font-size:15px;" id="alertBannerTitle">ALERTE STUDIO</div>' +
+                '<div style="font-size:12px;opacity:0.8;" id="alertBannerMsg"></div></div>' +
+            '</div>' +
+            '<button onclick="window._ackStudioAlert()" style="background:#fff;color:#ff4b2b;border:none;padding:10px 24px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;">&#x2705; PRISE EN CHARGE</button>' +
+        '</div>';
+        document.body.appendChild(alertBanner);
+        var style = document.createElement('style');
+        style.textContent = '@keyframes alertPulse{0%{transform:scale(1);}100%{transform:scale(1.3);}}';
+        document.head.appendChild(style);
+    }
+
+    function showBanner(title, msg) {
+        createAlertBanner();
+        document.getElementById('alertBannerTitle').textContent = 'ALERTE: ' + (title || 'STUDIO');
+        document.getElementById('alertBannerMsg').textContent = msg || '';
+        alertBanner.style.maxHeight = '80px';
+    }
+
+    function hideBanner() {
+        if (alertBanner) alertBanner.style.maxHeight = '0';
+    }
+
+    function startAlertSound() {
+        if (alertActive) return;
+        alertActive = true;
+        if (!alertAudioCtx) alertAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (alertAudioCtx.state === 'suspended') alertAudioCtx.resume();
+        function makeOsc(freq, type) {
+            var osc = alertAudioCtx.createOscillator();
+            var gain = alertAudioCtx.createGain();
+            osc.connect(gain); gain.connect(alertAudioCtx.destination);
+            osc.frequency.value = freq; osc.type = type; gain.gain.value = 1.0;
+            osc.start(); return {osc:osc, gain:gain};
+        }
+        var s1 = makeOsc(880, 'square'), s2 = makeOsc(1200, 'sawtooth');
+        alertNodes.push(s1, s2);
+        var up = true;
+        var si = setInterval(function(){
+            if(!alertActive){clearInterval(si);return;}
+            s1.osc.frequency.value = up ? 1100 : 700;
+            s2.osc.frequency.value = up ? 1400 : 900;
+            up = !up;
+        }, 300);
+    }
+
+    function stopAlertSound() {
+        alertActive = false;
+        alertNodes.forEach(function(n){ try{n.osc.stop();}catch(e){} });
+        alertNodes = [];
+        hideBanner();
+    }
+
+    window._ackStudioAlert = function() {
+        stopAlertSound();
+        // Notify other pages that alert is acknowledged
+        if (alertWs && alertWs.readyState === WebSocket.OPEN) {
+            var stored = [];
+            try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(e){}
+            stored.forEach(function(a) {
+                if (a.status === 'sent') {
+                    a.status = 'handled';
+                    a.handledAt = new Date().toISOString();
+                    alertWs.send(JSON.stringify({type:'studio-alert-update', data:{id:a.id, status:'handled'}}));
+                }
+            });
+            localStorage.setItem('studioAlerts', JSON.stringify(stored));
+        }
+    };
+
+    function connectAlertWS() {
+        alertWs = new WebSocket(ALERT_WS_URL);
+        alertWs.onmessage = function(e) {
+            try {
+                var msg = JSON.parse(e.data);
+                if (msg.type === 'studio-alert' && msg.data && msg.data.status === 'sent') {
+                    // Store alert locally
+                    var stored = [];
+                    try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(ex){}
+                    if (!stored.find(function(a){return a.id === msg.data.id;})) {
+                        stored.unshift(msg.data);
+                        localStorage.setItem('studioAlerts', JSON.stringify(stored));
+                    }
+                    showBanner(msg.data.title, msg.data.emitter ? msg.data.emitter.name : '');
+                    startAlertSound();
+                }
+                if (msg.type === 'studio-alert-update' && msg.data && msg.data.status !== 'sent') {
+                    stopAlertSound();
+                }
+            } catch(err) {}
+        };
+        alertWs.onclose = function(){ setTimeout(connectAlertWS, 3000); };
+        alertWs.onerror = function(){ alertWs.close(); };
+    }
+
+    // Check on load if unacknowledged alerts exist
+    try {
+        var existing = JSON.parse(localStorage.getItem('studioAlerts') || '[]');
+        if (existing.some(function(a){return a.status === 'sent';})) {
+            var last = existing.find(function(a){return a.status === 'sent';});
+            setTimeout(function(){
+                showBanner(last.title, last.emitter ? last.emitter.name : '');
+                // Don't auto-start sound (needs user interaction first)
+                // But show banner so they know
+            }, 500);
+        }
+    } catch(e){}
+
+    connectAlertWS();
+})();
+</script>
+
 </body>
 </html>
