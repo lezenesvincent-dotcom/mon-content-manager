@@ -1134,7 +1134,8 @@
             { freq: 739.99, dur: 0.35 },
             { freq: 293.66, dur: 0.7 }
         ];
-        var totalDur = 0; sncfNotes.forEach(function(n){ totalDur += n.dur; }); totalDur += 0.4;
+        var chimeDur = 0; sncfNotes.forEach(function(n){ chimeDur += n.dur; });
+
         function playChime() {
             if (!alertActive) return;
             var t = alertAudioCtx.currentTime;
@@ -1148,8 +1149,36 @@
                 alertNodes.push({osc:o, gain:g});
                 t += note.dur;
             });
-            setTimeout(function(){ if (alertActive) playChime(); }, totalDur * 1000);
+            setTimeout(function(){ if (!alertActive) return; speakAlert(); }, chimeDur * 1000 + 200);
         }
+
+        function speakAlert() {
+            if (!('speechSynthesis' in window)) { scheduleNext(); return; }
+            var stored = [];
+            try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(e){}
+            var lastNew = null;
+            for (var i=0;i<stored.length;i++) { if (stored[i].status === 'sent') { lastNew = stored[i]; break; } }
+            var text = 'Alerte studio';
+            if (lastNew) {
+                var prenom = lastNew.emitter ? lastNew.emitter.name.split(' ')[0] : '';
+                var desc = lastNew.title || lastNew.description || '';
+                if (prenom && desc) text = prenom + ' signale : ' + desc;
+                else if (prenom) text = 'Alerte de ' + prenom;
+                else if (desc) text = desc;
+            }
+            window.speechSynthesis.cancel();
+            var utt = new SpeechSynthesisUtterance(text);
+            utt.lang = 'fr-FR'; utt.rate = 0.95; utt.pitch = 1.0; utt.volume = 1.0;
+            var voices = window.speechSynthesis.getVoices();
+            for (var v=0;v<voices.length;v++) { if (voices[v].lang.indexOf('fr')===0) { utt.voice = voices[v]; break; } }
+            utt.onend = function(){ setTimeout(function(){ if (alertActive) playChime(); }, 1500); };
+            utt.onerror = function(){ scheduleNext(); };
+            window.speechSynthesis.speak(utt);
+        }
+
+        function scheduleNext() { setTimeout(function(){ if (alertActive) playChime(); }, 3000); }
+
+        if ('speechSynthesis' in window) window.speechSynthesis.getVoices();
         playChime();
     }
 
@@ -1219,5 +1248,6 @@
 })();
 </script>
 
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.2);pointer-events:none;">v8-sncf</div>
 </body>
 </html>
