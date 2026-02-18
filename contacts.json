@@ -160,14 +160,14 @@
     "photo": "contacts-photos/adrien-regnier-laurent.png"
   },
   {
-    "id": "c17",
     "firstName": "Anne-Lise",
     "lastName": "Cornen",
     "speciality": "eco",
-    "function": "",
+    "function": "Économiste",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/anne-lise-cornen.png"
+    "photo": "contacts-photos/anne-lise-cornen.png",
+    "id": "c17"
   },
   {
     "firstName": "Benoît",
