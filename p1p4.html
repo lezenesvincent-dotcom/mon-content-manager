@@ -3,41 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Content Management Interface - P1-P4 System</title>
     <style>
-       * {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Cacher la scrollbar partout */
-        ::-webkit-scrollbar {
-            display: none;
-        }
-        
-        * {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-       body {
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 0;
-            overflow-y: scroll;
-        }
-
-        body::-webkit-scrollbar {
-            width: 0;
-            background: transparent;
+            padding: 20px;
         }
 
         .container {
-            max-width: 95%;
+            max-width: 1400px;
             margin: 0 auto;
             background: #1a1a2e;
             border-radius: 20px;
@@ -122,7 +104,6 @@
             animation: fadeIn 0.4s ease-out;
             background: #1a1a2e;
             color: #e4e4e4;
-            overflow: hidden;
         }
 
         .tab-content.active {
@@ -171,6 +152,7 @@
         .form-group textarea {
             min-height: 80px;
             resize: vertical;
+            font-family: 'Courier New', monospace;
         }
 
         .template-info {
@@ -443,10 +425,9 @@
 
         .content-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-top: 30px;
-            padding: 0 10px;
         }
 
         /* Responsive : 2 colonnes sur tablette */
@@ -470,9 +451,9 @@
             box-shadow: 0 10px 40px rgba(123, 104, 238, 0.3);
             transition: all 0.3s ease;
             position: relative;
-            overflow: visible;
+            overflow: hidden;
             cursor: pointer;
-            min-height: 320px;
+            aspect-ratio: 1.4 / 1;
         }
 
         .content-card:hover {
@@ -560,7 +541,7 @@
             color: white;
             padding: 14px;
             border: none;
-            border-radius: 10px;
+            border-radius: 50px;
             font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
@@ -580,18 +561,6 @@
 
         .btn-next:hover {
             background: rgba(76, 175, 80, 0.45);
-        }
-
-          /* Checkbox de sélection (en haut à gauche) */
-        .card-checkbox {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            width: 22px;
-            height: 22px;
-            cursor: pointer;
-            z-index: 10;
-            accent-color: #667eea;
         }
 
         /* Bouton de suppression (croix en haut à droite) - GRIS */
@@ -630,80 +599,50 @@
         }
 
         /* Modal Styles - CORRIGÉ POUR AFFICHAGE AU-DESSUS */
-   .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 99999;
-    justify-content: center;
-     align-items: center;  
-    padding-top: 0px;        
-    overflow-y: auto;         
-}
-
-        #createModal {
-    align-items: flex-start !important;
-    padding-top: 20px !important;
-}
-        
-.modal-overlay.show {
-    display: flex;
-}
-
-        #createModal.show {
-    display: flex !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 999999 !important;
-    overflow-y: auto !important;
-}
-
-#createModal .modal-content {
-    margin-top: 0 !important; 
-}
-        
-      .modal-content {
-    background: #1a1a2e;
-    border-radius: 20px;
-    padding: 40px;
-    max-width: 800px;
-    width: 100%;
-    margin: 0 auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    position: relative;
-    z-index: 100000;
-}
-        #editModal {
-            align-items: flex-start !important;
-            padding-top: 20px !important;
-        }
-        
-        #editModal.show {
-            display: flex !important;
+        .modal-overlay {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            align-items: center !important;
-            justify-content: center !important;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
             z-index: 999999 !important;
-            overflow-y: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            opacity: 0;
+            pointer-events: none;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease-out;
         }
 
-        #editModal .modal-content {
-            margin-top: 0 !important; 
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: all;
         }
-   
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1000000 !important;
+            transform: translateY(30px);
+            transition: transform 0.3s ease-out;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
 
         @keyframes slideUpModal {
             from {
@@ -918,12 +857,12 @@
     <div class="container">
         <div class="header">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; gap: 10px; position: absolute; left: 30px;">
-            <button onclick="openCreateModal()" style="padding: 12px 24px; background: rgba(255,255,255,0.25); color: white; border: none; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.3s;">➕ NEW</button>
-        </div>
                 <h1 style="text-align: center; width: 100%; font-size: 2.5rem; letter-spacing: 2px;">MANAGE</h1>
                 <div style="display: flex; gap: 10px; position: absolute; right: 30px;">
-                    <a href="p1p4.html" style="padding: 12px 24px; background: white; color: #7b68ee; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <a href="content-manager-websocket.html" style="padding: 12px 24px; background: rgba(255,255,255,0.25); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s;">
+                        🚀 Création
+                    </a>
+                    <a href="content-management-p1-p4.html" style="padding: 12px 24px; background: white; color: #7b68ee; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         📝 Manage
                     </a>
                 </div>
@@ -1082,127 +1021,22 @@
         </div>
 
         <div id="manage" class="tab-content active">
-            <!-- Quick Edit Modal -->
-<div class="modal-overlay" id="editModal" style="display: none;">
-   <div class="modal-content" style="max-width: 1200px; max-height: 85vh; overflow-y: auto;">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                <span class="edit-icon">✏️</span>
-                Quick Edit
-            </h2>
-            <button class="modal-close" onclick="closeEditModal()">×</button>
-        </div>
-        
-        <form id="editForm">
-            <input type="hidden" id="editContentId">
-            
-            <div class="form-group">
-                <label for="editTitle" class="required">Title</label>
-                <input type="text" id="editTitle" name="title"  
-                       placeholder="Enter a title">
-            </div>
-
-            <div class="form-group">
-                <label for="editSubtitle" class="required">Subtitle</label>
-                <input type="text" id="editSubtitle" name="subtitle"  
-                       placeholder="Enter a subtitle">
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px;">
-                <!-- P1 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P1</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="editP1Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP1Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="editP1Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP1Contenu">0 / 500</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px;">
+                <div>
+                    <h3 style="margin: 0 0 5px 0;">Gestion des Overlays</h3>
+                    <p style="margin: 0; color: #8b92a8; font-size: 0.95rem;">Visualisez et envoyez vos contenus à l'overlay</p>
                 </div>
-
-                <!-- P2 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P2</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="editP2Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP2Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="editP2Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP2Contenu">0 / 500</div>
-                </div>
-
-                <!-- P3 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P3</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="editP3Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP3Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="editP3Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP3Contenu">0 / 500</div>
-                </div>
-
-                <!-- P4 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P4</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="editP4Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 5px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP4Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="editP4Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem;" id="editCounterP4Contenu">0 / 500</div>
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeEditModal()">
-                    Cancel
-                </button>
-                <button type="button" class="btn-duplicate" onclick="duplicateContent()">
-                    📋 Duplicate
-                </button>
-                <button type="submit" class="btn-update">
-                    💾 Update
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
                 <div id="wsStatusIndicator" style="padding: 12px 20px; background: #ffc107; color: #000; border-radius: 10px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.3s ease, color 0.3s ease;">
                     🔄 Connexion...
                 </div>
             </div>
             
-            <!-- Boutons de gestion -->
-            <div style="margin-bottom: 20px; text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
-                <button id="deleteSelectionBtn" onclick="deleteSelectedCards()" class="btn-secondary" style="background: #ff9800; color: white; border-color: #ff9800; display: none;">
-                    🗑️ Supprimer la sélection (<span id="selectionCount">0</span>)
-                </button>
+            <div style="background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                <p style="margin: 0; color: #b8c1ec;">💡 <strong>Synchronisation automatique active :</strong> Les données se synchronisent depuis la page "Création" toutes les 3 secondes</p>
+            </div>
+            
+            <!-- Bouton pour vider l'historique -->
+            <div style="margin-bottom: 20px; text-align: right;">
                 <button onclick="clearAllHistory()" class="btn-secondary" style="background: #dc3545; color: white; border-color: #dc3545;">
                     🗑️ Vider tout l'historique
                 </button>
@@ -1212,117 +1046,24 @@
                 <!-- Content cards will be populated here -->
             </div>
 
-          <div id="emptyState" class="empty-state">
+            <div id="emptyState" class="empty-state">
                 <h4>📭 Aucun contenu disponible</h4>
-                <p>Cliquez sur "➕ NEW" pour créer du contenu.</p>
+                <p>Utilisez la page "🚀 Création" pour créer du contenu.</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">
+                    Le contenu créé dans "Création" apparaîtra ici automatiquement<br>
+                    (synchronisation toutes les 3 secondes)
+                </p>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; border: 1px solid rgba(255, 193, 7, 0.3);">
+                    <p style="font-size: 0.9rem; color: #ffc107;">
+                        💡 <strong>Vérifiez :</strong><br>
+                        • Le serveur WebSocket est-il accessible ?<br>
+                        • Avez-vous créé du contenu dans la page Création ?<br>
+                        • Ouvrez la console (F12) pour voir les logs de connexion
+                    </p>
+                </div>
             </div>
         </div>
-<!-- Create Modal -->
-<div class="modal-overlay" id="createModal" style="display: none;">
-    <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                <span class="edit-icon">➕</span>
-                Créer un nouveau contenu
-            </h2>
-            <button class="modal-close" onclick="closeCreateModal()">×</button>
-        </div>
-        
-        <form id="createModalForm">
-<div style="background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                <h3 style="color: #e4e4e4; margin-bottom: 10px;">🚀 TITRE</h3>
-                <input type="text" id="createTitle" required 
-                       placeholder="Titre principal"
-                       style="width: 100%; padding: 15px; border: 2px solid #0f3460; border-radius: 10px; background: #1a1a2e; color: #e4e4e4; font-size: 1rem; margin-bottom: 15px;">
-            </div>
 
-            <div style="background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                <h3 style="color: #e4e4e4; margin-bottom: 10px;">📄 Sous-titre</h3>
-                <input type="text" id="createSubtitle" required 
-                       placeholder="Sous-titre"
-                       style="width: 100%; padding: 15px; border: 2px solid #0f3460; border-radius: 10px; background: #1a1a2e; color: #e4e4e4; font-size: 1rem;">
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px;">
-                <!-- P1 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P1</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="createP1Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 15px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 5px;" id="createCounterP1Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="createP1Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 5px;" id="createCounterP1Contenu">0 / 500</div>
-                </div>
-
-                <!-- P2 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P2</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="createP2Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 15px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 5px;" id="createCounterP2Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="createP2Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 5px;" id="createCounterP2Contenu">0 / 500</div>
-                </div>
-
-                <!-- P3 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P3</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="createP3Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 15px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 5px;" id="createCounterP3Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="createP3Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 5px;" id="createCounterP3Contenu">0 / 500</div>
-                </div>
-
-                <!-- P4 -->
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px;">
-                    <h3 style="color: white; text-align: center; margin-bottom: 15px; font-size: 1.5rem; font-weight: 700;">P4</h3>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px;">Sujet</label>
-                    <input type="text" id="createP4Sujet" maxlength="15"
-                           placeholder="Sujet (15 chars max)"
-                           style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 15px;">
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 5px;" id="createCounterP4Sujet">0 / 15</div>
-                    
-                    <label style="color: white; font-weight: 600; display: block; margin-bottom: 8px; margin-top: 15px;">Contenu</label>
-                    <textarea id="createP4Contenu" rows="7" maxlength="500"
-                              placeholder="Contenu (7 lignes max)"
-                              style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9); resize: vertical;"></textarea>
-                    <div style="text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 5px;" id="createCounterP4Contenu">0 / 500</div>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeCreateModal()">
-                    Cancel
-                </button>
-                <button type="submit" class="btn-update">
-                    💾 Create Content
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
         <div id="settings" class="tab-content">
             <h3>Settings & Configuration</h3>
             
@@ -1454,7 +1195,142 @@
         </div>
     </div>
 
-   
+    <!-- Quick Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <span class="edit-icon">✏️</span>
+                    Quick Edit
+                </h2>
+                <button class="modal-close" onclick="closeEditModal()">×</button>
+            </div>
+            
+            <form id="editForm">
+                <input type="hidden" id="editContentId">
+                
+                <div class="form-group">
+                    <label for="editTitle" class="required">Title</label>
+                    <input type="text" id="editTitle" name="title" required 
+                           placeholder="Enter a title">
+                </div>
+
+                <div class="form-group">
+                    <label for="editSubtitle" class="required">Subtitle</label>
+                    <input type="text" id="editSubtitle" name="subtitle" required 
+                           placeholder="Enter a subtitle">
+                </div>
+
+                <!-- P1 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P1</span>
+                        <span class="p-description">Lines 1-2</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP1Line1" class="required">Line 1</label>
+                        <textarea id="editP1Line1" name="p1_line1" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="First line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p1_line1">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP1Line2" class="required">Line 2</label>
+                        <textarea id="editP1Line2" name="p1_line2" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Second line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p1_line2">0 / 80</div>
+                    </div>
+                </div>
+
+                <!-- P2 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P2</span>
+                        <span class="p-description">Lines 3-4</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP2Line3" class="required">Line 3</label>
+                        <textarea id="editP2Line3" name="p2_line3" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Third line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p2_line3">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP2Line4" class="required">Line 4</label>
+                        <textarea id="editP2Line4" name="p2_line4" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Fourth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p2_line4">0 / 80</div>
+                    </div>
+                </div>
+
+                <!-- P3 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P3</span>
+                        <span class="p-description">Lines 5-6</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP3Line5" class="required">Line 5</label>
+                        <textarea id="editP3Line5" name="p3_line5" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Fifth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p3_line5">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP3Line6" class="required">Line 6</label>
+                        <textarea id="editP3Line6" name="p3_line6" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Sixth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p3_line6">0 / 80</div>
+                    </div>
+                </div>
+
+                <!-- P4 Section -->
+                <div class="p-section" style="margin-bottom: 20px;">
+                    <div class="p-section-header">
+                        <span class="p-badge">P4</span>
+                        <span class="p-description">Lines 7-8</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editP4Line7" class="required">Line 7</label>
+                        <textarea id="editP4Line7" name="p4_line7" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Seventh line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p4_line7">0 / 80</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editP4Line8" class="required">Line 8</label>
+                        <textarea id="editP4Line8" name="p4_line8" required 
+                                  maxlength="80" rows="2"
+                                  placeholder="Eighth line (max 80 chars)"></textarea>
+                        <div class="char-counter" id="editCounter_p4_line8">0 / 80</div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-duplicate" onclick="duplicateContent()">
+                        📋 Duplicate
+                    </button>
+                    <button type="submit" class="btn-update">
+                        💾 Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
         // ===================================================================
@@ -1744,53 +1620,6 @@
 
         // Variable pour stocker l'ID du contenu actuellement affiché
         let currentOnlineContentId = null;
-        let selectedCards = [];
-
-        function toggleSelection(contentId) {
-            const index = selectedCards.indexOf(contentId);
-            if (index === -1) {
-                selectedCards.push(contentId);
-            } else {
-                selectedCards.splice(index, 1);
-            }
-            updateDeleteSelectionButton();
-        }
-
-        function updateDeleteSelectionButton() {
-            const btn = document.getElementById('deleteSelectionBtn');
-            const count = document.getElementById('selectionCount');
-            if (btn && count) {
-                count.textContent = selectedCards.length;
-                btn.style.display = selectedCards.length > 0 ? 'inline-block' : 'none';
-            }
-        }
-
-        async function deleteSelectedCards() {
-            if (selectedCards.length === 0) return;
-            
-            if (!confirm(`🗑️ Supprimer ${selectedCards.length} contenu(s) sélectionné(s) ?\n\nCette action est définitive.`)) {
-                return;
-            }
-
-            try {
-                showStatusMessage('🔄 Suppression en cours...', 'info');
-                
-                for (const contentId of selectedCards) {
-                    await fetch(`${WS_SERVER_URL}/api/history/${contentId}`, {
-                        method: 'DELETE'
-                    });
-                    contentStore = contentStore.filter(item => item.id !== contentId);
-                }
-                
-                selectedCards = [];
-                displayContentCards();
-                showStatusMessage('✅ Sélection supprimée !', 'success');
-                
-            } catch (error) {
-                console.error('❌ Erreur lors de la suppression:', error);
-                showStatusMessage('❌ Erreur: ' + error.message, 'error');
-            }
-        }
 
         async function sendContentToOverlay(contentId) {
             const content = contentStore.find(item => item.id === contentId);
@@ -1817,7 +1646,7 @@
                 console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
                 
                 // Envoyer via HTTP POST au serveur
-                const response = await fetch(`${WS_SERVER_URL}/api/update`, {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1859,7 +1688,7 @@
                     p4: { sujet: '', contenu: ['', ''] }
                 };
                 
-                const response = await fetch(`${WS_SERVER_URL}/api/update`, {
+                const response = await fetch(`${WS_SERVER_URL}/api/data`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -2022,7 +1851,7 @@
             }
         }
 
-       function displayContentCards() {
+        function displayContentCards() {
             console.log('==============================================');
             console.log('🎨 AFFICHAGE DES CARTES');
             console.log('==============================================');
@@ -2036,7 +1865,6 @@
                 console.log('❌ Aucun contenu à afficher (contentStore vide)');
                 contentList.style.display = 'none';
                 emptyState.style.display = 'block';
-                updateDeleteSelectionButton();
                 return;
             }
             
@@ -2050,13 +1878,9 @@
                 // Vérifier si ce contenu est actuellement online
                 const isOnline = content.id === currentOnlineContentId;
                 const onlineClass = isOnline ? ' online' : '';
-                const isSelected = selectedCards.includes(content.id);
                 
                 return `
                     <div class="content-card${onlineClass}" onclick="sendContentToOverlay('${content.id}')">
-                        <input type="checkbox" class="card-checkbox" data-id="${content.id}" 
-                               ${isSelected ? 'checked' : ''} 
-                               onclick="event.stopPropagation(); toggleSelection('${content.id}')">
                         <button class="btn-delete-corner" onclick="event.stopPropagation(); deleteContent('${content.id}')">
                             ✕
                         </button>
@@ -2078,55 +1902,50 @@
                     </div>
                 `;
             }).join('');
-            
-            updateDeleteSelectionButton();
         }
 
         // Character counters for all text areas
         // Quick Edit Modal Functions
-function openEditModal(contentId) {
-    const content = contentStore.find(item => item.id === contentId);
-    if (!content) return;
+        function openEditModal(contentId) {
+            const content = contentStore.find(item => item.id === contentId);
+            if (!content) return;
 
-    // Fill form with existing data
-    document.getElementById('editContentId').value = contentId;
-    document.getElementById('editTitle').value = content.title || '';
-    document.getElementById('editSubtitle').value = content.subtitle || '';
-    
-    // P1
-    document.getElementById('editP1Sujet').value = content.p1?.sujet || '';
-    document.getElementById('editP1Contenu').value = content.p1?.contenu ? content.p1.contenu.join('\n') : '';
-    
-    // P2
-    document.getElementById('editP2Sujet').value = content.p2?.sujet || '';
-    document.getElementById('editP2Contenu').value = content.p2?.contenu ? content.p2.contenu.join('\n') : '';
-    
-    // P3
-    document.getElementById('editP3Sujet').value = content.p3?.sujet || '';
-    document.getElementById('editP3Contenu').value = content.p3?.contenu ? content.p3.contenu.join('\n') : '';
-    
-    // P4
-    document.getElementById('editP4Sujet').value = content.p4?.sujet || '';
-    document.getElementById('editP4Contenu').value = content.p4?.contenu ? content.p4.contenu.join('\n') : '';
+            // Fill form with existing data
+            document.getElementById('editContentId').value = contentId;
+            document.getElementById('editTitle').value = content.title || '';
+            document.getElementById('editSubtitle').value = content.subtitle || '';
+            document.getElementById('editP1Line1').value = content.p1_line1 || '';
+            document.getElementById('editP1Line2').value = content.p1_line2 || '';
+            document.getElementById('editP2Line3').value = content.p2_line3 || '';
+            document.getElementById('editP2Line4').value = content.p2_line4 || '';
+            document.getElementById('editP3Line5').value = content.p3_line5 || '';
+            document.getElementById('editP3Line6').value = content.p3_line6 || '';
+            document.getElementById('editP4Line7').value = content.p4_line7 || '';
+            document.getElementById('editP4Line8').value = content.p4_line8 || '';
 
-    // Show modal
-    const modal = document.getElementById('editModal');
-    modal.style.display = 'flex';
-    modal.style.alignItems = 'center';
-    modal.style.justifyContent = 'center';
-    modal.classList.add('show');
-}
+            // Update character counters
+            updateEditCounter('editP1Line1', 'editCounter_p1_line1');
+            updateEditCounter('editP1Line2', 'editCounter_p1_line2');
+            updateEditCounter('editP2Line3', 'editCounter_p2_line3');
+            updateEditCounter('editP2Line4', 'editCounter_p2_line4');
+            updateEditCounter('editP3Line5', 'editCounter_p3_line5');
+            updateEditCounter('editP3Line6', 'editCounter_p3_line6');
+            updateEditCounter('editP4Line7', 'editCounter_p4_line7');
+            updateEditCounter('editP4Line8', 'editCounter_p4_line8');
 
-       function closeEditModal() {
-    const modal = document.getElementById('editModal');
-    modal.style.display = 'none';
-    modal.classList.remove('show');
-    
-    // Reset le formulaire après la transition de fermeture
-    setTimeout(() => {
-        document.getElementById('editForm').reset();
-    }, 300);
-}
+            // Show modal
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('show');
+            
+            // Reset le formulaire après la transition de fermeture
+            setTimeout(() => {
+                document.getElementById('editForm').reset();
+            }, 300);
+        }
 
         function updateEditCounter(textareaId, counterId) {
             const textarea = document.getElementById(textareaId);
@@ -2149,17 +1968,10 @@ function openEditModal(contentId) {
         });
 
         // Handle edit form submission
-      // Handle edit form submission
         document.getElementById('editForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const contentId = document.getElementById('editContentId').value;
-
-            // Fonction pour splitter le contenu en lignes
-            function splitContent(text) {
-                if (!text || text.trim() === '') return [];
-                return text.split('\n').filter(line => line.trim() !== '').slice(0, 7);
-            }
 
             try {
                 // Update in contentStore
@@ -2169,26 +1981,20 @@ function openEditModal(contentId) {
                         ...contentStore[contentIndex],
                         title: document.getElementById('editTitle').value.trim(),
                         subtitle: document.getElementById('editSubtitle').value.trim(),
-                        p1: {
-                            sujet: document.getElementById('editP1Sujet').value.trim(),
-                            contenu: splitContent(document.getElementById('editP1Contenu').value)
-                        },
-                        p2: {
-                            sujet: document.getElementById('editP2Sujet').value.trim(),
-                            contenu: splitContent(document.getElementById('editP2Contenu').value)
-                        },
-                        p3: {
-                            sujet: document.getElementById('editP3Sujet').value.trim(),
-                            contenu: splitContent(document.getElementById('editP3Contenu').value)
-                        },
-                        p4: {
-                            sujet: document.getElementById('editP4Sujet').value.trim(),
-                            contenu: splitContent(document.getElementById('editP4Contenu').value)
-                        },
+                        p1_line1: document.getElementById('editP1Line1').value.trim(),
+                        p1_line2: document.getElementById('editP1Line2').value.trim(),
+                        p2_line3: document.getElementById('editP2Line3').value.trim(),
+                        p2_line4: document.getElementById('editP2Line4').value.trim(),
+                        p3_line5: document.getElementById('editP3Line5').value.trim(),
+                        p3_line6: document.getElementById('editP3Line6').value.trim(),
+                        p4_line7: document.getElementById('editP4Line7').value.trim(),
+                        p4_line8: document.getElementById('editP4Line8').value.trim(),
                         timestamp: new Date().toLocaleString()
                     };
                 }
 
+                saveToLocalStorage();
+                
                 // Update display
                 displayContentCards();
                 closeEditModal();
@@ -2199,6 +2005,7 @@ function openEditModal(contentId) {
                 showStatusMessage(`Failed to update: ${error.message}`, 'error');
             }
         });
+
         // Duplicate content function
         async function duplicateContent() {
             const contentId = document.getElementById('editContentId').value;
@@ -2400,7 +2207,7 @@ function openEditModal(contentId) {
                     wsStatusIndicator.textContent = '🔄 Chargement...';
                 }
                 
-                const response = await fetch(`${WS_SERVER_URL}/history`);
+                const response = await fetch(`${WS_SERVER_URL}/api/history`);
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
@@ -2451,127 +2258,6 @@ function openEditModal(contentId) {
                 return [];
             }
         }
-        // Create Modal Functions
-function openCreateModal() {
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // ← Scroll vers le haut
-    const modal = document.getElementById('createModal');
-    modal.style.display = 'flex';
-    modal.classList.add('show');
-}
-
-function closeCreateModal() {
-    const modal = document.getElementById('createModal');
-    modal.style.display = 'none';
-    modal.classList.remove('show');
-    document.getElementById('createModalForm').reset();
-    
-    // Reset all counters
-    document.querySelectorAll('[id^="createCounter_"]').forEach(counter => {
-        counter.textContent = '0 / 80 characters';
-        counter.classList.remove('warning', 'error');
-    });
-}
-
-// Create modal character counters
-const createTextareas = [
-    { id: 'createP1Line1', counter: 'createCounter_p1_line1' },
-    { id: 'createP1Line2', counter: 'createCounter_p1_line2' },
-    { id: 'createP2Line3', counter: 'createCounter_p2_line3' },
-    { id: 'createP2Line4', counter: 'createCounter_p2_line4' },
-    { id: 'createP3Line5', counter: 'createCounter_p3_line5' },
-    { id: 'createP3Line6', counter: 'createCounter_p3_line6' },
-    { id: 'createP4Line7', counter: 'createCounter_p4_line7' },
-    { id: 'createP4Line8', counter: 'createCounter_p4_line8' }
-];
-
-createTextareas.forEach(item => {
-    setTimeout(() => {
-        const textarea = document.getElementById(item.id);
-        if (textarea) {
-            textarea.addEventListener('input', function() {
-                const counter = document.getElementById(item.counter);
-                if (counter) {
-                    const length = this.value.length;
-                    counter.textContent = `${length} / 80 characters`;
-                    counter.classList.remove('warning', 'error');
-                    if (length > 70) counter.classList.add('warning');
-                    if (length === 80) counter.classList.add('error');
-                }
-            });
-        }
-    }, 100);
-});
-
-// Create form submission
-setTimeout(() => {
-    const form = document.getElementById('createModalForm');
-    if (form) {
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            try {
-                const contentId = Date.now().toString();
-               // Fonction pour splitter le contenu en lignes
-function splitContent(text) {
-    if (!text || text.trim() === '') return [];
-    return text.split('\n').filter(line => line.trim() !== '').slice(0, 7);
-}
-
-const contentData = {
-    id: contentId,
-    title: document.getElementById('createTitle').value.trim(),
-    subtitle: document.getElementById('createSubtitle').value.trim(),
-    p1: {
-        sujet: document.getElementById('createP1Sujet').value.trim(),
-        contenu: splitContent(document.getElementById('createP1Contenu').value)
-    },
-    p2: {
-        sujet: document.getElementById('createP2Sujet').value.trim(),
-        contenu: splitContent(document.getElementById('createP2Contenu').value)
-    },
-    p3: {
-        sujet: document.getElementById('createP3Sujet').value.trim(),
-        contenu: splitContent(document.getElementById('createP3Contenu').value)
-    },
-    p4: {
-        sujet: document.getElementById('createP4Sujet').value.trim(),
-        contenu: splitContent(document.getElementById('createP4Contenu').value)
-    },
-    timestamp: new Date().toLocaleString(),
-    source: 'create-modal'
-};
-                // Send to server
-                const response = await fetch(`${WS_SERVER_URL}/api/update`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-    titre: contentData.title || '',
-    soustitre: contentData.subtitle || '',
-    p1: contentData.p1 || { sujet: '', contenu: [] },
-    p2: contentData.p2 || { sujet: '', contenu: [] },
-    p3: contentData.p3 || { sujet: '', contenu: [] },
-    p4: contentData.p4 || { sujet: '', contenu: [] }
-})
- });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                // Add to local store
-                contentStore.unshift(contentData);
-                displayContentCards();
-                closeCreateModal();
-                
-                showStatusMessage(`✨ "${contentData.title}" created successfully!`, 'success');
-            } catch (error) {
-                console.error('Create failed:', error);
-                showStatusMessage(`❌ Failed to create: ${error.message}`, 'error');
-            }
-        });
-    }
-}, 100);
     </script>
 </body>
 </html>
