@@ -578,16 +578,21 @@
     ];
 
     // ===== CONTACTS (for photo matching) =====
+    function normalize(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
     function loadContacts() {
         fetch('contacts.json').then(r => r.json()).then(data => {
             contacts = data;
-            // Match photos to emitters
+            // Match photos to emitters (souple : prénom + début nom sans accents)
             EMITTERS.forEach(em => {
-                const match = contacts.find(c =>
-                    c.firstName.toLowerCase() === em.firstName.toLowerCase() &&
-                    c.lastName.toLowerCase() === em.lastName.toLowerCase()
-                );
-                if (match && match.photo) em.photo = match.photo;
+                const emFirst = normalize(em.firstName);
+                const emLast = normalize(em.lastName.split(' ')[0].split('-')[0]);
+                const match = contacts.find(c => {
+                    if (!c.firstName || !c.lastName) return false;
+                    const cFirst = normalize(c.firstName);
+                    const cLast = normalize(c.lastName.split(' ')[0].split('-')[0]);
+                    return cFirst === emFirst && cLast === emLast;
+                });
+                if (match && match.photo && match.photo.length > 10) em.photo = match.photo;
             });
             renderEmitterGrid();
         }).catch(() => { renderEmitterGrid(); });
