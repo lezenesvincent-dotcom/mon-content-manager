@@ -20,14 +20,14 @@
     "id": "c02"
   },
   {
-    "id": "c03",
     "firstName": "Eric",
     "lastName": "Ravary",
     "speciality": "actions",
-    "function": "",
+    "function": "Analyste Secteurs Médias et Télécoms",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/eric-ravary.png"
+    "photo": "contacts-photos/eric-ravary.png",
+    "id": "c03"
   },
   {
     "id": "c04",
