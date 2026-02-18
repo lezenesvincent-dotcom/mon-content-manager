@@ -320,23 +320,35 @@
 
     function startAlarmOscillators() {
         alarmActive = true;
-        function createAlarmOsc(freq, type) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.value = freq; osc.type = type; gain.gain.value = 1.0;
-            osc.start(); return { osc, gain };
+        // Carillon style annonce SNCF - 4 notes en boucle
+        const sncfNotes = [
+            { freq: 587.33, dur: 0.35 },  // Ré5
+            { freq: 880.00, dur: 0.35 },  // La5
+            { freq: 739.99, dur: 0.35 },  // Fa#5
+            { freq: 293.66, dur: 0.7 }    // Ré4 (longue)
+        ];
+        const totalDur = sncfNotes.reduce((s, n) => s + n.dur, 0) + 0.4; // pause entre boucles
+
+        function playChime() {
+            if (!alarmActive) return;
+            let t = audioCtx.currentTime;
+            sncfNotes.forEach(note => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = note.freq;
+                gain.gain.setValueAtTime(0.6, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + note.dur - 0.02);
+                osc.start(t);
+                osc.stop(t + note.dur);
+                alarmNodes.push({ osc, gain });
+                t += note.dur;
+            });
+            // Boucle
+            setTimeout(() => { if (alarmActive) playChime(); }, totalDur * 1000);
         }
-        const siren1 = createAlarmOsc(880, 'square');
-        const siren2 = createAlarmOsc(1200, 'sawtooth');
-        alarmNodes.push(siren1, siren2);
-        let up = true;
-        const si = setInterval(() => {
-            if (!alarmActive) { clearInterval(si); return; }
-            siren1.osc.frequency.value = up ? 1100 : 700;
-            siren2.osc.frequency.value = up ? 1400 : 900;
-            up = !up;
-        }, 300);
+        playChime();
     }
 
     // ===== BROWSER NOTIFICATIONS (work even when tab is in background) =====

@@ -506,21 +506,29 @@
 
     function startOsc() {
         alertActive = true;
-        function mk(f, t) {
-            var o = alertAudioCtx.createOscillator(), g = alertAudioCtx.createGain();
-            o.connect(g); g.connect(alertAudioCtx.destination);
-            o.frequency.value = f; o.type = t; g.gain.value = 1.0; o.start();
-            return {osc:o, gain:g};
+        var sncfNotes = [
+            { freq: 587.33, dur: 0.35 },
+            { freq: 880.00, dur: 0.35 },
+            { freq: 739.99, dur: 0.35 },
+            { freq: 293.66, dur: 0.7 }
+        ];
+        var totalDur = 0; sncfNotes.forEach(function(n){ totalDur += n.dur; }); totalDur += 0.4;
+        function playChime() {
+            if (!alertActive) return;
+            var t = alertAudioCtx.currentTime;
+            sncfNotes.forEach(function(note) {
+                var o = alertAudioCtx.createOscillator(), g = alertAudioCtx.createGain();
+                o.connect(g); g.connect(alertAudioCtx.destination);
+                o.type = 'sine'; o.frequency.value = note.freq;
+                g.gain.setValueAtTime(0.6, t);
+                g.gain.exponentialRampToValueAtTime(0.001, t + note.dur - 0.02);
+                o.start(t); o.stop(t + note.dur);
+                alertNodes.push({osc:o, gain:g});
+                t += note.dur;
+            });
+            setTimeout(function(){ if (alertActive) playChime(); }, totalDur * 1000);
         }
-        var s1 = mk(880,'square'), s2 = mk(1200,'sawtooth');
-        alertNodes.push(s1, s2);
-        var up = true;
-        var si = setInterval(function() {
-            if (!alertActive) { clearInterval(si); return; }
-            s1.osc.frequency.value = up ? 1100 : 700;
-            s2.osc.frequency.value = up ? 1400 : 900;
-            up = !up;
-        }, 300);
+        playChime();
     }
 
     function stopSound() {
