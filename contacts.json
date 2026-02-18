@@ -200,14 +200,14 @@
     "photo": "contacts-photos/eric-baron.png"
   },
   {
-    "id": "c21",
     "firstName": "Eva",
     "lastName": "Bellin",
-    "speciality": "eco",
+    "speciality": "technique",
     "function": "Responsable Analyse Technique",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/eva-bellin.png"
+    "photo": "contacts-photos/eva-bellin.png",
+    "id": "c21"
   },
   {
     "firstName": "Eva",
