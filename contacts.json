@@ -80,14 +80,14 @@
     "photo": "contacts-photos/jean-luc-romain.png"
   },
   {
-    "id": "c09",
     "firstName": "Alexandre",
     "lastName": "Plaud",
-    "speciality": "technique",
-    "function": "Analyste Technique",
+    "speciality": "actions",
+    "function": "Analyste Secteur Technologies",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/alexandre-plaud.png"
+    "photo": "contacts-photos/alexandre-plaud.png",
+    "id": "c09"
   },
   {
     "id": "c10",
