@@ -111,7 +111,7 @@
     "prepDuration": 30,
     "ibmChaine": "https://video.ibm.com/channel/eez4Cj2bKy4",
     "toggles": {
-      "diffIBM": true,
+      "diffIBM": false,
       "replay": true,
       "chat": true,
       "qr": false,
@@ -125,6 +125,6 @@
     "application": "WEBEX",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-19T10:28:30.487Z"
+    "updatedAt": "2026-02-19T10:28:32.681Z"
   }
 }
