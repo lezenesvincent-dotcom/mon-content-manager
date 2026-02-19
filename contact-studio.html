@@ -1077,6 +1077,11 @@
                 <button class="add-interv" onclick="addRow()">+ Ajouter</button>
             </div>
 
+            <div class="panel">
+                <div class="section-title">Commentaires</div>
+                <textarea id="commentaires" spellcheck="false" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#fff;font-size:11px;font-weight:400;font-family:inherit;outline:none;resize:none;height:60px;line-height:1.4"></textarea>
+            </div>
+
             <div class="upload-panel">
                 <div class="section-title">Contenus uploadés</div>
                 <div class="upload-grid">
@@ -1512,6 +1517,7 @@
             prepDuration: prepDuration,
             ibmChaine: document.getElementById('ibmChaine').value,
             titreSynthe: document.getElementById('titreSynthe').value,
+            commentaires: document.getElementById('commentaires').value,
             toggles: {},
             application: null,
             intervenants: [],
@@ -1631,6 +1637,8 @@
             document.getElementById('ibmChaine').value = data.ibmChaine;
         if (data.titreSynthe)
             document.getElementById('titreSynthe').value = data.titreSynthe;
+        if (data.commentaires)
+            document.getElementById('commentaires').value = data.commentaires;
         if (data.toggles) {
             Object.keys(data.toggles).forEach(function(f) {
                 var el = document.querySelector('.toggle-switch[data-field="' + f + '"]');
