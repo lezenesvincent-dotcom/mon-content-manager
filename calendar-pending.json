@@ -64,8 +64,9 @@
         "visite": true
       },
       "createdAt": "2026-02-19T10:20:33.711Z",
-      "status": "pending"
+      "status": "done",
+      "processedAt": "2026-02-19T10:24:57Z"
     }
   ],
-  "updatedAt": "2026-02-19T10:20:33.997Z"
+  "updatedAt": "2026-02-19T10:24:57Z"
 }
