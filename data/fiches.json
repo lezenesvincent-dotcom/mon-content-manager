@@ -89,8 +89,15 @@
       "visite": true
     },
     "application": "ZOOM",
-    "intervenants": [],
+    "intervenants": [
+      {
+        "nom": "Martin ",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
+      }
+    ],
     "mode": "visio",
-    "updatedAt": "2026-02-19T09:29:27.831Z"
+    "updatedAt": "2026-02-19T09:29:40.617Z"
   }
 }
