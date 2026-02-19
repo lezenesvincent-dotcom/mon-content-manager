@@ -1075,6 +1075,7 @@
 <script>
 (function(){
     var ALERT_WS_URL = 'wss://ecamm-overlay-server.onrender.com';
+    var ALERT_PROXY_URL = 'https://script.google.com/macros/s/AKfycbzjO0-wHGd-uIIJhnpmBAVQxIruHnQUpnvFpsrEqAsSDkerG8z0Cp47HYgojMHlOG9pFQ/exec';
     var alertWs = null;
     var alertAudioCtx = null;
     var alertNodes = [];
@@ -1208,6 +1209,25 @@
         }
     };
 
+    var alertProxyTimer = null;
+    var alertWsFails = 0;
+    function startAlertProxyPolling() {
+        if (alertProxyTimer) return;
+        alertProxyTimer = setInterval(function() {
+            fetch(ALERT_PROXY_URL + '?action=sync').then(function(r){ return r.json(); }).then(function(data) {
+                if (!Array.isArray(data)) return;
+                var stored = [];
+                try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(e){}
+                var newOnes = data.filter(function(d){ return d.status === 'sent' && !stored.find(function(s){ return s.id === d.id; }); });
+                localStorage.setItem('studioAlerts', JSON.stringify(data));
+                if (newOnes.length > 0) {
+                    showBanner(newOnes[0].title, newOnes[0].emitter ? newOnes[0].emitter.name : '');
+                }
+                if (!data.some(function(d){ return d.status === 'sent'; })) { stopSound(); }
+            }).catch(function(){});
+        }, 3000);
+    }
+
     function connectAlertWS() {
         alertWs = new WebSocket(ALERT_WS_URL);
         alertWs.onmessage = function(e) {
@@ -1224,7 +1244,10 @@
                 if (msg.type === 'studio-alert-update' && msg.data && msg.data.status !== 'sent') { stopSound(); }
             } catch(err) {}
         };
-        alertWs.onclose = function(){ setTimeout(connectAlertWS, 3000); };
+        alertWs.onclose = function(){
+            alertWsFails = (alertWsFails || 0) + 1;
+            if (alertWsFails >= 3) { startAlertProxyPolling(); } else { setTimeout(connectAlertWS, 3000); }
+        };
         alertWs.onerror = function(){ alertWs.close(); };
     }
 
@@ -1241,6 +1264,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v8-sncf</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v9</div>
 </body>
 </html>

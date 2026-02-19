@@ -599,9 +599,29 @@
     }
 
     // ===== WEBSOCKET =====
+    var proxyPollTimer = null;
+    function startProxyPolling() {
+        if (proxyPollTimer) return;
+        useProxy = true;
+        document.getElementById('syncDot').classList.remove('offline');
+        document.getElementById('syncText').textContent = 'Proxy';
+        proxyPollTimer = setInterval(() => {
+            fetch(PROXY_URL + '?action=sync').then(r => r.json()).then(data => {
+                if (Array.isArray(data)) {
+                    var hadSent = alerts.some(a => a.status === 'sent');
+                    var newAlerts = data.filter(d => !alerts.find(a => a.id === d.id) && d.status === 'sent');
+                    alerts = data; saveAlerts(); renderAlerts();
+                    if (newAlerts.length > 0) startAlarm();
+                    if (hadSent && !data.some(d => d.status === 'sent')) stopAlarm();
+                }
+            }).catch(() => {});
+        }, 3000);
+    }
+
+    var wsFailCount = 0;
     function connectWS() {
         ws = new WebSocket(WS_URL);
-        ws.onopen = () => { document.getElementById('syncDot').classList.remove('offline'); document.getElementById('syncText').textContent = 'Connecté'; };
+        ws.onopen = () => { wsFailCount = 0; document.getElementById('syncDot').classList.remove('offline'); document.getElementById('syncText').textContent = 'Connecté'; };
         ws.onmessage = e => {
             try {
                 const msg = JSON.parse(e.data);
@@ -621,14 +641,25 @@
                 }
             } catch(err) {}
         };
-        ws.onclose = () => { document.getElementById('syncDot').classList.add('offline'); document.getElementById('syncText').textContent = 'Déconnecté'; setTimeout(connectWS, 3000); };
+        ws.onclose = () => {
+            wsFailCount++;
+            document.getElementById('syncDot').classList.add('offline');
+            document.getElementById('syncText').textContent = 'Déconnecté';
+            if (wsFailCount >= 3) { startProxyPolling(); } else { setTimeout(connectWS, 3000); }
+        };
         ws.onerror = () => { ws.close(); };
     }
 
     function loadFromServer() {
-        fetch(API_URL + '/api/studio-alerts').then(r => r.json()).then(data => {
+        fetch(API_URL + '/api/studio-alerts').then(r => { if (!r.ok) throw new Error('fail'); return r.json(); }).then(data => {
             if (Array.isArray(data) && data.length > 0) { alerts = data; saveAlerts(); renderAlerts(); }
-        }).catch(() => {});
+        }).catch(() => {
+            // Fallback proxy Google
+            useProxy = true;
+            fetch(PROXY_URL + '?action=get').then(r => r.json()).then(data => {
+                if (Array.isArray(data) && data.length > 0) { alerts = data; saveAlerts(); renderAlerts(); }
+            }).catch(() => {});
+        });
     }
 
     // ===== INIT =====
