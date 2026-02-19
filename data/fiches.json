@@ -137,7 +137,7 @@
     "heurePrep": "12:30",
     "prepDuration": 30,
     "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
-    "titreSynthe": "Facture électronqiue obligatoire : Comment le CIC facilite ",
+    "titreSynthe": "Facture électronqiue obligatoire : Comment le CIC facilite votre transition d'ici 2027",
     "toggles": {
       "diffIBM": true,
       "replay": true,
@@ -153,6 +153,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-19T13:54:42.237Z"
+    "updatedAt": "2026-02-19T13:54:49.966Z"
   }
 }
