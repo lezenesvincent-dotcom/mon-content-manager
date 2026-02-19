@@ -46,6 +46,17 @@
         .draft-slot .draft-title { font-size: 9px; font-weight: 700; color: #fff; line-height: 1.2; }
         .draft-slot .draft-date { font-size: 7px; color: rgba(255,255,255,0.35); margin-top: 3px; }
         .draft-slot.empty { opacity: 0.2; cursor: default; }
+        .problem-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+        .problem-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 8px 6px; min-width: 68px; border-radius: 10px; cursor: pointer;
+            background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.08);
+            transition: all 0.15s;
+        }
+        .problem-btn:hover { border-color: rgba(255,100,100,0.4); background: rgba(255,100,100,0.06); }
+        .problem-btn.selected { border-color: rgba(255,100,100,0.7); background: rgba(255,100,100,0.12); box-shadow: 0 0 10px rgba(255,100,100,0.15); }
+        .problem-btn .pb-icon { font-size: 22px; line-height: 1; }
+        .problem-btn .pb-label { font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.5); text-align: center; line-height: 1.15; text-transform: uppercase; letter-spacing: 0.3px; }
         .emitter-card {
             display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 10px;
             border-radius: 12px; cursor: pointer; transition: all 0.15s; border: 2px solid transparent;
@@ -173,6 +184,8 @@
         <div class="emitter-grid" id="emitterGrid"></div>
         <div class="emitter-label" style="margin-top:12px;">Contenu concern&eacute; <span style="font-weight:400;opacity:0.4">(brouillons PRSNET)</span></div>
         <div class="draft-grid" id="draftGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;"></div>
+        <div class="emitter-label" style="margin-top:8px;">Type de probl&egrave;me</div>
+        <div class="problem-grid" id="problemGrid"></div>
         <div class="form-row">
             <input type="text" id="alertTitle" placeholder="Titre de l'alerte..." />
         </div>
@@ -203,7 +216,52 @@
     let contacts = [];
     let selectedEmitter = null;
     let selectedDraft = null;
+    let selectedProblem = null;
     let weekContent = { vignettes: [], agenda: [] };
+
+    const PROBLEMS = [
+        { id: 'vignette_ko', icon: '🖼️', label: 'Vignettes KO' },
+        { id: 'debut_gen', icon: '🎬', label: 'Défaut Début\ngénérique' },
+        { id: 'fin_gen', icon: '🔚', label: 'Défaut Fin\ngénérique' },
+        { id: 'pb_synthe', icon: '📊', label: 'Pb Synthé' },
+        { id: 'pb_son', icon: '🔇', label: 'Pb Direct\nSon' },
+        { id: 'pb_image', icon: '📷', label: 'Pb Direct\nImage' },
+        { id: 'pb_bandeau', icon: '🏷️', label: 'Pb Bandeau' },
+        { id: 'pb_ibm', icon: '📡', label: 'Pb IBM TV' },
+        { id: 'pb_chat', icon: '💬', label: 'Pb Chat' },
+        { id: 'pb_qr', icon: '❓', label: 'Pb Q&R' }
+    ];
+
+    function renderProblemGrid() {
+        const grid = document.getElementById('problemGrid');
+        grid.innerHTML = PROBLEMS.map(p => {
+            const sel = selectedProblem === p.id ? ' selected' : '';
+            const labelHtml = p.label.replace(/\n/g, '<br>');
+            return '<div class="problem-btn' + sel + '" onclick="selectProblem(\'' + p.id + '\')">' +
+                '<div class="pb-icon">' + p.icon + '</div>' +
+                '<div class="pb-label">' + labelHtml + '</div></div>';
+        }).join('');
+    }
+
+    function selectProblem(id) {
+        if (selectedProblem === id) {
+            selectedProblem = null;
+            document.getElementById('alertTitle').value = '';
+        } else {
+            selectedProblem = id;
+            const p = PROBLEMS.find(x => x.id === id);
+            if (p) {
+                const currentTitle = document.getElementById('alertTitle').value;
+                const problemLabel = p.label.replace(/\n/g, ' ');
+                if (!currentTitle || PROBLEMS.some(x => currentTitle === x.icon + ' ' + x.label.replace(/\n/g, ' '))) {
+                    document.getElementById('alertTitle').value = p.icon + ' ' + problemLabel;
+                } else {
+                    document.getElementById('alertTitle').value = currentTitle + ' — ' + p.icon + ' ' + problemLabel;
+                }
+            }
+        }
+        renderProblemGrid();
+    }
 
     // GitHub access for PRSNET drafts
     const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s => s.split('').reverse().join('')).join('');
@@ -311,6 +369,7 @@
         if (form.classList.contains('visible')) {
             document.getElementById('alertTitle').focus();
             loadPrsnetDrafts();
+            renderProblemGrid();
         }
     }
 
@@ -533,7 +592,7 @@
         toggleAlertForm();
         document.getElementById('alertTitle').value = '';
         document.getElementById('alertDesc').value = '';
-        selectedEmitter = null; selectedDraft = null; renderEmitterGrid(); renderAlerts();
+        selectedEmitter = null; selectedDraft = null; selectedProblem = null; renderEmitterGrid(); renderProblemGrid(); renderAlerts();
     }
 
     // ===== STATUS CHANGE =====
@@ -772,6 +831,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v12b</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v13</div>
 </body>
 </html>
