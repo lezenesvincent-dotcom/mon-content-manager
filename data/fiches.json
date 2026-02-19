@@ -68,13 +68,13 @@
   },
   "1770988212142": {
     "id": "1770988212142",
-    "titre": "",
-    "date": "2026-02-18",
+    "titre": "Direct SDG",
+    "date": "2026-02-05",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
-    "heurePrep": "12:30",
-    "prepDuration": 30,
+    "heurePrep": "12:15",
+    "prepDuration": 45,
     "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
     "toggles": {
       "diffIBM": true,
@@ -91,6 +91,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-19T09:27:09.086Z"
+    "updatedAt": "2026-02-19T09:27:46.327Z"
   }
 }
