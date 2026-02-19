@@ -48,15 +48,19 @@
         .draft-slot.empty { opacity: 0.2; cursor: default; }
         .problem-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
         .problem-btn {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            padding: 8px 6px; min-width: 68px; border-radius: 10px; cursor: pointer;
-            background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.08);
-            transition: all 0.15s;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            padding: 10px 6px 8px; min-width: 72px; border-radius: 14px; cursor: pointer;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1.5px solid rgba(255,255,255,0.06);
+            transition: all 0.2s; backdrop-filter: blur(4px);
         }
-        .problem-btn:hover { border-color: rgba(255,100,100,0.4); background: rgba(255,100,100,0.06); }
-        .problem-btn.selected { border-color: rgba(255,100,100,0.7); background: rgba(255,100,100,0.12); box-shadow: 0 0 10px rgba(255,100,100,0.15); }
-        .problem-btn .pb-icon { font-size: 22px; line-height: 1; }
-        .problem-btn .pb-label { font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.5); text-align: center; line-height: 1.15; text-transform: uppercase; letter-spacing: 0.3px; }
+        .problem-btn:hover { border-color: rgba(255,255,255,0.15); background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03)); transform: translateY(-1px); }
+        .problem-btn.selected { border-color: rgba(255,100,100,0.5); background: linear-gradient(135deg, rgba(255,80,80,0.15), rgba(200,50,50,0.08)); box-shadow: 0 4px 15px rgba(255,80,80,0.12); transform: translateY(-1px); }
+        .problem-btn .pb-icon {
+            width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+        }
+        .problem-btn .pb-icon svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .problem-btn .pb-label { font-size: 7.5px; font-weight: 700; color: rgba(255,255,255,0.45); text-align: center; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.3px; }
         .emitter-card {
             display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 10px;
             border-radius: 12px; cursor: pointer; transition: all 0.15s; border: 2px solid transparent;
@@ -220,16 +224,16 @@
     let weekContent = { vignettes: [], agenda: [] };
 
     const PROBLEMS = [
-        { id: 'vignette_ko', icon: '🖼️', label: 'Vignettes KO' },
-        { id: 'debut_gen', icon: '🎬', label: 'Défaut Début\ngénérique' },
-        { id: 'fin_gen', icon: '🔚', label: 'Défaut Fin\ngénérique' },
-        { id: 'pb_synthe', icon: '📊', label: 'Pb Synthé' },
-        { id: 'pb_son', icon: '🔇', label: 'Pb Direct\nSon' },
-        { id: 'pb_image', icon: '📷', label: 'Pb Direct\nImage' },
-        { id: 'pb_bandeau', icon: '🏷️', label: 'Pb Bandeau' },
-        { id: 'pb_ibm', icon: '📡', label: 'Pb IBM TV' },
-        { id: 'pb_chat', icon: '💬', label: 'Pb Chat' },
-        { id: 'pb_qr', icon: '❓', label: 'Pb Q&R' }
+        { id: 'vignette_ko', icon: '<div style="background:linear-gradient(135deg,#ff6b6b,#ee5a24);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg></div>', label: 'Vignettes\nKO' },
+        { id: 'debut_gen', icon: '<div style="background:linear-gradient(135deg,#a55eea,#8854d0);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>', label: 'Défaut Début\ngénérique' },
+        { id: 'fin_gen', icon: '<div style="background:linear-gradient(135deg,#8854d0,#6c5ce7);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><polygon points="14,4 22,12 14,20"/></svg></div>', label: 'Défaut Fin\ngénérique' },
+        { id: 'pb_synthe', icon: '<div style="background:linear-gradient(135deg,#0984e3,#74b9ff);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></div>', label: 'Pb Synthé' },
+        { id: 'pb_son', icon: '<div style="background:linear-gradient(135deg,#e17055,#d63031);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></div>', label: 'Pb Direct\nSon' },
+        { id: 'pb_image', icon: '<div style="background:linear-gradient(135deg,#fdcb6e,#e17055);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="3"/><circle cx="8" cy="10" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div>', label: 'Pb Direct\nImage' },
+        { id: 'pb_bandeau', icon: '<div style="background:linear-gradient(135deg,#00b894,#00cec9);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><line x1="6" y1="12" x2="18" y2="12"/></svg></div>', label: 'Pb Bandeau' },
+        { id: 'pb_ibm', icon: '<div style="background:linear-gradient(135deg,#636e72,#2d3436);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>', label: 'Pb IBM TV' },
+        { id: 'pb_chat', icon: '<div style="background:linear-gradient(135deg,#0984e3,#6c5ce7);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>', label: 'Pb Chat' },
+        { id: 'pb_qr', icon: '<div style="background:linear-gradient(135deg,#fdcb6e,#f39c12);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>', label: 'Pb Q&R' }
     ];
 
     function renderProblemGrid() {
@@ -251,12 +255,12 @@
             selectedProblem = id;
             const p = PROBLEMS.find(x => x.id === id);
             if (p) {
-                const currentTitle = document.getElementById('alertTitle').value;
                 const problemLabel = p.label.replace(/\n/g, ' ');
-                if (!currentTitle || PROBLEMS.some(x => currentTitle === x.icon + ' ' + x.label.replace(/\n/g, ' '))) {
-                    document.getElementById('alertTitle').value = p.icon + ' ' + problemLabel;
+                const currentTitle = document.getElementById('alertTitle').value;
+                if (!currentTitle || PROBLEMS.some(x => currentTitle === x.label.replace(/\n/g, ' '))) {
+                    document.getElementById('alertTitle').value = problemLabel;
                 } else {
-                    document.getElementById('alertTitle').value = currentTitle + ' — ' + p.icon + ' ' + problemLabel;
+                    document.getElementById('alertTitle').value = currentTitle + ' — ' + problemLabel;
                 }
             }
         }
@@ -831,6 +835,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v13</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v14</div>
 </body>
 </html>
