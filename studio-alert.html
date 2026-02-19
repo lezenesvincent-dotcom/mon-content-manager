@@ -248,7 +248,7 @@
     function preloadChime() {
         chimeAudio = new Audio('alert-chime.mp3');
         chimeAudio.preload = 'auto';
-        chimeAudio.volume = 1.0;
+        chimeAudio.volume = 0.3;
     }
     preloadChime();
 
@@ -325,7 +325,7 @@
             // 1) Jouer le MP3 chime
             if (chimeAudio) {
                 chimeAudio.currentTime = 0;
-                chimeAudio.volume = 1.0;
+                chimeAudio.volume = 0.3;
                 chimeAudio.play().catch(() => {});
             }
             // 2) Après le chime (~8s pour être safe), lancer la voix
@@ -667,6 +667,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v9</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v11</div>
 </body>
 </html>
