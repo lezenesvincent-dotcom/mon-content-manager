@@ -757,7 +757,7 @@
             }
             window.speechSynthesis.cancel();
             var utt = new SpeechSynthesisUtterance(text);
-            utt.lang = 'fr-FR'; utt.rate = 0.9; utt.pitch = 1.05; utt.volume = 1.0;
+            utt.lang = 'fr-FR'; utt.rate = 0.9; utt.pitch = 1.05; utt.volume = 0.3;
             var voices = window.speechSynthesis.getVoices();
             var pref = null;
             for (var v=0;v<voices.length;v++) {
@@ -866,6 +866,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v11c</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v12</div>
 </body>
 </html>

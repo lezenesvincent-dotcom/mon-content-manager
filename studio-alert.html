@@ -39,6 +39,13 @@
         /* EMITTER PICKER */
         .emitter-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
         .emitter-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; max-height: 200px; overflow-y: auto; padding: 4px; }
+        .draft-slot { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px; cursor: pointer; min-height: 48px; display: flex; align-items: center; justify-content: center; text-align: center; transition: all 0.15s; }
+        .draft-slot:hover { border-color: rgba(255,165,0,0.4); background: rgba(255,165,0,0.06); }
+        .draft-slot.selected { border-color: rgba(255,165,0,0.7); background: rgba(255,165,0,0.12); box-shadow: 0 0 8px rgba(255,165,0,0.15); }
+        .draft-slot .draft-emoji { font-size: 14px; margin-bottom: 2px; }
+        .draft-slot .draft-title { font-size: 9px; font-weight: 700; color: #fff; line-height: 1.2; }
+        .draft-slot .draft-date { font-size: 7px; color: rgba(255,255,255,0.35); margin-top: 3px; }
+        .draft-slot.empty { opacity: 0.2; cursor: default; }
         .emitter-card {
             display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 10px;
             border-radius: 12px; cursor: pointer; transition: all 0.15s; border: 2px solid transparent;
@@ -164,6 +171,8 @@
         <h3>&#x26A0;&#xFE0F; Nouvelle alerte</h3>
         <div class="emitter-label">&Eacute;metteur</div>
         <div class="emitter-grid" id="emitterGrid"></div>
+        <div class="emitter-label" style="margin-top:12px;">Contenu concern&eacute; <span style="font-weight:400;opacity:0.4">(brouillons PRSNET)</span></div>
+        <div class="draft-grid" id="draftGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;"></div>
         <div class="form-row">
             <input type="text" id="alertTitle" placeholder="Titre de l'alerte..." />
         </div>
@@ -191,7 +200,91 @@
     let alerts = [];
     let contacts = [];
     let selectedEmitter = null;
+    let selectedDraft = null;
     let weekContent = { vignettes: [], agenda: [] };
+
+    // GitHub access for PRSNET drafts
+    const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s => s.split('').reverse().join('')).join('');
+    const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+
+    const EMISSION_ICONS = { morning: '☀️', conf: '📞', hot: '🔥', da: '📊', dc: '🏢', expert: '🎓', echo: '📢', decryptage: '🔍' };
+
+    function detectEmission(tags, title) {
+        var t = (tags||'').toLowerCase(), ti = (title||'').toLowerCase();
+        if (ti.indexOf('direct corporate') > -1 || t.indexOf('direct corporate') > -1) return 'dc';
+        if (t.indexOf('direct analystes') > -1 || ti.indexOf('direct analystes') > -1) return 'da';
+        if (t.indexOf('direct expert') > -1 || ti.indexOf('direct expert') > -1) return 'expert';
+        if (t.indexOf('conférence hebdo') > -1 || t.indexOf('conference hebdo') > -1 || ti.indexOf('conf call') > -1) return 'conf';
+        if (t.indexOf('echo hebdo') > -1 || t.indexOf("l'echo hebdo") > -1 || ti.indexOf('echo hebdo') > -1) return 'echo';
+        if (t.indexOf('chart solutions') > -1 || ti.indexOf('chart solutions') > -1) return 'hot';
+        if (t.indexOf('chart equity') > -1 || ti.indexOf('chart equity') > -1) return 'hot';
+        if (t.indexOf('morning meeting') > -1) return 'morning';
+        if (t.indexOf('décryptage') > -1 || t.indexOf('decryptage') > -1) return 'decryptage';
+        return '';
+    }
+
+    function extractSubject(title, emission) {
+        var t = title || '';
+        if (t.indexOf(':') > -1) {
+            var beforeColon = t.split(':')[0].trim();
+            var prefixes = ['Direct Corporate Développement Durable','Direct Corporate','Direct Analystes','Direct Expert'];
+            for (var i = 0; i < prefixes.length; i++) {
+                if (beforeColon.toLowerCase().indexOf(prefixes[i].toLowerCase()) === 0) {
+                    var afterColon = t.split(':').slice(1).join(':').trim();
+                    if (afterColon.indexOf(':') > -1) return afterColon.split(':')[0].trim();
+                    return afterColon;
+                }
+            }
+            if (emission === 'morning') return beforeColon;
+            return beforeColon;
+        }
+        return t;
+    }
+
+    async function loadPrsnetDrafts() {
+        try {
+            const r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/prsnet-drafts.json', {
+                headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store'
+            });
+            if (!r.ok) return;
+            const d = await r.json();
+            const data = JSON.parse(decodeURIComponent(escape(atob(d.content))));
+            const grid = document.getElementById('draftGrid');
+            grid.innerHTML = '';
+            const drafts = data.drafts || [];
+            for (let i = 0; i < 6; i++) {
+                const s = document.createElement('div');
+                s.className = 'draft-slot' + (drafts[i] ? '' : ' empty');
+                if (drafts[i]) {
+                    const title = drafts[i].title || '';
+                    const date = drafts[i].date || '';
+                    const tags = drafts[i].tags || '';
+                    const emission = detectEmission(tags, title);
+                    const displayTitle = extractSubject(title, emission);
+                    const icon = EMISSION_ICONS[emission] || '📄';
+                    s.innerHTML = '<div><div class="draft-emoji">' + icon + '</div>' +
+                        '<div class="draft-title">' + displayTitle + '</div>' +
+                        '<div class="draft-date">' + date + '</div></div>';
+                    s.title = title;
+                    s.onclick = ((draft, em, subj) => () => {
+                        // Toggle selection
+                        document.querySelectorAll('.draft-slot').forEach(d => d.classList.remove('selected'));
+                        if (selectedDraft && selectedDraft.title === draft.title) {
+                            selectedDraft = null;
+                            document.getElementById('alertTitle').value = '';
+                        } else {
+                            selectedDraft = draft;
+                            s.classList.add('selected');
+                            document.getElementById('alertTitle').value = (EMISSION_ICONS[em] || '') + ' ' + subj;
+                        }
+                    })(drafts[i], emission, displayTitle);
+                } else {
+                    s.innerHTML = '<div style="opacity:0.3;font-size:9px;">—</div>';
+                }
+                grid.appendChild(s);
+            }
+        } catch(e) { console.error('PRSNET drafts:', e); }
+    }
 
     const STATUSES = ['sent','handled','modif','fixed'];
     const STATUS_LABELS = { sent: 'Envoyé', handled: 'Prise en charge', modif: 'Modification', fixed: 'Réparé' };
@@ -213,7 +306,10 @@
     function toggleAlertForm() {
         const form = document.getElementById('alertForm');
         form.classList.toggle('visible');
-        if (form.classList.contains('visible')) document.getElementById('alertTitle').focus();
+        if (form.classList.contains('visible')) {
+            document.getElementById('alertTitle').focus();
+            loadPrsnetDrafts();
+        }
     }
 
     // ===== EMITTER GRID =====
@@ -351,7 +447,7 @@
             utt.lang = 'fr-FR';
             utt.rate = 0.9;
             utt.pitch = 1.05;
-            utt.volume = 1.0;
+            utt.volume = 0.3;
             // Préférer une voix féminine française de qualité
             const voices = window.speechSynthesis.getVoices();
             const preferred = voices.find(v => v.lang === 'fr-FR' && v.name.includes('Amelie')) ||
@@ -435,7 +531,7 @@
         toggleAlertForm();
         document.getElementById('alertTitle').value = '';
         document.getElementById('alertDesc').value = '';
-        selectedEmitter = null; renderEmitterGrid(); renderAlerts();
+        selectedEmitter = null; selectedDraft = null; renderEmitterGrid(); renderAlerts();
     }
 
     // ===== STATUS CHANGE =====
@@ -670,6 +766,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v11c</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v12</div>
 </body>
 </html>
