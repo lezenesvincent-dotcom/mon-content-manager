@@ -196,6 +196,8 @@
     <script>
     const WS_URL = 'wss://ecamm-overlay-server.onrender.com';
     const API_URL = 'https://ecamm-overlay-server.onrender.com';
+    const PROXY_URL = 'https://script.google.com/macros/s/AKfycbzjO0-wHGd-uIIJhnpmBAVQxIruHnQUpnvFpsrEqAsSDkerG8z0Cp47HYgojMHlOG9pFQ/exec';
+    var useProxy = false;
     let ws = null;
     let alerts = [];
     let contacts = [];
@@ -744,21 +746,25 @@
             wsFailCount++;
             document.getElementById('syncDot').classList.add('offline');
             document.getElementById('syncText').textContent = 'Déconnecté';
-            if (wsFailCount >= 3) { startProxyPolling(); } else { setTimeout(connectWS, 3000); }
+            if (wsFailCount >= 1) { startProxyPolling(); } else { setTimeout(connectWS, 3000); }
         };
         ws.onerror = () => { ws.close(); };
     }
 
     function loadFromServer() {
-        fetch(API_URL + '/api/studio-alerts').then(r => { if (!r.ok) throw new Error('fail'); return r.json(); }).then(data => {
-            if (Array.isArray(data) && data.length > 0) { alerts = data; saveAlerts(); renderAlerts(); }
-        }).catch(() => {
-            // Fallback proxy Google
-            useProxy = true;
-            fetch(PROXY_URL + '?action=get').then(r => r.json()).then(data => {
-                if (Array.isArray(data) && data.length > 0) { alerts = data; saveAlerts(); renderAlerts(); }
+        var loaded = false;
+        // Essayer Render
+        fetch(API_URL + '/api/studio-alerts', { signal: AbortSignal.timeout(4000) })
+            .then(r => { if (!r.ok) throw new Error('fail'); return r.json(); })
+            .then(data => {
+                if (!loaded && Array.isArray(data) && data.length > 0) { loaded = true; alerts = data; saveAlerts(); renderAlerts(); }
             }).catch(() => {});
-        });
+        // Essayer Proxy en parallèle (pour PC EI)
+        fetch(PROXY_URL + '?action=sync')
+            .then(r => r.json())
+            .then(data => {
+                if (!loaded && Array.isArray(data) && data.length > 0) { loaded = true; useProxy = true; alerts = data; saveAlerts(); renderAlerts(); }
+            }).catch(() => {});
     }
 
     // ===== INIT =====
@@ -766,6 +772,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v12</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v12b</div>
 </body>
 </html>
