@@ -704,6 +704,9 @@
     }
 
     function showBanner(title, msg) {
+        // Ne pas sonner si cette machine est l'émettrice (flag < 15s)
+        var emitTime = parseInt(localStorage.getItem('alertEmitter') || '0');
+        if (Date.now() - emitTime < 15000) return;
         createAlertBanner();
         document.getElementById('alertBannerMsg').textContent = (title || 'Nouvelle alerte') + (msg ? ' \u2014 ' + msg : '');
         alertBanner.style.display = 'flex';

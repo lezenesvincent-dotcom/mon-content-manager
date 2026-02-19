@@ -429,6 +429,8 @@
         };
         alerts.unshift(a);
         saveAlerts(); broadcastAlert(a);
+        // Marquer cette machine comme émettrice pour 15 secondes
+        localStorage.setItem('alertEmitter', Date.now().toString());
         // PAS de sonnerie sur le poste émetteur — seules les machines réceptrices sonnent
         toggleAlertForm();
         document.getElementById('alertTitle').value = '';
@@ -629,8 +631,9 @@
                     if (!alerts.find(a => a.id === msg.data.id)) {
                         alerts.unshift(msg.data);
                         saveAlerts(); renderAlerts();
-                        // Start alarm on ALL pages receiving the alert
-                        if (msg.data.status === 'sent') startAlarm();
+                        // Start alarm sauf si cette machine est l'émettrice
+                        var emitTime = parseInt(localStorage.getItem('alertEmitter') || '0');
+                        if (msg.data.status === 'sent' && (Date.now() - emitTime > 15000)) startAlarm();
                     }
                 }
                 if (msg.type === 'studio-alert-update') {
