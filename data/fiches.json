@@ -138,6 +138,7 @@
     "prepDuration": 30,
     "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
     "titreSynthe": "",
+    "commentaires": "",
     "toggles": {
       "diffIBM": true,
       "replay": true,
@@ -153,6 +154,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-19T13:54:56.322Z"
+    "updatedAt": "2026-02-19T13:58:06.576Z"
   }
 }
