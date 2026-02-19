@@ -126,5 +126,33 @@
     "intervenants": [],
     "mode": "studio",
     "updatedAt": "2026-02-19T10:28:32.681Z"
+  },
+  "1771509224032": {
+    "id": "1771509224032",
+    "titre": "",
+    "date": "",
+    "entite": "",
+    "contact": "",
+    "heureDirect": "13:00",
+    "heurePrep": "12:30",
+    "prepDuration": 30,
+    "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "titreSynthe": "Facture électronqiue obligatoire : Comment le CIC facilite ",
+    "toggles": {
+      "diffIBM": true,
+      "replay": true,
+      "chat": true,
+      "qr": false,
+      "masquerQR": false,
+      "synthes": true,
+      "diffGen": true,
+      "fournisGen": true,
+      "studioGen": false,
+      "visite": true
+    },
+    "application": null,
+    "intervenants": [],
+    "mode": "studio",
+    "updatedAt": "2026-02-19T13:54:42.237Z"
   }
 }
