@@ -6,139 +6,844 @@
     <title>Contact Studio</title>
     <!-- deploy: 2026-02-16 18:30:00 -->
     <style>
-        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif !important}
-        html,body,div,span,p,a,h1,h2,h3,h4,h5,h6,input,select,textarea,button,option,label,table,tr,td,th{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif !important}
-        body{background:#0a0c14;color:#fff;min-height:100vh;overflow-x:hidden}
+    *, * ::before, * ::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif !important
+    }
 
-        .album-bg{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;overflow:hidden;background:linear-gradient(135deg,#1a1028 0%,#2a1838 30%,#1c2a3a 60%,#1a1028 100%)}
-        .album-bg .cover{position:absolute;top:-20%;left:-20%;right:-20%;bottom:-20%;background-size:cover;background-position:center;filter:blur(80px) saturate(1.8) brightness(0.45);transition:opacity 2s;opacity:0}
-        .album-bg .cover.active{opacity:1}
-        .album-bg::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.25);z-index:1}
+    html, body, div, span, p, a, h1, h2, h3, h4, h5, h6, input, select, textarea, button, option, label, table, tr, td, th {
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif !important
+    }
 
-        .layout{display:flex;gap:14px;max-width:1440px;margin:0 auto;padding:10px 14px;position:relative;z-index:2;height:100vh}
+    body {
+        background: #0a0c14;
+        color: #fff;
+        min-height: 100vh;
+        overflow-x: hidden
+    }
 
-        /* LEFT SIDEBAR */
-        .sidebar{width:370px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent}
-        .sidebar::-webkit-scrollbar{width:4px}
-        .sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
+    .album-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+        overflow: hidden;
+        background: linear-gradient(135deg, #1a1028 0%, #2a1838 30%, #1c2a3a 60%, #1a1028 100%)
+    }
 
-        .panel{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:12px;backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px)}
-        .panel-hero{display:flex;align-items:center;gap:10px;padding:2px}
-        .hero-icon{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center}
-        .hero-icon svg{width:18px;height:18px;stroke:rgba(255,255,255,0.5);fill:none;stroke-width:1.5}
-        .hero-text{font-size:16px;font-weight:800;letter-spacing:-0.3px}
+    .album-bg .cover {
+        position: absolute;
+        top: -20%;
+        left: -20%;
+        right: -20%;
+        bottom: -20%;
+        background-size: cover;
+        background-position: center;
+        filter: blur(80px) saturate(1.8) brightness(0.45);
+        transition: opacity 2s;
+        opacity: 0
+    }
 
-        .section-title{font-size:9px;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:1px;text-transform:uppercase;margin:6px 0 4px}
-        .field{margin-bottom:5px}
-        .field label{display:block;font-size:8px;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px}
-        .field input,.field select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:7px 10px;color:#fff;font-size:12px;font-weight:500;outline:none;-webkit-appearance:none;-moz-appearance:none;appearance:none}
-        .field input:focus,.field select:focus{border-color:rgba(0,140,255,0.4)}
-        .field input::placeholder{color:rgba(255,255,255,0.15)}
-        .field select option{background:#1a1c28}
+    .album-bg .cover.active {
+        opacity: 1
+    }
 
-        .row-2{display:flex;gap:5px}
-        .row-2 .field{flex:1}
+    .album-bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.25);
+        z-index: 1
+    }
 
-        .toggle-row{display:flex;align-items:center;gap:6px;padding:3px 0}
-        .toggle-label-text{font-size:11px;font-weight:600;color:rgba(255,255,255,0.75);flex:1}
-        .toggle-switch{width:32px;height:18px;border-radius:9px;background:rgba(255,255,255,0.1);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0}
-        .toggle-switch.active{background:#0070f3}
-        .toggle-switch::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform 0.2s}
-        .toggle-switch.active::after{transform:translateX(14px)}
+    .layout {
+        display: flex;
+        gap: 14px;
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        position: relative;
+        z-index: 2;
+        height: 100vh
+    }/* LEFT SIDEBAR */
 
-        .sep{height:1px;background:rgba(255,255,255,0.04);margin:4px 0}
+    .sidebar {
+        width: 370px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow-y: auto;
+        padding-right: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent
+    }
 
-        .prep-row{display:flex;align-items:center;gap:4px;margin-top:3px}
-        .prep-btn{padding:3px 7px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.4);font-size:9px;font-weight:600;cursor:pointer}
-        .prep-btn.active{background:rgba(0,140,255,0.15);border-color:rgba(0,140,255,0.3);color:#4da8ff}
-        .prep-info{font-size:9px;color:rgba(255,255,255,0.6);margin-left:auto}
+    .sidebar::-webkit-scrollbar {
+        width: 4px
+    }
 
-        .radio-pills{display:flex;gap:3px}
-        .radio-pill{padding:4px 10px;border-radius:7px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.4);font-size:10px;font-weight:600;cursor:pointer}
-        .radio-pill.active{background:rgba(0,140,255,0.15);border-color:rgba(0,140,255,0.3);color:#4da8ff}
+    .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px
+    }
 
-        .mode-row{display:flex;gap:5px}
-        .mode-card{flex:1;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);cursor:pointer;text-align:center}
-        .mode-card.active{border-color:rgba(0,140,255,0.3)}
-        .mode-card-title{font-size:10px;font-weight:700;margin-bottom:2px}
-        .mode-desc{font-size:7px;color:rgba(255,255,255,0.45);line-height:1.4}
-        .mode-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.1);display:inline-block;margin-bottom:3px}
-        .mode-card.active .mode-dot{background:#0070f3}
+    .panel {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 14px;
+        padding: 12px;
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px)
+    }
 
-        .interv-row{display:flex;gap:3px;margin-bottom:3px}
-        .interv-row input{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:4px 6px;color:#fff;font-size:10px;outline:none}
-        .interv-row input:focus{border-color:rgba(0,140,255,0.3)}
-        .interv-row input::placeholder{color:rgba(255,255,255,0.15)}
-        .interv-num{width:14px;font-size:8px;font-weight:700;color:rgba(0,140,255,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-        .add-interv{font-size:9px;color:#4da8ff;cursor:pointer;text-align:center;padding:3px;background:none;border:none}
+    .panel-hero {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 2px
+    }
 
-        /* RIGHT MAIN AREA */
-        .main-area{flex:1;display:flex;flex-direction:column;gap:8px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent}
-        .main-area::-webkit-scrollbar{width:4px}
-        .main-area::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
+    .hero-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center
+    }
 
-        .summary-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;backdrop-filter:blur(40px)}
-        .summary-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:2px;min-height:28px}
-        .summary-date{font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:10px}
-        .summary-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-        .summary-item{background:rgba(255,255,255,0.04);border-radius:10px;padding:8px 10px}
-        .summary-item-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.4px}
-        .summary-item-value{font-size:12px;font-weight:600;margin-top:1px}
+    .hero-icon svg {
+        width: 18px;
+        height: 18px;
+        stroke: rgba(255, 255, 255, 0.5);
+        fill: none;
+        stroke-width: 1.5
+    }
 
-        .ibm-preview{border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);margin-top:10px}
-        .ibm-preview img{width:100%;display:block}
-        .ibm-preview-label{font-size:9px;color:rgba(255,255,255,0.5);text-align:center;padding:5px;background:rgba(0,0,0,0.3)}
+    .hero-text {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.3px
+    }
 
-        .upload-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:12px;backdrop-filter:blur(40px)}
-        .upload-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-        .upload-slot{border:1px dashed rgba(255,255,255,0.08);border-radius:8px;aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:border-color 0.2s}
-        .upload-slot:hover{border-color:rgba(0,140,255,0.3)}
-        .upload-slot.has-file{border-style:solid;border-color:rgba(0,140,255,0.4)}
-        .upload-slot input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2}
-        .upload-slot-icon{font-size:18px;opacity:0.3}
-        .upload-slot-label{font-size:7px;font-weight:700;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.3px;margin-top:3px}
-        .upload-slot-thumb{position:absolute;inset:0;z-index:1}
-        .upload-slot-thumb img{width:100%;height:100%;object-fit:cover;border-radius:9px}
-        .upload-slot-name{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);padding:2px 5px;font-size:7px;font-weight:600;color:#fff;z-index:3;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
-        .upload-slot-dl{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:5px;background:rgba(0,140,255,0.8);display:none;align-items:center;justify-content:center;z-index:4;cursor:pointer}
-        .upload-slot.has-file .upload-slot-dl{display:flex}
-        .upload-slot-dl svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-width:2}
+    .section-title {
+        font-size: 9px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.55);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin: 6px 0 4px
+    }
 
-        .download-row{display:flex;gap:6px;margin-top:8px}
-        .download-item{flex:1;padding:8px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);text-align:center;cursor:pointer;transition:border-color 0.2s}
-        .download-item:hover{border-color:rgba(0,140,255,0.2)}
-        .download-item-icon{font-size:16px;margin-bottom:3px}
-        .download-item-label{font-size:8px;font-weight:600;color:rgba(255,255,255,0.6)}
+    .field {
+        margin-bottom: 5px
+    }
 
-        .btn-submit{width:100%;padding:12px;background:linear-gradient(135deg,#0070f3,#0050c8);border:none;border-radius:12px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(0,112,243,0.25);transition:all 0.2s}
-        .btn-submit:hover{box-shadow:0 6px 28px rgba(0,112,243,0.35);transform:translateY(-1px)}
-        .btn-submit svg{width:16px;height:16px;fill:#fff}
+    .field label {
+        display: block;
+        font-size: 8px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.55);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 2px
+    }
 
-        .footer-info{font-size:9px;color:rgba(255,255,255,0.4);text-align:center;padding:6px}
-        .footer-info strong{color:rgba(255,255,255,0.7)}
+    .field input, .field select {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 7px 10px;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        outline: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none
+    }
 
-        .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:rgba(30,33,48,0.95);color:#fff;padding:10px 24px;border-radius:10px;font-size:12px;font-weight:600;border:1px solid rgba(0,140,255,0.2);z-index:200;opacity:0;transition:all 0.25s;backdrop-filter:blur(20px)}
-        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .field input:focus, .field select:focus {
+        border-color: rgba(0, 140, 255, 0.4)
+    }
 
-        /* iOS Time Picker */
-        .tp-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:200;display:flex;align-items:center;justify-content:center}
-        .tp-container{background:rgba(44,44,46,0.98);border-radius:20px;width:280px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.5)}
-        .tp-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
-        .tp-cancel{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-        .tp-done{width:36px;height:36px;border-radius:50%;background:#0070f3;border:none;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center}
-        .tp-title{font-size:15px;font-weight:bold;color:#fff}
-        .tp-wheels{display:flex;align-items:center;justify-content:center;height:210px;position:relative;overflow:hidden;padding:0 20px;z-index:1}
-        .tp-wheel{height:210px;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;width:90px;text-align:center;scrollbar-width:none;-ms-overflow-style:none}
-        .tp-wheel::-webkit-scrollbar{display:none}
-        .tp-wheel-item{height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:300;color:rgba(255,255,255,0.25);scroll-snap-align:center;transition:all 0.15s}
-        .tp-wheel-item.active{font-size:28px;font-weight:600;color:#fff}
-        .tp-separator{font-size:28px;font-weight:bold;color:#fff;padding:0 6px}
-        .tp-selection-bar{position:absolute;left:16px;right:16px;top:50%;transform:translateY(-50%);height:42px;background:rgba(120,120,128,0.24);border-radius:12px;pointer-events:none;z-index:0}
-        .time-display{display:inline-flex;align-items:center;justify-content:center;padding:7px 16px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);transition:background 0.15s}
-        .time-display:hover{background:rgba(255,255,255,0.08)}
+    .field input::placeholder {
+        color: rgba(255, 255, 255, 0.15)
+    }
 
-        .nav-back{display:inline-flex;align-items:center;gap:4px;color:#4da8ff;text-decoration:none;font-size:10px;font-weight:600;padding:5px 10px;background:rgba(0,140,255,0.08);border:1px solid rgba(0,140,255,0.15);border-radius:8px}
-        .nav-back:hover{background:rgba(0,140,255,0.12)}
+    .field select option {
+        background: #1a1c28
+    }
+
+    .row-2 {
+        display: flex;
+        gap: 5px
+    }
+
+    .row-2 .field {
+        flex: 1
+    }
+
+    .toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 0
+    }
+
+    .toggle-label-text {
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.75);
+        flex: 1
+    }
+
+    .toggle-switch {
+        width: 32px;
+        height: 18px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+        position: relative;
+        transition: background 0.2s;
+        flex-shrink: 0
+    }
+
+    .toggle-switch.active {
+        background: #0070f3
+    }
+
+    .toggle-switch::after {
+        content: '';
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #fff;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.2s
+    }
+
+    .toggle-switch.active::after {
+        transform: translateX(14px)
+    }
+
+    .sep {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.04);
+        margin: 4px 0
+    }
+
+    .prep-row {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 3px
+    }
+
+    .prep-btn {
+        padding: 3px 7px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 9px;
+        font-weight: 600;
+        cursor: pointer
+    }
+
+    .prep-btn.active {
+        background: rgba(0, 140, 255, 0.15);
+        border-color: rgba(0, 140, 255, 0.3);
+        color: #4da8ff
+    }
+
+    .prep-info {
+        font-size: 9px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-left: auto
+    }
+
+    .radio-pills {
+        display: flex;
+        gap: 3px
+    }
+
+    .radio-pill {
+        padding: 4px 10px;
+        border-radius: 7px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer
+    }
+
+    .radio-pill.active {
+        background: rgba(0, 140, 255, 0.15);
+        border-color: rgba(0, 140, 255, 0.3);
+        color: #4da8ff
+    }
+
+    .mode-row {
+        display: flex;
+        gap: 5px
+    }
+
+    .mode-card {
+        flex: 1;
+        padding: 8px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.03);
+        cursor: pointer;
+        text-align: center
+    }
+
+    .mode-card.active {
+        border-color: rgba(0, 140, 255, 0.3)
+    }
+
+    .mode-card-title {
+        font-size: 10px;
+        font-weight: 700;
+        margin-bottom: 2px
+    }
+
+    .mode-desc {
+        font-size: 7px;
+        color: rgba(255, 255, 255, 0.45);
+        line-height: 1.4
+    }
+
+    .mode-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: inline-block;
+        margin-bottom: 3px
+    }
+
+    .mode-card.active .mode-dot {
+        background: #0070f3
+    }
+
+    .interv-row {
+        display: flex;
+        gap: 3px;
+        margin-bottom: 3px
+    }
+
+    .interv-row input {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 5px;
+        padding: 4px 6px;
+        color: #fff;
+        font-size: 10px;
+        outline: none
+    }
+
+    .interv-row input:focus {
+        border-color: rgba(0, 140, 255, 0.3)
+    }
+
+    .interv-row input::placeholder {
+        color: rgba(255, 255, 255, 0.15)
+    }
+
+    .interv-num {
+        width: 14px;
+        font-size: 8px;
+        font-weight: 700;
+        color: rgba(0, 140, 255, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0
+    }
+
+    .add-interv {
+        font-size: 9px;
+        color: #4da8ff;
+        cursor: pointer;
+        text-align: center;
+        padding: 3px;
+        background: none;
+        border: none
+    }/* RIGHT MAIN AREA */
+
+    .main-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent
+    }
+
+    .main-area::-webkit-scrollbar {
+        width: 4px
+    }
+
+    .main-area::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px
+    }
+
+    .summary-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 18px;
+        backdrop-filter: blur(40px)
+    }
+
+    .summary-title {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 2px;
+        min-height: 28px
+    }
+
+    .summary-date {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 10px
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px
+    }
+
+    .summary-item {
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 10px;
+        padding: 8px 10px
+    }
+
+    .summary-item-label {
+        font-size: 8px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.55);
+        text-transform: uppercase;
+        letter-spacing: 0.4px
+    }
+
+    .summary-item-value {
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 1px
+    }
+
+    .ibm-preview {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        margin-top: 10px
+    }
+
+    .ibm-preview img {
+        width: 100%;
+        display: block
+    }
+
+    .ibm-preview-label {
+        font-size: 9px;
+        color: rgba(255, 255, 255, 0.5);
+        text-align: center;
+        padding: 5px;
+        background: rgba(0, 0, 0, 0.3)
+    }
+
+    .upload-panel {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 12px;
+        backdrop-filter: blur(40px)
+    }
+
+    .upload-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px
+    }
+
+    .upload-slot {
+        border: 1px dashed rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        aspect-ratio: 4/3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.2s
+    }
+
+    .upload-slot:hover {
+        border-color: rgba(0, 140, 255, 0.3)
+    }
+
+    .upload-slot.has-file {
+        border-style: solid;
+        border-color: rgba(0, 140, 255, 0.4)
+    }
+
+    .upload-slot input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 2
+    }
+
+    .upload-slot-icon {
+        font-size: 18px;
+        opacity: 0.3
+    }
+
+    .upload-slot-label {
+        font-size: 7px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.55);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-top: 3px
+    }
+
+    .upload-slot-thumb {
+        position: absolute;
+        inset: 0;
+        z-index: 1
+    }
+
+    .upload-slot-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 9px
+    }
+
+    .upload-slot-name {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 2px 5px;
+        font-size: 7px;
+        font-weight: 600;
+        color: #fff;
+        z-index: 3;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap
+    }
+
+    .upload-slot-dl {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 5px;
+        background: rgba(0, 140, 255, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 4;
+        cursor: pointer
+    }
+
+    .upload-slot.has-file .upload-slot-dl {
+        display: flex
+    }
+
+    .upload-slot-dl svg {
+        width: 10px;
+        height: 10px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2
+    }
+
+    .download-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px
+    }
+
+    .download-item {
+        flex: 1;
+        padding: 8px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s
+    }
+
+    .download-item:hover {
+        border-color: rgba(0, 140, 255, 0.2)
+    }
+
+    .download-item-icon {
+        font-size: 16px;
+        margin-bottom: 3px
+    }
+
+    .download-item-label {
+        font-size: 8px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.6)
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #0070f3, #0050c8);
+        border: none;
+        border-radius: 12px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 20px rgba(0, 112, 243, 0.25);
+        transition: all 0.2s
+    }
+
+    .btn-submit:hover {
+        box-shadow: 0 6px 28px rgba(0, 112, 243, 0.35);
+        transform: translateY(-1px)
+    }
+
+    .btn-submit svg {
+        width: 16px;
+        height: 16px;
+        fill: #fff
+    }
+
+    .footer-info {
+        font-size: 9px;
+        color: rgba(255, 255, 255, 0.4);
+        text-align: center;
+        padding: 6px
+    }
+
+    .footer-info strong {
+        color: rgba(255, 255, 255, 0.7)
+    }
+
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(60px);
+        background: rgba(30, 33, 48, 0.95);
+        color: #fff;
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid rgba(0, 140, 255, 0.2);
+        z-index: 200;
+        opacity: 0;
+        transition: all 0.25s;
+        backdrop-filter: blur(20px)
+    }
+
+    .toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1
+    }/* iOS Time Picker */
+
+    .tp-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center
+    }
+
+    .tp-container {
+        background: rgba(44, 44, 46, 0.98);
+        border-radius: 20px;
+        width: 280px;
+        overflow: hidden;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5)
+    }
+
+    .tp-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px
+    }
+
+    .tp-cancel {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center
+    }
+
+    .tp-done {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #0070f3;
+        border: none;
+        color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center
+    }
+
+    .tp-title {
+        font-size: 15px;
+        font-weight: bold;
+        color: #fff
+    }
+
+    .tp-wheels {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 210px;
+        position: relative;
+        overflow: hidden;
+        padding: 0 20px;
+        z-index: 1
+    }
+
+    .tp-wheel {
+        height: 210px;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+        -webkit-overflow-scrolling: touch;
+        width: 90px;
+        text-align: center;
+        scrollbar-width: none;
+        -ms-overflow-style: none
+    }
+
+    .tp-wheel::-webkit-scrollbar {
+        display: none
+    }
+
+    .tp-wheel-item {
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.25);
+        scroll-snap-align: center;
+        transition: all 0.15s
+    }
+
+    .tp-wheel-item.active {
+        font-size: 28px;
+        font-weight: 600;
+        color: #fff
+    }
+
+    .tp-separator {
+        font-size: 28px;
+        font-weight: bold;
+        color: #fff;
+        padding: 0 6px
+    }
+
+    .tp-selection-bar {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 42px;
+        background: rgba(120, 120, 128, 0.24);
+        border-radius: 12px;
+        pointer-events: none;
+        z-index: 0
+    }
+
+    .time-display {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 16px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        cursor: pointer;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: background 0.15s
+    }
+
+    .time-display:hover {
+        background: rgba(255, 255, 255, 0.08)
+    }
+
+    .nav-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: #4da8ff;
+        text-decoration: none;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 5px 10px;
+        background: rgba(0, 140, 255, 0.08);
+        border: 1px solid rgba(0, 140, 255, 0.15);
+        border-radius: 8px
+    }
+
+    .nav-back:hover {
+        background: rgba(0, 140, 255, 0.12)
+    }
     </style>
 </head>
 <body>
@@ -148,20 +853,40 @@
         <div class="sidebar">
             <div class="panel">
                 <div class="panel-hero">
-                    <div class="hero-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+                    <div class="hero-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 8v4l3 3"/>
+                        </svg>
+                    </div>
                     <div class="hero-text">Contact Studio</div>
                     <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
-                        <button class="btn-submit" onclick="transmettreParMail()" style="width:auto;padding:6px 14px;font-size:11px;border-radius:8px;box-shadow:none"><svg viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> Transmettre</button>
+                        <button class="btn-submit" onclick="transmettreParMail()" style="width:auto;padding:6px 14px;font-size:11px;border-radius:8px;box-shadow:none">
+                            <svg viewBox="0 0 24 24" style="width:13px;height:13px">
+                                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                             Transmettre
+                        </button>
                         <a href="#" class="nav-back" onclick="saveAndGo('prestation.html');return false;">← Accueil</a>
                     </div>
                 </div>
             </div>
             <div class="panel">
                 <div class="section-title">Événement</div>
-                <div class="field"><input type="text" id="titreEvent" placeholder="Titre de l'événement" spellcheck="false" autofocus></div>
+                <div class="field">
+                    <input type="text" id="titreEvent" placeholder="Titre de l'événement" spellcheck="false" autofocus>
+                </div>
                 <div class="row-2">
-                    <div class="field"><label>Date</label><input type="date" id="dateEvent"></div>
-                    <div class="field"><label>Heure direct</label><div class="time-display" onclick="openTimePicker()"><span id="heureDirect">13:00</span></div></div>
+                    <div class="field">
+                        <label>Date</label>
+                        <input type="date" id="dateEvent">
+                    </div>
+                    <div class="field">
+                        <label>Heure direct</label>
+                        <div class="time-display" onclick="openTimePicker()">
+                            <span id="heureDirect">13:00</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="prep-row">
                     <span style="font-size:9px;color:rgba(255,255,255,0.4)">Prépa</span>
@@ -172,43 +897,74 @@
                     <span class="prep-info" id="heurePrepDisplay">prépa 12:30</span>
                 </div>
                 <div class="sep"></div>
-                <div class="field"><label>Entité groupe</label><input type="text" id="entiteGroupe" placeholder="Ex: CIC Market Solutions" spellcheck="false"></div>
-                <div class="field"><label>Contact</label><input type="text" id="contactField" placeholder="Nom du contact" spellcheck="false"></div>
+                <div class="field">
+                    <label>Entité groupe</label>
+                    <input type="text" id="entiteGroupe" placeholder="Ex: CIC Market Solutions" spellcheck="false">
+                </div>
+                <div class="field">
+                    <label>Contact</label>
+                    <input type="text" id="contactField" placeholder="Nom du contact" spellcheck="false">
+                </div>
             </div>
             <div class="panel">
                 <div class="section-title">Diffusion</div>
-                <div class="toggle-row"><span class="toggle-label-text">Diffusion IBM</span><div class="toggle-switch active" data-field="diffIBM" onclick="toggleSwitch(this)"></div></div>
-                <div class="field"><label>Chaîne</label><select id="ibmChaine" onchange="onChaineSelect(this)">
-                    <option value="">Chaîne...</option>
-                    <option value="https://video.ibm.com/channel/dhWaG6DN5VF" selected>Solutions de marchés CIC</option>
-                    <option value="https://video.ibm.com/channel/6JAvvSqAWfG">Crédit Mutuel Alliance Fédérale</option>
-                    <option value="https://video.ibm.com/channel/wgYXBRG5D89">Ligne métier communication</option>
-                    <option value="https://video.ibm.com/channel/U9p5hKnPQzr">Cap Compétences</option>
-                    <option value="https://video.ibm.com/channel/QqqjDP8aRSK">CIC Banque Privée</option>
-                    <option value="https://video.ibm.com/channel/2mxWDJXfN3g">Banque Européenne du Crédit Mutuel</option>
-                    <option value="https://video.ibm.com/channel/VaknyevYmxQ">Banque Transatlantique</option>
-                    <option value="https://video.ibm.com/channel/rPQcjnAqWnm">Banque Transatlantique interne</option>
-                    <option value="https://video.ibm.com/channel/eez4Cj2bKy4">Banque Fédérative Crédit Mutuel</option>
-                    <option value="https://video.ibm.com/channel/cEEeVMhM53F">CIC</option>
-                    <option value="https://video.ibm.com/channel/Rv4G7ByxQnq">CIC Corporate</option>
-                    <option value="https://video.ibm.com/channel/jtBTPeTtRYb">CIC Île-de-France</option>
-                    <option value="https://video.ibm.com/channel/MEXuyQAKeeT">Crédit Mutuel Asset Management</option>
-                    <option value="https://video.ibm.com/channel/vhaQCJkLZMj">Crédit Mutuel Elles</option>
-                    <option value="https://video.ibm.com/channel/NffUJ2J2nzd">Crédit Mutuel Épargne Salariale</option>
-                    <option value="https://video.ibm.com/channel/qwhttJ6fQkd">Crédit Mutuel Equity</option>
-                    <option value="https://video.ibm.com/channel/Pb8cPgShAZM">Crédit Mutuel Immobilier</option>
-                    <option value="https://video.ibm.com/channel/yMRGtf6bMFv">Direction Contentieux</option>
-                    <option value="https://video.ibm.com/channel/YDfG86mzFfY">Direction des contentieux</option>
-                    <option value="https://video.ibm.com/channel/qRcUJzudurF">Direction des Ressources Humaines</option>
-                </select></div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Diffusion IBM</span>
+                    <div class="toggle-switch active" data-field="diffIBM" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="field">
+                    <label>Chaîne</label>
+                    <select id="ibmChaine" onchange="onChaineSelect(this)">
+                        <option value="">Chaîne...</option>
+                        <option value="https://video.ibm.com/channel/dhWaG6DN5VF" selected>Solutions de marchés CIC</option>
+                        <option value="https://video.ibm.com/channel/6JAvvSqAWfG">Crédit Mutuel Alliance Fédérale</option>
+                        <option value="https://video.ibm.com/channel/wgYXBRG5D89">Ligne métier communication</option>
+                        <option value="https://video.ibm.com/channel/U9p5hKnPQzr">Cap Compétences</option>
+                        <option value="https://video.ibm.com/channel/QqqjDP8aRSK">CIC Banque Privée</option>
+                        <option value="https://video.ibm.com/channel/2mxWDJXfN3g">Banque Européenne du Crédit Mutuel</option>
+                        <option value="https://video.ibm.com/channel/VaknyevYmxQ">Banque Transatlantique</option>
+                        <option value="https://video.ibm.com/channel/rPQcjnAqWnm">Banque Transatlantique interne</option>
+                        <option value="https://video.ibm.com/channel/eez4Cj2bKy4">Banque Fédérative Crédit Mutuel</option>
+                        <option value="https://video.ibm.com/channel/cEEeVMhM53F">CIC</option>
+                        <option value="https://video.ibm.com/channel/Rv4G7ByxQnq">CIC Corporate</option>
+                        <option value="https://video.ibm.com/channel/jtBTPeTtRYb">CIC Île-de-France</option>
+                        <option value="https://video.ibm.com/channel/MEXuyQAKeeT">Crédit Mutuel Asset Management</option>
+                        <option value="https://video.ibm.com/channel/vhaQCJkLZMj">Crédit Mutuel Elles</option>
+                        <option value="https://video.ibm.com/channel/NffUJ2J2nzd">Crédit Mutuel Épargne Salariale</option>
+                        <option value="https://video.ibm.com/channel/qwhttJ6fQkd">Crédit Mutuel Equity</option>
+                        <option value="https://video.ibm.com/channel/Pb8cPgShAZM">Crédit Mutuel Immobilier</option>
+                        <option value="https://video.ibm.com/channel/yMRGtf6bMFv">Direction Contentieux</option>
+                        <option value="https://video.ibm.com/channel/YDfG86mzFfY">Direction des contentieux</option>
+                        <option value="https://video.ibm.com/channel/qRcUJzudurF">Direction des Ressources Humaines</option>
+                    </select>
+                </div>
                 <div class="sep"></div>
-                <div class="toggle-row"><span class="toggle-label-text">Replay</span><div class="toggle-switch active" data-field="replay" onclick="toggleSwitch(this)"></div></div>
-                <div class="toggle-row"><span class="toggle-label-text">Chat</span><div class="toggle-switch active" data-field="chat" onclick="toggleSwitch(this)"></div></div>
-                <div class="toggle-row"><span class="toggle-label-text">Q&R</span><div class="toggle-switch" data-field="qr" onclick="toggleSwitch(this)"></div></div>
-                <div class="toggle-row"><span class="toggle-label-text">Masquer QR</span><div class="toggle-switch" data-field="masquerQR" onclick="toggleSwitch(this)"></div></div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Replay</span>
+                    <div class="toggle-switch active" data-field="replay" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Chat</span>
+                    <div class="toggle-switch active" data-field="chat" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Q&R</span>
+                    <div class="toggle-switch" data-field="qr" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Masquer QR</span>
+                    <div class="toggle-switch" data-field="masquerQR" onclick="toggleSwitch(this)"></div>
+                </div>
                 <div class="sep"></div>
-                <div class="toggle-row"><span class="toggle-label-text">Synthés</span><div class="toggle-switch active" data-field="synthes" onclick="toggleSwitch(this)"></div></div>
-                <div class="field"><label>Application distante</label>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Synthés</span>
+                    <div class="toggle-switch active" data-field="synthes" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div style="margin-top:3px">
+                    <textarea id="titreSynthe" placeholder="" spellcheck="false" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:7px 10px;color:#fff;font-size:11px;font-weight:400;font-family:inherit;outline:none;resize:none;height:38px;line-height:1.4"></textarea>
+                </div>
+                <div class="field">
+                    <label>Application distante</label>
                     <div class="radio-pills">
                         <div class="radio-pill" onclick="selectApp(this)">ZOOM</div>
                         <div class="radio-pill" onclick="selectApp(this)">WEBEX</div>
@@ -218,16 +974,36 @@
             </div>
             <div class="panel">
                 <div class="section-title">Générique</div>
-                <div class="toggle-row"><span class="toggle-label-text">Diffusion générique</span><div class="toggle-switch active" data-field="diffGen" onclick="toggleSwitch(this)"></div></div>
-                <div class="toggle-row"><span class="toggle-label-text">Je fournis mon générique</span><div class="toggle-switch active" data-field="fournisGen" onclick="toggleSwitch(this)"></div></div>
-                <div class="toggle-row"><span class="toggle-label-text">Le studio fournit</span><div class="toggle-switch" data-field="studioGen" onclick="toggleSwitch(this)"></div></div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Diffusion générique</span>
+                    <div class="toggle-switch active" data-field="diffGen" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Je fournis mon générique</span>
+                    <div class="toggle-switch active" data-field="fournisGen" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Le studio fournit</span>
+                    <div class="toggle-switch" data-field="studioGen" onclick="toggleSwitch(this)"></div>
+                </div>
             </div>
             <div class="panel">
-                <div class="toggle-row"><span class="toggle-label-text">Visite du studio</span><div class="toggle-switch active" data-field="visite" onclick="toggleSwitch(this)"></div></div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Visite du studio</span>
+                    <div class="toggle-switch active" data-field="visite" onclick="toggleSwitch(this)"></div>
+                </div>
                 <div class="section-title" style="margin-top:4px">Mode réalisation</div>
                 <div class="mode-row">
-                    <div class="mode-card active" id="modeStudio" onclick="selectMode('studio')"><div class="mode-dot"></div><div class="mode-card-title">Studio</div><div class="mode-desc">Dynamique, champs/contre-champs</div></div>
-                    <div class="mode-card" id="modeVisio" onclick="selectMode('visio')"><div class="mode-dot"></div><div class="mode-card-title">Visio</div><div class="mode-desc">Plans fixes, caméras limitées</div></div>
+                    <div class="mode-card active" id="modeStudio" onclick="selectMode('studio')">
+                        <div class="mode-dot"></div>
+                        <div class="mode-card-title">Studio</div>
+                        <div class="mode-desc">Dynamique, champs/contre-champs</div>
+                    </div>
+                    <div class="mode-card" id="modeVisio" onclick="selectMode('visio')">
+                        <div class="mode-dot"></div>
+                        <div class="mode-card-title">Visio</div>
+                        <div class="mode-desc">Plans fixes, caméras limitées</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -238,12 +1014,30 @@
                 <div class="summary-title" id="summaryTitle">Titre événement</div>
                 <div class="summary-date" id="summaryDate">—</div>
                 <div class="summary-grid">
-                    <div class="summary-item"><div class="summary-item-label">Heure direct</div><div class="summary-item-value" id="summaryHeure">13:00</div></div>
-                    <div class="summary-item"><div class="summary-item-label">Préparation</div><div class="summary-item-value" id="summaryPrep">12:30</div></div>
-                    <div class="summary-item"><div class="summary-item-label">Entité</div><div class="summary-item-value" id="summaryEntite">—</div></div>
-                    <div class="summary-item"><div class="summary-item-label">Contact</div><div class="summary-item-value" id="summaryContact">—</div></div>
-                    <div class="summary-item"><div class="summary-item-label">Mode</div><div class="summary-item-value" id="summaryMode">Studio</div></div>
-                    <div class="summary-item"><div class="summary-item-label">Application</div><div class="summary-item-value" id="summaryApp">—</div></div>
+                    <div class="summary-item">
+                        <div class="summary-item-label">Heure direct</div>
+                        <div class="summary-item-value" id="summaryHeure">13:00</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-item-label">Préparation</div>
+                        <div class="summary-item-value" id="summaryPrep">12:30</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-item-label">Entité</div>
+                        <div class="summary-item-value" id="summaryEntite">—</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-item-label">Contact</div>
+                        <div class="summary-item-value" id="summaryContact">—</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-item-label">Mode</div>
+                        <div class="summary-item-value" id="summaryMode">Studio</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-item-label">Application</div>
+                        <div class="summary-item-value" id="summaryApp">—</div>
+                    </div>
                 </div>
                 <div class="ibm-preview" id="ibmPreviewWrap">
                     <a id="ibmPreviewLink" href="https://video.ibm.com/channel/dhWaG6DN5VF" target="_blank">
@@ -258,9 +1052,27 @@
                 <div class="section-title">Intervenants synthés</div>
                 <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-bottom:4px">*en période de sous-effectif, ce service peut ne pas être disponible</div>
                 <div id="intervenantsBody">
-                    <div class="interv-row"><span class="interv-num">1</span><input type="text" placeholder="Nom"><input type="text" placeholder="Prénom"><input type="text" placeholder="Fonction"><input type="text" placeholder="Entreprise"></div>
-                    <div class="interv-row"><span class="interv-num">2</span><input type="text" placeholder="Nom"><input type="text" placeholder="Prénom"><input type="text" placeholder="Fonction"><input type="text" placeholder="Entreprise"></div>
-                    <div class="interv-row"><span class="interv-num">3</span><input type="text" placeholder="Nom"><input type="text" placeholder="Prénom"><input type="text" placeholder="Fonction"><input type="text" placeholder="Entreprise"></div>
+                    <div class="interv-row">
+                        <span class="interv-num">1</span>
+                        <input type="text" placeholder="Nom">
+                        <input type="text" placeholder="Prénom">
+                        <input type="text" placeholder="Fonction">
+                        <input type="text" placeholder="Entreprise">
+                    </div>
+                    <div class="interv-row">
+                        <span class="interv-num">2</span>
+                        <input type="text" placeholder="Nom">
+                        <input type="text" placeholder="Prénom">
+                        <input type="text" placeholder="Fonction">
+                        <input type="text" placeholder="Entreprise">
+                    </div>
+                    <div class="interv-row">
+                        <span class="interv-num">3</span>
+                        <input type="text" placeholder="Nom">
+                        <input type="text" placeholder="Prénom">
+                        <input type="text" placeholder="Fonction">
+                        <input type="text" placeholder="Entreprise">
+                    </div>
                 </div>
                 <button class="add-interv" onclick="addRow()">+ Ajouter</button>
             </div>
@@ -268,26 +1080,135 @@
             <div class="upload-panel">
                 <div class="section-title">Contenus uploadés</div>
                 <div class="upload-grid">
-                    <div class="upload-slot" id="up-gen"><div class="upload-slot-icon">📼</div><div class="upload-slot-label">Générique</div><input type="file" onchange="handleUpload(this,'up-gen','Generique')"><div class="upload-slot-thumb"></div><div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-gen')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
-                    <div class="upload-slot" id="up-jingle"><div class="upload-slot-icon">🎵</div><div class="upload-slot-label">Jingle</div><input type="file" onchange="handleUpload(this,'up-jingle','Jingle')"><div class="upload-slot-thumb"></div><div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-jingle')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
-                    <div class="upload-slot" id="up-m1"><div class="upload-slot-icon">🎬</div><div class="upload-slot-label">Magnéto 1</div><input type="file" onchange="handleUpload(this,'up-m1','Magneto1')"><div class="upload-slot-thumb"></div><div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-m1')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
-                    <div class="upload-slot" id="up-m2"><div class="upload-slot-icon">🎬</div><div class="upload-slot-label">Magnéto 2</div><input type="file" onchange="handleUpload(this,'up-m2','Magneto2')"><div class="upload-slot-thumb"></div><div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-m2')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
-                    <div class="upload-slot" id="up-m3"><div class="upload-slot-icon">🎬</div><div class="upload-slot-label">Magnéto 3</div><input type="file" onchange="handleUpload(this,'up-m3','Magneto3')"><div class="upload-slot-thumb"></div><div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-m3')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
-                    <div class="upload-slot" id="up-ppt"><div class="upload-slot-icon">📊</div><div class="upload-slot-label">PPT</div><input type="file" onchange="handleUpload(this,'up-ppt','PPT')"><div class="upload-slot-thumb"></div><div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-ppt')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
-                    <div class="upload-slot" id="up-img"><div class="upload-slot-icon">🖼</div><div class="upload-slot-label">Image</div><input type="file" onchange="handleUpload(this,'up-img','Image')"><div class="upload-slot-thumb"></div><div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-img')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
-                    <div class="upload-slot" id="up-autre"><div class="upload-slot-icon">📁</div><div class="upload-slot-label">Autre</div><input type="file" onchange="handleUpload(this,'up-autre','Autre')"><div class="upload-slot-thumb"></div><div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-autre')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
+                    <div class="upload-slot" id="up-gen">
+                        <div class="upload-slot-icon">📼</div>
+                        <div class="upload-slot-label">Générique</div>
+                        <input type="file" onchange="handleUpload(this,'up-gen','Generique')">
+                        <div class="upload-slot-thumb"></div>
+                        <div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-gen')">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="upload-slot" id="up-jingle">
+                        <div class="upload-slot-icon">🎵</div>
+                        <div class="upload-slot-label">Jingle</div>
+                        <input type="file" onchange="handleUpload(this,'up-jingle','Jingle')">
+                        <div class="upload-slot-thumb"></div>
+                        <div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-jingle')">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="upload-slot" id="up-m1">
+                        <div class="upload-slot-icon">🎬</div>
+                        <div class="upload-slot-label">Magnéto 1</div>
+                        <input type="file" onchange="handleUpload(this,'up-m1','Magneto1')">
+                        <div class="upload-slot-thumb"></div>
+                        <div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-m1')">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="upload-slot" id="up-m2">
+                        <div class="upload-slot-icon">🎬</div>
+                        <div class="upload-slot-label">Magnéto 2</div>
+                        <input type="file" onchange="handleUpload(this,'up-m2','Magneto2')">
+                        <div class="upload-slot-thumb"></div>
+                        <div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-m2')">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="upload-slot" id="up-m3">
+                        <div class="upload-slot-icon">🎬</div>
+                        <div class="upload-slot-label">Magnéto 3</div>
+                        <input type="file" onchange="handleUpload(this,'up-m3','Magneto3')">
+                        <div class="upload-slot-thumb"></div>
+                        <div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-m3')">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="upload-slot" id="up-ppt">
+                        <div class="upload-slot-icon">📊</div>
+                        <div class="upload-slot-label">PPT</div>
+                        <input type="file" onchange="handleUpload(this,'up-ppt','PPT')">
+                        <div class="upload-slot-thumb"></div>
+                        <div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-ppt')">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="upload-slot" id="up-img">
+                        <div class="upload-slot-icon">🖼</div>
+                        <div class="upload-slot-label">Image</div>
+                        <input type="file" onchange="handleUpload(this,'up-img','Image')">
+                        <div class="upload-slot-thumb"></div>
+                        <div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-img')">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="upload-slot" id="up-autre">
+                        <div class="upload-slot-icon">📁</div>
+                        <div class="upload-slot-label">Autre</div>
+                        <input type="file" onchange="handleUpload(this,'up-autre','Autre')">
+                        <div class="upload-slot-thumb"></div>
+                        <div class="upload-slot-dl" onclick="event.stopPropagation();downloadFile('up-autre')">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
                 <div class="download-row">
-                    <div class="download-item"><div class="download-item-icon">📄</div><div class="download-item-label">Modèle générique</div></div>
-                    <div class="download-item"><div class="download-item-icon">📊</div><div class="download-item-label">Modèle PPT</div></div>
+                    <div class="download-item">
+                        <div class="download-item-icon">📄</div>
+                        <div class="download-item-label">Modèle générique</div>
+                    </div>
+                    <div class="download-item">
+                        <div class="download-item-icon">📊</div>
+                        <div class="download-item-label">Modèle PPT</div>
+                    </div>
                 </div>
             </div>
 
             <button class="btn-submit" onclick="transmettreParMail()">
-                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                Transmettre la fiche
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+
+                                Transmettre la fiche
+                            
             </button>
-            <div class="footer-info"><strong>Contact studio : Vincent</strong> — 61 rue Taitbout, 3e étage (Work Café D2) — Arrivée 30min avant le direct</div>
+            <div class="footer-info">
+                <strong>Contact studio : Vincent</strong>
+                 — 61 rue Taitbout, 3e étage (Work Café D2) — Arrivée 30min avant le direct
+            </div>
         </div>
     </div>
     <div id="timePickerOverlay" class="tp-overlay" style="display:none;" onclick="closeTimePicker()">
@@ -308,472 +1229,944 @@
     <div class="toast" id="toast"></div>
 
     <script>
-    var GH_TOKEN=['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(function(s){return s.split('').reverse().join('')}).join('');
-    var GH_REPO='lezenesvincent-dotcom/mon-content-manager';
-    var MAIL_DEST='vincent.lezenes@cic.fr';
-    var urlParams=new URLSearchParams(window.location.search);
-    var FICHE_ID=urlParams.get('fiche')||localStorage.getItem('currentFicheId')||Date.now().toString();
-    localStorage.setItem('currentFicheId',FICHE_ID);
-    var prepDuration=30;var uploadedFiles={};
+    var GH_TOKEN = ['s6Q6VG_phg', '71QRNKGR8m', 'EiaK9FWAqE', 'cWTym0zJLw'].map(function(s) {
+        return s.split('').reverse().join('')
+    }).join('');
+    var GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+    var MAIL_DEST = 'vincent.lezenes@cic.fr';
+    var urlParams = new URLSearchParams(window.location.search);
+    var FICHE_ID = urlParams.get('fiche') || localStorage.getItem('currentFicheId') || Date.now().toString();
+    localStorage.setItem('currentFicheId', FICHE_ID);
+    var prepDuration = 30;
+    var uploadedFiles = {};
 
-    function toggleSwitch(el){el.classList.toggle('active');updateSummary();scheduleAutoSave();}
-    function selectApp(el){document.querySelectorAll('.radio-pill').forEach(function(p){p.classList.remove('active')});el.classList.add('active');updateSummary();scheduleAutoSave();}
-    function selectMode(m){document.getElementById('modeStudio').classList.toggle('active',m==='studio');document.getElementById('modeVisio').classList.toggle('active',m==='visio');updateSummary();scheduleAutoSave();}
-    function selectPrep(min){prepDuration=min;document.querySelectorAll('.prep-btn').forEach(function(b){b.classList.toggle('active',parseInt(b.dataset.prep)===min)});updatePrepDisplay();scheduleAutoSave();}
-    function onChaineSelect(sel){var p=document.getElementById('ibmPreviewImg'),l=document.getElementById('ibmPreviewLink'),lb=document.getElementById('ibmPreviewLabel');if(sel.value){p.src='https://image.thum.io/get/width/900/crop/400/'+sel.value;l.href=sel.value;lb.textContent=sel.options[sel.selectedIndex].text+' — cliquez pour ouvrir';}scheduleAutoSave();}
-
-    var rowCount=3;
-    function addRow(){rowCount++;var d=document.createElement('div');d.className='interv-row';d.innerHTML='<span class="interv-num">'+rowCount+'</span><input type="text" placeholder="Nom"><input type="text" placeholder="Prénom"><input type="text" placeholder="Fonction"><input type="text" placeholder="Entreprise">';document.getElementById('intervenantsBody').appendChild(d);}
-
-    function updatePrepDisplay(){
-        var t=document.getElementById('heureDirect').textContent||'13:00';var p=t.split(':');
-        var h=parseInt(p[0])||13,m=parseInt(p[1])||0;var total=h*60+m-prepDuration;
-        if(total<0)total+=1440;var ph=Math.floor(total/60),pm=total%60;
-        var s=String(ph).padStart(2,'0')+':'+String(pm).padStart(2,'0');
-        document.getElementById('heurePrepDisplay').textContent='prépa '+s;
-        document.getElementById('heurePrepDisplay').dataset.time=s;
+    function toggleSwitch(el) {
+        el.classList.toggle('active');
         updateSummary();
+        scheduleAutoSave();
     }
-
-    function updateSummary(){
-        document.getElementById('summaryTitle').textContent=document.getElementById('titreEvent').value||'Titre événement';
-        var d=document.getElementById('dateEvent').value;
-        if(d){var p=d.split('-');document.getElementById('summaryDate').textContent=p[2]+'/'+p[1]+'/'+p[0];}
-        document.getElementById('summaryHeure').textContent=document.getElementById('heureDirect').textContent||'13:00';
-        document.getElementById('summaryPrep').textContent=document.getElementById('heurePrepDisplay').dataset.time||'12:30';
-        document.getElementById('summaryEntite').textContent=document.getElementById('entiteGroupe').value||'—';
-        document.getElementById('summaryContact').textContent=document.getElementById('contactField').value||'—';
-        document.getElementById('summaryMode').textContent=document.getElementById('modeStudio').classList.contains('active')?'Studio':'Visio';
-        var app=document.querySelector('.radio-pill.active');
-        document.getElementById('summaryApp').textContent=app?app.textContent:'—';
+    function selectApp(el) {
+        document.querySelectorAll('.radio-pill').forEach(function(p) {
+            p.classList.remove('active')
+        });
+        el.classList.add('active');
+        updateSummary();
+        scheduleAutoSave();
     }
-
-    document.addEventListener('input',function(){updateSummary();scheduleAutoSave();});
-
-    // iOS Time Picker
-    var ITEM_H=42,WHEEL_H=210,PAD_ITEMS=Math.round((WHEEL_H/2-ITEM_H/2)/ITEM_H);
-    function openTimePicker(){
-        var current=document.getElementById('heureDirect').textContent;var parts=current.split(':');
-        var h=parseInt(parts[0])||13,m=parseInt(parts[1])||0;
-        var hw=document.getElementById('tpHourWheel'),mw=document.getElementById('tpMinWheel');
-        var hhtml='',mhtml='';
-        for(var p=0;p<PAD_ITEMS;p++)hhtml+='<div class="tp-wheel-item">&nbsp;</div>';
-        for(var i=0;i<24;i++)hhtml+='<div class="tp-wheel-item" data-val="'+i+'">'+String(i).padStart(2,'0')+'</div>';
-        for(var p=0;p<PAD_ITEMS;p++)hhtml+='<div class="tp-wheel-item">&nbsp;</div>';
-        hw.innerHTML=hhtml;
-        for(var p=0;p<PAD_ITEMS;p++)mhtml+='<div class="tp-wheel-item">&nbsp;</div>';
-        for(var i=0;i<60;i+=5)mhtml+='<div class="tp-wheel-item" data-val="'+i+'">'+String(i).padStart(2,'0')+'</div>';
-        for(var p=0;p<PAD_ITEMS;p++)mhtml+='<div class="tp-wheel-item">&nbsp;</div>';
-        mw.innerHTML=mhtml;
-        hw.scrollTop=h*ITEM_H;mw.scrollTop=Math.round(m/5)*ITEM_H;
-        document.getElementById('timePickerOverlay').style.display='flex';
-        setTimeout(function(){snapWheel(hw);snapWheel(mw);setupWheelSnap(hw);setupWheelSnap(mw);},50);
+    function selectMode(m) {
+        document.getElementById('modeStudio').classList.toggle('active', m === 'studio');
+        document.getElementById('modeVisio').classList.toggle('active', m === 'visio');
+        updateSummary();
+        scheduleAutoSave();
     }
-    function snapWheel(w){var idx=Math.round(w.scrollTop/ITEM_H);w.scrollTo({top:idx*ITEM_H,behavior:'smooth'});w.querySelectorAll('.tp-wheel-item[data-val]').forEach(function(it,i){it.classList.toggle('active',i===idx);});}
-    function setupWheelSnap(w){var t=null;w.addEventListener('scroll',function(){var idx=Math.round(w.scrollTop/ITEM_H);w.querySelectorAll('.tp-wheel-item[data-val]').forEach(function(it,i){it.classList.toggle('active',i===idx);});clearTimeout(t);t=setTimeout(function(){snapWheel(w);},80);});}
-    function getWheelVal(id){var w=document.getElementById(id);var idx=Math.round(w.scrollTop/ITEM_H);var items=w.querySelectorAll('.tp-wheel-item[data-val]');return items[idx]?parseInt(items[idx].dataset.val):0;}
-    function confirmTimePicker(){var h=String(getWheelVal('tpHourWheel')).padStart(2,'0'),m=String(getWheelVal('tpMinWheel')).padStart(2,'0');document.getElementById('heureDirect').textContent=h+':'+m;closeTimePicker();updatePrepDisplay();scheduleAutoSave();}
-    function closeTimePicker(){document.getElementById('timePickerOverlay').style.display='none';}
-
-    function handleUpload(input,slotId,label){
-        if(!input.files||!input.files[0])return;
-        var file=input.files[0];var slot=document.getElementById(slotId);
-        slot.classList.add('has-file');
-        uploadedFiles[slotId]={file:file,name:file.name,url:URL.createObjectURL(file)};
-        var thumbDiv=slot.querySelector('.upload-slot-thumb');
-        if(file.type.startsWith('image/')){thumbDiv.innerHTML='<img src="'+uploadedFiles[slotId].url+'">';}
-        else{var ext=file.name.split('.').pop().toUpperCase();thumbDiv.innerHTML='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,140,255,0.1);border-radius:9px;font-size:11px;font-weight:700;color:#4da8ff">'+ext+'</div>';}
-        var nameEl=slot.querySelector('.upload-slot-name');
-        if(!nameEl){nameEl=document.createElement('div');nameEl.className='upload-slot-name';slot.appendChild(nameEl);}
-        nameEl.textContent=file.name;
-        uploadToGitHub(file,slotId,label);
+    function selectPrep(min) {
+        prepDuration = min;
+        document.querySelectorAll('.prep-btn').forEach(function(b) {
+            b.classList.toggle('active', parseInt(b.dataset.prep) === min)
+        });
+        updatePrepDisplay();
+        scheduleAutoSave();
+    }
+    function onChaineSelect(sel) {
+        var p = document.getElementById('ibmPreviewImg'),
+            l = document.getElementById('ibmPreviewLink'),
+            lb = document.getElementById('ibmPreviewLabel');
+        if (sel.value) {
+            p.src = 'https://image.thum.io/get/width/900/crop/400/' + sel.value;
+            l.href = sel.value;
+            lb.textContent = sel.options[sel.selectedIndex].text + ' — cliquez pour ouvrir';
+        }
         scheduleAutoSave();
     }
 
-    async function uploadToGitHub(file,slotId,label){
-        try{
-            showToast('⬆️ Upload '+file.name+'...');
-            var reader=new FileReader();
-            reader.onload=async function(e){
-                var b64=e.target.result.split(',')[1];
-                var path='data/uploads/'+FICHE_ID+'/'+label.toLowerCase()+'-'+file.name.replace(/\s+/g,'_');
-                var apiUrl='https://api.github.com/repos/'+GH_REPO+'/contents/'+path;
-                var sha=null;
-                try{var r=await fetch(apiUrl,{headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'}});if(r.ok){var d=await r.json();sha=d.sha;}}catch(ex){}
-                var body={message:'upload '+label+' - '+file.name,content:b64};
-                if(sha)body.sha=sha;
-                var r2=await fetch(apiUrl,{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},body:JSON.stringify(body)});
-                if(r2.ok){var d2=await r2.json();uploadedFiles[slotId].ghUrl=d2.content.download_url;showToast('✅ '+file.name+' uploadé');}
-                else{showToast('⚠️ Upload échoué ('+file.name+')');}
-            };reader.readAsDataURL(file);
-        }catch(ex){console.error('Upload:',ex);showToast('⚠️ Upload échoué');}
+    var rowCount = 3;
+    function addRow() {
+        rowCount++;
+        var d = document.createElement('div');
+        d.className = 'interv-row';
+        d.innerHTML = '<span class="interv-num">' + rowCount + '</span><input type="text" placeholder="Nom"><input type="text" placeholder="Prénom"><input type="text" placeholder="Fonction"><input type="text" placeholder="Entreprise">';
+        document.getElementById('intervenantsBody').appendChild(d);
     }
 
-    function downloadFile(slotId){
-        var f=uploadedFiles[slotId];if(!f)return;
-        if(f.ghUrl){window.open(f.ghUrl,'_blank');return;}
-        if(f.url){var a=document.createElement('a');a.href=f.url;a.download=f.name;a.click();}
+    function updatePrepDisplay() {
+        var t = document.getElementById('heureDirect').textContent || '13:00';
+        var p = t.split(':');
+        var h = parseInt(p[0]) || 13,
+            m = parseInt(p[1]) || 0;
+        var total = h * 60 + m - prepDuration;
+        if (total < 0)
+            total += 1440;
+        var ph = Math.floor(total / 60),
+            pm = total % 60;
+        var s = String(ph).padStart(2, '0') + ':' + String(pm).padStart(2, '0');
+        document.getElementById('heurePrepDisplay').textContent = 'prépa ' + s;
+        document.getElementById('heurePrepDisplay').dataset.time = s;
+        updateSummary();
     }
 
-    function collectData(){
-        var d={id:FICHE_ID,titre:document.getElementById('titreEvent').value,date:document.getElementById('dateEvent').value,entite:document.getElementById('entiteGroupe').value,contact:document.getElementById('contactField').value,heureDirect:document.getElementById('heureDirect').textContent,heurePrep:document.getElementById('heurePrepDisplay').dataset.time||'12:30',prepDuration:prepDuration,ibmChaine:document.getElementById('ibmChaine').value,toggles:{},application:null,intervenants:[],mode:document.getElementById('modeStudio').classList.contains('active')?'studio':'visio',updatedAt:new Date().toISOString()};
-        document.querySelectorAll('.toggle-switch').forEach(function(t){d.toggles[t.dataset.field]=t.classList.contains('active');});
-        var app=document.querySelector('.radio-pill.active');if(app)d.application=app.textContent;
-        document.querySelectorAll('.interv-row').forEach(function(row){var inputs=row.querySelectorAll('input');var p={};['nom','prenom','fonction','entreprise'].forEach(function(k,i){p[k]=inputs[i]?inputs[i].value:'';});if(Object.values(p).some(function(v){return v.trim()}))d.intervenants.push(p);});
+    function updateSummary() {
+        document.getElementById('summaryTitle').textContent = document.getElementById('titreEvent').value || 'Titre événement';
+        var d = document.getElementById('dateEvent').value;
+        if (d) {
+            var p = d.split('-');
+            document.getElementById('summaryDate').textContent = p[2] + '/' + p[1] + '/' + p[0];
+        }
+        document.getElementById('summaryHeure').textContent = document.getElementById('heureDirect').textContent || '13:00';
+        document.getElementById('summaryPrep').textContent = document.getElementById('heurePrepDisplay').dataset.time || '12:30';
+        document.getElementById('summaryEntite').textContent = document.getElementById('entiteGroupe').value || '—';
+        document.getElementById('summaryContact').textContent = document.getElementById('contactField').value || '—';
+        document.getElementById('summaryMode').textContent = document.getElementById('modeStudio').classList.contains('active') ? 'Studio' : 'Visio';
+        var app = document.querySelector('.radio-pill.active');
+        document.getElementById('summaryApp').textContent = app ? app.textContent : '—';
+    }
+
+    document.addEventListener('input', function() {
+        updateSummary();
+        scheduleAutoSave();
+    });
+
+    // iOS Time Picker
+    var ITEM_H = 42,
+        WHEEL_H = 210,
+        PAD_ITEMS = Math.round((WHEEL_H / 2 - ITEM_H / 2) / ITEM_H);
+    function openTimePicker() {
+        var current = document.getElementById('heureDirect').textContent;
+        var parts = current.split(':');
+        var h = parseInt(parts[0]) || 13,
+            m = parseInt(parts[1]) || 0;
+        var hw = document.getElementById('tpHourWheel'),
+            mw = document.getElementById('tpMinWheel');
+        var hhtml = '',
+            mhtml = '';
+        for (var p = 0; p < PAD_ITEMS; p++)
+            hhtml += '<div class="tp-wheel-item">&nbsp;</div>';
+        for (var i = 0; i < 24; i++)
+            hhtml += '<div class="tp-wheel-item" data-val="' + i + '">' + String(i).padStart(2, '0') + '</div>';
+        for (var p = 0; p < PAD_ITEMS; p++)
+            hhtml += '<div class="tp-wheel-item">&nbsp;</div>';
+        hw.innerHTML = hhtml;
+        for (var p = 0; p < PAD_ITEMS; p++)
+            mhtml += '<div class="tp-wheel-item">&nbsp;</div>';
+        for (var i = 0; i < 60; i += 5)
+            mhtml += '<div class="tp-wheel-item" data-val="' + i + '">' + String(i).padStart(2, '0') + '</div>';
+        for (var p = 0; p < PAD_ITEMS; p++)
+            mhtml += '<div class="tp-wheel-item">&nbsp;</div>';
+        mw.innerHTML = mhtml;
+        hw.scrollTop = h * ITEM_H;
+        mw.scrollTop = Math.round(m / 5) * ITEM_H;
+        document.getElementById('timePickerOverlay').style.display = 'flex';
+        setTimeout(function() {
+            snapWheel(hw);
+            snapWheel(mw);
+            setupWheelSnap(hw);
+            setupWheelSnap(mw);
+        }, 50);
+    }
+    function snapWheel(w) {
+        var idx = Math.round(w.scrollTop / ITEM_H);
+        w.scrollTo({
+            top: idx * ITEM_H,
+            behavior: 'smooth'
+        });
+        w.querySelectorAll('.tp-wheel-item[data-val]').forEach(function(it, i) {
+            it.classList.toggle('active', i === idx);
+        });
+    }
+    function setupWheelSnap(w) {
+        var t = null;
+        w.addEventListener('scroll', function() {
+            var idx = Math.round(w.scrollTop / ITEM_H);
+            w.querySelectorAll('.tp-wheel-item[data-val]').forEach(function(it, i) {
+                it.classList.toggle('active', i === idx);
+            });
+            clearTimeout(t);
+            t = setTimeout(function() {
+                snapWheel(w);
+            }, 80);
+        });
+    }
+    function getWheelVal(id) {
+        var w = document.getElementById(id);
+        var idx = Math.round(w.scrollTop / ITEM_H);
+        var items = w.querySelectorAll('.tp-wheel-item[data-val]');
+        return items[idx] ? parseInt(items[idx].dataset.val) : 0;
+    }
+    function confirmTimePicker() {
+        var h = String(getWheelVal('tpHourWheel')).padStart(2, '0'),
+            m = String(getWheelVal('tpMinWheel')).padStart(2, '0');
+        document.getElementById('heureDirect').textContent = h + ':' + m;
+        closeTimePicker();
+        updatePrepDisplay();
+        scheduleAutoSave();
+    }
+    function closeTimePicker() {
+        document.getElementById('timePickerOverlay').style.display = 'none';
+    }
+
+    function handleUpload(input, slotId, label) {
+        if (!input.files || !input.files[0])
+            return;
+        var file = input.files[0];
+        var slot = document.getElementById(slotId);
+        slot.classList.add('has-file');
+        uploadedFiles[slotId] = {
+            file: file,
+            name: file.name,
+            url: URL.createObjectURL(file)
+        };
+        var thumbDiv = slot.querySelector('.upload-slot-thumb');
+        if (file.type.startsWith('image/')) {
+            thumbDiv.innerHTML = '<img src="' + uploadedFiles[slotId].url + '">';
+        }
+        else {
+            var ext = file.name.split('.').pop().toUpperCase();
+            thumbDiv.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,140,255,0.1);border-radius:9px;font-size:11px;font-weight:700;color:#4da8ff">' + ext + '</div>';
+        }
+        var nameEl = slot.querySelector('.upload-slot-name');
+        if (!nameEl) {
+            nameEl = document.createElement('div');
+            nameEl.className = 'upload-slot-name';
+            slot.appendChild(nameEl);
+        }
+        nameEl.textContent = file.name;
+        uploadToGitHub(file, slotId, label);
+        scheduleAutoSave();
+    }
+
+    async function uploadToGitHub(file, slotId, label) {
+        try {
+            showToast('⬆️ Upload ' + file.name + '...');
+            var reader = new FileReader();
+            reader.onload = async function(e) {
+                var b64 = e.target.result.split(',')[1];
+                var path = 'data/uploads/' + FICHE_ID + '/' + label.toLowerCase() + '-' + file.name.replace(/\s+/g, '_');
+                var apiUrl = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + path;
+                var sha = null;
+                try {
+                    var r = await fetch(apiUrl, {
+                        headers: {
+                            'Authorization': 'token ' + GH_TOKEN,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    if (r.ok) {
+                        var d = await r.json();
+                        sha = d.sha;
+                    }
+                } catch (ex) {}
+                var body = {
+                    message: 'upload ' + label + ' - ' + file.name,
+                    content: b64
+                };
+                if (sha)
+                    body.sha = sha;
+                var r2 = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'token ' + GH_TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+                if (r2.ok) {
+                    var d2 = await r2.json();
+                    uploadedFiles[slotId].ghUrl = d2.content.download_url;
+                    showToast('✅ ' + file.name + ' uploadé');
+                }
+                else {
+                    showToast('⚠️ Upload échoué (' + file.name + ')');
+                }
+            };
+            reader.readAsDataURL(file);
+        } catch (ex) {
+            console.error('Upload:', ex);
+            showToast('⚠️ Upload échoué');
+        }
+    }
+
+    function downloadFile(slotId) {
+        var f = uploadedFiles[slotId];
+        if (!f)
+            return;
+        if (f.ghUrl) {
+            window.open(f.ghUrl, '_blank');
+            return;
+        }
+        if (f.url) {
+            var a = document.createElement('a');
+            a.href = f.url;
+            a.download = f.name;
+            a.click();
+        }
+    }
+
+    function collectData() {
+        var d = {
+            id: FICHE_ID,
+            titre: document.getElementById('titreEvent').value,
+            date: document.getElementById('dateEvent').value,
+            entite: document.getElementById('entiteGroupe').value,
+            contact: document.getElementById('contactField').value,
+            heureDirect: document.getElementById('heureDirect').textContent,
+            heurePrep: document.getElementById('heurePrepDisplay').dataset.time || '12:30',
+            prepDuration: prepDuration,
+            ibmChaine: document.getElementById('ibmChaine').value,
+            titreSynthe: document.getElementById('titreSynthe').value,
+            toggles: {},
+            application: null,
+            intervenants: [],
+            mode: document.getElementById('modeStudio').classList.contains('active') ? 'studio' : 'visio',
+            updatedAt: new Date().toISOString()
+        };
+        document.querySelectorAll('.toggle-switch').forEach(function(t) {
+            d.toggles[t.dataset.field] = t.classList.contains('active');
+        });
+        var app = document.querySelector('.radio-pill.active');
+        if (app)
+            d.application = app.textContent;
+        document.querySelectorAll('.interv-row').forEach(function(row) {
+            var inputs = row.querySelectorAll('input');
+            var p = {};
+            ['nom', 'prenom', 'fonction', 'entreprise'].forEach(function(k, i) {
+                p[k] = inputs[i] ? inputs[i].value : '';
+            });
+            if (Object.values(p).some(function(v) {
+                return v.trim()
+            }))
+                d.intervenants.push(p);
+        });
         return d;
     }
 
-    var ghSha=null,saveTimer,ghSaveTimer,lastSavedJson='';
-    function scheduleAutoSave(){
+    var ghSha = null,
+        saveTimer,
+        ghSaveTimer,
+        lastSavedJson = '';
+    function scheduleAutoSave() {
         // Always save to localStorage IMMEDIATELY
-        var data=collectData();
-        var fiches=JSON.parse(localStorage.getItem('fiches_studio')||'{}');
-        fiches[FICHE_ID]=data;localStorage.setItem('fiches_studio',JSON.stringify(fiches));
+        var data = collectData();
+        var fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+        fiches[FICHE_ID] = data;
+        localStorage.setItem('fiches_studio', JSON.stringify(fiches));
         // Debounce GitHub save
         clearTimeout(ghSaveTimer);
-        ghSaveTimer=setTimeout(function(){forceSaveGitHub();},2000);
+        ghSaveTimer = setTimeout(function() {
+            forceSaveGitHub();
+        }, 2000);
     }
-    function autoSave(){scheduleAutoSave();}
-    async function forceSaveGitHub(){
-        var data=collectData();var json=JSON.stringify(data);
-        if(json===lastSavedJson)return;// Skip if nothing changed
-        try{var gh=await ghLoadFiches()||{};gh[FICHE_ID]=data;await ghSaveFiches(gh);lastSavedJson=json;}catch(e){console.warn('GH:',e);}
+    function autoSave() {
+        scheduleAutoSave();
     }
-
-    async function ghLoadFiches(){try{var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/data/fiches.json',{headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'},cache:'no-cache'});if(r.ok){var d=await r.json();ghSha=d.sha;return JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));}}catch(e){}return null;}
-    async function ghSaveFiches(fiches){var c=btoa(unescape(encodeURIComponent(JSON.stringify(fiches,null,2))));var b={message:'save '+new Date().toISOString(),content:c,branch:'main'};if(ghSha)b.sha=ghSha;var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/data/fiches.json',{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},body:JSON.stringify(b)});if(r.ok){var d=await r.json();ghSha=d.content.sha;}}
-
-    function applyData(data){
-        if(!data)return;
-        if(data.titre)document.getElementById('titreEvent').value=data.titre;
-        if(data.date)document.getElementById('dateEvent').value=data.date;
-        if(data.entite)document.getElementById('entiteGroupe').value=data.entite;
-        if(data.contact)document.getElementById('contactField').value=data.contact;
-        if(data.heureDirect)document.getElementById('heureDirect').textContent=data.heureDirect;
-        if(data.prepDuration)selectPrep(data.prepDuration);
-        if(data.ibmChaine)document.getElementById('ibmChaine').value=data.ibmChaine;
-        if(data.toggles){Object.keys(data.toggles).forEach(function(f){var el=document.querySelector('.toggle-switch[data-field="'+f+'"]');if(el)el.classList.toggle('active',!!data.toggles[f]);});}
-        if(data.application){document.querySelectorAll('.radio-pill').forEach(function(p){p.classList.toggle('active',p.textContent===data.application);});}
-        if(data.mode)selectMode(data.mode);
-        if(data.intervenants&&data.intervenants.length){var body=document.getElementById('intervenantsBody');data.intervenants.forEach(function(p,i){var rows=body.querySelectorAll('.interv-row');if(!rows[i])addRow();var row=body.querySelectorAll('.interv-row')[i];var inputs=row.querySelectorAll('input');['nom','prenom','fonction','entreprise'].forEach(function(k,j){if(inputs[j]&&p[k])inputs[j].value=p[k];});});}
-        updatePrepDisplay();updateSummary();
+    async function forceSaveGitHub() {
+        var data = collectData();
+        var json = JSON.stringify(data);
+        if (json === lastSavedJson)
+            return; // Skip if nothing changed
+        try {
+            var gh = await ghLoadFiches() || {};
+            gh[FICHE_ID] = data;
+            await ghSaveFiches(gh);
+            lastSavedJson = json;
+        } catch (e) {
+            console.warn('GH:', e);
+        }
     }
 
-    async function loadData(){
-        var gh=await ghLoadFiches();
-        if(gh){localStorage.setItem('fiches_studio',JSON.stringify(gh));if(gh[FICHE_ID]){applyData(gh[FICHE_ID]);showToast('✅ Fiche chargée');return;}}
-        var local=JSON.parse(localStorage.getItem('fiches_studio')||'{}');
-        if(local[FICHE_ID]){applyData(local[FICHE_ID]);showToast('✅ Fiche locale');}
+    async function ghLoadFiches() {
+        try {
+            var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/data/fiches.json', {
+                headers: {
+                    'Authorization': 'token ' + GH_TOKEN,
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                cache: 'no-cache'
+            });
+            if (r.ok) {
+                var d = await r.json();
+                ghSha = d.sha;
+                return JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g, '')))));
+            }
+        } catch (e) {}
+        return null;
+    }
+    async function ghSaveFiches(fiches) {
+        var c = btoa(unescape(encodeURIComponent(JSON.stringify(fiches, null, 2))));
+        var b = {
+            message: 'save ' + new Date().toISOString(),
+            content: c,
+            branch: 'main'
+        };
+        if (ghSha)
+            b.sha = ghSha;
+        var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/data/fiches.json', {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'token ' + GH_TOKEN,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(b)
+        });
+        if (r.ok) {
+            var d = await r.json();
+            ghSha = d.content.sha;
+        }
     }
 
-    async function transmettreParMail(){
-        var data=collectData();
-        if(!data.titre){showToast('⚠️ Titre requis');return;}
-        if(!data.date){showToast('⚠️ Date requise');return;}
+    function applyData(data) {
+        if (!data)
+            return;
+        if (data.titre)
+            document.getElementById('titreEvent').value = data.titre;
+        if (data.date)
+            document.getElementById('dateEvent').value = data.date;
+        if (data.entite)
+            document.getElementById('entiteGroupe').value = data.entite;
+        if (data.contact)
+            document.getElementById('contactField').value = data.contact;
+        if (data.heureDirect)
+            document.getElementById('heureDirect').textContent = data.heureDirect;
+        if (data.prepDuration)
+            selectPrep(data.prepDuration);
+        if (data.ibmChaine)
+            document.getElementById('ibmChaine').value = data.ibmChaine;
+        if (data.titreSynthe)
+            document.getElementById('titreSynthe').value = data.titreSynthe;
+        if (data.toggles) {
+            Object.keys(data.toggles).forEach(function(f) {
+                var el = document.querySelector('.toggle-switch[data-field="' + f + '"]');
+                if (el)
+                    el.classList.toggle('active', !!data.toggles[f]);
+            });
+        }
+        if (data.application) {
+            document.querySelectorAll('.radio-pill').forEach(function(p) {
+                p.classList.toggle('active', p.textContent === data.application);
+            });
+        }
+        if (data.mode)
+            selectMode(data.mode);
+        if (data.intervenants && data.intervenants.length) {
+            var body = document.getElementById('intervenantsBody');
+            data.intervenants.forEach(function(p, i) {
+                var rows = body.querySelectorAll('.interv-row');
+                if (!rows[i])
+                    addRow();
+                var row = body.querySelectorAll('.interv-row')[i];
+                var inputs = row.querySelectorAll('input');
+                ['nom', 'prenom', 'fonction', 'entreprise'].forEach(function(k, j) {
+                    if (inputs[j] && p[k])
+                        inputs[j].value = p[k];
+                });
+            });
+        }
+        updatePrepDisplay();
+        updateSummary();
+    }
+
+    async function loadData() {
+        var gh = await ghLoadFiches();
+        if (gh) {
+            localStorage.setItem('fiches_studio', JSON.stringify(gh));
+            if (gh[FICHE_ID]) {
+                applyData(gh[FICHE_ID]);
+                showToast('✅ Fiche chargée');
+                return;
+            }
+        }
+        var local = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+        if (local[FICHE_ID]) {
+            applyData(local[FICHE_ID]);
+            showToast('✅ Fiche locale');
+        }
+    }
+
+    async function transmettreParMail() {
+        var data = collectData();
+        if (!data.titre) {
+            showToast('⚠️ Titre requis');
+            return;
+        }
+        if (!data.date) {
+            showToast('⚠️ Date requise');
+            return;
+        }
 
         showToast('📅 Envoi vers le planning...');
 
         // 1. Save fiche first
-        var fiches=JSON.parse(localStorage.getItem('fiches_studio')||'{}');
-        fiches[FICHE_ID]=data;localStorage.setItem('fiches_studio',JSON.stringify(fiches));
-        try{var gh=await ghLoadFiches()||{};gh[FICHE_ID]=data;await ghSaveFiches(gh);}catch(e){}
+        var fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+        fiches[FICHE_ID] = data;
+        localStorage.setItem('fiches_studio', JSON.stringify(fiches));
+        try {
+            var gh = await ghLoadFiches() || {};
+            gh[FICHE_ID] = data;
+            await ghSaveFiches(gh);
+        } catch (e) {}
 
         // 2. Build pending event
-        var pendingEvent={
-            ficheId:FICHE_ID,
-            subject:data.titre,
-            date:data.date,
-            heurePrep:data.heurePrep||'12:30',
-            heureDirect:data.heureDirect||'13:00',
-            heureFin:null,
-            entite:data.entite||'',
-            contact:data.contact||'',
-            mode:data.mode||'studio',
-            ibmChaine:data.ibmChaine||'',
-            application:data.application||'',
-            intervenants:data.intervenants||[],
-            toggles:data.toggles||{},
-            createdAt:new Date().toISOString(),
-            status:'pending'
+        var pendingEvent = {
+            ficheId: FICHE_ID,
+            subject: data.titre,
+            date: data.date,
+            heurePrep: data.heurePrep || '12:30',
+            heureDirect: data.heureDirect || '13:00',
+            heureFin: null,
+            entite: data.entite || '',
+            contact: data.contact || '',
+            mode: data.mode || 'studio',
+            ibmChaine: data.ibmChaine || '',
+            application: data.application || '',
+            intervenants: data.intervenants || [],
+            toggles: data.toggles || {},
+            createdAt: new Date().toISOString(),
+            status: 'pending'
         };
 
         // 3. Load existing pending, append, push
-        try{
-            var pendingUrl='https://api.github.com/repos/'+GH_REPO+'/contents/calendar-pending.json';
-            var hdrs={'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'};
-            var pendingSha=null;
-            var pendingData={pending:[],updatedAt:''};
+        try {
+            var pendingUrl = 'https://api.github.com/repos/' + GH_REPO + '/contents/calendar-pending.json';
+            var hdrs = {
+                'Authorization': 'token ' + GH_TOKEN,
+                'Accept': 'application/vnd.github.v3+json'
+            };
+            var pendingSha = null;
+            var pendingData = {
+                pending: [],
+                updatedAt: ''
+            };
 
-            try{
-                var r=await fetch(pendingUrl,{headers:hdrs,cache:'no-cache'});
-                if(r.ok){
-                    var d=await r.json();
-                    pendingSha=d.sha;
-                    pendingData=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+            try {
+                var r = await fetch(pendingUrl, {
+                    headers: hdrs,
+                    cache: 'no-cache'
+                });
+                if (r.ok) {
+                    var d = await r.json();
+                    pendingSha = d.sha;
+                    pendingData = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g, '')))));
                 }
-            }catch(e){}
+            } catch (e) {}
 
             // Remove old done items (>24h) to keep file small
-            var now=Date.now();
-            if(pendingData.pending){
-                pendingData.pending=pendingData.pending.filter(function(p){
-                    if(p.status==='done'&&p.processedAt){
-                        return (now-new Date(p.processedAt).getTime())<86400000;
+            var now = Date.now();
+            if (pendingData.pending) {
+                pendingData.pending = pendingData.pending.filter(function(p) {
+                    if (p.status === 'done' && p.processedAt) {
+                        return (now - new Date(p.processedAt).getTime()) < 86400000;
                     }
                     return true;
                 });
             } else {
-                pendingData.pending=[];
+                pendingData.pending = [];
             }
 
             // Check if this fiche already has a pending entry
-            var existing=pendingData.pending.findIndex(function(p){return p.ficheId===FICHE_ID && p.status==='pending';});
-            if(existing>-1){
-                pendingData.pending[existing]=pendingEvent;
+            var existing = pendingData.pending.findIndex(function(p) {
+                return p.ficheId === FICHE_ID && p.status === 'pending';
+            });
+            if (existing > -1) {
+                pendingData.pending[existing] = pendingEvent;
             } else {
                 pendingData.pending.push(pendingEvent);
             }
-            pendingData.updatedAt=new Date().toISOString();
+            pendingData.updatedAt = new Date().toISOString();
 
-            var b64=btoa(unescape(encodeURIComponent(JSON.stringify(pendingData,null,2))));
-            var body={message:'booking '+data.titre+' '+data.date,content:b64,branch:'main'};
-            if(pendingSha)body.sha=pendingSha;
-            var r2=await fetch(pendingUrl,{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},body:JSON.stringify(body)});
-            if(r2.ok){
+            var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(pendingData, null, 2))));
+            var body = {
+                message: 'booking ' + data.titre + ' ' + data.date,
+                content: b64,
+                branch: 'main'
+            };
+            if (pendingSha)
+                body.sha = pendingSha;
+            var r2 = await fetch(pendingUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'token ' + GH_TOKEN,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            if (r2.ok) {
                 showToast('✅ Réservation envoyée — sera créée au prochain sync (5min)');
             } else {
                 showToast('⚠️ Erreur push pending');
             }
-        }catch(e){
-            console.error('Transmettre:',e);
-            showToast('⚠️ Erreur: '+e.message);
+        } catch (e) {
+            console.error('Transmettre:', e);
+            showToast('⚠️ Erreur: ' + e.message);
         }
     }
-    async function saveAndGo(url){
+    async function saveAndGo(url) {
         clearTimeout(ghSaveTimer);
         showToast('💾 Sauvegarde...');
         // Save localStorage immediately
-        var data=collectData();
-        var fiches=JSON.parse(localStorage.getItem('fiches_studio')||'{}');
-        fiches[FICHE_ID]=data;localStorage.setItem('fiches_studio',JSON.stringify(fiches));
+        var data = collectData();
+        var fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+        fiches[FICHE_ID] = data;
+        localStorage.setItem('fiches_studio', JSON.stringify(fiches));
         // Force GitHub save and WAIT for it
-        try{var gh=await ghLoadFiches()||{};gh[FICHE_ID]=data;await ghSaveFiches(gh);}catch(e){console.warn('GH save before nav:',e);}
-        window.location.href=url;
+        try {
+            var gh = await ghLoadFiches() || {};
+            gh[FICHE_ID] = data;
+            await ghSaveFiches(gh);
+        } catch (e) {
+            console.warn('GH save before nav:', e);
+        }
+        window.location.href = url;
     }
-    function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500);}
+    function showToast(m) {
+        var t = document.getElementById('toast');
+        t.textContent = m;
+        t.classList.add('show');
+        setTimeout(function() {
+            t.classList.remove('show')
+        }, 2500);
+    }
 
-    loadData();updatePrepDisplay();
+    loadData();
+    updatePrepDisplay();
 
     // Force save on page leave
-    window.addEventListener('beforeunload',function(){
-        var data=collectData();var fiches=JSON.parse(localStorage.getItem('fiches_studio')||'{}');
-        fiches[FICHE_ID]=data;localStorage.setItem('fiches_studio',JSON.stringify(fiches));
+    window.addEventListener('beforeunload', function() {
+        var data = collectData();
+        var fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+        fiches[FICHE_ID] = data;
+        localStorage.setItem('fiches_studio', JSON.stringify(fiches));
     });
 
-    var ALBUMS=['https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228','https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25','https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2','https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b','https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0'];
-    var aidx=0,abg=document.getElementById('albumBg'),al1=document.createElement('div'),al2=document.createElement('div');
-    al1.className='cover active';al2.className='cover';abg.appendChild(al1);abg.appendChild(al2);
-    for(var i=ALBUMS.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=ALBUMS[i];ALBUMS[i]=ALBUMS[j];ALBUMS[j]=tmp;}
-    al1.style.backgroundImage='url('+ALBUMS[0]+')';
-    setInterval(function(){aidx=(aidx+1)%ALBUMS.length;var a=al1.classList.contains('active')?al1:al2;var b=a===al1?al2:al1;b.style.backgroundImage='url('+ALBUMS[aidx]+')';b.classList.add('active');a.classList.remove('active');},30000);
+    var ALBUMS = ['https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228', 'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25', 'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2', 'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b', 'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0'];
+    var aidx = 0,
+        abg = document.getElementById('albumBg'),
+        al1 = document.createElement('div'),
+        al2 = document.createElement('div');
+    al1.className = 'cover active';
+    al2.className = 'cover';
+    abg.appendChild(al1);
+    abg.appendChild(al2);
+    for (var i = ALBUMS.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = ALBUMS[i];
+        ALBUMS[i] = ALBUMS[j];
+        ALBUMS[j] = tmp;
+    }
+    al1.style.backgroundImage = 'url(' + ALBUMS[0] + ')';
+    setInterval(function() {
+        aidx = (aidx + 1) % ALBUMS.length;
+        var a = al1.classList.contains('active') ? al1 : al2;
+        var b = a === al1 ? al2 : al1;
+        b.style.backgroundImage = 'url(' + ALBUMS[aidx] + ')';
+        b.classList.add('active');
+        a.classList.remove('active');
+    }, 30000);
     </script>
 
+    <script>
+    (function() {
+        var ALERT_WS_URL = 'wss://ecamm-overlay-server.onrender.com';
+        var ALERT_PROXY_URL = 'https://script.google.com/macros/s/AKfycbzjO0-wHGd-uIIJhnpmBAVQxIruHnQUpnvFpsrEqAsSDkerG8z0Cp47HYgojMHlOG9pFQ/exec';
+        var alertWs = null;
+        var alertAudioCtx = null;
+        var alertNodes = [];
+        var alertActive = false;
+        var alertBanner = null;
 
-<script>
-(function(){
-    var ALERT_WS_URL = 'wss://ecamm-overlay-server.onrender.com';
-    var ALERT_PROXY_URL = 'https://script.google.com/macros/s/AKfycbzjO0-wHGd-uIIJhnpmBAVQxIruHnQUpnvFpsrEqAsSDkerG8z0Cp47HYgojMHlOG9pFQ/exec';
-    var alertWs = null;
-    var alertAudioCtx = null;
-    var alertNodes = [];
-    var alertActive = false;
-    var alertBanner = null;
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default')
+            Notification.requestPermission();
 
-    // Request notification permission
-    if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
-
-    function createAlertBanner() {
-        if (alertBanner) return;
-        alertBanner = document.createElement('div');
-        alertBanner.id = 'studioAlertBanner';
-        alertBanner.style.cssText = 'position:fixed;inset:0;z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,0,0,0.85);animation:alertFlash 0.5s infinite;cursor:pointer;';
-        alertBanner.innerHTML = '<div style="font-size:72px;margin-bottom:20px;">&#x1F6A8;</div>' +
+        function createAlertBanner() {
+            if (alertBanner)
+                return;
+            alertBanner = document.createElement('div');
+            alertBanner.id = 'studioAlertBanner';
+            alertBanner.style.cssText = 'position:fixed;inset:0;z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,0,0,0.85);animation:alertFlash 0.5s infinite;cursor:pointer;';
+            alertBanner.innerHTML = '<div style="font-size:72px;margin-bottom:20px;">&#x1F6A8;</div>' +
             '<div style="font-size:28px;font-weight:800;color:#fff;margin-bottom:12px;">ALERTE STUDIO</div>' +
             '<div style="font-size:16px;color:rgba(255,255,255,0.8);margin-bottom:10px;" id="alertBannerMsg"></div>' +
             '<div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:30px;" id="alertBannerSound">&#x1F50A; Cliquez n\'importe o\u00f9 pour activer le son</div>' +
             '<button onclick="window._ackStudioAlert()" style="padding:18px 50px;font-size:18px;font-weight:800;background:#fff;color:#ff0000;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-transform:uppercase;">&#x2705; PRISE EN CHARGE</button>';
-        alertBanner.addEventListener('click', function(e) {
-            if (e.target.tagName !== 'BUTTON') forceAlertSound();
-        });
-        document.body.appendChild(alertBanner);
-        var style = document.createElement('style');
-        style.textContent = '@keyframes alertFlash{0%,100%{background:rgba(255,0,0,0.85);}50%{background:rgba(180,0,0,0.95);}}';
-        document.head.appendChild(style);
-    }
-
-    function showBanner(title, msg) {
-        // Ne pas sonner si cette machine est l'émettrice (flag < 15s)
-        var emitTime = parseInt(localStorage.getItem('alertEmitter') || '0');
-        if (Date.now() - emitTime < 15000) return;
-        createAlertBanner();
-        document.getElementById('alertBannerMsg').textContent = (title || 'Nouvelle alerte') + (msg ? ' \u2014 ' + msg : '');
-        alertBanner.style.display = 'flex';
-        forceAlertSound();
-        sendNotif(title, msg);
-    }
-
-    function hideBanner() { if (alertBanner) alertBanner.style.display = 'none'; }
-
-    function forceAlertSound() {
-        if (!alertAudioCtx) alertAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (alertAudioCtx.state === 'suspended') {
-            alertAudioCtx.resume().then(function() {
-                if (!alertActive) startOsc();
-                var el = document.getElementById('alertBannerSound'); if (el) el.style.display = 'none';
+            alertBanner.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'BUTTON')
+                    forceAlertSound();
             });
-        } else {
-            if (!alertActive) startOsc();
-            var el = document.getElementById('alertBannerSound'); if (el) el.style.display = 'none';
+            document.body.appendChild(alertBanner);
+            var style = document.createElement('style');
+            style.textContent = '@keyframes alertFlash{0%,100%{background:rgba(255,0,0,0.85);}50%{background:rgba(180,0,0,0.95);}}';
+            document.head.appendChild(style);
         }
-    }
 
-    var alertChimeAudio = new Audio('alert-chime.mp3');
-    alertChimeAudio.preload = 'auto'; alertChimeAudio.volume = 0.3;
-    var alertLoopTimer = null;
-
-    function startOsc() {
-        alertActive = true;
-        function playSequence() {
-            if (!alertActive) return;
-            alertChimeAudio.currentTime = 0; alertChimeAudio.volume = 0.3;
-            alertChimeAudio.play().catch(function(){});
-            alertLoopTimer = setTimeout(function(){ if (!alertActive) return; speakAlert(); }, 8800);
+        function showBanner(title, msg) {
+            // Ne pas sonner si cette machine est l'émettrice (flag < 15s)
+            var emitTime = parseInt(localStorage.getItem('alertEmitter') || '0');
+            if (Date.now() - emitTime < 15000)
+                return;
+            createAlertBanner();
+            document.getElementById('alertBannerMsg').textContent = (title || 'Nouvelle alerte') + (msg ? ' \u2014 ' + msg : '');
+            alertBanner.style.display = 'flex';
+            forceAlertSound();
+            sendNotif(title, msg);
         }
-        function speakAlert() {
-            if (!('speechSynthesis' in window)) { scheduleNext(); return; }
-            var stored = [];
-            try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(e){}
-            var lastNew = null;
-            for (var i=0;i<stored.length;i++) { if (stored[i].status === 'sent') { lastNew = stored[i]; break; } }
-            var text = 'Attention, alerte studio.';
-            if (lastNew) {
-                var prenom = lastNew.emitter ? lastNew.emitter.name.split(' ')[0] : '';
-                var desc = lastNew.title || lastNew.description || '';
-                if (prenom && desc) text = prenom + ' signale : ' + desc;
-                else if (prenom) text = 'Alerte de ' + prenom;
-                else if (desc) text = 'Attention : ' + desc;
+
+        function hideBanner() {
+            if (alertBanner)
+                alertBanner.style.display = 'none';
+        }
+
+        function forceAlertSound() {
+            if (!alertAudioCtx)
+                alertAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (alertAudioCtx.state === 'suspended') {
+                alertAudioCtx.resume().then(function() {
+                    if (!alertActive)
+                        startOsc();
+                    var el = document.getElementById('alertBannerSound');
+                    if (el)
+                        el.style.display = 'none';
+                });
+            } else {
+                if (!alertActive)
+                    startOsc();
+                var el = document.getElementById('alertBannerSound');
+                if (el)
+                    el.style.display = 'none';
             }
-            window.speechSynthesis.cancel();
-            var utt = new SpeechSynthesisUtterance(text);
-            utt.lang = 'fr-FR'; utt.rate = 0.9; utt.pitch = 1.05; utt.volume = 1.0;
-            var voices = window.speechSynthesis.getVoices();
-            var pref = null;
-            for (var v=0;v<voices.length;v++) {
-                if (voices[v].lang==='fr-FR' && voices[v].name.indexOf('Amelie')>-1) { pref=voices[v]; break; }
-                if (voices[v].lang==='fr-FR' && voices[v].name.indexOf('Thomas')>-1 && !pref) pref=voices[v];
-                if (voices[v].lang.indexOf('fr')===0 && !pref) pref=voices[v];
-            }
-            if (pref) utt.voice = pref;
-            utt.onend = function(){ scheduleNext(); };
-            utt.onerror = function(){ scheduleNext(); };
-            window.speechSynthesis.speak(utt);
         }
-        function scheduleNext() { alertLoopTimer = setTimeout(function(){ if (alertActive) playSequence(); }, 2000); }
-        if ('speechSynthesis' in window) window.speechSynthesis.getVoices();
-        playSequence();
-    }
 
-    function stopSound() {
-        alertActive = false;
-        if (alertChimeAudio) { alertChimeAudio.pause(); alertChimeAudio.currentTime = 0; }
-        if (alertLoopTimer) { clearTimeout(alertLoopTimer); alertLoopTimer = null; }
-        if (window.speechSynthesis) window.speechSynthesis.cancel();
-        alertNodes.forEach(function(n){ try{n.osc.stop();}catch(e){} });
-        alertNodes = [];
-        hideBanner();
-    }
+        var alertChimeAudio = new Audio('alert-chime.mp3');
+        alertChimeAudio.preload = 'auto';
+        alertChimeAudio.volume = 0.3;
+        var alertLoopTimer = null;
 
-    function sendNotif(title, msg) {
-        if (!('Notification' in window) || Notification.permission !== 'granted') return;
-        try {
-            var n = new Notification('\uD83D\uDEA8 ALERTE STUDIO', {
-                body: (title || 'Alerte') + (msg ? ' \u2014 ' + msg : ''),
-                requireInteraction: true, tag: 'studio-alert'
-            });
-            n.onclick = function() { window.focus(); n.close(); };
-        } catch(e) {}
-    }
-
-    window._ackStudioAlert = function() {
-        stopSound();
-        if (alertWs && alertWs.readyState === WebSocket.OPEN) {
-            var stored = [];
-            try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(e){}
-            stored.forEach(function(a) {
-                if (a.status === 'sent') {
-                    a.status = 'handled'; a.handledAt = new Date().toISOString();
-                    alertWs.send(JSON.stringify({type:'studio-alert-update', data:{id:a.id, status:'handled'}}));
+        function startOsc() {
+            alertActive = true;
+            function playSequence() {
+                if (!alertActive)
+                    return;
+                alertChimeAudio.currentTime = 0;
+                alertChimeAudio.volume = 0.3;
+                alertChimeAudio.play().catch(function() {});
+                alertLoopTimer = setTimeout(function() {
+                    if (!alertActive)
+                        return;
+                    speakAlert();
+                }, 8800);
+            }
+            function speakAlert() {
+                if (!('speechSynthesis' in window)) {
+                    scheduleNext();
+                    return;
                 }
-            });
-            localStorage.setItem('studioAlerts', JSON.stringify(stored));
-        }
-    };
-
-    var alertProxyTimer = null;
-    var alertWsFails = 0;
-    function startAlertProxyPolling() {
-        if (alertProxyTimer) return;
-        alertProxyTimer = setInterval(function() {
-            fetch(ALERT_PROXY_URL + '?action=sync').then(function(r){ return r.json(); }).then(function(data) {
-                if (!Array.isArray(data)) return;
                 var stored = [];
-                try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(e){}
-                var newOnes = data.filter(function(d){ return d.status === 'sent' && !stored.find(function(s){ return s.id === d.id; }); });
-                localStorage.setItem('studioAlerts', JSON.stringify(data));
-                if (newOnes.length > 0) {
-                    showBanner(newOnes[0].title, newOnes[0].emitter ? newOnes[0].emitter.name : '');
-                }
-                if (!data.some(function(d){ return d.status === 'sent'; })) { stopSound(); }
-            }).catch(function(){});
-        }, 3000);
-    }
-
-    function connectAlertWS() {
-        alertWs = new WebSocket(ALERT_WS_URL);
-        alertWs.onmessage = function(e) {
-            try {
-                var msg = JSON.parse(e.data);
-                if (msg.type === 'studio-alert' && msg.data && msg.data.status === 'sent') {
-                    var stored = [];
-                    try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(ex){}
-                    if (!stored.find(function(a){return a.id === msg.data.id;})) {
-                        stored.unshift(msg.data); localStorage.setItem('studioAlerts', JSON.stringify(stored));
+                try {
+                    stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]');
+                } catch (e) {}
+                var lastNew = null;
+                for (var i = 0; i < stored.length; i++) {
+                    if (stored[i].status === 'sent') {
+                        lastNew = stored[i];
+                        break;
                     }
-                    showBanner(msg.data.title, msg.data.emitter ? msg.data.emitter.name : '');
                 }
-                if (msg.type === 'studio-alert-update' && msg.data && msg.data.status !== 'sent') { stopSound(); }
-            } catch(err) {}
-        };
-        alertWs.onclose = function(){
-            alertWsFails = (alertWsFails || 0) + 1;
-            if (alertWsFails >= 3) { startAlertProxyPolling(); } else { setTimeout(connectAlertWS, 3000); }
-        };
-        alertWs.onerror = function(){ alertWs.close(); };
-    }
-
-    // Check on load
-    try {
-        var existing = JSON.parse(localStorage.getItem('studioAlerts') || '[]');
-        if (existing.some(function(a){return a.status === 'sent';})) {
-            var last = existing.find(function(a){return a.status === 'sent';});
-            setTimeout(function(){ showBanner(last.title, last.emitter ? last.emitter.name : ''); }, 500);
+                var text = 'Attention, alerte studio.';
+                if (lastNew) {
+                    var prenom = lastNew.emitter ? lastNew.emitter.name.split(' ')[0] : '';
+                    var desc = lastNew.title || lastNew.description || '';
+                    if (prenom && desc)
+                        text = prenom + ' signale : ' + desc;
+                    else if (prenom)
+                        text = 'Alerte de ' + prenom;
+                    else if (desc)
+                        text = 'Attention : ' + desc;
+                }
+                window.speechSynthesis.cancel();
+                var utt = new SpeechSynthesisUtterance(text);
+                utt.lang = 'fr-FR';
+                utt.rate = 0.9;
+                utt.pitch = 1.05;
+                utt.volume = 1.0;
+                var voices = window.speechSynthesis.getVoices();
+                var pref = null;
+                for (var v = 0; v < voices.length; v++) {
+                    if (voices[v].lang === 'fr-FR' && voices[v].name.indexOf('Amelie') > -1) {
+                        pref = voices[v];
+                        break;
+                    }
+                    if (voices[v].lang === 'fr-FR' && voices[v].name.indexOf('Thomas') > -1 && !pref)
+                        pref = voices[v];
+                    if (voices[v].lang.indexOf('fr') === 0 && !pref)
+                        pref = voices[v];
+                }
+                if (pref)
+                    utt.voice = pref;
+                utt.onend = function() {
+                    scheduleNext();
+                };
+                utt.onerror = function() {
+                    scheduleNext();
+                };
+                window.speechSynthesis.speak(utt);
+            }
+            function scheduleNext() {
+                alertLoopTimer = setTimeout(function() {
+                    if (alertActive)
+                        playSequence();
+                }, 2000);
+            }
+            if ('speechSynthesis' in window)
+                window.speechSynthesis.getVoices();
+            playSequence();
         }
-    } catch(e){}
 
-    connectAlertWS();
-})();
-</script>
+        function stopSound() {
+            alertActive = false;
+            if (alertChimeAudio) {
+                alertChimeAudio.pause();
+                alertChimeAudio.currentTime = 0;
+            }
+            if (alertLoopTimer) {
+                clearTimeout(alertLoopTimer);
+                alertLoopTimer = null;
+            }
+            if (window.speechSynthesis)
+                window.speechSynthesis.cancel();
+            alertNodes.forEach(function(n) {
+                try {
+                    n.osc.stop();
+                } catch (e) {}
+            });
+            alertNodes = [];
+            hideBanner();
+        }
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v11c</div>
+        function sendNotif(title, msg) {
+            if (!('Notification' in window) || Notification.permission !== 'granted')
+                return;
+            try {
+                var n = new Notification('\uD83D\uDEA8 ALERTE STUDIO', {
+                    body: (title || 'Alerte') + (msg ? ' \u2014 ' + msg : ''),
+                    requireInteraction: true,
+                    tag: 'studio-alert'
+                });
+                n.onclick = function() {
+                    window.focus();
+                    n.close();
+                };
+            } catch (e) {}
+        }
+
+        window._ackStudioAlert = function() {
+            stopSound();
+            if (alertWs && alertWs.readyState === WebSocket.OPEN) {
+                var stored = [];
+                try {
+                    stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]');
+                } catch (e) {}
+                stored.forEach(function(a) {
+                    if (a.status === 'sent') {
+                        a.status = 'handled';
+                        a.handledAt = new Date().toISOString();
+                        alertWs.send(JSON.stringify({
+                            type: 'studio-alert-update',
+                            data: {
+                                id: a.id,
+                                status: 'handled'
+                            }
+                        }));
+                    }
+                });
+                localStorage.setItem('studioAlerts', JSON.stringify(stored));
+            }
+        };
+
+        var alertProxyTimer = null;
+        var alertWsFails = 0;
+        function startAlertProxyPolling() {
+            if (alertProxyTimer)
+                return;
+            alertProxyTimer = setInterval(function() {
+                fetch(ALERT_PROXY_URL + '?action=sync').then(function(r) {
+                    return r.json();
+                }).then(function(data) {
+                    if (!Array.isArray(data))
+                        return;
+                    var stored = [];
+                    try {
+                        stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]');
+                    } catch (e) {}
+                    var newOnes = data.filter(function(d) {
+                        return d.status === 'sent' && !stored.find(function(s) {
+                                return s.id === d.id;
+                            });
+                    });
+                    localStorage.setItem('studioAlerts', JSON.stringify(data));
+                    if (newOnes.length > 0) {
+                        showBanner(newOnes[0].title, newOnes[0].emitter ? newOnes[0].emitter.name : '');
+                    }
+                    if (!data.some(function(d) {
+                        return d.status === 'sent';
+                    })) {
+                        stopSound();
+                    }
+                }).catch(function() {});
+            }, 3000);
+        }
+
+        function connectAlertWS() {
+            alertWs = new WebSocket(ALERT_WS_URL);
+            alertWs.onmessage = function(e) {
+                try {
+                    var msg = JSON.parse(e.data);
+                    if (msg.type === 'studio-alert' && msg.data && msg.data.status === 'sent') {
+                        var stored = [];
+                        try {
+                            stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]');
+                        } catch (ex) {}
+                        if (!stored.find(function(a) {
+                            return a.id === msg.data.id;
+                        })) {
+                            stored.unshift(msg.data);
+                            localStorage.setItem('studioAlerts', JSON.stringify(stored));
+                        }
+                        showBanner(msg.data.title, msg.data.emitter ? msg.data.emitter.name : '');
+                    }
+                    if (msg.type === 'studio-alert-update' && msg.data && msg.data.status !== 'sent') {
+                        stopSound();
+                    }
+                } catch (err) {}
+            };
+            alertWs.onclose = function() {
+                alertWsFails = (alertWsFails || 0) + 1;
+                if (alertWsFails >= 3) {
+                    startAlertProxyPolling();
+                } else {
+                    setTimeout(connectAlertWS, 3000);
+                }
+            };
+            alertWs.onerror = function() {
+                alertWs.close();
+            };
+        }
+
+        // Check on load
+        try {
+            var existing = JSON.parse(localStorage.getItem('studioAlerts') || '[]');
+            if (existing.some(function(a) {
+                return a.status === 'sent';
+            })) {
+                var last = existing.find(function(a) {
+                    return a.status === 'sent';
+                });
+                setTimeout(function() {
+                    showBanner(last.title, last.emitter ? last.emitter.name : '');
+                }, 500);
+            }
+        } catch (e) {}
+
+        connectAlertWS();
+    })();
+    </script>
+
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v11c</div>
 </body>
 </html>
