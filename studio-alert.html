@@ -39,13 +39,15 @@
         /* EMITTER PICKER */
         .emitter-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
         .emitter-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; max-height: 200px; overflow-y: auto; padding: 4px; }
-        .draft-slot { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px; cursor: pointer; min-height: 48px; display: flex; align-items: center; justify-content: center; text-align: center; transition: all 0.15s; }
-        .draft-slot:hover { border-color: rgba(255,165,0,0.4); background: rgba(255,165,0,0.06); }
-        .draft-slot.selected { border-color: rgba(255,165,0,0.7); background: rgba(255,165,0,0.12); box-shadow: 0 0 8px rgba(255,165,0,0.15); }
-        .draft-slot .draft-emoji { font-size: 14px; margin-bottom: 2px; }
-        .draft-slot .draft-title { font-size: 9px; font-weight: 700; color: #fff; line-height: 1.2; }
-        .draft-slot .draft-date { font-size: 7px; color: rgba(255,255,255,0.35); margin-top: 3px; }
-        .draft-slot.empty { opacity: 0.2; cursor: default; }
+        .draft-slot { aspect-ratio: 16/9; border-radius: 10px; cursor: pointer; overflow: hidden; position: relative; transition: all 0.2s; border: 1.5px solid rgba(255,255,255,0.06); }
+        .draft-slot:hover { border-color: rgba(255,255,255,0.2); transform: scale(1.03); }
+        .draft-slot.selected { border-color: rgba(255,165,0,0.7); box-shadow: 0 0 12px rgba(255,165,0,0.2); transform: scale(1.03); }
+        .draft-slot .draft-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.25; position: absolute; top: 0; left: 0; pointer-events: none; }
+        .draft-slot .draft-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 6px; text-align: center; }
+        .draft-slot .draft-emission { font-size: 7px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
+        .draft-slot .draft-title { font-size: 9px; font-weight: 700; color: #fff; line-height: 1.25; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .draft-slot .draft-date { font-size: 7px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+        .draft-slot.empty { opacity: 0.15; cursor: default; background: rgba(255,255,255,0.03); }
         .problem-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
         .problem-btn {
             display: flex; flex-direction: column; align-items: center; gap: 6px;
@@ -187,7 +189,14 @@
         <div class="emitter-label">&Eacute;metteur</div>
         <div class="emitter-grid" id="emitterGrid"></div>
         <div class="emitter-label" style="margin-top:12px;">Contenu concern&eacute; <span style="font-weight:400;opacity:0.4">(brouillons PRSNET)</span></div>
-        <div class="draft-grid" id="draftGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;"></div>
+        <div class="draft-grid" id="draftGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;"></div>
+        <div class="emitter-label" style="margin-top:4px;">Derniers publi&eacute;s</div>
+        <div class="draft-grid" id="publishedGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;"></div>
+        <div class="emitter-label" style="margin-top:4px;">Recherche <span style="font-weight:400;opacity:0.4">(7 derniers jours)</span></div>
+        <div class="form-row" style="margin-bottom:8px;">
+            <input type="text" id="prsnetSearch" placeholder="Rechercher un contenu..." oninput="filterRecentContent()" style="font-size:12px;padding:8px 12px;" />
+        </div>
+        <div class="draft-grid" id="recentGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;max-height:150px;overflow-y:auto;"></div>
         <div class="emitter-label" style="margin-top:8px;">Type de probl&egrave;me</div>
         <div class="problem-grid" id="problemGrid"></div>
         <div class="form-row">
@@ -308,6 +317,68 @@
     const EM_GRADIENTS = { morning:'linear-gradient(135deg,#f6d365,#fda085)', conf:'linear-gradient(135deg,#667eea,#764ba2)', hot:'linear-gradient(135deg,#ff416c,#ff4b2b)', da:'linear-gradient(135deg,#00d2ff,#3a7bd5)', dc:'linear-gradient(135deg,#1a3a8a,#6b2fa0)', expert:'linear-gradient(135deg,#43e97b,#38f9d7)', echo:'linear-gradient(135deg,#f093fb,#f5576c)', decryptage:'linear-gradient(135deg,#a18cd1,#fbc2eb)' };
     const EM_NAMES = { morning:'Morning', conf:'Conf Hebdo', hot:'Hot', da:'Direct Analystes', dc:'Direct Corporate', expert:'Direct Expert', echo:'Écho Hebdo', decryptage:'Décryptage' };
 
+    let prsnetData = { drafts: [], published: [], recent: [] };
+
+    function renderDraftSlot(item, grid) {
+        const s = document.createElement('div');
+        s.className = 'draft-slot';
+        const title = item.title || '';
+        const date = item.date || '';
+        const tags = item.tags || '';
+        const emission = detectEmission(tags, title);
+        const displayTitle = extractSubject(title, emission);
+        const grad = EM_GRADIENTS[emission] || 'linear-gradient(135deg,#555,#333)';
+        const emName = EM_NAMES[emission] || '';
+        const badge = emission ? '<div style="background:' + grad + ';border-radius:5px;padding:1px 6px;font-size:7px;font-weight:800;color:#fff;letter-spacing:0.4px;margin-bottom:3px;display:inline-block;text-shadow:0 1px 2px rgba(0,0,0,0.2)">' + emName + '</div>' : '';
+        const stateLabel = item.state === 'publie' ? '<div style="font-size:6px;color:rgba(74,222,128,0.6);margin-top:2px">✓ Publié</div>' : '';
+        s.innerHTML = '<div>' + badge +
+            '<div class="draft-title">' + displayTitle + '</div>' +
+            '<div class="draft-date">' + date + '</div>' + stateLabel + '</div>';
+        s.title = title + (item.author ? ' — ' + item.author : '');
+        s.onclick = (() => {
+            document.querySelectorAll('.draft-slot').forEach(d => d.classList.remove('selected'));
+            if (selectedDraft && selectedDraft.title === item.title) {
+                selectedDraft = null;
+                document.getElementById('alertTitle').value = '';
+            } else {
+                selectedDraft = item;
+                s.classList.add('selected');
+                const emLabel = EM_NAMES[emission] || '';
+                document.getElementById('alertTitle').value = (emLabel ? emLabel + ' — ' : '') + displayTitle;
+            }
+        });
+        grid.appendChild(s);
+    }
+
+    function renderGridItems(items, gridId, max) {
+        const grid = document.getElementById(gridId);
+        grid.innerHTML = '';
+        const list = items.slice(0, max || 6);
+        if (list.length === 0) {
+            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;font-size:10px;color:rgba(255,255,255,0.2);padding:8px;">Aucun contenu</div>';
+            return;
+        }
+        list.forEach(item => renderDraftSlot(item, grid));
+    }
+
+    function filterRecentContent() {
+        const q = (document.getElementById('prsnetSearch').value || '').toLowerCase().trim();
+        const all = [...prsnetData.recent, ...prsnetData.published, ...prsnetData.drafts];
+        if (!q) {
+            renderGridItems(prsnetData.recent, 'recentGrid', 6);
+            return;
+        }
+        const filtered = all.filter(item => {
+            return (item.title || '').toLowerCase().indexOf(q) > -1 ||
+                   (item.tags || '').toLowerCase().indexOf(q) > -1 ||
+                   (item.author || '').toLowerCase().indexOf(q) > -1;
+        });
+        // Dedup
+        const seen = {};
+        const unique = filtered.filter(f => { if (seen[f.id]) return false; seen[f.id] = true; return true; });
+        renderGridItems(unique, 'recentGrid', 9);
+    }
+
     async function loadPrsnetDrafts() {
         try {
             const r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/prsnet-drafts.json', {
@@ -315,43 +386,11 @@
             });
             if (!r.ok) return;
             const d = await r.json();
-            const data = JSON.parse(decodeURIComponent(escape(atob(d.content))));
-            const grid = document.getElementById('draftGrid');
-            grid.innerHTML = '';
-            const drafts = data.drafts || [];
-            for (let i = 0; i < 6; i++) {
-                const s = document.createElement('div');
-                s.className = 'draft-slot' + (drafts[i] ? '' : ' empty');
-                if (drafts[i]) {
-                    const title = drafts[i].title || '';
-                    const date = drafts[i].date || '';
-                    const tags = drafts[i].tags || '';
-                    const emission = detectEmission(tags, title);
-                    const displayTitle = extractSubject(title, emission);
-                    const grad = EM_GRADIENTS[emission] || 'linear-gradient(135deg,#555,#333)';
-                    const emName = EM_NAMES[emission] || '';
-                    const badge = emission ? '<div style="background:' + grad + ';border-radius:5px;padding:1px 6px;font-size:7px;font-weight:800;color:#fff;letter-spacing:0.4px;margin-bottom:3px;display:inline-block;text-shadow:0 1px 2px rgba(0,0,0,0.2)">' + emName + '</div>' : '';
-                    s.innerHTML = '<div>' + badge +
-                        '<div class="draft-title">' + displayTitle + '</div>' +
-                        '<div class="draft-date">' + date + '</div></div>';
-                    s.title = title;
-                    s.onclick = ((draft, em, subj) => () => {
-                        document.querySelectorAll('.draft-slot').forEach(d => d.classList.remove('selected'));
-                        if (selectedDraft && selectedDraft.title === draft.title) {
-                            selectedDraft = null;
-                            document.getElementById('alertTitle').value = '';
-                        } else {
-                            selectedDraft = draft;
-                            s.classList.add('selected');
-                            const emLabel = EM_NAMES[em] || '';
-                            document.getElementById('alertTitle').value = (emLabel ? emLabel + ' — ' : '') + subj;
-                        }
-                    })(drafts[i], emission, displayTitle);
-                } else {
-                    s.innerHTML = '<div style="opacity:0.3;font-size:9px;">—</div>';
-                }
-                grid.appendChild(s);
-            }
+            prsnetData = JSON.parse(decodeURIComponent(escape(atob(d.content))));
+
+            renderGridItems(prsnetData.drafts || [], 'draftGrid', 6);
+            renderGridItems(prsnetData.published || [], 'publishedGrid', 6);
+            renderGridItems(prsnetData.recent || [], 'recentGrid', 6);
         } catch(e) { console.error('PRSNET drafts:', e); }
     }
 
@@ -840,6 +879,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v14b</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v15</div>
 </body>
 </html>
