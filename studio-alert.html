@@ -39,14 +39,14 @@
         /* EMITTER PICKER */
         .emitter-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
         .emitter-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; max-height: 200px; overflow-y: auto; padding: 4px; }
-        .draft-slot { aspect-ratio: 16/9; border-radius: 10px; cursor: pointer; overflow: hidden; position: relative; transition: all 0.2s; border: 1.5px solid rgba(255,255,255,0.06); }
+        .draft-slot { aspect-ratio: 16/7; border-radius: 8px; cursor: pointer; overflow: hidden; position: relative; transition: all 0.2s; border: 1.5px solid rgba(255,255,255,0.06); background-size: cover; background-position: center; }
         .draft-slot:hover { border-color: rgba(255,255,255,0.2); transform: scale(1.03); }
         .draft-slot.selected { border-color: rgba(255,165,0,0.7); box-shadow: 0 0 12px rgba(255,165,0,0.2); transform: scale(1.03); }
-        .draft-slot .draft-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.25; position: absolute; top: 0; left: 0; pointer-events: none; }
-        .draft-slot .draft-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 6px; text-align: center; }
+        .draft-slot .draft-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0.35)); z-index: 1; }
+        .draft-slot .draft-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; height: 100%; padding: 6px 8px; text-align: left; }
         .draft-slot .draft-emission { font-size: 7px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
-        .draft-slot .draft-title { font-size: 9px; font-weight: 700; color: #fff; line-height: 1.25; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
-        .draft-slot .draft-date { font-size: 7px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+        .draft-slot .draft-title { font-size: 8px; font-weight: 700; color: #fff; line-height: 1.25; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .draft-slot .draft-date { font-size: 6px; color: rgba(255,255,255,0.5); margin-top: 2px; }
         .draft-slot.empty { opacity: 0.15; cursor: default; background: rgba(255,255,255,0.03); }
         .problem-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
         .problem-btn {
@@ -347,6 +347,7 @@
 
     const EM_GRADIENTS = { morning:'linear-gradient(135deg,#f6d365,#fda085)', conf:'linear-gradient(135deg,#667eea,#764ba2)', hot:'linear-gradient(135deg,#ff416c,#ff4b2b)', da:'linear-gradient(135deg,#00d2ff,#3a7bd5)', dc:'linear-gradient(135deg,#1a3a8a,#6b2fa0)', expert:'linear-gradient(135deg,#43e97b,#38f9d7)', echo:'linear-gradient(135deg,#f093fb,#f5576c)', decryptage:'linear-gradient(135deg,#a18cd1,#fbc2eb)' };
     const EM_NAMES = { morning:'Morning', conf:'Conf Hebdo', hot:'Hot', da:'Direct Analystes', dc:'Direct Corporate', expert:'Direct Expert', echo:'Écho Hebdo', decryptage:'Décryptage' };
+    const EM_IMGS = { morning:'vignette-assets/MORNING_FOND.png', conf:'vignette-assets/CONF_CALL_FOND.png', hot:'vignette-assets/MODELE_HOT_001.png', da:'vignette-assets/FOND_DIRECT_ANALYSTE_001.png', dc:'vignette-assets/FOND_DIRECT_CORPORATE_png_001.png', expert:'vignette-assets/MORNING_FOND.png', echo:'vignette-assets/ECHO_HEBDO_FOND.png', decryptage:'vignette-assets/MORNING_FOND.png' };
 
     let prsnetData = { drafts: [], published: [], recent: [] };
 
@@ -360,9 +361,15 @@
         const displayTitle = extractSubject(title, emission);
         const grad = EM_GRADIENTS[emission] || 'linear-gradient(135deg,#555,#333)';
         const emName = EM_NAMES[emission] || '';
-        const badge = emission ? '<div style="background:' + grad + ';border-radius:5px;padding:1px 6px;font-size:7px;font-weight:800;color:#fff;letter-spacing:0.4px;margin-bottom:3px;display:inline-block;text-shadow:0 1px 2px rgba(0,0,0,0.2)">' + emName + '</div>' : '';
-        const stateLabel = item.state === 'publie' ? '<div style="font-size:6px;color:rgba(74,222,128,0.6);margin-top:2px">✓ Publié</div>' : '';
-        s.innerHTML = '<div>' + badge +
+        const emImg = EM_IMGS[emission] || '';
+        if (emImg) {
+            s.style.backgroundImage = 'url(' + emImg + ')';
+        } else {
+            s.style.background = 'rgba(255,255,255,0.04)';
+        }
+        const badge = emission ? '<div style="background:' + grad + ';border-radius:4px;padding:1px 5px;font-size:6px;font-weight:800;color:#fff;letter-spacing:0.3px;display:inline-block;text-shadow:0 1px 2px rgba(0,0,0,0.3);margin-bottom:2px">' + emName + '</div>' : '';
+        const stateLabel = item.state === 'publie' ? '<div style="font-size:5px;color:rgba(74,222,128,0.7);margin-top:1px">✓ Publié</div>' : '';
+        s.innerHTML = '<div class="draft-overlay"></div><div class="draft-content">' + badge +
             '<div class="draft-title">' + displayTitle + '</div>' +
             '<div class="draft-date">' + date + '</div>' + stateLabel + '</div>';
         s.title = title + (item.author ? ' — ' + item.author : '');
@@ -910,6 +917,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v21</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v22</div>
 </body>
 </html>
