@@ -266,5 +266,42 @@
     "intervenants": [],
     "mode": "visio",
     "updatedAt": "2026-02-20T10:38:45.240Z"
+  },
+  "1771584321250": {
+    "id": "1771584321250",
+    "titre": "",
+    "date": "",
+    "entite": "",
+    "contact": "",
+    "heureDirect": "13:00",
+    "heurePrep": "12:30",
+    "prepDuration": 30,
+    "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "titreSynthe": "",
+    "commentaires": "",
+    "toggles": {
+      "diffIBM": true,
+      "replay": true,
+      "chat": true,
+      "qr": false,
+      "masquerQR": false,
+      "portailInscription": false,
+      "synthes": true,
+      "diffGen": true,
+      "fournisGen": true,
+      "studioGen": false,
+      "visite": true
+    },
+    "application": null,
+    "intervenants": [
+      {
+        "nom": "MARTIN",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
+      }
+    ],
+    "mode": "studio",
+    "updatedAt": "2026-02-20T10:45:42.279Z"
   }
 }
