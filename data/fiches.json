@@ -192,8 +192,8 @@
     "entite": "",
     "contact": "",
     "heureDirect": "02:00",
-    "heurePrep": "01:00",
-    "prepDuration": 60,
+    "heurePrep": "01:15",
+    "prepDuration": 45,
     "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
     "toggles": {
       "diffIBM": true,
@@ -210,6 +210,6 @@
     "application": "ZOOM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-20T09:24:13.427Z"
+    "updatedAt": "2026-02-20T09:24:16.591Z"
   }
 }
