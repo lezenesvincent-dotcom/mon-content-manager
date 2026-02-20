@@ -271,7 +271,7 @@
     const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s => s.split('').reverse().join('')).join('');
     const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
 
-    const EMISSION_ICONS = { morning: '☀️', conf: '📞', hot: '🔥', da: '📊', dc: '🏢', expert: '🎓', echo: '📢', decryptage: '🔍' };
+    const EMISSION_GRADIENTS_REF = { morning:'#f6d365', conf:'#667eea', hot:'#ff416c', da:'#00d2ff', dc:'#1a3a8a', expert:'#43e97b', echo:'#f093fb', decryptage:'#a18cd1' };
 
     function detectEmission(tags, title) {
         var t = (tags||'').toLowerCase(), ti = (title||'').toLowerCase();
@@ -305,6 +305,9 @@
         return t;
     }
 
+    const EM_GRADIENTS = { morning:'linear-gradient(135deg,#f6d365,#fda085)', conf:'linear-gradient(135deg,#667eea,#764ba2)', hot:'linear-gradient(135deg,#ff416c,#ff4b2b)', da:'linear-gradient(135deg,#00d2ff,#3a7bd5)', dc:'linear-gradient(135deg,#1a3a8a,#6b2fa0)', expert:'linear-gradient(135deg,#43e97b,#38f9d7)', echo:'linear-gradient(135deg,#f093fb,#f5576c)', decryptage:'linear-gradient(135deg,#a18cd1,#fbc2eb)' };
+    const EM_NAMES = { morning:'Morning', conf:'Conf Hebdo', hot:'Hot', da:'Direct Analystes', dc:'Direct Corporate', expert:'Direct Expert', echo:'Écho Hebdo', decryptage:'Décryptage' };
+
     async function loadPrsnetDrafts() {
         try {
             const r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/prsnet-drafts.json', {
@@ -325,13 +328,14 @@
                     const tags = drafts[i].tags || '';
                     const emission = detectEmission(tags, title);
                     const displayTitle = extractSubject(title, emission);
-                    const icon = EMISSION_ICONS[emission] || '📄';
-                    s.innerHTML = '<div><div class="draft-emoji">' + icon + '</div>' +
+                    const grad = EM_GRADIENTS[emission] || 'linear-gradient(135deg,#555,#333)';
+                    const emName = EM_NAMES[emission] || '';
+                    const badge = emission ? '<div style="background:' + grad + ';border-radius:5px;padding:1px 6px;font-size:7px;font-weight:800;color:#fff;letter-spacing:0.4px;margin-bottom:3px;display:inline-block;text-shadow:0 1px 2px rgba(0,0,0,0.2)">' + emName + '</div>' : '';
+                    s.innerHTML = '<div>' + badge +
                         '<div class="draft-title">' + displayTitle + '</div>' +
                         '<div class="draft-date">' + date + '</div></div>';
                     s.title = title;
                     s.onclick = ((draft, em, subj) => () => {
-                        // Toggle selection
                         document.querySelectorAll('.draft-slot').forEach(d => d.classList.remove('selected'));
                         if (selectedDraft && selectedDraft.title === draft.title) {
                             selectedDraft = null;
@@ -339,7 +343,8 @@
                         } else {
                             selectedDraft = draft;
                             s.classList.add('selected');
-                            document.getElementById('alertTitle').value = (EMISSION_ICONS[em] || '') + ' ' + subj;
+                            const emLabel = EM_NAMES[em] || '';
+                            document.getElementById('alertTitle').value = (emLabel ? emLabel + ' — ' : '') + subj;
                         }
                     })(drafts[i], emission, displayTitle);
                 } else {
@@ -835,6 +840,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v14</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v14b</div>
 </body>
 </html>

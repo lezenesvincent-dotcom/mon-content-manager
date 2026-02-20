@@ -553,12 +553,28 @@
                     var tags=drafts[i].tags||'';
                     var emission=detectEmission(tags,title);
                     var displayTitle=extractSubject(title,emission);
-                    // Build rich thumbnail with emission badge
-                    var emLabel=emission?({'morning':'☀️','conf':'📞','hot':'🔥','da':'📊','dc':'🏢','expert':'🎓','echo':'📢','decryptage':'🔍'}[emission]||''):'';
-                    s.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:6px;text-align:center"><div>'+
-                        (emLabel?'<div style="font-size:12px;margin-bottom:2px">'+emLabel+'</div>':'')+
-                        '<div style="font-size:9px;font-weight:700;color:#fff;line-height:1.2">'+displayTitle+'</div>'+
-                        '<div style="font-size:7px;color:rgba(255,255,255,0.4);margin-top:3px">'+date+'</div></div></div>';
+                    // Emission gradients matching the buttons
+                    var emGradients={'morning':'linear-gradient(135deg,#f6d365,#fda085)','conf':'linear-gradient(135deg,#667eea,#764ba2)','hot':'linear-gradient(135deg,#ff416c,#ff4b2b)','da':'linear-gradient(135deg,#00d2ff,#3a7bd5)','dc':'linear-gradient(135deg,#1a3a8a,#6b2fa0)','expert':'linear-gradient(135deg,#43e97b,#38f9d7)','echo':'linear-gradient(135deg,#f093fb,#f5576c)','decryptage':'linear-gradient(135deg,#a18cd1,#fbc2eb)'};
+                    var emLabels={'morning':'M','conf':'CH','hot':'H','da':'DA','dc':'DC','expert':'DE','echo':'EH','decryptage':'D'};
+                    var emNames={'morning':'Morning','conf':'Conf Hebdo','hot':'Hot','da':'Direct Analystes','dc':'Direct Corporate','expert':'Direct Expert','echo':'Écho Hebdo','decryptage':'Décryptage'};
+                    var grad=emGradients[emission]||'linear-gradient(135deg,#555,#333)';
+                    var emShort=emLabels[emission]||'?';
+                    var emName=emNames[emission]||'';
+                    var emBgs={'morning':'vignette-assets/MORNING_FOND.png','conf':'vignette-assets/CONF_CALL_FOND.png','hot':'vignette-assets/MODELE_HOT_001.png','da':'vignette-assets/FOND_DIRECT_ANALYSTE_001.png','dc':'vignette-assets/FOND_DIRECT_CORPORATE_png_001.png','expert':'vignette-assets/MORNING_FOND.png','echo':'vignette-assets/CONF_CALL_FOND.png','decryptage':'vignette-assets/MORNING_FOND.png'};
+                    var emBg=emBgs[emission]||'';
+                    s.style.position='relative';s.style.overflow='hidden';
+                    if(emBg){
+                        s.style.background=grad;
+                        s.innerHTML='<img src="'+emBg+'" style="width:100%;height:100%;object-fit:cover;opacity:0.25;position:absolute;top:0;left:0;pointer-events:none">'+
+                            '<div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:6px;text-align:center">'+
+                            '<div style="font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);margin-bottom:2px">'+emName+'</div>'+
+                            '<div style="font-size:10px;font-weight:700;color:#fff;line-height:1.25;text-shadow:0 1px 3px rgba(0,0,0,0.4)">'+displayTitle+'</div>'+
+                            '<div style="font-size:7px;color:rgba(255,255,255,0.55);margin-top:3px">'+date+'</div></div>';
+                    } else {
+                        s.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:6px;text-align:center"><div>'+
+                            '<div style="font-size:10px;font-weight:700;color:#fff;line-height:1.25">'+displayTitle+'</div>'+
+                            '<div style="font-size:7px;color:rgba(255,255,255,0.5);margin-top:3px">'+date+'</div></div></div>';
+                    }
                     s.title=title+' — '+tags+' — '+date;
                     s.style.cursor='pointer';
                     s.onclick=(function(draft,em,subj){return function(){
@@ -866,6 +882,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v14</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v14b</div>
 </body>
 </html>
