@@ -199,8 +199,8 @@
       "diffIBM": true,
       "replay": true,
       "chat": true,
-      "qr": false,
-      "masquerQR": false,
+      "qr": true,
+      "masquerQR": true,
       "synthes": true,
       "diffGen": true,
       "fournisGen": true,
@@ -210,6 +210,6 @@
     "application": "ZOOM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-20T09:24:16.591Z"
+    "updatedAt": "2026-02-20T09:45:31.075Z"
   }
 }
