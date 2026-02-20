@@ -518,8 +518,24 @@
     }
 
     .upload-slot-icon {
-        font-size: 18px;
-        opacity: 0.3
+        width: 36px;
+        height: 36px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px)
+    }
+    .upload-slot-icon svg {
+        width: 18px;
+        height: 18px;
+        stroke: rgba(255,255,255,0.5);
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round
     }
 
     .upload-slot-label {
@@ -609,8 +625,23 @@
     }
 
     .download-item-icon {
-        font-size: 16px;
+        width: 30px;
+        height: 30px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin-bottom: 3px
+    }
+    .download-item-icon svg {
+        width: 15px;
+        height: 15px;
+        stroke: rgba(255,255,255,0.5);
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round
     }
 
     .download-item-label {
@@ -1094,7 +1125,7 @@
                 <div class="section-title">Contenus uploadés</div>
                 <div class="upload-grid">
                     <div class="upload-slot" id="up-gen">
-                        <div class="upload-slot-icon">📼</div>
+                        <div class="upload-slot-icon"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
                         <div class="upload-slot-label">Générique</div>
                         <input type="file" onchange="handleUpload(this,'up-gen','Generique')">
                         <div class="upload-slot-thumb"></div>
@@ -1107,7 +1138,7 @@
                         </div>
                     </div>
                     <div class="upload-slot" id="up-jingle">
-                        <div class="upload-slot-icon">🎵</div>
+                        <div class="upload-slot-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
                         <div class="upload-slot-label">Jingle</div>
                         <input type="file" onchange="handleUpload(this,'up-jingle','Jingle')">
                         <div class="upload-slot-thumb"></div>
@@ -1120,7 +1151,7 @@
                         </div>
                     </div>
                     <div class="upload-slot" id="up-m1">
-                        <div class="upload-slot-icon">🎬</div>
+                        <div class="upload-slot-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
                         <div class="upload-slot-label">Magnéto 1</div>
                         <input type="file" onchange="handleUpload(this,'up-m1','Magneto1')">
                         <div class="upload-slot-thumb"></div>
@@ -1133,7 +1164,7 @@
                         </div>
                     </div>
                     <div class="upload-slot" id="up-m2">
-                        <div class="upload-slot-icon">🎬</div>
+                        <div class="upload-slot-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
                         <div class="upload-slot-label">Magnéto 2</div>
                         <input type="file" onchange="handleUpload(this,'up-m2','Magneto2')">
                         <div class="upload-slot-thumb"></div>
@@ -1146,7 +1177,7 @@
                         </div>
                     </div>
                     <div class="upload-slot" id="up-m3">
-                        <div class="upload-slot-icon">🎬</div>
+                        <div class="upload-slot-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
                         <div class="upload-slot-label">Magnéto 3</div>
                         <input type="file" onchange="handleUpload(this,'up-m3','Magneto3')">
                         <div class="upload-slot-thumb"></div>
@@ -1159,7 +1190,7 @@
                         </div>
                     </div>
                     <div class="upload-slot" id="up-ppt">
-                        <div class="upload-slot-icon">📊</div>
+                        <div class="upload-slot-icon"><svg viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
                         <div class="upload-slot-label">PPT</div>
                         <input type="file" onchange="handleUpload(this,'up-ppt','PPT')">
                         <div class="upload-slot-thumb"></div>
@@ -1172,7 +1203,7 @@
                         </div>
                     </div>
                     <div class="upload-slot" id="up-img">
-                        <div class="upload-slot-icon">🖼</div>
+                        <div class="upload-slot-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
                         <div class="upload-slot-label">Image</div>
                         <input type="file" onchange="handleUpload(this,'up-img','Image')">
                         <div class="upload-slot-thumb"></div>
@@ -1185,7 +1216,7 @@
                         </div>
                     </div>
                     <div class="upload-slot" id="up-autre">
-                        <div class="upload-slot-icon">📁</div>
+                        <div class="upload-slot-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
                         <div class="upload-slot-label">Autre</div>
                         <input type="file" onchange="handleUpload(this,'up-autre','Autre')">
                         <div class="upload-slot-thumb"></div>
@@ -1200,11 +1231,11 @@
                 </div>
                 <div class="download-row">
                     <div class="download-item">
-                        <div class="download-item-icon">📄</div>
+                        <div class="download-item-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
                         <div class="download-item-label">Modèle générique</div>
                     </div>
                     <div class="download-item">
-                        <div class="download-item-icon">📊</div>
+                        <div class="download-item-icon"><svg viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
                         <div class="download-item-label">Modèle PPT</div>
                     </div>
                 </div>
@@ -2197,6 +2228,6 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v19</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v20</div>
 </body>
 </html>
