@@ -250,12 +250,15 @@
     "heurePrep": "12:30",
     "prepDuration": 30,
     "ibmChaine": "https://video.ibm.com/channel/NffUJ2J2nzd",
+    "titreSynthe": "",
+    "commentaires": "",
     "toggles": {
       "diffIBM": true,
       "replay": true,
       "chat": true,
       "qr": false,
       "masquerQR": false,
+      "portailInscription": false,
       "synthes": true,
       "diffGen": true,
       "fournisGen": true,
@@ -265,7 +268,7 @@
     "application": null,
     "intervenants": [],
     "mode": "visio",
-    "updatedAt": "2026-02-20T10:38:45.240Z"
+    "updatedAt": "2026-02-20T13:51:47.244Z"
   },
   "1771584321250": {
     "id": "1771584321250",
