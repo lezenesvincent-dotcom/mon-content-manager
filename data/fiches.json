@@ -159,10 +159,16 @@
         "prenom": "",
         "fonction": "",
         "entreprise": ""
+      },
+      {
+        "nom": "ERIC ",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-02-20T14:14:54.848Z"
+    "updatedAt": "2026-02-20T14:14:59.178Z"
   },
   "1771510110721": {
     "id": "1771510110721",
