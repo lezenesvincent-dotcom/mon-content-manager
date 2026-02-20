@@ -153,22 +153,9 @@
       "synthes": true
     },
     "application": null,
-    "intervenants": [
-      {
-        "nom": "Eric",
-        "prenom": "",
-        "fonction": "",
-        "entreprise": ""
-      },
-      {
-        "nom": "Eric Eric",
-        "prenom": "",
-        "fonction": "",
-        "entreprise": ""
-      }
-    ],
+    "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-20T14:15:05.931Z"
+    "updatedAt": "2026-02-20T14:15:13.127Z"
   },
   "1771510110721": {
     "id": "1771510110721",
