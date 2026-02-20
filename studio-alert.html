@@ -200,6 +200,7 @@
         </div>
         <div style="display:flex;align-items:center;gap:16px;">
             <div class="week-label" id="weekLabel"></div>
+            <button onclick="clearAllAlerts()" style="background:none;border:1px solid rgba(255,80,80,0.25);color:rgba(255,80,80,0.5);font-size:9px;padding:3px 10px;border-radius:6px;cursor:pointer;font-weight:600;letter-spacing:0.3px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,80,80,0.1)';this.style.borderColor='rgba(255,80,80,0.5)';this.style.color='rgba(255,80,80,0.8)'" onmouseout="this.style.background='none';this.style.borderColor='rgba(255,80,80,0.25)';this.style.color='rgba(255,80,80,0.5)'">Clear all</button>
             <div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncText">Connexion...</span></div>
         </div>
     </div>
@@ -742,6 +743,18 @@
         saveAlerts(); renderAlerts();
     }
 
+    function clearAllAlerts() {
+        if (!confirm('Supprimer TOUTES les alertes de la semaine ?')) return;
+        alerts = [];
+        saveAlerts(); renderAlerts();
+        if (ws && ws.readyState === WebSocket.OPEN)
+            ws.send(JSON.stringify({ type: 'studio-alert-update', data: { clearAll: true } }));
+        fetch(API_URL + '/api/studio-alerts', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify([])
+        }).catch(() => {});
+    }
+
     // ===== BROADCAST =====
     function broadcastAlert(alert) {
         if (ws && ws.readyState === WebSocket.OPEN)
@@ -961,6 +974,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v25</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v26</div>
 </body>
 </html>
