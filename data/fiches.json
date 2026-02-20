@@ -293,15 +293,8 @@
       "visite": true
     },
     "application": null,
-    "intervenants": [
-      {
-        "nom": "MARTIN",
-        "prenom": "",
-        "fonction": "",
-        "entreprise": ""
-      }
-    ],
+    "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-20T10:45:42.279Z"
+    "updatedAt": "2026-02-20T10:45:58.603Z"
   }
 }
