@@ -39,17 +39,17 @@
         /* EMITTER PICKER */
         .emitter-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
         .emitter-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; max-height: 200px; overflow-y: auto; padding: 4px; }
-        .prsnet-list { display: flex; flex-direction: column; gap: 2px; max-height: 220px; overflow-y: auto; margin-bottom: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
-        .prsnet-row { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; min-height: 32px; }
+        .prsnet-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; max-height: 240px; overflow-y: auto; margin-bottom: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+        .prsnet-row { display: flex; align-items: center; gap: 6px; padding: 3px 5px; border-radius: 5px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
         .prsnet-row:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
         .prsnet-row.selected { background: rgba(255,165,0,0.08); border-color: rgba(255,165,0,0.4); }
-        .prsnet-thumb { width: 36px; height: 24px; border-radius: 3px; background-size: cover; background-position: center; flex-shrink: 0; position: relative; overflow: hidden; }
-        .prsnet-thumb::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.15); }
+        .prsnet-thumb { width: 44px; height: 30px; border-radius: 4px; background-size: cover; background-position: center; flex-shrink: 0; position: relative; overflow: hidden; }
+        .prsnet-thumb::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.1); }
         .prsnet-info { flex: 1; min-width: 0; }
-        .prsnet-em-badge { display: inline-block; border-radius: 3px; padding: 1px 5px; font-size: 7px; font-weight: 800; color: #fff; letter-spacing: 0.3px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); vertical-align: middle; }
-        .prsnet-title { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
-        .prsnet-meta { font-size: 7px; color: rgba(255,255,255,0.35); margin-top: 0px; }
-        .prsnet-state { font-size: 7px; margin-left: 4px; }
+        .prsnet-em-badge { display: inline-block; border-radius: 3px; padding: 1px 4px; font-size: 6px; font-weight: 800; color: #fff; letter-spacing: 0.2px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); vertical-align: middle; }
+        .prsnet-title { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
+        .prsnet-meta { font-size: 6.5px; color: rgba(255,255,255,0.3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .prsnet-state { font-size: 6px; margin-left: 3px; }
         .prsnet-state.pub { color: rgba(74,222,128,0.7); }
         .prsnet-state.draft { color: rgba(251,191,36,0.7); }
         .problem-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -961,6 +961,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v24</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v25</div>
 </body>
 </html>
