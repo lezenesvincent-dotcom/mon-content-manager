@@ -1297,8 +1297,22 @@
         var d = document.createElement('div');
         d.className = 'interv-row';
         d.innerHTML = '<span class="interv-num">' + rowCount + '</span><input type="text" placeholder="Nom"><input type="text" placeholder="Prénom"><input type="text" placeholder="Fonction"><input type="text" placeholder="Entreprise">';
+        d.querySelectorAll('input').forEach(function(inp){ inp.addEventListener('blur', capitalizeInput); });
         document.getElementById('intervenantsBody').appendChild(d);
     }
+
+    function capitalizeInput(e) {
+        var v = e.target.value.trim();
+        if (!v) return;
+        e.target.value = v.split(/[\s-]+/).map(function(word, i, arr) {
+            if (!word) return '';
+            var cap = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            return cap;
+        }).join(v.indexOf('-') !== -1 ? '-' : ' ');
+    }
+
+    // Apply to existing rows
+    document.querySelectorAll('.interv-row input').forEach(function(inp){ inp.addEventListener('blur', capitalizeInput); });
 
     function updatePrepDisplay() {
         var t = document.getElementById('heureDirect').textContent || '13:00';
