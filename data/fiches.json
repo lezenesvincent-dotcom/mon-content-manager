@@ -337,8 +337,8 @@
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
-    "heurePrep": "12:30",
-    "prepDuration": 30,
+    "heurePrep": "12:00",
+    "prepDuration": 60,
     "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
     "titreSynthe": "",
     "commentaires": "",
@@ -358,6 +358,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-20T14:37:12.916Z"
+    "updatedAt": "2026-02-20T14:42:40.042Z"
   }
 }
