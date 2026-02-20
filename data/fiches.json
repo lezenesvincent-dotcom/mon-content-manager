@@ -153,9 +153,16 @@
       "synthes": true
     },
     "application": null,
-    "intervenants": [],
+    "intervenants": [
+      {
+        "nom": "",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": "Cic Mmdzrket Solcxuud"
+      }
+    ],
     "mode": "studio",
-    "updatedAt": "2026-02-20T14:15:13.127Z"
+    "updatedAt": "2026-02-20T14:15:19.855Z"
   },
   "1771510110721": {
     "id": "1771510110721",
