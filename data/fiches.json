@@ -146,16 +146,16 @@
       "qr": true,
       "masquerQR": true,
       "portailInscription": false,
-      "synthes": true,
       "diffGen": true,
       "fournisGen": true,
       "studioGen": false,
-      "visite": true
+      "visite": true,
+      "synthes": true
     },
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-20T10:43:47.832Z"
+    "updatedAt": "2026-02-20T13:58:33.118Z"
   },
   "1771510110721": {
     "id": "1771510110721",
