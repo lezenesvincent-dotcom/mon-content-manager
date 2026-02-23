@@ -418,7 +418,7 @@
     document.addEventListener('keydown',function(e){if(!selectedLayer)return;var s=e.shiftKey?1:3;if(e.key==='ArrowUp'){moveOnce(0,-s);e.preventDefault();}if(e.key==='ArrowDown'){moveOnce(0,s);e.preventDefault();}if(e.key==='ArrowLeft'){moveOnce(-s,0);e.preventDefault();}if(e.key==='ArrowRight'){moveOnce(s,0);e.preventDefault();}if(e.key==='Escape')deselectAll();});
 
     async function transmitPRSNET(){
-        if(!selectedDraft||!selectedDraft.id){alert('Sélectionne d\'abord un brouillon PRSNET');return;}
+        if(!selectedDraft||!selectedDraft.id){alert('Sélectionne d\'abord un brouillon PRSNET (cliquer dessus dans la grille Brouillons PRSNET en haut)');return;}
         var btn=event.target.closest('button');btn.disabled=true;btn.textContent='⏳ Upload...';
         try{
             // Générer le PNG en canvas (comme exportPNG mais sans télécharger)
@@ -604,7 +604,7 @@
             await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/vignettes-recent.json',{method:'PUT',headers:h,body:JSON.stringify(body)});
         }catch(e){console.error('Save vig recents:',e);}
     }
-    function saveRecent(dataUrl,subject){vigRecents.unshift({img:dataUrl,subject:subject||'',emission:currentEmission,analystIds:selectedIntervenants.map(function(c){return c.id}),date:new Date().toISOString()});if(vigRecents.length>50)vigRecents=vigRecents.slice(0,50);renderRecent();saveVigRecentsToGH();}
+    function saveRecent(dataUrl,subject){vigRecents.unshift({img:dataUrl,subject:subject||'',emission:currentEmission,analystIds:selectedIntervenants.map(function(c){return c.id}),date:new Date().toISOString(),draft:selectedDraft?{id:selectedDraft.id,title:selectedDraft.title,url:selectedDraft.url}:null});if(vigRecents.length>50)vigRecents=vigRecents.slice(0,50);renderRecent();saveVigRecentsToGH();}
     function manualSave(){
         var frame=document.getElementById('previewFrame'),W=1920,H=1080;
         var canvas=document.getElementById('exportCanvas');canvas.width=W;canvas.height=H;
@@ -653,7 +653,7 @@
         renderRecent();
         saveVigRecentsToGH();
     }
-    function loadRecent(idx){try{var v=vigRecents[idx];if(!v)return;resetForm();document.getElementById('fieldSubject').value=v.subject||'';if(v.emission){var btn=document.querySelector('[data-emission="'+v.emission+'"]');if(btn)selectEmission(btn);}if(v.analystIds&&v.analystIds.length){var trySet=function(){if(contacts.length>0){v.analystIds.forEach(function(id){var c=contacts.find(function(x){return x.id===id});if(c)selectedIntervenants.push(c);});refreshDropdown();renderIntervenants();updatePreview();}else{setTimeout(trySet,200);}};trySet();}}catch(e){}}
+    function loadRecent(idx){try{var v=vigRecents[idx];if(!v)return;resetForm();if(v.draft){selectedDraft=v.draft;}document.getElementById('fieldSubject').value=v.subject||'';if(v.emission){var btn=document.querySelector('[data-emission="'+v.emission+'"]');if(btn)selectEmission(btn);}if(v.analystIds&&v.analystIds.length){var trySet=function(){if(contacts.length>0){v.analystIds.forEach(function(id){var c=contacts.find(function(x){return x.id===id});if(c)selectedIntervenants.push(c);});refreshDropdown();renderIntervenants();updatePreview();}else{setTimeout(trySet,200);}};trySet();}}catch(e){}}
     function renderRecent(){try{var grid=document.getElementById('recentGrid');grid.innerHTML='';if(vigRecents.length===0){for(var i=0;i<3;i++){var d=document.createElement('div');d.className='thumb-slot';grid.appendChild(d);}return;}vigRecents.forEach(function(v,i){var d=document.createElement('div');d.className='thumb-slot';d.innerHTML=(v.img?'<img src="'+v.img+'">':'')+'<div class="slot-label">'+(v.subject||'')+'</div><div class="slot-edit"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div><button class="slot-delete" onclick="deleteRecent('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>';d.onclick=(function(i){return function(e){if(e.target.closest('.slot-delete'))return;loadRecent(i)}})(i);grid.appendChild(d);});}catch(e){}}
     renderRecent();
 
@@ -1106,6 +1106,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v36</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v37</div>
 </body>
 </html>
