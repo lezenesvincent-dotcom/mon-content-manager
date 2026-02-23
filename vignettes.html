@@ -418,7 +418,34 @@
     document.addEventListener('keydown',function(e){if(!selectedLayer)return;var s=e.shiftKey?1:3;if(e.key==='ArrowUp'){moveOnce(0,-s);e.preventDefault();}if(e.key==='ArrowDown'){moveOnce(0,s);e.preventDefault();}if(e.key==='ArrowLeft'){moveOnce(-s,0);e.preventDefault();}if(e.key==='ArrowRight'){moveOnce(s,0);e.preventDefault();}if(e.key==='Escape')deselectAll();});
 
     async function transmitPRSNET(){
-        if(!selectedDraft||!selectedDraft.id){alert('Sélectionne d\'abord un brouillon PRSNET (cliquer dessus dans la grille Brouillons PRSNET en haut)');return;}
+        // Si pas de draft sélectionné, chercher dans les brouillons chargés
+        if(!selectedDraft||!selectedDraft.id){
+            var subject=document.getElementById('fieldSubject').value.trim().toLowerCase();
+            var slots=document.querySelectorAll('#prsnetGrid .thumb-slot');
+            if(subject&&slots.length>0){
+                // Chercher un brouillon dont le titre contient le sujet
+                // Les brouillons sont stockés dans les titres des slots
+                try{
+                    var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/prsnet-drafts.json',{headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'},cache:'no-store'});
+                    if(r.ok){var d=await r.json();var data=JSON.parse(decodeURIComponent(escape(atob(d.content))));var drafts=data.drafts||[];
+                    for(var i=0;i<drafts.length;i++){
+                        var dt=(drafts[i].title||'').toLowerCase();
+                        if(dt.indexOf(subject)>=0||subject.indexOf(dt.replace(/^(morning meeting|conf call|hot|direct analystes)\s*/i,'').trim())>=0){
+                            selectedDraft=drafts[i];break;
+                        }
+                    }
+                    // Si pas trouvé par sujet, prendre le premier brouillon de la même émission
+                    if(!selectedDraft){
+                        var emMap={'morning':'morning','conf':'conf call','hot':'hot','da':'direct analystes','dc':'direct corporate','expert':'direct expert','echo':'echo','decryptage':'decryptage'};
+                        var emKey=emMap[currentEmission]||'';
+                        if(emKey){for(var i=0;i<drafts.length;i++){
+                            if((drafts[i].title||'').toLowerCase().indexOf(emKey)>=0){selectedDraft=drafts[i];break;}
+                        }}
+                    }}
+                }catch(e){console.error(e);}
+            }
+        }
+        if(!selectedDraft||!selectedDraft.id){alert('Aucun brouillon PRSNET trouvé. Clique sur un brouillon dans la grille en haut.');return;}
         var btn=event.target.closest('button');btn.disabled=true;btn.textContent='⏳ Upload...';
         try{
             // Générer le PNG en canvas (comme exportPNG mais sans télécharger)
@@ -1106,6 +1133,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v37</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v38</div>
 </body>
 </html>
