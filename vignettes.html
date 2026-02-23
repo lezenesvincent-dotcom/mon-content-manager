@@ -98,8 +98,8 @@
         [contenteditable=true]{outline:1px dashed rgba(0,140,255,0.6);outline-offset:4px;border-radius:3px;cursor:text}
         [contenteditable=true]:focus{outline:2px solid rgba(0,140,255,0.8)}
         .bottom-bar{bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 70%,transparent 100%);padding:36px 4% 3% 4%}
-        .bottom-emission{text-align:center;margin-bottom:8px}
-        .bottom-emission-text{font-size:clamp(14px,2vw,24px);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;text-shadow:0 2px 8px rgba(0,0,0,0.6)}
+        .bottom-emission{text-align:center;margin-bottom:8px;position:relative;top:-20px}
+        .bottom-emission-text{font-size:clamp(20px,2.6vw,30px);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;text-shadow:0 2px 8px rgba(0,0,0,0.6)}
         .bottom-names{display:flex;gap:24px;flex-wrap:wrap}
         .bottom-person .person-name{font-size:clamp(12px,1.5vw,18px);font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.6)}
         .bottom-person .person-title{font-size:clamp(8px,0.9vw,12px);font-weight:400;color:rgba(255,255,255,0.7);margin-top:1px}
@@ -360,11 +360,23 @@
         else{document.getElementById('previewType').textContent='';}
         // Bottom names
         var bn=document.getElementById('bottomNames');bn.innerHTML='';
-        selectedIntervenants.forEach(function(c){
-            var d=document.createElement('div');d.className='bottom-person';
-            d.innerHTML='<div class="person-name" ondblclick="makeEditable(event,this)">'+c.firstName+' '+c.lastName+'</div>'+(c.function?'<div class="person-title" ondblclick="makeEditable(event,this)">'+c.function+'</div>':'')+'<div class="person-company" ondblclick="makeEditable(event,this)">'+(c.company||'')+'</div>';
-            bn.appendChild(d);
-        });
+        var n=selectedIntervenants.length;
+        if(n>2){
+            bn.style.flexDirection='row';bn.style.alignItems='center';bn.style.gap='8px';bn.style.justifyContent='center';
+            selectedIntervenants.forEach(function(c,i){
+                var d=document.createElement('div');d.className='bottom-person';
+                d.innerHTML='<div class="person-name" ondblclick="makeEditable(event,this)" style="font-size:clamp(10px,1.2vw,15px)">'+c.firstName+' '+c.lastName+'</div>';
+                bn.appendChild(d);
+                if(i<n-1){var sep=document.createElement('span');sep.style.cssText='color:rgba(255,255,255,0.3);font-size:10px';sep.textContent='·';bn.appendChild(sep);}
+            });
+        }else{
+            bn.style.flexDirection='';bn.style.alignItems='';bn.style.gap='24px';bn.style.justifyContent='';
+            selectedIntervenants.forEach(function(c){
+                var d=document.createElement('div');d.className='bottom-person';
+                d.innerHTML='<div class="person-name" ondblclick="makeEditable(event,this)">'+c.firstName+' '+c.lastName+'</div>'+(c.function?'<div class="person-title" ondblclick="makeEditable(event,this)">'+c.function+'</div>':'')+'<div class="person-company" ondblclick="makeEditable(event,this)">'+(c.company||'')+'</div>';
+                bn.appendChild(d);
+            });
+        }
     }
 
     function resetForm(){document.getElementById('fieldSubject').value='';selectedIntervenants=[];activeIntervenantIdx=-1;photoOverride=null;
@@ -924,6 +936,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v29</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v31</div>
 </body>
 </html>
