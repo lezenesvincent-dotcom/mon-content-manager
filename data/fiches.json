@@ -151,10 +151,10 @@
       "visite": true,
       "synthes": true
     },
-    "application": "IBM",
+    "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-23T14:31:35.193Z"
+    "updatedAt": "2026-02-23T14:31:38.232Z"
   },
   "1771510110721": {
     "id": "1771510110721",
