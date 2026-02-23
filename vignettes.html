@@ -56,7 +56,7 @@
         .field input{background-image:none}
         .field input:focus,.field select:focus{border-color:rgba(0,140,255,0.5)}
         .field input::placeholder{color:rgba(255,255,255,0.2)}
-        .field select option{background:#1a1c28;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif !important}
+        .field select option{background:#1a1c28;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif !important;text-transform:uppercase}
         .add-btn{width:24px;height:24px;border-radius:8px;background:rgba(0,140,255,0.2);border:1px solid rgba(0,140,255,0.3);color:#4da8ff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
         .add-btn:hover{background:rgba(0,140,255,0.4)}
         .interv-card{background:rgba(255,255,255,0.04);border-radius:10px;padding:8px 10px;margin-bottom:6px;display:flex;align-items:center;gap:8px;position:relative;cursor:pointer;transition:all 0.15s;border:1px solid transparent}
@@ -68,7 +68,7 @@
         .interv-card .ic-level:active{cursor:grabbing}
         .interv-card .ic-avatar{width:32px;height:32px;border-radius:8px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.1)}
         .interv-card .ic-avatar img{width:100%;height:100%;object-fit:cover;object-position:25% 15%}
-        .interv-card .ic-name{font-size:12px;font-weight:600}
+        .interv-card .ic-name{font-size:12px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif !important;text-transform:uppercase;letter-spacing:0.3px}
         .interv-card .ic-spec{font-size:9px;color:rgba(255,255,255,0.4)}
         .interv-card .ic-center,.interv-card .ic-mirror{width:22px;height:22px;border-radius:6px;background:rgba(0,140,255,0.25);border:none;color:#4da8ff;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0}
         .interv-card.selected .ic-center,.interv-card.selected .ic-mirror{display:flex}
@@ -265,7 +265,7 @@
     function refreshDropdown(){
         var sel=document.getElementById('analystSelect');sel.innerHTML='<option value="">Ajouter un intervenant...</option>';
         var used=selectedIntervenants.map(function(a){return a.id});
-        contacts.filter(function(c){return used.indexOf(c.id)===-1}).sort(function(a,b){return a.lastName.localeCompare(b.lastName)}).forEach(function(c){var o=document.createElement('option');o.value=c.id;o.textContent=c.firstName+' '+c.lastName;sel.appendChild(o);});
+        contacts.filter(function(c){return used.indexOf(c.id)===-1}).sort(function(a,b){return a.firstName.localeCompare(b.firstName)}).forEach(function(c){var o=document.createElement('option');o.value=c.id;o.textContent=(c.firstName+' '+c.lastName).toUpperCase();sel.appendChild(o);});
     }
 
     function pickAnalyst(){
@@ -924,6 +924,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v28</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v29</div>
 </body>
 </html>
