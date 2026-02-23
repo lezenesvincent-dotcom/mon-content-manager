@@ -207,9 +207,8 @@
                 </div>
             </div>
             <div class="preview-col">
-                <div style="position:relative">
-                <button class="save-btn" onclick="manualSave()">💾 SAVE</button>
                 <div class="preview-frame" id="previewFrame">
+                    <button class="save-btn" onclick="event.stopPropagation();manualSave()">💾 SAVE</button>
                     <div class="vignette-canvas" id="vignetteCanvas" onclick="deselectAll(event)">
                         <img class="bg-img" id="bgImg" src="vignette-assets/MORNING_FOND.png" alt="">
                         <div class="photos-container" id="photosContainer"></div>
@@ -217,7 +216,6 @@
                         <div class="spec-block drag-layer" id="specBlock" onclick="selectLayer(event,this)"><div class="spec-text" id="previewType" ondblclick="makeEditable(event,this)"></div></div>
                         <div class="bottom-bar drag-layer" id="bottomBar" onclick="selectLayer(event,this)"><div class="bottom-emission" id="bottomEmission"></div><div class="bottom-names" id="bottomNames"></div></div>
                     </div>
-                </div>
                 </div>
                 <div class="controls-bar">
                     <div class="joystick-wrap" id="joystickWrap"><div class="joystick">
@@ -1012,6 +1010,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v32</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v34</div>
 </body>
 </html>
