@@ -940,37 +940,44 @@
             </div>
             <div class="panel">
                 <div class="section-title">Diffusion</div>
-                <div class="toggle-row">
-                    <span class="toggle-label-text">Diffusion IBM</span>
-                    <div class="toggle-switch active" data-field="diffIBM" onclick="toggleSwitch(this)"></div>
-                </div>
                 <div class="field">
-                    <label>Chaîne</label>
-                    <select id="ibmChaine" onchange="onChaineSelect(this)">
-                        <option value="">Chaîne...</option>
-                        <option value="https://video.ibm.com/channel/dhWaG6DN5VF" selected>Solutions de marchés CIC</option>
-                        <option value="https://video.ibm.com/channel/6JAvvSqAWfG">Crédit Mutuel Alliance Fédérale</option>
-                        <option value="https://video.ibm.com/channel/wgYXBRG5D89">Ligne métier communication</option>
-                        <option value="https://video.ibm.com/channel/U9p5hKnPQzr">Cap Compétences</option>
-                        <option value="https://video.ibm.com/channel/QqqjDP8aRSK">CIC Banque Privée</option>
-                        <option value="https://video.ibm.com/channel/2mxWDJXfN3g">Banque Européenne du Crédit Mutuel</option>
-                        <option value="https://video.ibm.com/channel/VaknyevYmxQ">Banque Transatlantique</option>
-                        <option value="https://video.ibm.com/channel/rPQcjnAqWnm">Banque Transatlantique interne</option>
-                        <option value="https://video.ibm.com/channel/eez4Cj2bKy4">Banque Fédérative Crédit Mutuel</option>
-                        <option value="https://video.ibm.com/channel/cEEeVMhM53F">CIC</option>
-                        <option value="https://video.ibm.com/channel/Rv4G7ByxQnq">CIC Corporate</option>
-                        <option value="https://video.ibm.com/channel/jtBTPeTtRYb">CIC Île-de-France</option>
-                        <option value="https://video.ibm.com/channel/MEXuyQAKeeT">Crédit Mutuel Asset Management</option>
-                        <option value="https://video.ibm.com/channel/vhaQCJkLZMj">Crédit Mutuel Elles</option>
-                        <option value="https://video.ibm.com/channel/NffUJ2J2nzd">Crédit Mutuel Épargne Salariale</option>
-                        <option value="https://video.ibm.com/channel/qwhttJ6fQkd">Crédit Mutuel Equity</option>
-                        <option value="https://video.ibm.com/channel/Pb8cPgShAZM">Crédit Mutuel Immobilier</option>
-                        <option value="https://video.ibm.com/channel/yMRGtf6bMFv">Direction Contentieux</option>
-                        <option value="https://video.ibm.com/channel/YDfG86mzFfY">Direction des contentieux</option>
-                        <option value="https://video.ibm.com/channel/qRcUJzudurF">Direction des Ressources Humaines</option>
-                        <option value="https://video.ibm.com/channel/tSuADdWrBtZ">Université Mutualiste</option>
-                        <option value="https://video.ibm.com/channel/6PFpRYafesd">Webinaire BECM</option>
-                    </select>
+                    <label>Plateforme</label>
+                    <div class="radio-pills">
+                        <div class="radio-pill" onclick="selectApp(this)">ZOOM</div>
+                        <div class="radio-pill" onclick="selectApp(this)">WEBEX</div>
+                        <div class="radio-pill" onclick="selectApp(this)">TEAMS</div>
+                        <div class="radio-pill" onclick="selectApp(this)">IBM</div>
+                    </div>
+                </div>
+                <div id="ibmSection" style="display:none">
+                    <div class="field">
+                        <label>Chaîne</label>
+                        <select id="ibmChaine" onchange="onChaineSelect(this)">
+                            <option value="">Chaîne...</option>
+                            <option value="https://video.ibm.com/channel/dhWaG6DN5VF" selected>Solutions de marchés CIC</option>
+                            <option value="https://video.ibm.com/channel/6JAvvSqAWfG">Crédit Mutuel Alliance Fédérale</option>
+                            <option value="https://video.ibm.com/channel/wgYXBRG5D89">Ligne métier communication</option>
+                            <option value="https://video.ibm.com/channel/U9p5hKnPQzr">Cap Compétences</option>
+                            <option value="https://video.ibm.com/channel/QqqjDP8aRSK">CIC Banque Privée</option>
+                            <option value="https://video.ibm.com/channel/2mxWDJXfN3g">Banque Européenne du Crédit Mutuel</option>
+                            <option value="https://video.ibm.com/channel/VaknyevYmxQ">Banque Transatlantique</option>
+                            <option value="https://video.ibm.com/channel/rPQcjnAqWnm">Banque Transatlantique interne</option>
+                            <option value="https://video.ibm.com/channel/eez4Cj2bKy4">Banque Fédérative Crédit Mutuel</option>
+                            <option value="https://video.ibm.com/channel/cEEeVMhM53F">CIC</option>
+                            <option value="https://video.ibm.com/channel/Rv4G7ByxQnq">CIC Corporate</option>
+                            <option value="https://video.ibm.com/channel/jtBTPeTtRYb">CIC Île-de-France</option>
+                            <option value="https://video.ibm.com/channel/MEXuyQAKeeT">Crédit Mutuel Asset Management</option>
+                            <option value="https://video.ibm.com/channel/vhaQCJkLZMj">Crédit Mutuel Elles</option>
+                            <option value="https://video.ibm.com/channel/NffUJ2J2nzd">Crédit Mutuel Épargne Salariale</option>
+                            <option value="https://video.ibm.com/channel/qwhttJ6fQkd">Crédit Mutuel Equity</option>
+                            <option value="https://video.ibm.com/channel/Pb8cPgShAZM">Crédit Mutuel Immobilier</option>
+                            <option value="https://video.ibm.com/channel/yMRGtf6bMFv">Direction Contentieux</option>
+                            <option value="https://video.ibm.com/channel/YDfG86mzFfY">Direction des contentieux</option>
+                            <option value="https://video.ibm.com/channel/qRcUJzudurF">Direction des Ressources Humaines</option>
+                            <option value="https://video.ibm.com/channel/tSuADdWrBtZ">Université Mutualiste</option>
+                            <option value="https://video.ibm.com/channel/6PFpRYafesd">Webinaire BECM</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="sep"></div>
                 <div class="toggle-row">
@@ -997,14 +1004,6 @@
                 <div style="margin-top:3px">
                     <label style="display:block;font-size:8px;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">Synthé titre</label>
                     <textarea id="titreSynthe" placeholder="" spellcheck="false" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:7px 10px;color:#fff;font-size:11px;font-weight:400;font-family:inherit;outline:none;resize:none;height:38px;line-height:1.4"></textarea>
-                </div>
-                <div class="field">
-                    <label>Application distante</label>
-                    <div class="radio-pills">
-                        <div class="radio-pill" onclick="selectApp(this)">ZOOM</div>
-                        <div class="radio-pill" onclick="selectApp(this)">WEBEX</div>
-                        <div class="radio-pill" onclick="selectApp(this)">TEAMS</div>
-                    </div>
                 </div>
             </div>
             <div class="panel">
@@ -1294,6 +1293,8 @@
             p.classList.remove('active')
         });
         el.classList.add('active');
+        var ibmSection = document.getElementById('ibmSection');
+        ibmSection.style.display = el.textContent.trim() === 'IBM' ? 'block' : 'none';
         updateSummary();
         scheduleAutoSave();
     }
@@ -1703,6 +1704,7 @@
             document.querySelectorAll('.radio-pill').forEach(function(p) {
                 p.classList.toggle('active', p.textContent === data.application);
             });
+            document.getElementById('ibmSection').style.display = data.application === 'IBM' ? 'block' : 'none';
         }
         if (data.mode)
             selectMode(data.mode);
@@ -2228,6 +2230,6 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v37</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v38</div>
 </body>
 </html>
