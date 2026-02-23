@@ -462,33 +462,47 @@
             drawPhotos(function(){
                 var subject=document.getElementById('previewSubject').textContent;
                 var fRect=frame.getBoundingClientRect();
-                // Title - top right
+                // Title - top right, bigger
                 if(subject){
-                ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='900 80px -apple-system,Helvetica,sans-serif';
+                ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='900 120px -apple-system,Helvetica,sans-serif';
                 ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=20;
-                ctx.fillText(subject,W*0.97,H*0.04+80);ctx.shadowBlur=0;}
-                // Spec - just below title, tight
+                ctx.fillText(subject,W*0.97,H*0.04+120);ctx.shadowBlur=0;}
+                // Spec - just below title
                 var specLabel=document.getElementById('previewType').textContent;
                 if(specLabel){
-                ctx.textAlign='right';ctx.font='600 28px -apple-system,Helvetica,sans-serif';ctx.fillStyle='rgba(255,255,255,0.7)';ctx.letterSpacing='2px';
-                ctx.fillText(specLabel,W*0.97,H*0.04+80+34);}
+                ctx.textAlign='right';ctx.font='600 32px -apple-system,Helvetica,sans-serif';ctx.fillStyle='rgba(255,255,255,0.7)';
+                ctx.fillText(specLabel,W*0.97,H*0.04+120+40);}
                 // Bottom gradient
-                var grad=ctx.createLinearGradient(0,H*0.6,0,H);grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(0.5,'rgba(0,0,0,0.5)');grad.addColorStop(1,'rgba(0,0,0,0.85)');ctx.fillStyle=grad;ctx.fillRect(0,H*0.6,W,H*0.4);
-                // Names — read from DOM
+                var grad=ctx.createLinearGradient(0,H*0.55,0,H);grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(0.5,'rgba(0,0,0,0.5)');grad.addColorStop(1,'rgba(0,0,0,0.85)');ctx.fillStyle=grad;ctx.fillRect(0,H*0.55,W,H*0.45);
+                // Emission title (CONFÉRENCE HEBDO etc)
+                var emTitle=EMISSION_TITLES[currentEmission]||'';
+                if(emTitle){
+                ctx.textAlign='center';ctx.font='900 56px -apple-system,Helvetica,sans-serif';ctx.fillStyle='#fff';
+                ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=12;ctx.letterSpacing='4px';
+                ctx.fillText(emTitle,W/2,H-90);ctx.shadowBlur=0;}
+                // Names — compact on one line when >2
                 var personEls=document.querySelectorAll('.bottom-person');
-                var nameFontSize=n<=2?48:n<=4?36:28;
-                var fnFontSize=n<=2?30:n<=4?22:16;
-                var bx=W*0.04,by=H-20,gap=n<=2?0:n<=4?W*0.25:W/Math.max(n,1);
-                ctx.textAlign='left';
-                personEls.forEach(function(pe,i){
-                    var x=bx+(i*gap);
-                    var nameEl=pe.querySelector('.person-name');
-                    var titleEl=pe.querySelector('.person-title');
-                    var compEl=pe.querySelector('.person-company');
-                    if(nameEl){ctx.font='700 '+nameFontSize+'px -apple-system,Helvetica,sans-serif';ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=8;ctx.fillText(nameEl.textContent,x,by-fnFontSize*2);ctx.shadowBlur=0;}
-                    if(titleEl){ctx.font='400 '+fnFontSize+'px -apple-system,Helvetica,sans-serif';ctx.fillStyle='rgba(255,255,255,0.75)';ctx.fillText(titleEl.textContent,x,by-fnFontSize);}
-                    if(compEl){ctx.font='500 '+fnFontSize+'px -apple-system,Helvetica,sans-serif';ctx.fillStyle='rgba(255,255,255,0.6)';ctx.fillText(compEl.textContent,x,by);}
-                });
+                if(n>2){
+                    // Compact mode: all names on one line centered, separated by ·
+                    var names=[];personEls.forEach(function(pe){var ne=pe.querySelector('.person-name');if(ne)names.push(ne.textContent);});
+                    var nameStr=names.join('  ·  ');
+                    ctx.textAlign='center';ctx.font='600 32px -apple-system,Helvetica,sans-serif';ctx.fillStyle='rgba(255,255,255,0.85)';
+                    ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=6;
+                    ctx.fillText(nameStr,W/2,H-30);ctx.shadowBlur=0;
+                }else{
+                    var nameFontSize=48,fnFontSize=30;
+                    var bx=W*0.04,by=H-20;
+                    ctx.textAlign='left';
+                    personEls.forEach(function(pe,i){
+                        var x=bx+(i*(W*0.45));
+                        var nameEl=pe.querySelector('.person-name');
+                        var titleEl=pe.querySelector('.person-title');
+                        var compEl=pe.querySelector('.person-company');
+                        if(nameEl){ctx.font='700 '+nameFontSize+'px -apple-system,Helvetica,sans-serif';ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=8;ctx.fillText(nameEl.textContent,x,by-fnFontSize*2);ctx.shadowBlur=0;}
+                        if(titleEl){ctx.font='400 '+fnFontSize+'px -apple-system,Helvetica,sans-serif';ctx.fillStyle='rgba(255,255,255,0.75)';ctx.fillText(titleEl.textContent,x,by-fnFontSize);}
+                        if(compEl){ctx.font='500 '+fnFontSize+'px -apple-system,Helvetica,sans-serif';ctx.fillStyle='rgba(255,255,255,0.6)';ctx.fillText(compEl.textContent,x,by);}
+                    });
+                }
                 var link=document.createElement('a');var subj=subject||'vignette';link.download=subj.toUpperCase()+'_'+selectedIntervenants.map(function(c){return c.lastName}).join('_')+'.png';link.href=canvas.toDataURL('image/png');link.click();
                 saveRecent(canvas.toDataURL('image/jpeg',0.8),subject);
             });
@@ -549,9 +563,13 @@
                 };img.onerror=function(){loaded++;if(loaded===total)finish();};img.src=imgEl.src;
             });
             function finish(){
-                var grad=ctx.createLinearGradient(0,H*0.6,0,H);grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(0.5,'rgba(0,0,0,0.5)');grad.addColorStop(1,'rgba(0,0,0,0.85)');ctx.fillStyle=grad;ctx.fillRect(0,H*0.6,W,H*0.4);
+                var grad=ctx.createLinearGradient(0,H*0.55,0,H);grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(0.5,'rgba(0,0,0,0.5)');grad.addColorStop(1,'rgba(0,0,0,0.85)');ctx.fillStyle=grad;ctx.fillRect(0,H*0.55,W,H*0.45);
                 var subject=document.getElementById('previewSubject').textContent;
-                if(subject){ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='900 80px -apple-system,Helvetica,sans-serif';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=20;ctx.fillText(subject,W*0.97,H*0.04+80);ctx.shadowBlur=0;}
+                if(subject){ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='900 120px -apple-system,Helvetica,sans-serif';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=20;ctx.fillText(subject,W*0.97,H*0.04+120);ctx.shadowBlur=0;}
+                var emTitle=EMISSION_TITLES[currentEmission]||'';
+                if(emTitle){ctx.textAlign='center';ctx.font='900 56px -apple-system,Helvetica,sans-serif';ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=12;ctx.fillText(emTitle,W/2,H-90);ctx.shadowBlur=0;}
+                var personEls=document.querySelectorAll('.bottom-person');
+                if(n>2){var names=[];personEls.forEach(function(pe){var ne=pe.querySelector('.person-name');if(ne)names.push(ne.textContent);});ctx.textAlign='center';ctx.font='600 32px -apple-system,Helvetica,sans-serif';ctx.fillStyle='rgba(255,255,255,0.85)';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=6;ctx.fillText(names.join('  ·  '),W/2,H-30);ctx.shadowBlur=0;}
                 saveRecent(canvas.toDataURL('image/jpeg',0.7),subject||'');
             }
         };bgImg.src=EMISSIONS[currentEmission].bg;
@@ -1010,6 +1028,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v34</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v35</div>
 </body>
 </html>
