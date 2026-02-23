@@ -140,7 +140,6 @@
     "titreSynthe": "",
     "commentaires": "",
     "toggles": {
-      "diffIBM": true,
       "replay": true,
       "chat": true,
       "qr": true,
@@ -155,7 +154,7 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-23T13:13:09.456Z"
+    "updatedAt": "2026-02-23T14:31:03.176Z"
   },
   "1771510110721": {
     "id": "1771510110721",
