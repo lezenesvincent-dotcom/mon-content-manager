@@ -200,11 +200,15 @@
                 <div style="text-align:center;margin-top:-4px;margin-bottom:8px"><a href="#" onclick="event.preventDefault();openNewContact()" style="font-size:11px;color:#4da8ff;text-decoration:none">+ Créer un nouvel intervenant</a></div>
                 <div class="section-title">Valeur / Sujet</div>
                 <div class="field"><input type="text" id="fieldSubject" placeholder="Ex: VINCI, CAC 40..." oninput="updatePreview()"></div>
-                <div class="section-title">Photo (override)</div>
-                <div class="photo-upload" id="photoUpload" onclick="document.getElementById('photoInput').click()">
-                    <div class="upload-text">📷 Cliquer ou glisser</div>
-                    <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto(this)">
+                <div class="section-title">Position</div>
+                <div style="display:flex;justify-content:center">
+                    <div class="joystick" id="sidebarJoystick">
+                        <div></div><div class="joy-btn" onmousedown="startMove(0,-3)" onmouseup="stopMove()" onmouseleave="stopMove()">⌃</div><div></div>
+                        <div class="joy-btn" onmousedown="startMove(-3,0)" onmouseup="stopMove()" onmouseleave="stopMove()">⟨</div><div class="joy-btn" style="cursor:default"><div class="joy-center"></div></div><div class="joy-btn" onmousedown="startMove(3,0)" onmouseup="stopMove()" onmouseleave="stopMove()">⟩</div>
+                        <div></div><div class="joy-btn" onmousedown="startMove(0,3)" onmouseup="stopMove()" onmouseleave="stopMove()">⌄</div><div></div>
+                    </div>
                 </div>
+                <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(this)">
             </div>
             <div class="preview-col">
                 <div class="preview-frame" id="previewFrame">
@@ -218,14 +222,11 @@
                     </div>
                 </div>
                 <div class="controls-bar">
-                    <div class="joystick-wrap" id="joystickWrap"><div class="joystick">
-                        <div></div><div class="joy-btn" onmousedown="startMove(0,-3)" onmouseup="stopMove()" onmouseleave="stopMove()">⌃</div><div></div>
-                        <div class="joy-btn" onmousedown="startMove(-3,0)" onmouseup="stopMove()" onmouseleave="stopMove()">⟨</div><div class="joy-btn" style="cursor:default"><div class="joy-center"></div></div><div class="joy-btn" onmousedown="startMove(3,0)" onmouseup="stopMove()" onmouseleave="stopMove()">⟩</div>
-                        <div></div><div class="joy-btn" onmousedown="startMove(0,3)" onmouseup="stopMove()" onmouseleave="stopMove()">⌄</div><div></div>
-                    </div></div>
-                    <button class="btn btn-primary" onclick="exportPNG()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Télécharger PNG</button>
-                    <button class="btn" style="background:linear-gradient(135deg,#0d9488,#06b6d4);color:#fff;box-shadow:0 4px 16px rgba(13,148,136,0.3)" onclick="transmitPRSNET()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>Transmettre PRSNET</button>
                     <button class="btn btn-secondary" onclick="resetForm()">↺ Reset</button>
+                    <div style="margin-left:auto;display:flex;gap:8px">
+                        <button class="btn" style="background:rgba(0,112,243,0.8);color:#fff;padding:8px 14px;font-size:11px;backdrop-filter:blur(8px)" onclick="exportPNG()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>PNG</button>
+                        <button class="btn" style="background:linear-gradient(135deg,#0d9488,#06b6d4);color:#fff;padding:8px 14px;font-size:11px;backdrop-filter:blur(8px)" onclick="transmitPRSNET()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>PRSNET</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -266,6 +267,15 @@
     var SPEC_LABELS={actions:'RECHERCHE ACTIONS',eco:'ÉCONOMIE & MARCHÉS FINANCIERS',esg:'RECHERCHE DÉVELOPPEMENT DURABLE',technique:'ANALYSE TECHNIQUE',credit:'CRÉDIT'};
     var currentEmission='morning',photoOverride=null,contacts=[],selectedIntervenants=[];
     var selectedDraft=null;
+    function showToast(title,msg,type){
+        var t=document.createElement('div');
+        var bg=type==='error'?'linear-gradient(135deg,#ef4444,#dc2626)':'linear-gradient(135deg,#0d9488,#06b6d4)';
+        t.style.cssText='position:fixed;top:24px;right:24px;z-index:99999;padding:16px 24px;border-radius:14px;background:'+bg+';color:#fff;font-family:-apple-system,Helvetica,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.4);backdrop-filter:blur(12px);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);max-width:360px';
+        t.innerHTML='<div style="font-weight:700;font-size:14px;margin-bottom:4px">'+title+'</div><div style="font-size:12px;opacity:0.9">'+msg+'</div>';
+        document.body.appendChild(t);
+        requestAnimationFrame(function(){t.style.transform='translateX(0)';});
+        setTimeout(function(){t.style.transform='translateX(120%)';setTimeout(function(){t.remove();},500);},4000);
+    }
     var GH_TOKEN=['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(function(s){return s.split('').reverse().join('')}).join('');
     var GH_REPO='lezenesvincent-dotcom/mon-content-manager';
 
@@ -311,7 +321,7 @@
         // Select corresponding photo-item in canvas
         document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});
         var photoEl=document.querySelector('.photo-item[data-idx="'+idx+'"]');
-        if(photoEl){photoEl.classList.add('selected');selectedLayer=photoEl;document.getElementById('joystickWrap').classList.add('visible');}
+        if(photoEl){photoEl.classList.add('selected');selectedLayer=photoEl;document.getElementById('sidebarJoystick').style.opacity='1';}
     }
     function centerPhoto(idx){
         var photoEl=document.querySelector('.photo-item[data-idx="'+idx+'"]');
@@ -328,12 +338,12 @@
     }
 
     function selectEmission(btn){document.querySelectorAll('.emission-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');currentEmission=btn.dataset.emission;document.getElementById('bgImg').src=EMISSIONS[currentEmission].bg;updateEmissionTitle();}
-    function handlePhoto(input){if(!input.files||!input.files[0])return;var reader=new FileReader();reader.onload=function(e){photoOverride=e.target.result;var u=document.getElementById('photoUpload'),ex=u.querySelector('img');if(ex)ex.remove();var img=document.createElement('img');img.src=photoOverride;u.appendChild(img);u.classList.add('has-photo');updatePreview();};reader.readAsDataURL(input.files[0]);}
-    var pu=document.getElementById('photoUpload');pu.addEventListener('dragover',function(e){e.preventDefault();this.style.borderColor='rgba(0,140,255,0.6)';});pu.addEventListener('dragleave',function(){this.style.borderColor='';});pu.addEventListener('drop',function(e){e.preventDefault();this.style.borderColor='';if(e.dataTransfer.files.length){document.getElementById('photoInput').files=e.dataTransfer.files;handlePhoto(document.getElementById('photoInput'));}});
+    function handlePhoto(input){if(!input.files||!input.files[0])return;var reader=new FileReader();reader.onload=function(e){photoOverride=e.target.result;updatePreview();};reader.readAsDataURL(input.files[0]);}
 
     function updateEmissionTitle(){
         var be=document.getElementById('bottomEmission');
-        var title=EMISSION_TITLES[currentEmission]||'';
+        // N'afficher le titre d'émission que pour Conf Hebdo
+        var title=(currentEmission==='conf')?EMISSION_TITLES[currentEmission]:'';
         if(title){be.innerHTML='<div class="bottom-emission-text" ondblclick="makeEditable(event,this)">'+title+'</div>';}
         else{be.innerHTML='';}
     }
@@ -409,8 +419,8 @@
     function finishEditing(el){el.contentEditable='false';window.getSelection().removeAllRanges();}
 
     var selectedLayer=null,moveInterval=null;
-    function selectLayer(e,el){e.stopPropagation();document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});el.classList.add('selected');selectedLayer=el;document.getElementById('joystickWrap').classList.add('visible');activeIntervenantIdx=-1;renderIntervenants();}
-    function deselectAll(e){if(e&&e.target&&(e.target.classList.contains('drag-layer')||e.target.classList.contains('photo-item')))return;document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});selectedLayer=null;activeIntervenantIdx=-1;renderIntervenants();document.getElementById('joystickWrap').classList.remove('visible');}
+    function selectLayer(e,el){e.stopPropagation();document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});el.classList.add('selected');selectedLayer=el;document.getElementById('sidebarJoystick').style.opacity='1';activeIntervenantIdx=-1;renderIntervenants();}
+    function deselectAll(e){if(e&&e.target&&(e.target.classList.contains('drag-layer')||e.target.classList.contains('photo-item')))return;document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});selectedLayer=null;activeIntervenantIdx=-1;renderIntervenants();document.getElementById('sidebarJoystick').style.opacity='0.3';}
     function startMove(dx,dy){if(!selectedLayer)return;moveOnce(dx,dy);moveInterval=setInterval(function(){moveOnce(dx,dy);},50);}
     function moveOnce(dx,dy){if(!selectedLayer)return;var tx=parseFloat(selectedLayer.dataset.tx||0)+dx,ty=parseFloat(selectedLayer.dataset.ty||0)+dy;selectedLayer.dataset.tx=tx;selectedLayer.dataset.ty=ty;var mirror='';var idx=selectedLayer.dataset.idx;if(idx!==undefined){var c=selectedIntervenants[parseInt(idx)];if(c&&c._mirrored)mirror=' scaleX(-1)';}selectedLayer.style.transform='translate('+tx+'px,'+ty+'px)'+mirror;}
     function stopMove(){if(moveInterval){clearInterval(moveInterval);moveInterval=null;}}
@@ -483,7 +493,7 @@
                         var subject=document.getElementById('previewSubject').textContent;
                         var grad=ctx.createLinearGradient(0,H*0.55,0,H);grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(0.5,'rgba(0,0,0,0.5)');grad.addColorStop(1,'rgba(0,0,0,0.85)');ctx.fillStyle=grad;ctx.fillRect(0,H*0.55,W,H*0.45);
                         if(subject){ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='900 120px -apple-system,Helvetica,sans-serif';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=20;ctx.fillText(subject,W*0.97,H*0.04+120);ctx.shadowBlur=0;}
-                        var emTitle=EMISSION_TITLES[currentEmission]||'';
+                        var emTitle=(currentEmission==='conf')?(EMISSION_TITLES[currentEmission]||''):'';
                         if(emTitle){ctx.textAlign='center';ctx.font='900 56px -apple-system,Helvetica,sans-serif';ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=12;ctx.fillText(emTitle,W/2,H-90);ctx.shadowBlur=0;}
                         var personEls=document.querySelectorAll('.bottom-person');
                         if(n>2){var names=[];personEls.forEach(function(pe){var ne=pe.querySelector('.person-name');if(ne)names.push(ne.textContent);});ctx.textAlign='center';ctx.font='600 32px -apple-system,Helvetica,sans-serif';ctx.fillStyle='rgba(255,255,255,0.85)';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=6;ctx.fillText(names.join('  ·  '),W/2,H-30);ctx.shadowBlur=0;}
@@ -507,11 +517,13 @@
             var pendingPath='vignettes-export/pending-'+selectedDraft.id+'.json';
             try{var ex2=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+pendingPath,{headers:h,cache:'no-store'});var sha2=null;if(ex2.ok)sha2=(await ex2.json()).sha;var body2={message:'pending vignette',content:pendingB64,branch:'main'};if(sha2)body2.sha=sha2;await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+pendingPath,{method:'PUT',headers:h,body:JSON.stringify(body2)});}catch(e){}
             btn.textContent='✅ Transmis !';btn.style.background='linear-gradient(135deg,#22c55e,#16a34a)';
-            setTimeout(function(){btn.disabled=false;btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>Transmettre PRSNET';btn.style.background='linear-gradient(135deg,#0d9488,#06b6d4)';},3000);
+            showToast('✅ Vignette transmise','« '+selectedDraft.title+' » envoyée vers PRSNET','success');
+            setTimeout(function(){btn.disabled=false;btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>PRSNET';btn.style.background='linear-gradient(135deg,#0d9488,#06b6d4)';},3000);
         }catch(e){
             console.error('Transmit PRSNET:',e);
             btn.textContent='❌ Erreur';btn.style.background='linear-gradient(135deg,#ef4444,#dc2626)';
-            setTimeout(function(){btn.disabled=false;btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>Transmettre PRSNET';btn.style.background='linear-gradient(135deg,#0d9488,#06b6d4)';},3000);
+            showToast('❌ Erreur transmission','Vérifiez la connexion','error');
+            setTimeout(function(){btn.disabled=false;btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>PRSNET';btn.style.background='linear-gradient(135deg,#0d9488,#06b6d4)';},3000);
         }
     }
 
@@ -575,7 +587,7 @@
                 // Bottom gradient
                 var grad=ctx.createLinearGradient(0,H*0.55,0,H);grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(0.5,'rgba(0,0,0,0.5)');grad.addColorStop(1,'rgba(0,0,0,0.85)');ctx.fillStyle=grad;ctx.fillRect(0,H*0.55,W,H*0.45);
                 // Emission title (CONFÉRENCE HEBDO etc)
-                var emTitle=EMISSION_TITLES[currentEmission]||'';
+                var emTitle=(currentEmission==='conf')?(EMISSION_TITLES[currentEmission]||''):'';
                 if(emTitle){
                 ctx.textAlign='center';ctx.font='900 56px -apple-system,Helvetica,sans-serif';ctx.fillStyle='#fff';
                 ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=12;ctx.letterSpacing='4px';
@@ -666,7 +678,7 @@
                 var grad=ctx.createLinearGradient(0,H*0.55,0,H);grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(0.5,'rgba(0,0,0,0.5)');grad.addColorStop(1,'rgba(0,0,0,0.85)');ctx.fillStyle=grad;ctx.fillRect(0,H*0.55,W,H*0.45);
                 var subject=document.getElementById('previewSubject').textContent;
                 if(subject){ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='900 120px -apple-system,Helvetica,sans-serif';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=20;ctx.fillText(subject,W*0.97,H*0.04+120);ctx.shadowBlur=0;}
-                var emTitle=EMISSION_TITLES[currentEmission]||'';
+                var emTitle=(currentEmission==='conf')?(EMISSION_TITLES[currentEmission]||''):'';
                 if(emTitle){ctx.textAlign='center';ctx.font='900 56px -apple-system,Helvetica,sans-serif';ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=12;ctx.fillText(emTitle,W/2,H-90);ctx.shadowBlur=0;}
                 var personEls=document.querySelectorAll('.bottom-person');
                 if(n>2){var names=[];personEls.forEach(function(pe){var ne=pe.querySelector('.person-name');if(ne)names.push(ne.textContent);});ctx.textAlign='center';ctx.font='600 32px -apple-system,Helvetica,sans-serif';ctx.fillStyle='rgba(255,255,255,0.85)';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=6;ctx.fillText(names.join('  ·  '),W/2,H-30);ctx.shadowBlur=0;}
@@ -1145,6 +1157,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v39</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v41</div>
 </body>
 </html>
