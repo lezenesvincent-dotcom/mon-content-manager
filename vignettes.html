@@ -26,7 +26,7 @@
         .panel-hero .hero-icon{width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center}
         .panel-hero .hero-icon svg{width:24px;height:24px;fill:none;stroke:rgba(255,255,255,0.6);stroke-width:2}
         .panel-hero .hero-text{font-size:26px;font-weight:700}
-        .thumb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:300px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent}
+        .thumb-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-height:260px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent}
         .thumb-slot{aspect-ratio:16/9;border-radius:10px;background:rgba(100,160,255,0.1);border:1px solid rgba(100,160,255,0.12);overflow:hidden;cursor:pointer;transition:all 0.2s;position:relative}
         .thumb-slot:hover{border-color:rgba(100,160,255,0.4);transform:scale(1.02)}
         .thumb-slot img{width:100%;height:100%;object-fit:cover}
@@ -178,7 +178,7 @@
         </div>
         <div class="top-panels">
             <div class="panel"><div class="panel-hero"><div class="hero-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><div class="hero-text">Vignettes</div><button class="btn btn-primary" style="margin-left:auto;padding:8px 16px;font-size:12px" onclick="resetForm()">+ New</button></div></div>
-            <div class="panel"><div class="panel-title">Brouillons PRSNET</div><div class="thumb-grid" id="prsnetGrid"><div class="thumb-slot"></div><div class="thumb-slot"></div><div class="thumb-slot"></div><div class="thumb-slot"></div><div class="thumb-slot"></div><div class="thumb-slot"></div></div></div>
+            <div class="panel"><div class="panel-title">Contenus PRSNET</div><div class="thumb-grid" id="prsnetGrid"></div></div>
             <div class="panel"><div class="panel-title">Vignettes récentes</div><div class="thumb-grid" id="recentGrid"></div></div>
         </div>
         <div class="workspace">
@@ -687,14 +687,16 @@
     // Detect emission type from PRSNET tags
     function detectEmission(tags, title){
         var t=(tags||'').toLowerCase(), ti=(title||'').toLowerCase();
+        // Ordre important: plus spécifique d'abord
         if(ti.indexOf('direct corporate')>-1||t.indexOf('direct corporate')>-1) return 'dc';
-        if(t.indexOf('direct analystes')>-1||ti.indexOf('direct analystes')>-1) return 'da';
+        if(t.indexOf('direct analystes')>-1||ti.indexOf('direct analystes')>-1||t.indexOf('direct analyste')>-1) return 'da';
+        if(t.indexOf('recherche actions')>-1&&t.indexOf('direct')>-1) return 'da';
         if(t.indexOf('direct expert')>-1||ti.indexOf('direct expert')>-1) return 'expert';
-        if(t.indexOf('conférence hebdo')>-1||t.indexOf('conference hebdo')>-1||ti.indexOf('conf call')>-1) return 'conf';
+        if(t.indexOf('conférence hebdo')>-1||t.indexOf('conference hebdo')>-1||t.indexOf('conf call')>-1||ti.indexOf('conf call')>-1) return 'conf';
         if(t.indexOf('echo hebdo')>-1||t.indexOf("l'echo hebdo")>-1||ti.indexOf('echo hebdo')>-1) return 'echo';
         if(t.indexOf('chart solutions')>-1||ti.indexOf('chart solutions')>-1) return 'hot';
         if(t.indexOf('chart equity')>-1||ti.indexOf('chart equity')>-1) return 'hot';
-        if(t.indexOf('morning meeting')>-1) return 'morning';
+        if(t.indexOf('morning meeting')>-1||t.indexOf('flash strat')>-1) return 'morning';
         if(t.indexOf('décryptage')>-1||t.indexOf('decryptage')>-1) return 'decryptage';
         return '';
     }
@@ -790,44 +792,54 @@
             var data=JSON.parse(decodeURIComponent(escape(atob(d.content))));
             var grid=document.getElementById('prsnetGrid');grid.innerHTML='';
             var drafts=data.drafts||[];
-            for(var i=0;i<6;i++){
+            // Filtrer dernières 24h
+            var now=new Date();
+            var h24=new Date(now.getTime()-24*60*60*1000);
+            drafts=drafts.filter(function(d){
+                if(!d.date)return true;
+                var parts=d.date.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+                if(!parts)return true;
+                var dt=new Date(parts[3]+'-'+parts[2]+'-'+parts[1]+'T'+parts[4]+':'+parts[5]+':'+parts[6]);
+                return dt>=h24;
+            });
+            for(var i=0;i<Math.min(drafts.length,10);i++){
                 var s=document.createElement('div');s.className='thumb-slot';
                 if(drafts[i]){
                     var title=drafts[i].title||'';
                     var date=drafts[i].date||'';
                     var tags=drafts[i].tags||'';
+                    var state=drafts[i].state||'';
                     var emission=detectEmission(tags,title);
                     var displayTitle=extractSubject(title,emission);
-                    // Emission gradients matching the buttons
                     var emGradients={'morning':'linear-gradient(135deg,#f6d365,#fda085)','conf':'linear-gradient(135deg,#667eea,#764ba2)','hot':'linear-gradient(135deg,#ff416c,#ff4b2b)','da':'linear-gradient(135deg,#00d2ff,#3a7bd5)','dc':'linear-gradient(135deg,#1a3a8a,#6b2fa0)','expert':'linear-gradient(135deg,#43e97b,#38f9d7)','echo':'linear-gradient(135deg,#f093fb,#f5576c)','decryptage':'linear-gradient(135deg,#a18cd1,#fbc2eb)'};
-                    var emLabels={'morning':'M','conf':'CH','hot':'H','da':'DA','dc':'DC','expert':'DE','echo':'EH','decryptage':'D'};
                     var emNames={'morning':'Morning','conf':'Conf Hebdo','hot':'Hot','da':'Direct Analystes','dc':'Direct Corporate','expert':'Direct Expert','echo':'Écho Hebdo','decryptage':'Décryptage'};
                     var grad=emGradients[emission]||'linear-gradient(135deg,#555,#333)';
-                    var emShort=emLabels[emission]||'?';
                     var emName=emNames[emission]||'';
                     var emBgs={'morning':'vignette-assets/MORNING_FOND.png','conf':'vignette-assets/CONF_CALL_FOND.png','hot':'vignette-assets/MODELE_HOT_001.png','da':'vignette-assets/FOND_DIRECT_ANALYSTE_001.png','dc':'vignette-assets/FOND_DIRECT_CORPORATE_png_001.png','expert':'vignette-assets/MORNING_FOND.png','echo':'vignette-assets/CONF_CALL_FOND.png','decryptage':'vignette-assets/MORNING_FOND.png'};
                     var emBg=emBgs[emission]||'';
+                    // Statut badge
+                    var stateBadge='';
+                    if(state==='En ligne')stateBadge='<div style="position:absolute;top:3px;right:3px;background:rgba(74,222,128,0.8);color:#000;font-size:6px;font-weight:800;padding:1px 4px;border-radius:4px;z-index:2">EN LIGNE</div>';
+                    else if(state==='Brouillon')stateBadge='<div style="position:absolute;top:3px;right:3px;background:rgba(251,191,36,0.8);color:#000;font-size:6px;font-weight:800;padding:1px 4px;border-radius:4px;z-index:2">BROUILLON</div>';
                     s.style.position='relative';s.style.overflow='hidden';
                     if(emBg){
                         s.style.background=grad;
-                        s.innerHTML='<img src="'+emBg+'" style="width:100%;height:100%;object-fit:cover;opacity:0.25;position:absolute;top:0;left:0;pointer-events:none">'+
+                        s.innerHTML=stateBadge+'<img src="'+emBg+'" style="width:100%;height:100%;object-fit:cover;opacity:0.25;position:absolute;top:0;left:0;pointer-events:none">'+
                             '<div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:6px;text-align:center">'+
-                            '<div style="font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);margin-bottom:2px">'+emName+'</div>'+
-                            '<div style="font-size:10px;font-weight:700;color:#fff;line-height:1.25;text-shadow:0 1px 3px rgba(0,0,0,0.4)">'+displayTitle+'</div>'+
-                            '<div style="font-size:7px;color:rgba(255,255,255,0.55);margin-top:3px">'+date+'</div></div>';
+                            '<div style="font-size:6px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);margin-bottom:2px">'+emName+'</div>'+
+                            '<div style="font-size:9px;font-weight:700;color:#fff;line-height:1.2;text-shadow:0 1px 3px rgba(0,0,0,0.4)">'+displayTitle+'</div>'+
+                            '<div style="font-size:6px;color:rgba(255,255,255,0.55);margin-top:2px">'+date+'</div></div>';
                     } else {
-                        s.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:6px;text-align:center"><div>'+
-                            '<div style="font-size:10px;font-weight:700;color:#fff;line-height:1.25">'+displayTitle+'</div>'+
-                            '<div style="font-size:7px;color:rgba(255,255,255,0.5);margin-top:3px">'+date+'</div></div></div>';
+                        s.innerHTML=stateBadge+'<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:6px;text-align:center"><div>'+
+                            '<div style="font-size:9px;font-weight:700;color:#fff;line-height:1.2">'+displayTitle+'</div>'+
+                            '<div style="font-size:6px;color:rgba(255,255,255,0.5);margin-top:2px">'+date+'</div></div></div>';
                     }
-                    s.title=title+' — '+tags+' — '+date;
+                    s.title=title+' — '+tags+' — '+date+' — '+state;
                     s.style.cursor='pointer';
                     s.onclick=(function(draft,em,subj){return function(){
                         selectedDraft=draft;
-                        // Highlight selected
                         document.querySelectorAll('#prsnetGrid .thumb-slot').forEach(function(el){el.style.borderColor='';});
                         this.style.borderColor='rgba(13,148,136,0.7)';
-                        // Reset form first
                         resetForm();
                         selectedDraft=draft;
                         // Set emission
@@ -1133,6 +1145,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v38</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v39</div>
 </body>
 </html>
