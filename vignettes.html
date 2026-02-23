@@ -98,6 +98,8 @@
         [contenteditable=true]{outline:1px dashed rgba(0,140,255,0.6);outline-offset:4px;border-radius:3px;cursor:text}
         [contenteditable=true]:focus{outline:2px solid rgba(0,140,255,0.8)}
         .bottom-bar{bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 70%,transparent 100%);padding:36px 4% 3% 4%}
+        .bottom-emission{text-align:center;margin-bottom:8px}
+        .bottom-emission-text{font-size:clamp(14px,2vw,24px);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;text-shadow:0 2px 8px rgba(0,0,0,0.6)}
         .bottom-names{display:flex;gap:24px;flex-wrap:wrap}
         .bottom-person .person-name{font-size:clamp(12px,1.5vw,18px);font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.6)}
         .bottom-person .person-title{font-size:clamp(8px,0.9vw,12px);font-weight:400;color:rgba(255,255,255,0.7);margin-top:1px}
@@ -205,7 +207,7 @@
                         <div class="photos-container" id="photosContainer"></div>
                         <div class="title-block drag-layer" id="titleBlock" onclick="selectLayer(event,this)"><div class="title-main" id="previewSubject" ondblclick="makeEditable(event,this)"></div></div>
                         <div class="spec-block drag-layer" id="specBlock" onclick="selectLayer(event,this)"><div class="spec-text" id="previewType" ondblclick="makeEditable(event,this)"></div></div>
-                        <div class="bottom-bar drag-layer" id="bottomBar" onclick="selectLayer(event,this)"><div class="bottom-names" id="bottomNames"></div></div>
+                        <div class="bottom-bar drag-layer" id="bottomBar" onclick="selectLayer(event,this)"><div class="bottom-emission" id="bottomEmission"></div><div class="bottom-names" id="bottomNames"></div></div>
                     </div>
                 </div>
                 <div class="controls-bar">
@@ -252,6 +254,7 @@
     </div>
     <script>
     var EMISSIONS={morning:{bg:'vignette-assets/MORNING_FOND.png'},conf:{bg:'vignette-assets/CONF_CALL_FOND.png'},hot:{bg:'vignette-assets/MODELE_HOT_001.png'},da:{bg:'vignette-assets/FOND_DIRECT_ANALYSTE_001.png'},dc:{bg:'vignette-assets/FOND_DIRECT_CORPORATE_png_001.png'},expert:{bg:'vignette-assets/MORNING_FOND.png'},echo:{bg:'vignette-assets/CONF_CALL_FOND.png'},decryptage:{bg:'vignette-assets/MORNING_FOND.png'}};
+    var EMISSION_TITLES={morning:'MORNING MEETING',conf:'CONFÉRENCE HEBDO',hot:'HOT',da:'DIRECT ANALYSTES',dc:'DIRECT CORPORATE',expert:'DIRECT EXPERT',echo:'L\'ÉCHO HEBDO',decryptage:'DÉCRYPTAGE'};
     var SPEC_LABELS={actions:'RECHERCHE ACTIONS',eco:'ÉCONOMIE & MARCHÉS FINANCIERS',esg:'RECHERCHE DÉVELOPPEMENT DURABLE',technique:'ANALYSE TECHNIQUE',credit:'CRÉDIT'};
     var currentEmission='morning',photoOverride=null,contacts=[],selectedIntervenants=[];
     var GH_TOKEN=['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(function(s){return s.split('').reverse().join('')}).join('');
@@ -315,12 +318,20 @@
         }
     }
 
-    function selectEmission(btn){document.querySelectorAll('.emission-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');currentEmission=btn.dataset.emission;document.getElementById('bgImg').src=EMISSIONS[currentEmission].bg;}
+    function selectEmission(btn){document.querySelectorAll('.emission-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');currentEmission=btn.dataset.emission;document.getElementById('bgImg').src=EMISSIONS[currentEmission].bg;updateEmissionTitle();}
     function handlePhoto(input){if(!input.files||!input.files[0])return;var reader=new FileReader();reader.onload=function(e){photoOverride=e.target.result;var u=document.getElementById('photoUpload'),ex=u.querySelector('img');if(ex)ex.remove();var img=document.createElement('img');img.src=photoOverride;u.appendChild(img);u.classList.add('has-photo');updatePreview();};reader.readAsDataURL(input.files[0]);}
     var pu=document.getElementById('photoUpload');pu.addEventListener('dragover',function(e){e.preventDefault();this.style.borderColor='rgba(0,140,255,0.6)';});pu.addEventListener('dragleave',function(){this.style.borderColor='';});pu.addEventListener('drop',function(e){e.preventDefault();this.style.borderColor='';if(e.dataTransfer.files.length){document.getElementById('photoInput').files=e.dataTransfer.files;handlePhoto(document.getElementById('photoInput'));}});
 
+    function updateEmissionTitle(){
+        var be=document.getElementById('bottomEmission');
+        var title=EMISSION_TITLES[currentEmission]||'';
+        if(title){be.innerHTML='<div class="bottom-emission-text" ondblclick="makeEditable(event,this)">'+title+'</div>';}
+        else{be.innerHTML='';}
+    }
+
     function updatePreview(){
         document.getElementById('previewSubject').textContent=document.getElementById('fieldSubject').value||'';
+        updateEmissionTitle();
         var pc=document.getElementById('photosContainer');pc.innerHTML='';
         var n=selectedIntervenants.length;
         var ph_pct=n<=2?'100%':n<=4?'85%':'70%';
@@ -913,6 +924,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v27</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v28</div>
 </body>
 </html>

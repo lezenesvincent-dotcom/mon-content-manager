@@ -306,6 +306,6 @@ for(var i=ALBUMS.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=A
 l1.style.backgroundImage='url('+ALBUMS[0]+')';
 setInterval(function(){idx=(idx+1)%ALBUMS.length;var a=l1.classList.contains('active')?l1:l2,b=(a===l1)?l2:l1;b.style.backgroundImage='url('+ALBUMS[idx]+')';b.classList.add('active');a.classList.remove('active');},30000);
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v27</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v28</div>
 </body>
 </html>
