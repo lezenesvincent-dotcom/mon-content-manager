@@ -466,6 +466,10 @@
     "titreSynthe": "",
     "commentaires": "",
     "toggles": {
+      "appIBM": false,
+      "appZoom": false,
+      "appWebex": false,
+      "appTeams": true,
       "replay": true,
       "chat": true,
       "qr": false,
@@ -480,7 +484,7 @@
     "application": "TEAMS",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-24T08:55:26.935Z"
+    "updatedAt": "2026-02-24T13:57:26.465Z"
   },
   "1771401928693": {
     "id": "1771401928693",
