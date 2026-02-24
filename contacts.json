@@ -106,8 +106,12 @@
     "function": "Analyste Secteur Santé",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/arnaud-cadart.png",
-    "id": "c11"
+    "id": "c11",
+    "photos": [
+      "contacts-photos/arnaud-cadart.png",
+      "contacts-photos/c11-2.png"
+    ],
+    "photo": "contacts-photos/arnaud-cadart.png"
   },
   {
     "firstName": "David",
