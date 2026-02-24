@@ -685,11 +685,15 @@
     async function loadPrsnetDrafts(){
         try{
             var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/prsnet-drafts.json',{headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'},cache:'no-store'});
-            if(!r.ok)return;
+            if(!r.ok){console.error('PRSNET fetch failed:',r.status);return;}
             var d=await r.json();
-            var data=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\s/g,'')))));
+            var raw=d.content.replace(/\s/g,'');
+            var decoded=decodeURIComponent(escape(atob(raw)));
+            var data=JSON.parse(decoded);
+            console.log('PRSNET data:',typeof data.drafts,Array.isArray(data.drafts),data.drafts?data.drafts.length:'null');
             var grid=document.getElementById('prsnetGrid');grid.innerHTML='';
-            var drafts=data.drafts||[];
+            var drafts=Array.isArray(data.drafts)?data.drafts:[];
+            if(drafts.length===0){console.warn('PRSNET: 0 drafts');return;}
             // Filtrer dernières 24h
             var now=new Date();
             var h24=new Date(now.getTime()-24*60*60*1000);
@@ -704,6 +708,8 @@
             drafts=drafts.filter(function(d){
                 return detectEmission(d.tags||'',d.title||'')!=='';
             });
+            console.log('PRSNET after filters: 24h='+drafts.length+' (before video filter), video='+drafts.length);
+            if(drafts.length===0){console.warn('PRSNET: 0 après filtres');}
             for(var i=0;i<Math.min(drafts.length,10);i++){
                 var s=document.createElement('div');s.className='thumb-slot';
                 if(drafts[i]){
@@ -1047,6 +1053,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v51</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v52</div>
 </body>
 </html>
