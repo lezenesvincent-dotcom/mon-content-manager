@@ -99,7 +99,7 @@
         .photos-container .photo-item img{height:100%;width:auto;object-fit:contain;object-position:left bottom}
         .title-block{top:4%;right:3%;left:40%;text-align:right}
         .title-main{font-size:clamp(18px,3.2vw,48px);font-weight:900;color:#fff;line-height:1.05;letter-spacing:-0.5px;text-shadow:0 2px 16px rgba(0,0,0,0.5);min-width:20px;min-height:1em;word-wrap:break-word;overflow-wrap:break-word}
-        .spec-block{top:calc(4% + clamp(28px,4vw,56px) + 2px);right:3%;text-align:right}
+        .spec-block{top:calc(4% + clamp(28px,4vw,56px) + 2px);right:3%;text-align:right;transition:top 0.2s}
         .spec-text{font-size:clamp(10px,1.3vw,16px);font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:2px;text-transform:uppercase;min-width:20px;min-height:1em;line-height:1}
         [contenteditable=true]{outline:1px dashed rgba(0,140,255,0.6);outline-offset:4px;border-radius:3px;cursor:text}
         [contenteditable=true]:focus{outline:2px solid rgba(0,140,255,0.8)}
@@ -107,9 +107,9 @@
         .bottom-emission{text-align:center;margin-bottom:8px;position:relative;top:-20px}
         .bottom-emission-text{font-size:clamp(20px,2.6vw,30px);font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;text-shadow:0 2px 8px rgba(0,0,0,0.6)}
         .bottom-names{display:flex;gap:24px;flex-wrap:wrap}
-        .bottom-person .person-name{font-size:clamp(12px,1.5vw,18px);font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.6)}
-        .bottom-person .person-title{font-size:clamp(8px,0.9vw,12px);font-weight:400;color:rgba(255,255,255,0.7);margin-top:1px}
-        .bottom-person .person-company{font-size:clamp(8px,0.9vw,12px);font-weight:500;color:rgba(255,255,255,0.55);margin-top:1px}
+        .bottom-person .person-name{font-size:clamp(16px,2.1vw,25px);font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.6)}
+        .bottom-person .person-title{font-size:clamp(11px,1.25vw,17px);font-weight:400;color:rgba(255,255,255,0.7);margin-top:1px}
+        .bottom-person .person-company{font-size:clamp(11px,1.25vw,17px);font-weight:500;color:rgba(255,255,255,0.55);margin-top:1px}
         .controls-bar{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:16px;width:100%}
         .btn{padding:12px 24px;border-radius:12px;border:none;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px}
         .btn-primary{background:linear-gradient(135deg,#0070f3,#0050c8);color:#fff;box-shadow:0 4px 16px rgba(0,112,243,0.3)}
@@ -368,6 +368,13 @@
     function updatePreview(){
         document.getElementById('previewSubject').textContent=document.getElementById('fieldSubject').value||'';
         updateEmissionTitle();
+        // Descendre le sous-titre de 40px pour DA (titre plus long)
+        var sb=document.getElementById('specBlock');
+        if(currentEmission==='da'||currentEmission==='dc'||currentEmission==='expert'||currentEmission==='hot'){
+            sb.style.top='calc(4% + clamp(28px,4vw,56px) + 42px)';
+        }else{
+            sb.style.top='';
+        }
         var pc=document.getElementById('photosContainer');pc.innerHTML='';
         var n=selectedIntervenants.length;
         var ph_pct=n<=2?'100%':n<=4?'85%':'70%';
@@ -401,7 +408,7 @@
             bn.style.flexDirection='row';bn.style.alignItems='center';bn.style.gap='8px';bn.style.justifyContent='center';
             selectedIntervenants.forEach(function(c,i){
                 var d=document.createElement('div');d.className='bottom-person';
-                d.innerHTML='<div class="person-name" ondblclick="makeEditable(event,this)" style="font-size:clamp(10px,1.2vw,15px)">'+c.firstName+' '+c.lastName+'</div>';
+                d.innerHTML='<div class="person-name" ondblclick="makeEditable(event,this)" style="font-size:clamp(14px,1.7vw,21px)">'+c.firstName+' '+c.lastName+'</div>';
                 bn.appendChild(d);
                 if(i<n-1){var sep=document.createElement('span');sep.style.cssText='color:rgba(255,255,255,0.3);font-size:10px';sep.textContent='·';bn.appendChild(sep);}
             });
@@ -1171,6 +1178,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v45</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v46</div>
 </body>
 </html>
