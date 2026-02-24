@@ -595,7 +595,9 @@
         if(t.indexOf('chart solutions')>-1||ti.indexOf('chart solutions')>-1) return 'hot';
         if(t.indexOf('chart equity')>-1||ti.indexOf('chart equity')>-1) return 'hot';
         if(t.indexOf('morning meeting')>-1||t.indexOf('flash strat')>-1) return 'morning';
+        if(t.indexOf('recherche actions')>-1) return 'da';
         if(t.indexOf('décryptage')>-1||t.indexOf('decryptage')>-1) return 'decryptage';
+        if(ti.indexOf('[hot]')>-1) return 'hot';
         return '';
     }
 
@@ -697,6 +699,10 @@
                 if(!parts)return true;
                 var dt=new Date(parts[3]+'-'+parts[2]+'-'+parts[1]+'T'+parts[4]+':'+parts[5]+':'+parts[6]);
                 return dt>=h24;
+            });
+            // Filtrer uniquement les contenus vidéo (émission reconnue)
+            drafts=drafts.filter(function(d){
+                return detectEmission(d.tags||'',d.title||'')!=='';
             });
             for(var i=0;i<Math.min(drafts.length,10);i++){
                 var s=document.createElement('div');s.className='thumb-slot';
@@ -1041,6 +1047,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v49</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v50</div>
 </body>
 </html>
