@@ -407,7 +407,28 @@
         }
     }
 
-    function selectEmission(btn){document.querySelectorAll('.emission-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');currentEmission=btn.dataset.emission;document.getElementById('bgImg').src=EMISSIONS[currentEmission].bg;updateEmissionTitle();}
+    // Presets de position par émission (titleBlock.ty, specBlock.ty)
+    var EMISSION_PRESETS = {
+        morning: { titleTY: 213, specTY: 201 },
+        conf: { titleTY: 0, specTY: 0 },
+        hot: { titleTY: 0, specTY: 0 },
+        da: { titleTY: 0, specTY: 0 },
+        dc: { titleTY: 0, specTY: 0 },
+        expert: { titleTY: 0, specTY: 0 },
+        echo: { titleTY: 0, specTY: 0 },
+        decryptage: { titleTY: 0, specTY: 0 }
+    };
+
+    function applyEmissionPreset(emission) {
+        var preset = EMISSION_PRESETS[emission];
+        if (!preset) return;
+        var tb = document.getElementById('titleBlock');
+        var sb = document.getElementById('specBlock');
+        if (tb) { tb.dataset.tx = 0; tb.dataset.ty = preset.titleTY; tb.style.transform = 'translate(0px,' + preset.titleTY + 'px)'; }
+        if (sb) { sb.dataset.tx = 0; sb.dataset.ty = preset.specTY; sb.style.transform = 'translate(0px,' + preset.specTY + 'px)'; }
+    }
+
+    function selectEmission(btn){document.querySelectorAll('.emission-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');currentEmission=btn.dataset.emission;document.getElementById('bgImg').src=EMISSIONS[currentEmission].bg;applyEmissionPreset(currentEmission);updateEmissionTitle();updatePreview();}
     function handlePhoto(input){if(!input.files||!input.files[0])return;var reader=new FileReader();reader.onload=function(e){photoOverride=e.target.result;updatePreview();};reader.readAsDataURL(input.files[0]);}
 
     function updateEmissionTitle(){
@@ -1089,6 +1110,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v58</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v59</div>
 </body>
 </html>

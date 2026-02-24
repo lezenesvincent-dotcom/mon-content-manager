@@ -278,6 +278,11 @@
     // === PHOTOS MULTIPLES ===
     function handlePhotoUpload(input) {
         if (!input.files || input.files.length === 0) return;
+        // Si première modification, copier les photos existantes
+        if (pendingPhotos === null && editingId) {
+            var existing = contacts.find(function(c) { return c.id === editingId; });
+            pendingPhotos = existing ? (existing.photos || (existing.photo ? [existing.photo] : [])).slice() : [];
+        }
         if (pendingPhotos === null) pendingPhotos = [];
         Array.from(input.files).forEach(function(file) {
             var reader = new FileReader();
@@ -581,7 +586,9 @@
             var src = photosToSave[i];
             if (src.indexOf('data:') === 0) {
                 // Upload to GitHub as file
+                if (saveBtn) saveBtn.textContent = '⏳ Photo ' + (i+1) + '/' + photosToSave.length + '...';
                 var path = await uploadPhotoToGitHub(contactId, i, src);
+                console.log('Photo ' + (i+1) + ' uploaded:', path);
                 photoPaths.push(path || src);
             } else {
                 photoPaths.push(src); // Already a path
@@ -601,6 +608,7 @@
         saveToGitHub();
         renderContacts();
         closeModal();
+        if (saveBtn) { saveBtn.textContent = 'Enregistrer'; saveBtn.disabled = false; }
     }
 
     function deleteContact(id) {
