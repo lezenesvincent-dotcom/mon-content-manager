@@ -940,14 +940,9 @@
             </div>
             <div class="panel">
                 <div class="section-title">Diffusion</div>
-                <div class="field">
-                    <label>Plateforme</label>
-                    <div class="radio-pills">
-                        <div class="radio-pill" onclick="selectApp(this)">ZOOM</div>
-                        <div class="radio-pill" onclick="selectApp(this)">WEBEX</div>
-                        <div class="radio-pill" onclick="selectApp(this)">TEAMS</div>
-                        <div class="radio-pill" onclick="selectApp(this)">IBM</div>
-                    </div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">IBM</span>
+                    <div class="toggle-switch" data-field="appIBM" onclick="selectAppToggle(this, 'IBM')"></div>
                 </div>
                 <div id="ibmSection" style="display:none">
                     <div class="field">
@@ -978,6 +973,18 @@
                             <option value="https://video.ibm.com/channel/6PFpRYafesd">Webinaire BECM</option>
                         </select>
                     </div>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Zoom</span>
+                    <div class="toggle-switch" data-field="appZoom" onclick="selectAppToggle(this, 'ZOOM')"></div>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Webex</span>
+                    <div class="toggle-switch" data-field="appWebex" onclick="selectAppToggle(this, 'WEBEX')"></div>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label-text">Teams</span>
+                    <div class="toggle-switch" data-field="appTeams" onclick="selectAppToggle(this, 'TEAMS')"></div>
                 </div>
                 <div class="sep"></div>
                 <div class="toggle-row">
@@ -1288,13 +1295,14 @@
         updateSummary();
         scheduleAutoSave();
     }
-    function selectApp(el) {
-        document.querySelectorAll('.radio-pill').forEach(function(p) {
-            p.classList.remove('active')
+    function selectAppToggle(el, appName) {
+        var allApps = document.querySelectorAll('[data-field^="app"]');
+        allApps.forEach(function(sw) {
+            if (sw !== el) sw.classList.remove('active');
         });
-        el.classList.add('active');
+        el.classList.toggle('active');
         var ibmSection = document.getElementById('ibmSection');
-        ibmSection.style.display = el.textContent.trim() === 'IBM' ? 'block' : 'none';
+        ibmSection.style.display = (el.classList.contains('active') && appName === 'IBM') ? 'block' : 'none';
         updateSummary();
         scheduleAutoSave();
     }
@@ -1375,8 +1383,9 @@
         document.getElementById('summaryEntite').textContent = document.getElementById('entiteGroupe').value || '—';
         document.getElementById('summaryContact').textContent = document.getElementById('contactField').value || '—';
         document.getElementById('summaryMode').textContent = document.getElementById('modeStudio').classList.contains('active') ? 'Studio' : 'Visio';
-        var app = document.querySelector('.radio-pill.active');
-        document.getElementById('summaryApp').textContent = app ? app.textContent : '—';
+        var appEl = document.querySelector('[data-field^="app"].active');
+        var appMap = {appIBM:'IBM', appZoom:'Zoom', appWebex:'Webex', appTeams:'Teams'};
+        document.getElementById('summaryApp').textContent = appEl ? appMap[appEl.dataset.field] : '—';
     }
 
     document.addEventListener('input', function() {
@@ -1581,9 +1590,11 @@
         document.querySelectorAll('.toggle-switch').forEach(function(t) {
             d.toggles[t.dataset.field] = t.classList.contains('active');
         });
-        var app = document.querySelector('.radio-pill.active');
-        if (app)
-            d.application = app.textContent;
+        var app = document.querySelector('[data-field^="app"].active');
+        if (app) {
+            var appMap = {appIBM:'IBM', appZoom:'ZOOM', appWebex:'WEBEX', appTeams:'TEAMS'};
+            d.application = appMap[app.dataset.field] || '';
+        }
         document.querySelectorAll('.interv-row').forEach(function(row) {
             var inputs = row.querySelectorAll('input');
             var p = {};
@@ -1701,9 +1712,12 @@
             });
         }
         if (data.application) {
-            document.querySelectorAll('.radio-pill').forEach(function(p) {
-                p.classList.toggle('active', p.textContent === data.application);
-            });
+            var fieldMap = {IBM:'appIBM', ZOOM:'appZoom', WEBEX:'appWebex', TEAMS:'appTeams'};
+            var targetField = fieldMap[data.application];
+            if (targetField) {
+                var sw = document.querySelector('[data-field="' + targetField + '"]');
+                if (sw) sw.classList.add('active');
+            }
             document.getElementById('ibmSection').style.display = data.application === 'IBM' ? 'block' : 'none';
         }
         if (data.mode)
@@ -2230,6 +2244,6 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v39</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v40</div>
 </body>
 </html>
