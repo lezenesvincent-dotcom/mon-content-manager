@@ -283,12 +283,18 @@
         reader.onload = function(e) {
             var img = new Image();
             img.onload = function() {
+                // Garder la résolution originale, max 1150x650 pour les vignettes
+                var maxW = 1150, maxH = 650;
+                var w = img.width, h = img.height;
+                if (w > maxW || h > maxH) {
+                    var ratio = Math.min(maxW / w, maxH / h);
+                    w = Math.round(w * ratio);
+                    h = Math.round(h * ratio);
+                }
                 var canvas = document.createElement('canvas');
-                var size = Math.min(img.width, img.height);
-                canvas.width = 300; canvas.height = 300;
+                canvas.width = w; canvas.height = h;
                 var ctx = canvas.getContext('2d');
-                var sx = (img.width - size) / 2, sy = (img.height - size) / 2;
-                ctx.drawImage(img, sx, sy, size, size, 0, 0, 300, 300);
+                ctx.drawImage(img, 0, 0, w, h);
                 pendingPhoto = canvas.toDataURL('image/png');
                 document.getElementById('photoPreview').innerHTML = '<img src="' + pendingPhoto + '">';
                 document.getElementById('photoRemove').style.display = '';
