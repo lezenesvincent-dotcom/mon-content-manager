@@ -231,14 +231,13 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <h3 id="modalTitle">Ajouter un contact</h3>
-            <div class="field"><label>Photo</label>
+            <div class="field"><label>Photos</label>
                 <div class="photo-upload">
-                    <div class="photo-preview" id="photoPreview" onclick="document.getElementById('photoInput').click()">
-                        <span class="placeholder">📷</span>
+                    <div id="photosGallery" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                        <span class="photo-upload-btn" onclick="document.getElementById('photoInput').click()">+ Ajouter une photo</span>
                     </div>
-                    <span class="photo-upload-btn" onclick="document.getElementById('photoInput').click()">Choisir une photo</span>
-                    <span class="photo-remove" id="photoRemove" onclick="removePhoto()" style="display:none">✕ Retirer</span>
-                    <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(this)" style="display:none">
+                    <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(this)" style="display:none" multiple>
                 </div>
             </div>
             <div class="field"><label>Prénom</label><input type="text" id="mFirstName" placeholder="Ex: Éric"></div>
@@ -274,48 +273,62 @@
     var contactsSha = null;
     var currentFilter = 'all';
     var editingId = null;
-    var pendingPhoto = null;
+    var pendingPhotos = null; // null=garder existantes, []=modifiées
 
-    // === PHOTO UPLOAD ===
+    // === PHOTOS MULTIPLES ===
     function handlePhotoUpload(input) {
-        if (!input.files || !input.files[0]) return;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var img = new Image();
-            img.onload = function() {
-                // Garder la résolution originale, max 1150x650 pour les vignettes
-                var maxW = 1150, maxH = 650;
-                var w = img.width, h = img.height;
-                if (w > maxW || h > maxH) {
-                    var ratio = Math.min(maxW / w, maxH / h);
-                    w = Math.round(w * ratio);
-                    h = Math.round(h * ratio);
-                }
-                var canvas = document.createElement('canvas');
-                canvas.width = w; canvas.height = h;
-                var ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, w, h);
-                pendingPhoto = canvas.toDataURL('image/png');
-                document.getElementById('photoPreview').innerHTML = '<img src="' + pendingPhoto + '">';
-                document.getElementById('photoRemove').style.display = '';
+        if (!input.files || input.files.length === 0) return;
+        if (pendingPhotos === null) pendingPhotos = [];
+        Array.from(input.files).forEach(function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    var maxW = 1150, maxH = 650;
+                    var w = img.width, h = img.height;
+                    if (w > maxW || h > maxH) {
+                        var ratio = Math.min(maxW / w, maxH / h);
+                        w = Math.round(w * ratio); h = Math.round(h * ratio);
+                    }
+                    var canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    pendingPhotos.push(canvas.toDataURL('image/png'));
+                    renderPhotosGallery();
+                };
+                img.src = e.target.result;
             };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(input.files[0]);
+            reader.readAsDataURL(file);
+        });
+        input.value = '';
     }
 
-    function removePhoto() {
-        pendingPhoto = '';
-        document.getElementById('photoPreview').innerHTML = '<span class="placeholder">📷</span>';
-        document.getElementById('photoRemove').style.display = 'none';
-        document.getElementById('photoInput').value = '';
+    function removePhotoAt(idx) {
+        if (!pendingPhotos) return;
+        pendingPhotos.splice(idx, 1);
+        renderPhotosGallery();
+    }
+
+    function renderPhotosGallery() {
+        var g = document.getElementById('photosGallery'); if (!g) return;
+        g.innerHTML = '';
+        var photos = pendingPhotos || [];
+        photos.forEach(function(src, i) {
+            var d = document.createElement('div');
+            d.style.cssText = 'position:relative;width:60px;height:60px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);flex-shrink:0';
+            d.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover">' +
+                '<div onclick="removePhotoAt(' + i + ')" style="position:absolute;top:2px;right:2px;width:14px;height:14px;background:rgba(0,0,0,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:8px;color:#fff">✕</div>' +
+                '<div style="position:absolute;bottom:2px;left:2px;font-size:7px;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.5);padding:0 3px;border-radius:3px">#' + (i + 1) + '</div>';
+            g.appendChild(d);
+        });
+        if (photos.length === 0) {
+            g.innerHTML = '<div style="width:60px;height:60px;border-radius:8px;border:1px dashed rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;color:rgba(255,255,255,0.2);cursor:pointer" onclick="document.getElementById(\'photoInput\').click()">📷</div>';
+        }
     }
 
     function resetPhotoField() {
-        pendingPhoto = null;
-        document.getElementById('photoPreview').innerHTML = '<span class="placeholder">📷</span>';
-        document.getElementById('photoRemove').style.display = 'none';
-        document.getElementById('photoInput').value = '';
+        pendingPhotos = null;
+        renderPhotosGallery();
     }
 
     var SPEC_LABELS = {
@@ -468,11 +481,11 @@
             document.getElementById('mFunction').value = c.function || '';
             document.getElementById('mCompany').value = c.company || '';
             document.getElementById('mEmail').value = c.email || '';
-            // Charger photo existante
-            if (c.photo && c.photo.length > 10) {
-                pendingPhoto = null; // null = garder existante
-                document.getElementById('photoPreview').innerHTML = '<img src="' + c.photo + '">';
-                document.getElementById('photoRemove').style.display = '';
+            // Charger photos existantes
+            var existingPhotos = c.photos || (c.photo && c.photo.length > 10 ? [c.photo] : []);
+            if (existingPhotos.length > 0) {
+                pendingPhotos = existingPhotos.slice(); // copie
+                renderPhotosGallery();
             }
             document.getElementById('modalBtns').innerHTML =
                 '<button class="modal-btn-delete" onclick="deleteContact(\''+id+'\');closeModal()">Supprimer</button>' +
@@ -518,17 +531,19 @@
             var idx = contacts.findIndex(function(c) { return c.id === editingId; });
             if (idx > -1) {
                 data.id = editingId;
-                // Photo : si pendingPhoto est une string (nouvelle ou vide), utiliser. Sinon garder l'existante.
-                if (pendingPhoto !== null) {
-                    data.photo = pendingPhoto;
+                if (pendingPhotos !== null) {
+                    data.photos = pendingPhotos;
+                    data.photo = pendingPhotos[0] || '';
                 } else {
-                    data.photo = contacts[idx].photo || '';
+                    data.photos = contacts[idx].photos || (contacts[idx].photo ? [contacts[idx].photo] : []);
+                    data.photo = data.photos[0] || contacts[idx].photo || '';
                 }
                 contacts[idx] = data;
             }
         } else {
             data.id = 'c_' + Date.now();
-            data.photo = pendingPhoto || '';
+            data.photos = pendingPhotos || [];
+            data.photo = data.photos[0] || '';
             contacts.push(data);
         }
 
