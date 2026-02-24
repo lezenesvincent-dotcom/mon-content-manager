@@ -194,6 +194,7 @@
                     <button class="emission-btn em-echo" data-emission="echo" onclick="selectEmission(this)">Écho Hebdo</button>
                     <button class="emission-btn em-decryptage" data-emission="decryptage" onclick="selectEmission(this)">Décryptage</button>
                 </div>
+                <div style="margin:-4px 0 6px 0"><label style="font-size:10px;color:rgba(255,255,255,0.5);cursor:pointer;display:flex;align-items:center;gap:4px"><input type="checkbox" id="chkFullTitle" onchange="updatePreview()" style="margin:0;accent-color:#0d9488"> Afficher le titre complet</label></div>
                 <div class="section-title">Intervenants <button class="add-btn" onclick="addIntervenant()">+</button></div>
                 <div id="intervenantsList"></div>
                 <div class="field"><select id="analystSelect" onchange="pickAnalyst()"><option value="">Choisir un intervenant...</option></select></div>
@@ -391,7 +392,11 @@
     }
 
     function updatePreview(){
-        document.getElementById('previewSubject').textContent=document.getElementById('fieldSubject').value||'';
+        var subject=document.getElementById('fieldSubject').value||'';
+        if(document.getElementById('chkFullTitle').checked&&selectedDraft&&selectedDraft.title){
+            subject=selectedDraft.title;
+        }
+        document.getElementById('previewSubject').textContent=subject;
         updateEmissionTitle();
         // Descendre le sous-titre de 40px pour DA (titre plus long)
         var sb=document.getElementById('specBlock');
@@ -1057,6 +1062,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v54</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v55</div>
 </body>
 </html>
