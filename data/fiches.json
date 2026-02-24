@@ -140,10 +140,10 @@
     "titreSynthe": "",
     "commentaires": "",
     "toggles": {
-      "appIBM": true,
+      "appIBM": false,
       "appZoom": false,
       "appWebex": false,
-      "appTeams": false,
+      "appTeams": true,
       "replay": true,
       "chat": true,
       "qr": true,
@@ -155,10 +155,10 @@
       "visite": true,
       "synthes": true
     },
-    "application": "IBM",
+    "application": "TEAMS",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-24T10:40:32.000Z"
+    "updatedAt": "2026-02-24T10:40:40.608Z"
   },
   "1771510110721": {
     "id": "1771510110721",
