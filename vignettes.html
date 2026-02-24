@@ -288,17 +288,24 @@
     // Capture le preview DOM en PNG 1920x1080 via html2canvas
     async function capturePreview(){
         var frame=document.getElementById('vignetteCanvas');
-        // Masquer les bordures de sélection temporairement
+        // Masquer les bordures de sélection et boutons
         var selected=document.querySelectorAll('.selected');
         selected.forEach(function(el){el.classList.remove('selected');});
+        var saveBtn=document.querySelector('.save-btn');
+        var actionBtns=document.querySelector('#previewFrame > div[style*="position:absolute;top:8px;right:8px"]');
+        if(saveBtn)saveBtn.style.display='none';
+        if(actionBtns)actionBtns.style.display='none';
         var canvas=await html2canvas(frame,{
             width:frame.offsetWidth, height:frame.offsetHeight,
             scale:1920/frame.offsetWidth,
             useCORS:true, allowTaint:true,
             backgroundColor:null,
-            logging:false
+            logging:false,
+            removeContainer:true
         });
-        // Restaurer la sélection
+        // Restaurer
+        if(saveBtn)saveBtn.style.display='';
+        if(actionBtns)actionBtns.style.display='';
         selected.forEach(function(el){el.classList.add('selected');});
         return canvas;
     }
@@ -1034,6 +1041,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v47</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v48</div>
 </body>
 </html>
