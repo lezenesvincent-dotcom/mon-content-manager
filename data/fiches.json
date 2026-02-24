@@ -560,9 +560,9 @@
       "appTeams": false,
       "replay": true,
       "chat": true,
-      "qr": false,
-      "masquerQR": false,
-      "portailInscription": false,
+      "qr": true,
+      "masquerQR": true,
+      "portailInscription": true,
       "diffGen": true,
       "fournisGen": true,
       "studioGen": false,
@@ -572,6 +572,6 @@
     "application": "IBM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-24T10:45:45.347Z"
+    "updatedAt": "2026-02-24T10:46:06.644Z"
   }
 }
