@@ -485,7 +485,8 @@
                 // Les brouillons sont stockés dans les titres des slots
                 try{
                     var r=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/prsnet-drafts.json',{headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'},cache:'no-store'});
-                    if(r.ok){var d=await r.json();var data=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\s/g,'')))));var drafts=Array.isArray(data.drafts)?data.drafts:Object.values(data.drafts||{});
+                    if(r.ok){var d=await r.json();var data=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\s/g,'')))));
+                    var drafts=[];if(Array.isArray(data.drafts)){drafts=data.drafts;}else if(data.drafts&&data.drafts.id){drafts=[data.drafts];}else if(data.drafts&&typeof data.drafts==='object'){drafts=Object.values(data.drafts);}
                     for(var i=0;i<drafts.length;i++){
                         var dt=(drafts[i].title||'').toLowerCase();
                         if(dt.indexOf(subject)>=0||subject.indexOf(dt.replace(/^(morning meeting|conf call|hot|direct analystes)\s*/i,'').trim())>=0){
@@ -692,8 +693,11 @@
             var data=JSON.parse(decoded);
             console.log('PRSNET data:',typeof data.drafts,Array.isArray(data.drafts),data.drafts?data.drafts.length:'null');
             var grid=document.getElementById('prsnetGrid');grid.innerHTML='';
-            var drafts=Array.isArray(data.drafts)?data.drafts:Object.values(data.drafts||{});
-            if(drafts.length===0){console.warn('PRSNET: 0 drafts');return;}
+            var drafts=[];
+            if(Array.isArray(data.drafts)){drafts=data.drafts;}
+            else if(data.drafts&&data.drafts.id){drafts=[data.drafts];}
+            else if(data.drafts&&typeof data.drafts==='object'){drafts=Object.values(data.drafts);}
+            console.log('PRSNET drafts:',drafts.length);
             // Filtrer dernières 24h
             var now=new Date();
             var h24=new Date(now.getTime()-24*60*60*1000);
@@ -1053,6 +1057,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v53</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v54</div>
 </body>
 </html>
