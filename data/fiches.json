@@ -140,7 +140,7 @@
     "titreSynthe": "",
     "commentaires": "",
     "toggles": {
-      "appIBM": false,
+      "appIBM": true,
       "appZoom": false,
       "appWebex": false,
       "appTeams": false,
@@ -155,10 +155,10 @@
       "visite": true,
       "synthes": true
     },
-    "application": null,
+    "application": "IBM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-24T10:40:04.926Z"
+    "updatedAt": "2026-02-24T10:40:32.000Z"
   },
   "1771510110721": {
     "id": "1771510110721",
