@@ -416,7 +416,6 @@
     }
 
     function resetForm(){selectedDraft=null;document.getElementById('fieldSubject').value='';selectedIntervenants=[];activeIntervenantIdx=-1;photoOverride=null;
-        document.getElementById('photoUpload').classList.remove('has-photo');var ex=document.getElementById('photoUpload').querySelector('img');if(ex)ex.remove();
         document.querySelectorAll('.drag-layer').forEach(function(el){el.dataset.tx=0;el.dataset.ty=0;el.style.transform='';});
         refreshDropdown();renderIntervenants();updatePreview();deselectAll();}
 
@@ -722,7 +721,7 @@
         if(t.indexOf('recherche actions')>-1&&t.indexOf('direct')>-1) return 'da';
         if(t.indexOf('direct expert')>-1||ti.indexOf('direct expert')>-1) return 'expert';
         if(t.indexOf('conférence hebdo')>-1||t.indexOf('conference hebdo')>-1||t.indexOf('conf call')>-1||ti.indexOf('conf call')>-1) return 'conf';
-        if(t.indexOf('echo hebdo')>-1||t.indexOf("l'echo hebdo")>-1||ti.indexOf('echo hebdo')>-1) return 'echo';
+        if(t.indexOf('echo hebdo')>-1||t.indexOf("l'echo hebdo")>-1||t.indexOf("l\u2019echo hebdo")>-1||ti.indexOf('echo hebdo')>-1) return 'echo';
         if(t.indexOf('chart solutions')>-1||ti.indexOf('chart solutions')>-1) return 'hot';
         if(t.indexOf('chart equity')>-1||ti.indexOf('chart equity')>-1) return 'hot';
         if(t.indexOf('morning meeting')>-1||t.indexOf('flash strat')>-1) return 'morning';
@@ -1174,6 +1173,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v42</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v43</div>
 </body>
 </html>
