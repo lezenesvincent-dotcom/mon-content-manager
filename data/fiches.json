@@ -147,8 +147,8 @@
       "replay": true,
       "chat": true,
       "qr": true,
-      "masquerQR": true,
-      "portailInscription": false,
+      "masquerQR": false,
+      "portailInscription": true,
       "diffGen": true,
       "fournisGen": true,
       "studioGen": false,
@@ -158,7 +158,7 @@
     "application": "TEAMS",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-02-24T10:40:40.608Z"
+    "updatedAt": "2026-02-24T10:40:44.566Z"
   },
   "1771510110721": {
     "id": "1771510110721",
