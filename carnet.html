@@ -513,10 +513,42 @@
         editingId = null;
     }
 
-    function saveContact() {
+    async function uploadPhotoToGitHub(contactId, photoIdx, dataUrl) {
+        var b64 = dataUrl.split(',')[1];
+        if (!b64) return null;
+        var slug = contactId.replace(/[^a-z0-9_-]/gi, '');
+        var path = 'contacts-photos/' + slug + '-' + (photoIdx + 1) + '.png';
+        // Check if already a path (not data URL)
+        if (dataUrl.indexOf('data:') !== 0) return dataUrl;
+        try {
+            // Get existing sha
+            var sha = null;
+            try {
+                var existing = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
+                    headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (existing.ok) { var ed = await existing.json(); sha = ed.sha; }
+            } catch(e) {}
+            var body = { message: 'photo ' + slug + '-' + (photoIdx + 1), content: b64, branch: 'main' };
+            if (sha) body.sha = sha;
+            var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
+                method: 'PUT',
+                headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (r.ok) return path;
+        } catch(e) { console.error('Photo upload error:', e); }
+        return null;
+    }
+
+    async function saveContact() {
         var firstName = document.getElementById('mFirstName').value.trim();
         var lastName = document.getElementById('mLastName').value.trim();
         if (!firstName || !lastName) return;
+
+        // Feedback visuel
+        var saveBtn = document.querySelector('.modal-btn-save');
+        if (saveBtn) { saveBtn.textContent = '⏳ Sauvegarde...'; saveBtn.disabled = true; }
 
         var data = {
             firstName: firstName,
@@ -527,23 +559,42 @@
             email: document.getElementById('mEmail').value.trim()
         };
 
+        var contactId;
+        if (editingId) {
+            contactId = editingId;
+            data.id = editingId;
+        } else {
+            contactId = 'c_' + Date.now();
+            data.id = contactId;
+        }
+
+        // Upload photos séparément sur GitHub
+        var photoPaths = [];
+        var photosToSave = pendingPhotos;
+        if (pendingPhotos === null && editingId) {
+            var existing = contacts.find(function(c) { return c.id === editingId; });
+            photosToSave = existing ? (existing.photos || (existing.photo ? [existing.photo] : [])) : [];
+        }
+        if (photosToSave === null) photosToSave = [];
+
+        for (var i = 0; i < photosToSave.length; i++) {
+            var src = photosToSave[i];
+            if (src.indexOf('data:') === 0) {
+                // Upload to GitHub as file
+                var path = await uploadPhotoToGitHub(contactId, i, src);
+                photoPaths.push(path || src);
+            } else {
+                photoPaths.push(src); // Already a path
+            }
+        }
+
+        data.photos = photoPaths;
+        data.photo = photoPaths[0] || '';
+
         if (editingId) {
             var idx = contacts.findIndex(function(c) { return c.id === editingId; });
-            if (idx > -1) {
-                data.id = editingId;
-                if (pendingPhotos !== null) {
-                    data.photos = pendingPhotos;
-                    data.photo = pendingPhotos[0] || '';
-                } else {
-                    data.photos = contacts[idx].photos || (contacts[idx].photo ? [contacts[idx].photo] : []);
-                    data.photo = data.photos[0] || contacts[idx].photo || '';
-                }
-                contacts[idx] = data;
-            }
+            if (idx > -1) contacts[idx] = data;
         } else {
-            data.id = 'c_' + Date.now();
-            data.photos = pendingPhotos || [];
-            data.photo = data.photos[0] || '';
             contacts.push(data);
         }
 
