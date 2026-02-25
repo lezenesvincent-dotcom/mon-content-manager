@@ -480,8 +480,13 @@
     "function": "Stratégiste Actions & Matières Premières",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "",
-    "id": "c_1771421369107"
+    "id": "c_1771421369107",
+    "photos": [
+      "contacts-photos/c_1771421369107-1.png",
+      "contacts-photos/c_1771421369107-2.png",
+      "contacts-photos/c_1771421369107-3.png"
+    ],
+    "photo": "contacts-photos/c_1771421369107-1.png"
   },
   {
     "firstName": "Yassine",
