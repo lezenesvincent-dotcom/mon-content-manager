@@ -492,20 +492,5 @@
     "email": "",
     "photo": "",
     "id": "c_1771421510619"
-  },
-  {
-    "firstName": "Maxime",
-    "lastName": "Garcia",
-    "speciality": "actions",
-    "function": "Analyste (synthé temporaire)",
-    "company": "CIC Corporate & Institutional Banking",
-    "email": "",
-    "id": "c_1772013148755",
-    "photos": [
-      "contacts-photos/c_1772013148755-1.png",
-      "contacts-photos/c_1772013148755-2.png",
-      "contacts-photos/c_1772013148755-3.png"
-    ],
-    "photo": "contacts-photos/c_1772013148755-1.png"
   }
 ]
