@@ -530,5 +530,20 @@
     "id": "c_1772015202332",
     "photos": [],
     "photo": ""
+  },
+  {
+    "firstName": "Mathys",
+    "lastName": "Barlagne-Albert",
+    "speciality": "actions",
+    "function": "Stagiaire",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "id": "c_1772016205689",
+    "photos": [
+      "contacts-photos/c_1772016205689-1.png",
+      "contacts-photos/c_1772016205689-2.png",
+      "contacts-photos/c_1772016205689-3.png"
+    ],
+    "photo": "contacts-photos/c_1772016205689-1.png"
   }
 ]
