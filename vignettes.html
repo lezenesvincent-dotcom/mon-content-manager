@@ -1,4 +1,4 @@
-<!-- deploy: 2026-02-27 09:50:00 -->
+<!-- deploy: 2026-02-27 10:00:00 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -137,6 +137,8 @@
         .adj-btn:hover{background:rgba(255,255,255,0.15);color:#fff}
         .adj-btn:active{background:rgba(0,140,255,0.3)}
         .adj-val{font-size:9px;color:rgba(255,255,255,0.5);width:32px;text-align:center;font-variant-numeric:tabular-nums}
+        .adj-preset-btn{flex:1;border:none;border-radius:6px;background:rgba(13,148,136,0.2);color:rgba(13,148,136,0.9);font-size:9px;font-weight:700;padding:4px 6px;cursor:pointer;transition:all 0.15s;font-family:inherit}
+        .adj-preset-btn:hover{background:rgba(13,148,136,0.35);color:#5eead4}
         #exportCanvas{display:none}
         .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
         .modal-overlay.visible{display:flex}
@@ -226,8 +228,13 @@
                     </div>
                     <div class="adj-controls" id="adjControls">
                         <div class="adj-row"><span class="adj-label">Zoom</span><button class="adj-btn" onmousedown="startAdj('scale',-0.02)" onmouseup="stopAdj()" onmouseleave="stopAdj()">−</button><span class="adj-val" id="adjScale">100%</span><button class="adj-btn" onmousedown="startAdj('scale',0.02)" onmouseup="stopAdj()" onmouseleave="stopAdj()">+</button></div>
+                        <div class="adj-row"><span class="adj-label">Lumin.</span><button class="adj-btn" onmousedown="startAdj('brightness',-5)" onmouseup="stopAdj()" onmouseleave="stopAdj()">−</button><span class="adj-val" id="adjBrightness">100%</span><button class="adj-btn" onmousedown="startAdj('brightness',5)" onmouseup="stopAdj()" onmouseleave="stopAdj()">+</button></div>
                         <div class="adj-row"><span class="adj-label">Satur.</span><button class="adj-btn" onmousedown="startAdj('saturate',-5)" onmouseup="stopAdj()" onmouseleave="stopAdj()">−</button><span class="adj-val" id="adjSaturate">100%</span><button class="adj-btn" onmousedown="startAdj('saturate',5)" onmouseup="stopAdj()" onmouseleave="stopAdj()">+</button></div>
                         <div class="adj-row"><span class="adj-label">Contr.</span><button class="adj-btn" onmousedown="startAdj('contrast',-5)" onmouseup="stopAdj()" onmouseleave="stopAdj()">−</button><span class="adj-val" id="adjContrast">100%</span><button class="adj-btn" onmousedown="startAdj('contrast',5)" onmouseup="stopAdj()" onmouseleave="stopAdj()">+</button></div>
+                        <div style="display:flex;gap:4px;margin-top:6px">
+                            <button class="adj-preset-btn" onclick="capturePreset()" title="Capturer les valeurs comme preset pour cette émission">📋 REC</button>
+                            <button class="adj-preset-btn" onclick="applyCurrentPreset()" title="Réappliquer le preset de l'émission">📎 LOAD</button>
+                        </div>
                     </div>
                 </div>
                 <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(this)">
@@ -433,6 +440,10 @@
     };
 
     function applyEmissionPreset(emission) {
+        // D'abord essayer le preset sauvegardé par l'utilisateur
+        var saved = loadPresetForEmission(emission);
+        if (saved) { applyPresetToCanvas(saved); return; }
+        // Sinon appliquer le preset par defaut
         var preset = EMISSION_PRESETS[emission];
         if (!preset) return;
         var tb = document.getElementById('titleBlock');
@@ -551,6 +562,11 @@
             s=Math.max(0.2,Math.min(3,s));
             selectedLayer.dataset.scale=s;
             document.getElementById('adjScale').textContent=Math.round(s*100)+'%';
+        } else if(prop==='brightness'){
+            var v=parseFloat(selectedLayer.dataset.brightness||100)+delta;
+            v=Math.max(0,Math.min(300,v));
+            selectedLayer.dataset.brightness=v;
+            document.getElementById('adjBrightness').textContent=Math.round(v)+'%';
         } else if(prop==='saturate'){
             var v=parseFloat(selectedLayer.dataset.saturate||100)+delta;
             v=Math.max(0,Math.min(300,v));
@@ -572,12 +588,17 @@
         el.style.transform='translate('+tx+'px,'+ty+'px) scale('+scale+')'+mirror;
         var sat=parseFloat(el.dataset.saturate||100);
         var con=parseFloat(el.dataset.contrast||100);
-        if(sat!==100||con!==100){el.style.filter='saturate('+sat+'%) contrast('+con+'%)';}
-        else{el.style.filter='';}
+        var bri=parseFloat(el.dataset.brightness||100);
+        var filters=[];
+        if(bri!==100)filters.push('brightness('+bri+'%)');
+        if(sat!==100)filters.push('saturate('+sat+'%)');
+        if(con!==100)filters.push('contrast('+con+'%)');
+        el.style.filter=filters.length?filters.join(' '):'';
     }
     function updateAdjDisplay(){
         if(!selectedLayer){
             document.getElementById('adjScale').textContent='100%';
+            document.getElementById('adjBrightness').textContent='100%';
             document.getElementById('adjSaturate').textContent='100%';
             document.getElementById('adjContrast').textContent='100%';
             document.getElementById('adjControls').classList.remove('active');
@@ -585,8 +606,68 @@
         }
         document.getElementById('adjControls').classList.add('active');
         document.getElementById('adjScale').textContent=Math.round(parseFloat(selectedLayer.dataset.scale||1)*100)+'%';
+        document.getElementById('adjBrightness').textContent=Math.round(parseFloat(selectedLayer.dataset.brightness||100))+'%';
         document.getElementById('adjSaturate').textContent=Math.round(parseFloat(selectedLayer.dataset.saturate||100))+'%';
         document.getElementById('adjContrast').textContent=Math.round(parseFloat(selectedLayer.dataset.contrast||100))+'%';
+    }
+
+    // Capture/restore presets complets pour chaque émission
+    function captureLayerData(el){
+        return {tx:parseFloat(el.dataset.tx||0),ty:parseFloat(el.dataset.ty||0),scale:parseFloat(el.dataset.scale||1),brightness:parseFloat(el.dataset.brightness||100),saturate:parseFloat(el.dataset.saturate||100),contrast:parseFloat(el.dataset.contrast||100)};
+    }
+    function applyLayerData(el,d){
+        if(!d)return;
+        el.dataset.tx=d.tx||0;el.dataset.ty=d.ty||0;el.dataset.scale=d.scale||1;
+        el.dataset.brightness=d.brightness||100;el.dataset.saturate=d.saturate||100;el.dataset.contrast=d.contrast||100;
+        applyLayerTransform(el);
+    }
+    function capturePreset(){
+        var preset={};
+        var tb=document.getElementById('titleBlock');
+        var sb=document.getElementById('specBlock');
+        var bb=document.getElementById('bottomBar');
+        if(tb)preset.title=captureLayerData(tb);
+        if(sb)preset.spec=captureLayerData(sb);
+        if(bb)preset.bottom=captureLayerData(bb);
+        // Capturer fontSize du titre
+        var titleEl=document.getElementById('previewSubject');
+        if(titleEl&&titleEl.style.fontSize)preset.titleFontSize=titleEl.style.fontSize;
+        // Capturer les photos (positions relatives)
+        var photos=document.querySelectorAll('.photo-item');
+        preset.photos=[];
+        photos.forEach(function(p){preset.photos.push(captureLayerData(p));});
+        // Sauver dans localStorage par émission
+        var key='vigPreset_'+currentEmission;
+        localStorage.setItem(key,JSON.stringify(preset));
+        showToast('📋 Preset capturé','Valeurs sauvegardées pour '+currentEmission,'success');
+        console.log('Preset '+currentEmission+':',JSON.stringify(preset));
+    }
+    function loadPresetForEmission(emission){
+        var key='vigPreset_'+emission;
+        var raw=localStorage.getItem(key);
+        if(!raw)return null;
+        try{return JSON.parse(raw);}catch(e){return null;}
+    }
+    function applyCurrentPreset(){
+        var preset=loadPresetForEmission(currentEmission);
+        if(!preset){showToast('Pas de preset','Aucun preset sauvegardé pour '+currentEmission,'');return;}
+        applyPresetToCanvas(preset);
+        showToast('📎 Preset appliqué','Valeurs restaurées pour '+currentEmission,'success');
+    }
+    function applyPresetToCanvas(preset){
+        var tb=document.getElementById('titleBlock');
+        var sb=document.getElementById('specBlock');
+        var bb=document.getElementById('bottomBar');
+        if(tb&&preset.title)applyLayerData(tb,preset.title);
+        if(sb&&preset.spec)applyLayerData(sb,preset.spec);
+        if(bb&&preset.bottom)applyLayerData(bb,preset.bottom);
+        if(preset.titleFontSize){var te=document.getElementById('previewSubject');if(te)te.style.fontSize=preset.titleFontSize;}
+        // Appliquer aux photos existantes
+        if(preset.photos&&preset.photos.length){
+            var photos=document.querySelectorAll('.photo-item');
+            photos.forEach(function(p,i){if(preset.photos[i])applyLayerData(p,preset.photos[i]);});
+        }
+        updateAdjDisplay();
     }
     document.querySelectorAll('.drag-layer').forEach(function(el){el.dataset.tx=0;el.dataset.ty=0;});
     document.addEventListener('keydown',function(e){if(!selectedLayer)return;var s=e.shiftKey?1:3;if(e.key==='ArrowUp'){moveOnce(0,-s);e.preventDefault();}if(e.key==='ArrowDown'){moveOnce(0,s);e.preventDefault();}if(e.key==='ArrowLeft'){moveOnce(-s,0);e.preventDefault();}if(e.key==='ArrowRight'){moveOnce(s,0);e.preventDefault();}if(e.key==='Escape')deselectAll();});
@@ -1173,6 +1254,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v61</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v62</div>
 </body>
 </html>
