@@ -1,4 +1,4 @@
-<!-- deploy: 2026-02-27 09:35:00 -->
+<!-- deploy: 2026-02-27 09:50:00 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -129,6 +129,14 @@
         .joy-btn:hover{background:rgba(255,255,255,0.1);color:#fff}
         .joy-btn:active{background:rgba(0,140,255,0.3)}
         .joy-center{width:16px;height:16px;border-radius:50%;background:#4da8ff;margin:auto}
+        .adj-controls{display:flex;flex-direction:column;gap:6px;opacity:0.3;transition:opacity 0.2s}
+        .adj-controls.active{opacity:1}
+        .adj-row{display:flex;align-items:center;gap:4px}
+        .adj-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.5);width:32px;text-transform:uppercase;letter-spacing:0.3px}
+        .adj-btn{width:22px;height:22px;border:none;border-radius:6px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;padding:0;line-height:1}
+        .adj-btn:hover{background:rgba(255,255,255,0.15);color:#fff}
+        .adj-btn:active{background:rgba(0,140,255,0.3)}
+        .adj-val{font-size:9px;color:rgba(255,255,255,0.5);width:32px;text-align:center;font-variant-numeric:tabular-nums}
         #exportCanvas{display:none}
         .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
         .modal-overlay.visible{display:flex}
@@ -210,11 +218,16 @@
                 <div class="section-title">Valeur / Sujet</div>
                 <div class="field"><input type="text" id="fieldSubject" placeholder="Ex: VINCI, CAC 40..." oninput="updatePreview()"></div>
                 <div class="section-title">Position</div>
-                <div style="display:flex;justify-content:center">
+                <div style="display:flex;justify-content:center;align-items:flex-start;gap:12px">
                     <div class="joystick" id="sidebarJoystick">
                         <div></div><div class="joy-btn" onmousedown="startMove(0,-3)" onmouseup="stopMove()" onmouseleave="stopMove()">⌃</div><div></div>
                         <div class="joy-btn" onmousedown="startMove(-3,0)" onmouseup="stopMove()" onmouseleave="stopMove()">⟨</div><div class="joy-btn" style="cursor:default"><div class="joy-center"></div></div><div class="joy-btn" onmousedown="startMove(3,0)" onmouseup="stopMove()" onmouseleave="stopMove()">⟩</div>
                         <div></div><div class="joy-btn" onmousedown="startMove(0,3)" onmouseup="stopMove()" onmouseleave="stopMove()">⌄</div><div></div>
+                    </div>
+                    <div class="adj-controls" id="adjControls">
+                        <div class="adj-row"><span class="adj-label">Zoom</span><button class="adj-btn" onmousedown="startAdj('scale',-0.02)" onmouseup="stopAdj()" onmouseleave="stopAdj()">−</button><span class="adj-val" id="adjScale">100%</span><button class="adj-btn" onmousedown="startAdj('scale',0.02)" onmouseup="stopAdj()" onmouseleave="stopAdj()">+</button></div>
+                        <div class="adj-row"><span class="adj-label">Satur.</span><button class="adj-btn" onmousedown="startAdj('saturate',-5)" onmouseup="stopAdj()" onmouseleave="stopAdj()">−</button><span class="adj-val" id="adjSaturate">100%</span><button class="adj-btn" onmousedown="startAdj('saturate',5)" onmouseup="stopAdj()" onmouseleave="stopAdj()">+</button></div>
+                        <div class="adj-row"><span class="adj-label">Contr.</span><button class="adj-btn" onmousedown="startAdj('contrast',-5)" onmouseup="stopAdj()" onmouseleave="stopAdj()">−</button><span class="adj-val" id="adjContrast">100%</span><button class="adj-btn" onmousedown="startAdj('contrast',5)" onmouseup="stopAdj()" onmouseleave="stopAdj()">+</button></div>
                     </div>
                 </div>
                 <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(this)">
@@ -522,11 +535,59 @@
     function finishEditing(el){el.contentEditable='false';window.getSelection().removeAllRanges();}
 
     var selectedLayer=null,moveInterval=null;
-    function selectLayer(e,el){e.stopPropagation();document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});el.classList.add('selected');selectedLayer=el;document.getElementById('sidebarJoystick').style.opacity='1';activeIntervenantIdx=-1;renderIntervenants();}
-    function deselectAll(e){if(e&&e.target&&(e.target.classList.contains('drag-layer')||e.target.classList.contains('photo-item')))return;document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});selectedLayer=null;activeIntervenantIdx=-1;renderIntervenants();document.getElementById('sidebarJoystick').style.opacity='0.3';}
+    function selectLayer(e,el){e.stopPropagation();document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});el.classList.add('selected');selectedLayer=el;document.getElementById('sidebarJoystick').style.opacity='1';activeIntervenantIdx=-1;renderIntervenants();updateAdjDisplay();}
+    function deselectAll(e){if(e&&e.target&&(e.target.classList.contains('drag-layer')||e.target.classList.contains('photo-item')))return;document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});selectedLayer=null;activeIntervenantIdx=-1;renderIntervenants();document.getElementById('sidebarJoystick').style.opacity='0.3';updateAdjDisplay();}
     function startMove(dx,dy){if(!selectedLayer)return;moveOnce(dx,dy);moveInterval=setInterval(function(){moveOnce(dx,dy);},50);}
-    function moveOnce(dx,dy){if(!selectedLayer)return;var tx=parseFloat(selectedLayer.dataset.tx||0)+dx,ty=parseFloat(selectedLayer.dataset.ty||0)+dy;selectedLayer.dataset.tx=tx;selectedLayer.dataset.ty=ty;var mirror='';var idx=selectedLayer.dataset.idx;if(idx!==undefined){var c=selectedIntervenants[parseInt(idx)];if(c&&c._mirrored)mirror=' scaleX(-1)';}selectedLayer.style.transform='translate('+tx+'px,'+ty+'px)'+mirror;}
+    function moveOnce(dx,dy){if(!selectedLayer)return;var tx=parseFloat(selectedLayer.dataset.tx||0)+dx,ty=parseFloat(selectedLayer.dataset.ty||0)+dy;selectedLayer.dataset.tx=tx;selectedLayer.dataset.ty=ty;applyLayerTransform(selectedLayer);}
     function stopMove(){if(moveInterval){clearInterval(moveInterval);moveInterval=null;}}
+
+    var adjInterval=null;
+    function startAdj(prop,delta){if(!selectedLayer)return;adjOnce(prop,delta);adjInterval=setInterval(function(){adjOnce(prop,delta);},80);}
+    function stopAdj(){if(adjInterval){clearInterval(adjInterval);adjInterval=null;}}
+    function adjOnce(prop,delta){
+        if(!selectedLayer)return;
+        if(prop==='scale'){
+            var s=parseFloat(selectedLayer.dataset.scale||1)+delta;
+            s=Math.max(0.2,Math.min(3,s));
+            selectedLayer.dataset.scale=s;
+            document.getElementById('adjScale').textContent=Math.round(s*100)+'%';
+        } else if(prop==='saturate'){
+            var v=parseFloat(selectedLayer.dataset.saturate||100)+delta;
+            v=Math.max(0,Math.min(300,v));
+            selectedLayer.dataset.saturate=v;
+            document.getElementById('adjSaturate').textContent=Math.round(v)+'%';
+        } else if(prop==='contrast'){
+            var v=parseFloat(selectedLayer.dataset.contrast||100)+delta;
+            v=Math.max(0,Math.min(300,v));
+            selectedLayer.dataset.contrast=v;
+            document.getElementById('adjContrast').textContent=Math.round(v)+'%';
+        }
+        applyLayerTransform(selectedLayer);
+    }
+    function applyLayerTransform(el){
+        var tx=parseFloat(el.dataset.tx||0),ty=parseFloat(el.dataset.ty||0);
+        var scale=parseFloat(el.dataset.scale||1);
+        var mirror='';var idx=el.dataset.idx;
+        if(idx!==undefined){var c=selectedIntervenants[parseInt(idx)];if(c&&c._mirrored)mirror=' scaleX(-1)';}
+        el.style.transform='translate('+tx+'px,'+ty+'px) scale('+scale+')'+mirror;
+        var sat=parseFloat(el.dataset.saturate||100);
+        var con=parseFloat(el.dataset.contrast||100);
+        if(sat!==100||con!==100){el.style.filter='saturate('+sat+'%) contrast('+con+'%)';}
+        else{el.style.filter='';}
+    }
+    function updateAdjDisplay(){
+        if(!selectedLayer){
+            document.getElementById('adjScale').textContent='100%';
+            document.getElementById('adjSaturate').textContent='100%';
+            document.getElementById('adjContrast').textContent='100%';
+            document.getElementById('adjControls').classList.remove('active');
+            return;
+        }
+        document.getElementById('adjControls').classList.add('active');
+        document.getElementById('adjScale').textContent=Math.round(parseFloat(selectedLayer.dataset.scale||1)*100)+'%';
+        document.getElementById('adjSaturate').textContent=Math.round(parseFloat(selectedLayer.dataset.saturate||100))+'%';
+        document.getElementById('adjContrast').textContent=Math.round(parseFloat(selectedLayer.dataset.contrast||100))+'%';
+    }
     document.querySelectorAll('.drag-layer').forEach(function(el){el.dataset.tx=0;el.dataset.ty=0;});
     document.addEventListener('keydown',function(e){if(!selectedLayer)return;var s=e.shiftKey?1:3;if(e.key==='ArrowUp'){moveOnce(0,-s);e.preventDefault();}if(e.key==='ArrowDown'){moveOnce(0,s);e.preventDefault();}if(e.key==='ArrowLeft'){moveOnce(-s,0);e.preventDefault();}if(e.key==='ArrowRight'){moveOnce(s,0);e.preventDefault();}if(e.key==='Escape')deselectAll();});
 
@@ -1112,6 +1173,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v60</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v61</div>
 </body>
 </html>
