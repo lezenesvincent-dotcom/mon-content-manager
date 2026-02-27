@@ -1,0 +1,1860 @@
+<!DOCTYPE html>            
+<html lang="fr"> 
+<head> 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Régie Vidéo - Panneau Tactile</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #1a1028;
+    color: #ddd;
+    font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* ===== ANIMATED BACKGROUND ===== */
+  .album-bg {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; overflow: hidden;
+  }
+  .album-bg canvas {
+    width: 100%; height: 100%;
+  }
+  .album-bg::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(0,0,0,0.35); z-index: 1;
+  }
+
+  /* ===== MAIN 3-COLUMN LAYOUT ===== */
+  .main {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    gap: 8px;
+    padding: 8px;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ===== LEFT COLUMN: PGM + Conducteur + Carousel ===== */
+  .left {
+    flex: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    min-width: 0;
+    background: rgba(46,46,50,0.65);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-radius: 20px;
+    padding: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .pgm-block {
+    background: rgba(26,26,30,0.7);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .pgm-screen {
+    flex: 1 1 0;
+    background: #000;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    position: relative;
+  }
+  .pgm-screen span { font-size: 2vw; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 4px; }
+  .pgm-screen img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+    display: none;
+  }
+  .pgm-screen video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+    display: none;
+    background: #000;
+  }
+  .pgm-live-badge {
+    position: absolute; top: 10px; left: 12px;
+    background: #e00; color: #fff; font-size: 11px; font-weight: 800;
+    padding: 3px 10px; border-radius: 4px; display: none; letter-spacing: 1px; z-index: 2;
+  }
+  .pgm-cam-label {
+    position: absolute; top: 10px; right: 12px;
+    color: #00c8ff; font-size: 13px; font-weight: 700; display: none; z-index: 2;
+  }
+
+  /* === SYNTHÉ OVERLAY ON PGM === */
+  .synthe-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    pointer-events: none;
+    padding: 0;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .synthe-overlay.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .synthe-bandeau {
+    background: linear-gradient(90deg, rgba(38,42,50,0.95) 0%, rgba(38,42,50,0.88) 40%, rgba(38,42,50,0.5) 70%, rgba(38,42,50,0) 100%);
+    padding: 12px 40px 14px 16px;
+    border-radius: 0 0 0 12px;
+  }
+  .synthe-nom {
+    font-family: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.2;
+    letter-spacing: 0.2px;
+  }
+  .synthe-fonction {
+    font-family: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.35;
+    margin-top: 1px;
+  }
+  .synthe-entreprise {
+    font-family: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.35;
+  }
+
+  .cam-pills { display: flex; gap: 5px; padding: 8px 10px 10px; flex-shrink: 0; }
+  .cam-pill {
+    flex: 1; height: 34px;
+    background: #3a3a40; border: none; border-radius: 17px;
+    color: #999; font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .cam-pill:hover { background: #444448; }
+  .cam-pill.active { background: #00c8ff; border: none; color: #000; font-weight: 700; box-shadow: 0 0 10px rgba(0,200,255,0.3); }
+
+  /* Conducteur */
+  .conducteur {
+    background: #333338; border-radius: 16px;
+    padding: 10px 12px 12px; flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .cond-title { text-align: center; font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 8px; letter-spacing: 0.3px; }
+  .cond-items { display: flex; gap: 6px; }
+  .cond-item {
+    flex: 1; height: 48px;
+    background: #3e3e44; border: none; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    font-size: 10px; font-weight: 600; color: #bbb; letter-spacing: 0.3px;
+    cursor: pointer; position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .cond-item:hover { background: #48484e; }
+  .cond-item.active { background: #00c8ff; border: none; color: #000; }
+  .cond-item .gear { position: absolute; top: 3px; right: 5px; font-size: 12px; opacity: 0.4; }
+  .cond-item.active .gear { opacity: 0.6; color: #000; }
+  .cond-icon {
+    width: 26px; height: 26px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    backdrop-filter: blur(4px);
+  }
+  .cond-item.active .cond-icon { background: rgba(0,0,0,0.15); }
+  .cond-icon svg { width: 14px; height: 14px; stroke-width: 1.5; }
+
+  /* Bottom left: carousel + tags */
+  .bottom-left { display: flex; gap: 8px; flex-shrink: 0; overflow: hidden; min-width: 0; }
+  .pages-panel {
+    background: #333338; border-radius: 16px; padding: 10px;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .pages-scroll {
+    display: flex;
+    gap: 8px;
+    width: max-content;
+  }
+  .pages-panel::-webkit-scrollbar { height: 4px; }
+  .pages-panel::-webkit-scrollbar-track { background: transparent; }
+  .pages-panel::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+
+  .content-card {
+    width: 130px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 14px;
+    padding: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+  }
+  .content-card:hover { transform: scale(1.03); }
+  .content-card.selected { border-color: #00c8ff; box-shadow: 0 0 12px rgba(0,200,255,0.4); }
+  .content-card .cc-title {
+    font-size: 11px; font-weight: 700; color: #fff;
+    text-transform: uppercase; line-height: 1.2; margin-bottom: 3px;
+    overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    letter-spacing: 0.3px;
+  }
+  .content-card .cc-sub {
+    font-size: 9px; font-weight: 400; color: rgba(255,255,255,0.7);
+    text-transform: uppercase; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    letter-spacing: 0.2px;
+  }
+  .content-card-empty {
+    width: 130px; height: 100px; background: #3a3a40; border-radius: 14px;
+    border: none; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; color: #555; font-size: 11px;
+  }
+
+  .right-tags { display: flex; flex-direction: column; gap: 6px; width: 240px; flex-shrink: 0; }
+  .tag-row { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+  .tag {
+    background: #3a3a40; border: none; border-radius: 16px;
+    padding: 5px 12px; font-size: 11px; font-weight: 600; color: #aaa; cursor: pointer;
+  }
+  .tag:hover { background: #48484e; }
+  .tag.active { background: #00c8ff; border: none; color: #000; }
+  .search-btn {
+    width: 28px; height: 28px; background: #3a3a40; border: none;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .search-btn:hover { background: #48484e; }
+  .search-btn.active { background: #00c8ff; }
+  .search-btn.active svg circle, .search-btn.active svg line { stroke: #00c8ff; }
+  .search-row { padding: 0; }
+  .search-input {
+    width: 100%;
+    background: #3a3a40;
+    border: none;
+    border-radius: 12px;
+    padding: 7px 12px;
+    font-size: 11px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    color: #fff;
+    outline: none;
+  }
+  .search-input:focus { box-shadow: 0 0 0 2px #00c8ff; }
+  .search-input::placeholder { color: #555; }
+  .synthe-pills-wrap {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    max-height: 70px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .synthe-pills-wrap::-webkit-scrollbar { width: 2px; }
+  .synthe-pills-wrap::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+
+  .synthe-pill {
+    background: rgba(0,180,240,0.08);
+    border: 1.5px solid #00aadd;
+    border-radius: 16px;
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #00c8ff;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .synthe-pill:hover {
+    background: rgba(0,180,240,0.15);
+  }
+  .synthe-pill.on-air {
+    background: rgba(224,0,0,0.15);
+    border-color: #e00;
+    color: #ff4444;
+    animation: pulse-pill 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse-pill {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(224,0,0,0); }
+    50% { box-shadow: 0 0 8px 2px rgba(224,0,0,0.3); }
+  }
+
+  /* ===== CENTER COLUMN: Preview + Cam Grid + PTZ + Media ===== */
+  .center {
+    flex: 35;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    overflow: hidden;
+    background: rgba(46,46,50,0.65);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-radius: 20px;
+    padding: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .preview-panel {
+    background: rgba(51,51,56,0.7); border-radius: 16px; padding: 8px;
+    display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .preview-screen {
+    background: #000; border-radius: 8px; height: 20vh;
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .preview-screen span { font-size: 1.6vw; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 3px; }
+  .preview-screen img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; border-radius: 8px; display: none;
+  }
+  .zoom-ctrls { position: absolute; top: 6px; right: 6px; display: flex; flex-direction: column; gap: 3px; z-index: 2; }
+  .zoom-btn {
+    width: 34px; height: 34px; background: #48484e; border: none; border-radius: 50%;
+    color: #fff; font-size: 18px; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .zoom-btn:hover { background: #55555a; }
+  .home-icon { position: absolute; bottom: 6px; left: 8px; cursor: pointer; z-index: 2; }
+
+  .framing-bar { display: flex; gap: 4px; background: #3a3a40; border-radius: 12px; padding: 4px; }
+  .frame-slot {
+    flex: 1; height: 40px; background: #48484e; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .frame-slot:hover { background: #55555a; }
+  .frame-slot.active { background: #00c8ff; }
+  .frame-slot svg .pf { fill: #aaa; }
+  .frame-slot.active svg .pf { fill: #000; }
+
+  /* Cam grid + D-pad */
+  .cam-section { display: flex; gap: 8px; flex-shrink: 0; }
+  .cam-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1; }
+  .cam-g {
+    height: 44px; background: #3a3a40; border: none; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: #999; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .cam-g:hover { background: #48484e; }
+  .cam-g.active { background: #00c8ff; border: none; color: #000; font-weight: 700; }
+  .cam-g.empty { color: #334; }
+
+  /* D-pad */
+  .dpad { width: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; gap: 2px; }
+  .dpad-row { display: flex; align-items: center; justify-content: center; gap: 2px; }
+  .dpad-arrow {
+    background: none; border: none; cursor: pointer; padding: 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .dpad-arrow:hover svg path { stroke: #fff; }
+  .dpad-center-btn {
+    width: 40px; height: 40px; background: #00c8ff; border-radius: 50%; border: none;
+    font-size: 10px; font-weight: 800; color: #000; cursor: pointer;
+  }
+  .dpad-x2 { font-size: 11px; font-weight: 700; color: #888; margin-top: 2px; }
+
+  /* Media zone */
+  .media-zone {
+    display: flex;
+    gap: 6px;
+    flex: 1 1 0;
+    min-height: 0;
+  }
+  .media-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .media-thumbs-row {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    min-height: 0;
+    align-items: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .media-thumbs-row::-webkit-scrollbar { height: 3px; }
+  .media-thumbs-row::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+  .m-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    flex: 1; min-width: 120px; flex-shrink: 0;
+  }
+  .m-thumb {
+    width: 100%; height: 90px; border-radius: 14px;
+    overflow: hidden; cursor: pointer; border: 2px solid rgba(255,255,255,0.06);
+    position: relative;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+    background: #1a1a1e;
+  }
+  .m-thumb.sel { border-color: #00c8ff; box-shadow: 0 0 12px rgba(0,200,255,0.3); }
+  .m-thumb.playing { border-color: #e00; box-shadow: 0 0 12px rgba(224,0,0,0.4); }
+  .m-thumb canvas, .m-thumb img {
+    width: 100%; height: 100%; object-fit: cover; border-radius: 10px;
+  }
+  .m-thumb-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.25);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .m-thumb:hover .m-thumb-overlay { opacity: 1; }
+  .m-thumb-overlay svg { width: 28px; height: 28px; fill: rgba(255,255,255,0.8); }
+  .m-label {
+    font-family: 'Barlow', sans-serif;
+    font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.7);
+    text-align: center; line-height: 1.2; letter-spacing: 0.2px;
+  }
+
+  .bottom-ctrls {
+    display: flex; gap: 8px; flex-shrink: 0; height: 48px;
+  }
+  .bc {
+    height: 100%; background: #3a3a40; border: none; border-radius: 14px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .bc:hover { background: #48484e; }
+  .bc-demo { width: 65px; font-size: 12px; font-weight: 600; color: #ccc; }
+  .bc-icon { width: 55px; }
+
+  .media-right-btns {
+    width: 90px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
+  }
+  .m-btn {
+    flex: 1; border-radius: 14px; border: none;
+    font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 0.3px;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+  .m-btn:hover { opacity: 0.85; }
+  .m-btn.direct { background: #00c8ff; color: #000; box-shadow: 0 3px 12px rgba(0,200,255,0.3); }
+  .m-btn.morning { background: #48484e; color: #ccc; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+  .m-btn.autres { background: #48484e; color: #ccc; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+  .m-btn-icon {
+    width: 22px; height: 22px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .m-btn.direct .m-btn-icon { background: rgba(0,0,0,0.12); }
+  .m-btn.morning .m-btn-icon, .m-btn.autres .m-btn-icon { background: rgba(255,255,255,0.12); }
+  .m-btn-icon svg { width: 12px; height: 12px; stroke-width: 1.5; }
+
+  /* ===== RIGHT COLUMN: Calendar Timeline ===== */
+  .calendar-col {
+    width: 180px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: rgba(46,46,50,0.65);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-radius: 20px;
+    padding: 10px 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .cal-header {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    padding: 8px 0 6px;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+  }
+
+  .cal-timeline {
+    flex: 1;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .cal-timeline::-webkit-scrollbar { width: 3px; }
+  .cal-timeline::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+  .cal-timeline-inner {
+    position: relative;
+    width: 100%;
+  }
+
+  .cal-hour-row {
+    height: 60px;
+    border-top: 1px solid #3a3a40;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+  }
+  .cal-hour-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: #556;
+    width: 32px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    text-align: right;
+    padding-right: 6px;
+  }
+
+  .cal-events-area {
+    position: absolute;
+    left: 34px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+
+  .cal-ev {
+    position: absolute;
+    left: 0;
+    right: 4px;
+    background: #282c34;
+    border-left: 3px solid #00c8ff;
+    border-radius: 4px;
+    padding: 4px 6px;
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 2;
+    transition: background 0.2s;
+  }
+  .cal-ev:hover { background: #2e3340; }
+  .cal-ev.active { background: rgba(0,200,255,0.12); border-left-color: #00c8ff; }
+  .cal-ev.past { opacity: 0.4; border-left-color: #555; }
+  .cal-ev .cal-ev-time { font-size: 8px; font-weight: 700; color: #00c8ff; margin-bottom: 1px; }
+  .cal-ev.past .cal-ev-time { color: #666; }
+  .cal-ev .cal-ev-title { font-size: 10px; font-weight: 700; color: #ccc; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .cal-ev.past .cal-ev-title { color: #888; }
+
+  .cal-now-line {
+    position: absolute; left: 28px; right: 0; height: 2px; background: #00c8ff; z-index: 5; pointer-events: none;
+  }
+  .cal-now-line::before {
+    content: ''; position: absolute; left: -4px; top: -3px; width: 8px; height: 8px; background: #00c8ff; border-radius: 50%;
+  }
+  .cal-now-label {
+    position: absolute; left: 0; top: -6px; font-size: 8px; font-weight: 800; color: #00c8ff; z-index: 6; pointer-events: none;
+  }
+
+/* === DOCK NAV === */
+.dock-nav { position:fixed;top:10px;right:12px;z-index:9999;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:13px;padding:4px 7px; }
+.dock-nav a,.dock-nav .dock-btn { width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);position:relative;text-decoration:none;border:none;outline:none; }
+.dock-nav a:hover,.dock-nav .dock-btn:hover { transform:scale(1.3) translateY(-3px);z-index:10; }
+.dock-nav a:hover .dk-tip,.dock-nav .dock-btn:hover .dk-tip { opacity:1;transform:translateX(-50%) translateY(0); }
+.dock-nav svg { width:14px;height:14px;fill:none;stroke:rgba(255,255,255,0.9);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round; }
+.dock-nav .dk-inv svg { stroke:rgba(0,0,0,0.6); }
+.dk-tip { position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%) translateY(-3px);background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);color:#fff;font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:all 0.15s ease;letter-spacing:0.2px; }
+.dk-act::after { content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.7); }
+.dk-sep { width:1px;height:20px;background:rgba(255,255,255,0.08);margin:0 1px; }
+.dk-home { background:rgba(255,255,255,0.08)!important;border-radius:8px!important; }
+.dk-home:hover { background:rgba(255,255,255,0.15)!important; }
+.dk-home svg { stroke:rgba(255,255,255,0.5)!important; }
+.dr { background:linear-gradient(135deg,#ff416c,#ff4b2b); }
+.dp { background:linear-gradient(135deg,#8b5cf6,#6366f1); }
+.dc { background:linear-gradient(135deg,#00d2ff,#3a7bd5); }
+.dv { background:linear-gradient(135deg,#667eea,#764ba2); }
+.dk { background:linear-gradient(135deg,#f093fb,#f5576c); }
+.dg { background:linear-gradient(135deg,#43e97b,#38f9d7); }
+.do { background:linear-gradient(135deg,#f6d365,#fda085); }
+.dt { background:linear-gradient(135deg,#0d9488,#06b6d4); }
+.dd { background:linear-gradient(135deg,#1c2028,#2d2d2d);border:1px solid rgba(255,255,255,0.1); }
+/* === END DOCK === */
+
+</style>
+</head>
+<body>
+<!-- DOCK START -->
+<nav class="dock-nav">
+    <a href="studio-manager.html" class="dk-home"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Accueil</span></a>
+    <div class="dk-sep"></div>
+    <a href="regie-video.html" class="dr dk-act"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span class="dk-tip">R&eacute;gie</span></a>
+    <a href="agenda-studio.html" class="dp"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="dk-tip">Agenda</span></a>
+    <a href="vignettes.html" class="dc"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="2"/><path d="M21 15l-5-5L5 21"/></svg><span class="dk-tip">Vignettes</span></a>
+    <a href="creation.html" class="dv"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="dk-tip">Cr&eacute;ation</span></a>
+    <a href="manage-ei.html" class="dk"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Manage</span></a>
+    <div class="dk-sep"></div>
+    <a href="contact-studio.html" class="dg dk-inv"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="dk-tip">Contact</span></a>
+    <a href="prestation.html" class="do dk-inv"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="dk-tip">Prestations</span></a>
+    <a href="carnet.html" class="dt"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="dk-tip">Carnet</span></a>
+    <div class="dk-sep"></div>
+    <a href="studio-2027.html" class="dd"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="dk-tip">2027</span></a>
+    <a href="studio-alert.html" class="dr"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dk-tip">Alert</span></a>
+    <a href="dev-dashboard.html" class="dd"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span class="dk-tip">Dev</span></a>
+</nav>
+<!-- DOCK END -->
+
+<div class="album-bg" id="albumBg"></div>
+<div class="main">
+
+  <!-- ===== LEFT COLUMN ===== -->
+  <div class="left">
+    <div class="pgm-block">
+      <div class="pgm-screen" id="pgmScreen">
+        <span id="pgmLabel">PGM</span>
+        <img id="pgmStream" alt="">
+        <video id="pgmVideo" playsinline preload="auto"></video>
+        <div class="pgm-live-badge" id="pgmLive">● LIVE</div>
+        <div class="pgm-cam-label" id="pgmCamLabel"></div>
+        <!-- SYNTHÉ OVERLAY -->
+        <div class="synthe-overlay" id="syntheOverlay">
+          <div class="synthe-bandeau">
+            <div class="synthe-nom" id="syntheNom"></div>
+            <div class="synthe-fonction" id="syntheFonction"></div>
+            <div class="synthe-entreprise" id="syntheEntreprise"></div>
+          </div>
+        </div>
+      </div>
+      <div class="cam-pills" id="camPills">
+        <div class="cam-pill" data-cam="1">CAM 1</div>
+        <div class="cam-pill" data-cam="2">CAM 2</div>
+        <div class="cam-pill" data-cam="3">CAM 3</div>
+        <div class="cam-pill" data-cam="4">CAM 4</div>
+        <div class="cam-pill" data-cam="5">CAM 5</div>
+        <div class="cam-pill" data-cam="6">CAM 6</div>
+        <div class="cam-pill" data-cam="7">CAM 7</div>
+        <div class="cam-pill" data-cam="8">CAM 8</div>
+      </div>
+    </div>
+
+    <div class="conducteur">
+      <div class="cond-title">Mardi 10 février</div>
+      <div class="cond-items">
+        <div class="cond-item"><div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>UNIVERSAL<span class="gear">⚙</span></div>
+        <div class="cond-item active"><div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>REXEL<span class="gear">⚙</span></div>
+        <div class="cond-item"><div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>REMY<span class="gear">⚙</span></div>
+        <div class="cond-item"><div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>POINT TAUX<span class="gear">⚙</span></div>
+        <div class="cond-item"><div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>ÉCLAIREUR<span class="gear">⚙</span></div>
+      </div>
+    </div>
+
+    <div class="bottom-left">
+      <div class="pages-panel" id="pagesPanel">
+        <div class="pages-scroll" id="pagesScroll">
+          <div class="content-card-empty">Chargement...</div>
+        </div>
+      </div>
+      <div class="right-tags" id="synthesZone">
+        <div class="tag-row">
+          <span class="tag active" data-filter="Actions">Actions</span>
+          <span class="tag" data-filter="Eco">Eco</span>
+          <span class="tag" data-filter="Autre">Autre</span>
+          <span class="tag" data-filter="">Tous</span>
+          <div class="search-btn" id="searchToggle">
+            <svg width="12" height="12" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" fill="none" stroke="#888" stroke-width="1.5"/><line x1="15" y1="15" x2="21" y2="21" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="search-btn" id="faceRecToggle" title="Reconnaissance faciale">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 2H5a2 2 0 00-2 2v4"/><path d="M15 2h4a2 2 0 012 2v4"/><path d="M15 22h4a2 2 0 002-2v-4"/><path d="M9 22H5a2 2 0 01-2-2v-4"/>
+              <circle cx="12" cy="10" r="3"/><path d="M7 20c0-3 2.5-5 5-5s5 2 5 5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="search-row" id="searchRow" style="display:none;">
+          <input type="text" id="searchInput" placeholder="Rechercher un intervenant..." class="search-input">
+        </div>
+        <div class="synthe-pills-wrap" id="synthesGrid">
+          <span style="font-size:10px;color:#444;">Chargement...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CENTER COLUMN ===== -->
+  <div class="center">
+    <div class="preview-panel">
+      <div class="preview-screen">
+        <span id="previewLabel">CAM 1</span>
+        <img id="previewStream" alt="">
+        <video id="previewVideo" playsinline autoplay muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:none"></video>
+        <div class="zoom-ctrls">
+          <button class="zoom-btn">+</button>
+          <button class="zoom-btn">−</button>
+        </div>
+        <div class="home-icon">
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+            <path d="M6 16L16 6l10 10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 14v12a1 1 0 001 1h5v-7h4v7h5a1 1 0 001-1V14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="framing-bar">
+        <div class="frame-slot"><svg width="16" height="26" viewBox="0 0 16 26"><circle cx="8" cy="5.5" r="4" class="pf"/><rect x="2" y="12" width="12" height="13" rx="3" class="pf"/></svg></div>
+        <div class="frame-slot active"><svg width="24" height="26" viewBox="0 0 24 26"><circle cx="7" cy="5.5" r="3.5" class="pf"/><rect x="2" y="12" width="10" height="13" rx="2.5" class="pf"/><circle cx="17" cy="5.5" r="3.5" class="pf"/><rect x="12" y="12" width="10" height="13" rx="2.5" class="pf"/></svg></div>
+        <div class="frame-slot"><svg width="32" height="26" viewBox="0 0 32 26"><circle cx="6" cy="5.5" r="3.2" class="pf"/><rect x="1.5" y="12" width="9" height="13" rx="2.2" class="pf"/><circle cx="16" cy="5.5" r="3.2" class="pf"/><rect x="11.5" y="12" width="9" height="13" rx="2.2" class="pf"/><circle cx="26" cy="5.5" r="3.2" class="pf"/><rect x="21.5" y="12" width="9" height="13" rx="2.2" class="pf"/></svg></div>
+        <div class="frame-slot"><svg width="38" height="26" viewBox="0 0 38 26"><circle cx="5.5" cy="6" r="2.8" class="pf"/><rect x="1.5" y="12" width="8" height="12.5" rx="2" class="pf"/><circle cx="14.5" cy="6" r="2.8" class="pf"/><rect x="10.5" y="12" width="8" height="12.5" rx="2" class="pf"/><circle cx="23.5" cy="6" r="2.8" class="pf"/><rect x="19.5" y="12" width="8" height="12.5" rx="2" class="pf"/><circle cx="32.5" cy="6" r="2.8" class="pf"/><rect x="28.5" y="12" width="8" height="12.5" rx="2" class="pf"/></svg></div>
+      </div>
+    </div>
+
+    <div class="cam-section">
+      <div class="cam-grid">
+        <div class="cam-g" data-cam="3">CAM 3</div>
+        <div class="cam-g" data-cam="6">CAM 6</div>
+        <div class="cam-g empty">—</div>
+        <div class="cam-g" data-cam="2">CAM 2</div>
+        <div class="cam-g" data-cam="5">CAM 5</div>
+        <div class="cam-g" data-cam="8">CAM 8</div>
+        <div class="cam-g active" data-cam="1">CAM 1</div>
+        <div class="cam-g" data-cam="4">CAM 4</div>
+        <div class="cam-g" data-cam="7">CAM 7</div>
+      </div>
+      <div class="dpad">
+        <div class="dpad-row">
+          <button class="dpad-arrow" data-dir="up"><svg width="30" height="22" viewBox="0 0 30 22" fill="none"><path d="M15 3L26 19H4L15 3Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="dpad-row">
+          <button class="dpad-arrow" data-dir="left"><svg width="22" height="30" viewBox="0 0 22 30" fill="none"><path d="M3 15L19 4V26L3 15Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+          <button class="dpad-center-btn">slow</button>
+          <button class="dpad-arrow" data-dir="right"><svg width="22" height="30" viewBox="0 0 22 30" fill="none"><path d="M19 15L3 4V26L19 15Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="dpad-row" style="flex-direction:column;align-items:center;">
+          <button class="dpad-arrow" data-dir="down"><svg width="30" height="22" viewBox="0 0 30 22" fill="none"><path d="M15 19L4 3H26L15 19Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+          <span class="dpad-x2">x2</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="media-zone">
+      <div class="media-left">
+        <div class="media-thumbs-row" id="genThumbs"></div>
+        <div class="bottom-ctrls">
+          <button class="bc bc-demo">Démo</button>
+          <button class="bc bc-icon">
+            <svg width="20" height="22" viewBox="0 0 22 24" fill="none"><path d="M4 2L19 12L4 22V2Z" stroke="#ccc" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="bc bc-icon">
+            <svg width="22" height="20" viewBox="0 0 24 22" fill="none"><path d="M2 1h20v13H8L2 20V1Z" stroke="#ccc" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="bc bc-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v13M12 16l-5-5M12 16l5-5" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="18" width="18" height="3" rx="1.5" stroke="#ccc" stroke-width="1.5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="media-right-btns">
+        <button class="m-btn direct"><div class="m-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M16.24 7.76a6 6 0 010 8.49"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg></div>DIRECT</button>
+        <button class="m-btn morning"><div class="m-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></div>MORNING</button>
+        <button class="m-btn autres"><div class="m-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>AUTRES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RIGHT COLUMN: Calendar Timeline ===== -->
+  <div class="calendar-col">
+    <div class="cal-header" id="calHeader"></div>
+    <div class="cal-timeline" id="calTimeline">
+      <div class="cal-timeline-inner" id="calTimelineInner"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ===== CONFIGURATION =====
+  var CAMERA_IP = '192.168.1.54';
+  var WS_SERVER = 'https://ecamm-overlay-server.onrender.com';
+  var GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+  var camSources = {
+    1: 'capture', // Boitier de capture USB (getUserMedia)
+    2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null
+  };
+
+  // Cache des streams getUserMedia par deviceId
+  var captureStreams = {};
+  var captureDeviceId = null;
+
+  // Détecte le boitier de capture au chargement
+  async function initCaptureDevice() {
+    try {
+      // D'abord demander la permission
+      var tempStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      tempStream.getTracks().forEach(function(t) { t.stop(); });
+
+      var devices = await navigator.mediaDevices.enumerateDevices();
+      var videoDevices = devices.filter(function(d) { return d.kind === 'videoinput'; });
+
+      console.log('Périphériques vidéo détectés:', videoDevices.length);
+      videoDevices.forEach(function(d, i) {
+        console.log('  [' + i + '] ' + d.label + ' (id: ' + d.deviceId.substring(0, 8) + '...)');
+      });
+
+      if (videoDevices.length > 0) {
+        // Cherche un boitier de capture (pas la webcam intégrée)
+        var capture = videoDevices.find(function(d) {
+          var label = d.label.toLowerCase();
+          return label.includes('capture') || label.includes('cam link') ||
+                 label.includes('magewell') || label.includes('blackmagic') ||
+                 label.includes('elgato') || label.includes('avermedia') ||
+                 label.includes('hdmi') || label.includes('usb video');
+        });
+        captureDeviceId = capture ? capture.deviceId : videoDevices[videoDevices.length - 1].deviceId;
+        console.log('Boitier de capture sélectionné:', capture ? capture.label : videoDevices[videoDevices.length - 1].label);
+      }
+    } catch (e) {
+      console.log('Pas de périphérique de capture disponible:', e.message);
+    }
+  }
+
+  async function getCaptureStream() {
+    if (!captureDeviceId) await initCaptureDevice();
+    if (!captureDeviceId) return null;
+
+    if (captureStreams[captureDeviceId]) return captureStreams[captureDeviceId];
+
+    try {
+      var stream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: { exact: captureDeviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+        audio: false
+      });
+      captureStreams[captureDeviceId] = stream;
+      return stream;
+    } catch (e) {
+      console.error('Erreur capture:', e.message);
+      return null;
+    }
+  }
+
+  var activePgmCam = null;
+  var activePreviewCam = null;
+  var ptzSpeed = 5;
+  var selectedContentId = null;
+  var contacts = [];
+  var activeSynthe = null;
+  var todayIntervenants = [];
+  var ws = null;
+
+  // ===== WEBSOCKET FOR SYNTHÉ SYNC =====
+  function connectSyntheWS() {
+    var wsUrl = WS_SERVER.replace('https://', 'wss://').replace('http://', 'ws://');
+    ws = new WebSocket(wsUrl);
+    ws.onopen = function() { console.log('🟢 Synthé WS connecté'); };
+    ws.onclose = function() { setTimeout(connectSyntheWS, 3000); };
+    ws.onerror = function() {};
+  }
+  connectSyntheWS(); // contact IDs detected from today's fiches
+
+  // ===== LOAD CONTACTS FROM GITHUB =====
+  async function loadContactsData() {
+    try {
+      var resp = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/contacts.json', { cache: 'no-store' });
+      if (resp.ok) {
+        contacts = await resp.json();
+      }
+    } catch(e) {
+      try {
+        var r2 = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/contacts.json', {
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (r2.ok) {
+          var d = await r2.json();
+          contacts = JSON.parse(decodeURIComponent(escape(atob(d.content))));
+        }
+      } catch(e2) { console.error('Contacts fallback error:', e2); }
+    }
+  }
+
+  // ===== LOAD TODAY'S FICHES → DETECT INTERVENANTS =====
+  async function loadTodayFiches() {
+    try {
+      var resp = await fetch(WS_SERVER + '/api/fiches');
+      if (!resp.ok) return;
+      var fiches = await resp.json();
+      var today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+      todayIntervenants = [];
+
+      Object.values(fiches).forEach(function(fiche) {
+        // Match fiches for today
+        if (fiche.date !== today) return;
+
+        // Extract intervenants from fiche
+        var intervs = fiche.intervenants || [];
+        intervs.forEach(function(interv) {
+          var nom = (interv.nom || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          var prenom = (interv.prenom || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+          // Match with contacts
+          contacts.forEach(function(c) {
+            var cNom = (c.lastName || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            var cPrenom = (c.firstName || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+            if (cNom && nom && cNom === nom) {
+              if (!todayIntervenants.includes(c.id)) {
+                todayIntervenants.push(c.id);
+              }
+            } else if (cNom && cPrenom && nom === cNom && prenom === cPrenom) {
+              if (!todayIntervenants.includes(c.id)) {
+                todayIntervenants.push(c.id);
+              }
+            }
+          });
+        });
+      });
+    } catch(e) {
+      console.error('Fiches load error:', e);
+    }
+  }
+
+  // ===== INIT: load contacts then fiches then build pills =====
+  async function initSynthes() {
+    await loadContactsData();
+    await loadTodayFiches();
+    buildSynthePills();
+  }
+
+  var activeFilter = 'Actions'; // default filter
+  var searchQuery = '';
+
+  // ===== BUILD SYNTHÉ PILLS =====
+  function buildSynthePills() {
+    var grid = document.getElementById('synthesGrid');
+    grid.innerHTML = '';
+
+    if (!contacts || contacts.length === 0) {
+      grid.innerHTML = '<span style="font-size:10px;color:#444;">Aucun contact</span>';
+      return;
+    }
+
+    var sorted = contacts.slice().sort(function(a, b) {
+      return (a.lastName || '').localeCompare(b.lastName || '');
+    });
+
+    // Filter by tag (speciality)
+    var filtered = sorted;
+    if (activeFilter) {
+      filtered = sorted.filter(function(c) {
+        var spec = (c.speciality || c.category || '').toLowerCase();
+        return spec.indexOf(activeFilter.toLowerCase()) !== -1;
+      });
+    }
+
+    // Filter by search
+    if (searchQuery) {
+      var q = searchQuery.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      filtered = sorted.filter(function(c) {
+        var fullName = ((c.firstName || '') + ' ' + (c.lastName || '')).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return fullName.indexOf(q) !== -1;
+      });
+    }
+
+    // Suggested contacts from today's fiches come first
+    var suggested = filtered.filter(function(c) { return todayIntervenants.includes(c.id); });
+    var others = filtered.filter(function(c) { return !todayIntervenants.includes(c.id); });
+    var final = suggested.concat(others);
+
+    if (final.length === 0) {
+      grid.innerHTML = '<span style="font-size:10px;color:#555;">Aucun résultat</span>';
+      return;
+    }
+
+    final.forEach(function(c) {
+      var pill = document.createElement('span');
+      pill.className = 'synthe-pill';
+      if (todayIntervenants.includes(c.id)) pill.classList.add('suggested');
+      pill.textContent = c.firstName + ' ' + c.lastName;
+      pill.dataset.contactId = c.id;
+      if (activeSynthe === c.id) pill.classList.add('on-air');
+      pill.addEventListener('click', function() {
+        toggleSynthe(c);
+      });
+      grid.appendChild(pill);
+    });
+  }
+
+  // ===== TAG FILTER CLICKS =====
+  document.querySelectorAll('#synthesZone .tag').forEach(function(tag) {
+    tag.addEventListener('click', function() {
+      document.querySelectorAll('#synthesZone .tag').forEach(function(t) { t.classList.remove('active'); });
+      tag.classList.add('active');
+      activeFilter = tag.dataset.filter || '';
+      searchQuery = '';
+      document.getElementById('searchInput').value = '';
+      buildSynthePills();
+    });
+  });
+
+  // ===== SEARCH TOGGLE =====
+  document.getElementById('searchToggle').addEventListener('click', function() {
+    var row = document.getElementById('searchRow');
+    var btn = document.getElementById('searchToggle');
+    if (row.style.display === 'none') {
+      row.style.display = 'block';
+      btn.classList.add('active');
+      document.getElementById('searchInput').focus();
+      // Clear filter when searching
+      activeFilter = '';
+      document.querySelectorAll('#synthesZone .tag').forEach(function(t) { t.classList.remove('active'); });
+    } else {
+      row.style.display = 'none';
+      btn.classList.remove('active');
+      searchQuery = '';
+      document.getElementById('searchInput').value = '';
+      // Reset to Actions filter
+      activeFilter = 'Actions';
+      document.querySelectorAll('#synthesZone .tag').forEach(function(t) {
+        if (t.dataset.filter === 'Actions') t.classList.add('active');
+      });
+      buildSynthePills();
+    }
+  });
+
+  // ===== SEARCH INPUT =====
+  document.getElementById('searchInput').addEventListener('input', function() {
+    searchQuery = this.value;
+    buildSynthePills();
+  });
+
+  // ===== TOGGLE SYNTHÉ ON/OFF =====
+  function toggleSynthe(contact) {
+    var overlay = document.getElementById('syntheOverlay');
+
+    if (activeSynthe === contact.id) {
+      // Turn OFF
+      overlay.classList.remove('visible');
+      activeSynthe = null;
+      document.querySelectorAll('.synthe-pill').forEach(function(p) {
+        p.classList.remove('on-air');
+      });
+      // Send OFF to output page
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'synthe_update', data: null }));
+      }
+      return;
+    }
+
+    // Turn ON
+    activeSynthe = contact.id;
+
+    document.getElementById('syntheNom').textContent = contact.firstName + ' ' + contact.lastName;
+    document.getElementById('syntheFonction').textContent = contact.function || '';
+    document.getElementById('syntheEntreprise').textContent = contact.company || '';
+
+    overlay.classList.remove('visible');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        overlay.classList.add('visible');
+      });
+    });
+
+    document.querySelectorAll('.synthe-pill').forEach(function(p) {
+      if (p.dataset.contactId === contact.id) {
+        p.classList.add('on-air');
+      } else {
+        p.classList.remove('on-air');
+      }
+    });
+
+    // Send to output page
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({
+        type: 'synthe_update',
+        data: {
+          nom: contact.firstName + ' ' + contact.lastName,
+          fonction: contact.function || '',
+          entreprise: contact.company || ''
+        }
+      }));
+    }
+  }
+
+  // Load synthés on startup
+  initSynthes();
+  // Refresh every 2 minutes
+  setInterval(initSynthes, 120000);
+
+  // ===== OVERLAY CONTENTS =====
+  function loadContents() {
+    fetch(WS_SERVER + '/history')
+      .then(function(r) { return r.json(); })
+      .then(function(history) {
+        var scroll = document.getElementById('pagesScroll');
+        scroll.innerHTML = '';
+
+        if (!history || history.length === 0) {
+          scroll.innerHTML = '<div class="content-card-empty">Aucun contenu</div>';
+          return;
+        }
+
+        var seen = {};
+        var unique = [];
+        history.forEach(function(item) {
+          var key = item.titre || item.title || 'Sans titre';
+          if (!seen[key]) {
+            seen[key] = true;
+            unique.push(item);
+          }
+        });
+
+        unique.forEach(function(item) {
+          var card = document.createElement('div');
+          card.className = 'content-card';
+          if (item.id === selectedContentId) card.classList.add('selected');
+
+          var title = item.titre || item.title || 'Sans titre';
+          var sub = item.soustitre || item.subtitle || '';
+          if (!sub && item.p1 && item.p1.sujet) sub = item.p1.sujet;
+
+          card.innerHTML = '<div class="cc-title">' + title + '</div><div class="cc-sub">' + sub + '</div>';
+
+          card.addEventListener('click', function() {
+            selectContent(item);
+            document.querySelectorAll('.content-card').forEach(function(c) { c.classList.remove('selected'); });
+            card.classList.add('selected');
+          });
+
+          scroll.appendChild(card);
+        });
+      })
+      .catch(function() {
+        document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Serveur hors ligne</div>';
+      });
+  }
+
+  function selectContent(item) {
+    selectedContentId = item.id;
+    fetch(WS_SERVER + '/api/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        titre: item.titre || item.title || '',
+        soustitre: item.soustitre || item.subtitle || '',
+        p1: item.p1 || { sujet: '', contenu: [] },
+        p2: item.p2 || { sujet: '', contenu: [] },
+        p3: item.p3 || { sujet: '', contenu: [] },
+        p4: item.p4 || { sujet: '', contenu: [] }
+      })
+    });
+  }
+
+  loadContents();
+  setInterval(loadContents, 30000);
+
+  // ===== CAMERA COMMANDS =====
+  function sendCmd(cgi, params) {
+    var query = Object.entries(params).map(function(p) { return p[0] + '=' + p[1]; }).join('&');
+    var url = 'https://' + CAMERA_IP + '/command/' + cgi + '?' + query;
+    var img = new Image();
+    img.src = url;
+  }
+
+  // ===== PTZ =====
+  function ptzMove(direction) {
+    var s = ptzSpeed;
+    if (direction === 'up') sendCmd('ptzf.cgi', { PanTiltMove: 'up,0,' + s });
+    if (direction === 'down') sendCmd('ptzf.cgi', { PanTiltMove: 'down,0,' + s });
+    if (direction === 'left') sendCmd('ptzf.cgi', { PanTiltMove: 'left,' + s + ',0' });
+    if (direction === 'right') sendCmd('ptzf.cgi', { PanTiltMove: 'right,' + s + ',0' });
+  }
+
+  function ptzStop() {
+    sendCmd('ptzf.cgi', { PanTiltMove: 'stop,0,0' });
+  }
+
+  // ===== D-PAD =====
+  document.querySelectorAll('.dpad-arrow').forEach(function(arrow) {
+    var dir = arrow.getAttribute('data-dir');
+    if (!dir) return;
+    arrow.addEventListener('mousedown', function(e) { e.preventDefault(); ptzMove(dir); });
+    arrow.addEventListener('touchstart', function(e) { e.preventDefault(); ptzMove(dir); });
+    arrow.addEventListener('mouseup', ptzStop);
+    arrow.addEventListener('mouseleave', ptzStop);
+    arrow.addEventListener('touchend', ptzStop);
+  });
+
+  document.querySelector('.dpad-center-btn').addEventListener('click', function() {
+    if (ptzSpeed === 5) {
+      ptzSpeed = 20;
+      this.textContent = 'fast';
+      this.style.background = '#ff6600';
+    } else {
+      ptzSpeed = 5;
+      this.textContent = 'slow';
+      this.style.background = '#00c8ff';
+    }
+  });
+
+  // ===== ZOOM =====
+  document.querySelectorAll('.zoom-btn').forEach(function(btn) {
+    var dir = btn.textContent.trim() === '+' ? 'tele' : 'wide';
+    btn.addEventListener('mousedown', function(e) { e.preventDefault(); sendCmd('ptzf.cgi', { ZoomMove: dir + ',5000' }); });
+    btn.addEventListener('mouseup', function() { sendCmd('ptzf.cgi', { ZoomMove: 'stop,0' }); });
+    btn.addEventListener('mouseleave', function() { sendCmd('ptzf.cgi', { ZoomMove: 'stop,0' }); });
+    btn.addEventListener('touchstart', function(e) { e.preventDefault(); sendCmd('ptzf.cgi', { ZoomMove: dir + ',5000' }); });
+    btn.addEventListener('touchend', function() { sendCmd('ptzf.cgi', { ZoomMove: 'stop,0' }); });
+  });
+
+  // ===== HOME =====
+  document.querySelector('.home-icon').addEventListener('click', function() {
+    sendCmd('presetposition.cgi', { HomePos: 'recall' });
+  });
+
+  // ===== CAM PILLS → PGM =====
+  document.querySelectorAll('.cam-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      selectPgmCam(parseInt(pill.dataset.cam));
+    });
+  });
+
+  function selectPgmCam(camNum) {
+    var pgmLabel = document.getElementById('pgmLabel');
+    var pgmStream = document.getElementById('pgmStream');
+    var pgmVideo = document.getElementById('pgmVideo');
+    var pgmLive = document.getElementById('pgmLive');
+    var pgmCamLabel = document.getElementById('pgmCamLabel');
+
+    document.querySelectorAll('.cam-pill').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelector('.cam-pill[data-cam="' + camNum + '"]').classList.add('active');
+    activePgmCam = camNum;
+
+    var src = camSources[camNum];
+    // Reset both
+    pgmStream.style.display = 'none'; pgmStream.src = '';
+    pgmVideo.style.display = 'none'; pgmVideo.srcObject = null;
+
+    if (src === 'capture') {
+      getCaptureStream().then(function(stream) {
+        if (stream) {
+          pgmLabel.style.display = 'none';
+          pgmVideo.srcObject = stream;
+          pgmVideo.muted = true;
+          pgmVideo.play();
+          pgmVideo.style.display = 'block';
+          pgmLive.style.display = 'block';
+          pgmCamLabel.textContent = 'CAM ' + camNum;
+          pgmCamLabel.style.display = 'block';
+        } else {
+          pgmLabel.style.display = 'block';
+          pgmLabel.textContent = 'CAM ' + camNum + ' (pas de signal)';
+          pgmLabel.style.color = '#f44';
+          pgmLive.style.display = 'none';
+          pgmCamLabel.style.display = 'none';
+        }
+      });
+    } else if (src) {
+      pgmLabel.style.display = 'none';
+      pgmStream.src = src;
+      pgmStream.style.display = 'block';
+      pgmLive.style.display = 'block';
+      pgmCamLabel.textContent = 'CAM ' + camNum;
+      pgmCamLabel.style.display = 'block';
+    } else {
+      pgmLive.style.display = 'none';
+      pgmCamLabel.style.display = 'none';
+      pgmLabel.style.display = 'block';
+      pgmLabel.textContent = 'CAM ' + camNum;
+      pgmLabel.style.color = '#aaa';
+    }
+  }
+
+  // ===== CAM GRID → PREVIEW =====
+  document.querySelectorAll('.cam-g').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var camNum = btn.dataset.cam;
+      if (!camNum) return;
+      selectPreviewCam(parseInt(camNum));
+    });
+  });
+
+  function selectPreviewCam(camNum) {
+    var previewLabel = document.getElementById('previewLabel');
+    var previewStream = document.getElementById('previewStream');
+    var previewVideo = document.getElementById('previewVideo');
+
+    document.querySelectorAll('.cam-g').forEach(function(g) { g.classList.remove('active'); });
+    document.querySelector('.cam-g[data-cam="' + camNum + '"]').classList.add('active');
+    activePreviewCam = camNum;
+
+    // Reset both
+    previewStream.style.display = 'none'; previewStream.src = '';
+    previewVideo.style.display = 'none'; previewVideo.srcObject = null;
+
+    var src = camSources[camNum];
+    if (src === 'capture') {
+      getCaptureStream().then(function(stream) {
+        if (stream) {
+          previewLabel.style.display = 'none';
+          previewVideo.srcObject = stream;
+          previewVideo.muted = true;
+          previewVideo.play();
+          previewVideo.style.display = 'block';
+        } else {
+          previewLabel.style.display = 'block';
+          previewLabel.textContent = 'CAM ' + camNum + ' (pas de signal)';
+          previewLabel.style.color = '#f44';
+        }
+      });
+    } else if (src) {
+      previewLabel.style.display = 'none';
+      previewStream.src = src;
+      previewStream.style.display = 'block';
+    } else {
+      previewLabel.style.display = 'block';
+      previewLabel.textContent = 'CAM ' + camNum;
+      previewLabel.style.color = '#aaa';
+    }
+  }
+
+  // ===== GÉNÉRIQUES =====
+  var RENDER_SERVER = 'https://ecamm-overlay-server.onrender.com';
+  var generiques = [
+    { nom: 'GEN - Ligne Métier Communication', url: RENDER_SERVER + '/videos/gen-communication.mov' },
+    { nom: 'GEN - Morning', url: RENDER_SERVER + '/videos/morning-2026-v1.mp4' }
+  ];
+
+  var pgmVideo = document.getElementById('pgmVideo');
+
+  function buildGenThumbs() {
+    var container = document.getElementById('genThumbs');
+    container.innerHTML = '';
+    generiques.forEach(function(gen, i) {
+      var wrap = document.createElement('div');
+      wrap.className = 'm-wrap';
+      var shortName = gen.nom.replace('GEN - ', '').replace('GEN ', '');
+
+      var thumb = document.createElement('div');
+      thumb.className = 'm-thumb';
+      thumb.dataset.gen = i;
+
+      // Create canvas for video thumbnail
+      var canvas = document.createElement('canvas');
+      canvas.width = 260;
+      canvas.height = 160;
+      thumb.appendChild(canvas);
+
+      // Play overlay
+      var overlay = document.createElement('div');
+      overlay.className = 'm-thumb-overlay';
+      overlay.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+      thumb.appendChild(overlay);
+
+      // Label below
+      var label = document.createElement('span');
+      label.className = 'm-label';
+      label.textContent = shortName;
+
+      wrap.appendChild(thumb);
+      wrap.appendChild(label);
+
+      thumb.addEventListener('click', function() {
+        playGenerique(i);
+      });
+      container.appendChild(wrap);
+
+      // Extract first frame
+      var tempVideo = document.createElement('video');
+      tempVideo.crossOrigin = 'anonymous';
+      tempVideo.muted = true;
+      tempVideo.preload = 'auto';
+      tempVideo.src = gen.url;
+      tempVideo.addEventListener('loadeddata', function() {
+        tempVideo.currentTime = 0.5;
+      });
+      tempVideo.addEventListener('seeked', function() {
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+        tempVideo.src = '';
+        tempVideo.load();
+      });
+    });
+  }
+  buildGenThumbs();
+
+  if (generiques.length > 0) {
+    pgmVideo.src = generiques[0].url;
+    pgmVideo.load();
+  }
+
+  function playGenerique(index) {
+    var gen = generiques[index];
+    var pgmLabel = document.getElementById('pgmLabel');
+    var pgmStream = document.getElementById('pgmStream');
+    var pgmLive = document.getElementById('pgmLive');
+    var pgmCamLabel = document.getElementById('pgmCamLabel');
+
+    pgmStream.style.display = 'none';
+    pgmStream.src = '';
+    pgmLabel.style.display = 'none';
+    pgmLive.style.display = 'none';
+    pgmCamLabel.style.display = 'none';
+
+    document.querySelectorAll('.cam-pill').forEach(function(p) { p.classList.remove('active'); });
+    activePgmCam = null;
+
+    document.querySelectorAll('.m-thumb').forEach(function(t) { t.classList.remove('playing'); });
+    var thumb = document.querySelector('.m-thumb[data-gen="' + index + '"]');
+    if (thumb) thumb.classList.add('playing');
+
+    pgmVideo.src = gen.url;
+    pgmVideo.load();
+    pgmVideo.style.display = 'block';
+    pgmVideo.play();
+  }
+
+  pgmVideo.addEventListener('ended', function() {
+    pgmVideo.style.display = 'none';
+    pgmVideo.src = '';
+    document.querySelectorAll('.m-thumb').forEach(function(t) { t.classList.remove('playing'); });
+    // Retour automatique sur CAM 1
+    selectPgmCam(1);
+  });
+
+  var origSelectPgmCam = selectPgmCam;
+  selectPgmCam = function(camNum) {
+    pgmVideo.pause();
+    pgmVideo.style.display = 'none';
+    pgmVideo.src = '';
+    document.querySelectorAll('.m-thumb').forEach(function(t) { t.classList.remove('playing'); });
+    origSelectPgmCam(camNum);
+  };
+
+  // ===== ERREURS STREAM =====
+  document.getElementById('pgmStream').addEventListener('error', function() {
+    document.getElementById('pgmStream').style.display = 'none';
+    document.getElementById('pgmLive').style.display = 'none';
+    var l = document.getElementById('pgmLabel');
+    l.style.display = 'block';
+    l.textContent = 'CAM ' + activePgmCam + ' — pas de signal';
+    l.style.color = '#c44';
+  });
+
+  document.getElementById('previewStream').addEventListener('error', function() {
+    document.getElementById('previewStream').style.display = 'none';
+    var l = document.getElementById('previewLabel');
+    l.style.display = 'block';
+    l.textContent = 'CAM ' + activePreviewCam + ' — pas de signal';
+    l.style.color = '#c44';
+  });
+
+  // ===== CALENDAR TIMELINE =====
+  var CAL_START = 8;
+  var CAL_END = 19;
+  var HOUR_HEIGHT = 60;
+  var calEvents = [];
+
+  // Load real calendar data from GitHub (synced from Exchange every 5 min)
+  async function loadCalendarData() {
+    try {
+      var resp = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/calendar-data.json', { cache: 'no-store' });
+      if (!resp.ok) return;
+      var data = await resp.json();
+
+      // calendar-data.json contains { salle: [...], perso: [...] }
+      var events = data.salle || data.events || [];
+      if (Array.isArray(data) ) events = data;
+
+      var today = new Date();
+      var todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+
+      calEvents = [];
+      events.forEach(function(ev) {
+        if (!ev.start) return;
+        var startDate = new Date(ev.start);
+        var endDate = ev.end ? new Date(ev.end) : new Date(startDate.getTime() + 30*60000);
+
+        // Filter today only
+        var evDateStr = startDate.getFullYear() + '-' + String(startDate.getMonth()+1).padStart(2,'0') + '-' + String(startDate.getDate()).padStart(2,'0');
+        if (evDateStr !== todayStr) return;
+
+        var sh = startDate.getHours();
+        var sm = startDate.getMinutes();
+        var eh = endDate.getHours();
+        var em = endDate.getMinutes();
+
+        calEvents.push({
+          title: ev.subject || ev.title || 'Sans titre',
+          start: String(sh).padStart(2,'0') + ':' + String(sm).padStart(2,'0'),
+          end: String(eh).padStart(2,'0') + ':' + String(em).padStart(2,'0'),
+          organizer: ev.organizer || '',
+          location: ev.location || ''
+        });
+      });
+
+      // Sort by start time
+      calEvents.sort(function(a, b) { return a.start.localeCompare(b.start); });
+
+      buildCalendar();
+    } catch(e) {
+      console.error('Calendar load error:', e);
+    }
+  }
+
+  function buildCalendar() {
+    var now = new Date();
+    var jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+    var mois = ['janv.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+    document.getElementById('calHeader').textContent = jours[now.getDay()] + ' ' + now.getDate() + ' ' + mois[now.getMonth()];
+
+    var inner = document.getElementById('calTimelineInner');
+    inner.innerHTML = '';
+    var totalHours = CAL_END - CAL_START;
+    inner.style.height = (totalHours * HOUR_HEIGHT) + 'px';
+
+    for (var h = CAL_START; h < CAL_END; h++) {
+      var row = document.createElement('div');
+      row.className = 'cal-hour-row';
+      row.innerHTML = '<span class="cal-hour-label">' + h + 'h</span>';
+      row.style.position = 'absolute';
+      row.style.top = ((h - CAL_START) * HOUR_HEIGHT) + 'px';
+      row.style.left = '0';
+      row.style.right = '0';
+      row.style.height = HOUR_HEIGHT + 'px';
+      inner.appendChild(row);
+    }
+
+    var area = document.createElement('div');
+    area.className = 'cal-events-area';
+    area.style.height = (totalHours * HOUR_HEIGHT) + 'px';
+    inner.appendChild(area);
+
+    var nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+    calEvents.forEach(function(ev) {
+      var sp = ev.start.split(':');
+      var ep = ev.end.split(':');
+      var startMin = parseInt(sp[0]) * 60 + parseInt(sp[1]);
+      var endMin = parseInt(ep[0]) * 60 + parseInt(ep[1]);
+      var topPx = ((startMin - CAL_START * 60) / 60) * HOUR_HEIGHT;
+      var heightPx = ((endMin - startMin) / 60) * HOUR_HEIGHT;
+      if (heightPx < 24) heightPx = 24;
+
+      var div = document.createElement('div');
+      div.className = 'cal-ev';
+      if (nowMinutes >= startMin && nowMinutes < endMin) div.classList.add('active');
+      if (nowMinutes >= endMin) div.classList.add('past');
+      div.style.top = topPx + 'px';
+      div.style.height = heightPx + 'px';
+
+      var timeStr = ev.start.replace(':','H') + ' - ' + ev.end.replace(':','H');
+      div.innerHTML = '<div class="cal-ev-time">' + timeStr + '</div><div class="cal-ev-title">' + ev.title + '</div>';
+
+      // Tooltip on click
+      div.addEventListener('click', function() {
+        var info = ev.title + '\n' + timeStr;
+        if (ev.organizer) info += '\nOrg: ' + ev.organizer;
+        if (ev.location) info += '\nLieu: ' + ev.location;
+        alert(info);
+      });
+
+      area.appendChild(div);
+    });
+
+    // Now line
+    if (nowMinutes >= CAL_START * 60 && nowMinutes <= CAL_END * 60) {
+      var nowTop = ((nowMinutes - CAL_START * 60) / 60) * HOUR_HEIGHT;
+      var line = document.createElement('div');
+      line.className = 'cal-now-line';
+      line.id = 'calNowLine';
+      line.style.top = nowTop + 'px';
+      inner.appendChild(line);
+
+      var label = document.createElement('div');
+      label.className = 'cal-now-label';
+      label.id = 'calNowLabel';
+      label.style.top = (nowTop - 6) + 'px';
+      var hh = now.getHours();
+      var mm = now.getMinutes();
+      label.textContent = hh + 'H' + (mm < 10 ? '0' : '') + mm;
+      inner.appendChild(label);
+
+      var timeline = document.getElementById('calTimeline');
+      setTimeout(function() {
+        timeline.scrollTop = Math.max(0, nowTop - 80);
+      }, 100);
+    }
+  }
+
+  function updateNowLine() {
+    var now = new Date();
+    var nowMinutes = now.getHours() * 60 + now.getMinutes();
+    if (nowMinutes < CAL_START * 60 || nowMinutes > CAL_END * 60) return;
+
+    var nowTop = ((nowMinutes - CAL_START * 60) / 60) * HOUR_HEIGHT;
+    var line = document.getElementById('calNowLine');
+    var label = document.getElementById('calNowLabel');
+    if (line) line.style.top = nowTop + 'px';
+    if (label) {
+      label.style.top = (nowTop - 6) + 'px';
+      var hh = now.getHours();
+      var mm = now.getMinutes();
+      label.textContent = hh + 'H' + (mm < 10 ? '0' : '') + mm;
+    }
+  }
+
+  // Init calendar
+  loadCalendarData();
+  setInterval(updateNowLine, 30000);
+  // Reload calendar data every 5 min (matches Exchange sync interval)
+  setInterval(loadCalendarData, 300000);
+
+  // Auto-connect CAM 1 on page load
+  initCaptureDevice().then(function() {
+    selectPgmCam(1);
+  });
+
+  // ===== FLUID ANIMATED BACKGROUND =====
+  (function() {
+    var abg = document.getElementById('albumBg');
+    var canvas = document.createElement('canvas');
+    abg.appendChild(canvas);
+    var gl = canvas.getContext('webgl');
+    if (!gl) return;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    var vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}';
+    var fs = [
+      'precision mediump float;',
+      'uniform float t;',
+      'uniform vec2 r;',
+      '',
+      'vec3 palette(float x){',
+      '  vec3 a=vec3(0.08,0.04,0.12);',
+      '  vec3 b=vec3(0.12,0.06,0.18);',
+      '  vec3 c=vec3(0.6,0.5,0.7);',
+      '  vec3 d=vec3(0.15,0.55,0.75);',
+      '  return a+b*cos(6.28318*(c*x+d));',
+      '}',
+      '',
+      'void main(){',
+      '  vec2 uv=(gl_FragCoord.xy-0.5*r)/min(r.x,r.y);',
+      '  float n=0.0;',
+      '  vec2 p=uv;',
+      '  float T=t*0.08;',
+      '  for(int i=0;i<5;i++){',
+      '    p=vec2(',
+      '      sin(p.y*2.1+T*1.3+float(i)*0.7)+cos(p.x*1.7-T*0.9)*0.8,',
+      '      cos(p.x*2.3-T*1.1+float(i)*0.5)+sin(p.y*1.9+T*0.7)*0.8',
+      '    );',
+      '    n+=0.5/float(i+1)*length(sin(p*3.0+T));',
+      '  }',
+      '  vec3 col=palette(n*0.5+T*0.05);',
+      '  col*=0.55+0.45*sin(n*3.14);',
+      '  col=pow(col,vec3(0.9));',
+      '  gl_FragColor=vec4(col,1.0);',
+      '}'
+    ].join('\n');
+
+    function cs(src, type) {
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
+    }
+    var prog = gl.createProgram();
+    gl.attachShader(prog, cs(vs, gl.VERTEX_SHADER));
+    gl.attachShader(prog, cs(fs, gl.FRAGMENT_SHADER));
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+    var pLoc = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(pLoc);
+    gl.vertexAttribPointer(pLoc, 2, gl.FLOAT, false, 0, 0);
+
+    var tLoc = gl.getUniformLocation(prog, 't');
+    var rLoc = gl.getUniformLocation(prog, 'r');
+
+    function draw(time) {
+      gl.uniform1f(tLoc, time * 0.001);
+      gl.uniform2f(rLoc, canvas.width, canvas.height);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  })();
+
+  // ===== FACE RECOGNITION ENGINE =====
+  var faceRecActive = false;
+  var faceRecInterval = null;
+  var faceMatcher = null;
+  var faceRecReady = false;
+  var lastRecognizedId = null;
+  var faceRecCooldown = false;
+  var FACE_REC_MODELS = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/model/';
+  var faceAPI = window.faceapi;
+
+  var faceRecBtn = document.getElementById('faceRecToggle');
+
+  async function initFaceRecModels() {
+    if (faceRecReady) return true;
+    try {
+      faceRecBtn.style.opacity = '0.5';
+      faceRecBtn.title = 'Chargement des modèles...';
+      await faceAPI.nets.ssdMobilenetv1.loadFromUri(FACE_REC_MODELS);
+      await faceAPI.nets.faceLandmark68Net.loadFromUri(FACE_REC_MODELS);
+      await faceAPI.nets.faceRecognitionNet.loadFromUri(FACE_REC_MODELS);
+      faceRecReady = true;
+      faceRecBtn.style.opacity = '1';
+      console.log('Face-api modèles chargés');
+      return true;
+    } catch(e) {
+      console.error('Erreur chargement modèles face-api:', e);
+      faceRecBtn.title = 'Erreur chargement modèles';
+      faceRecBtn.style.opacity = '1';
+      return false;
+    }
+  }
+
+  async function buildFaceMatcher() {
+    if (!contacts || contacts.length === 0) { console.warn('⚠️ Aucun contact chargé'); return null; }
+    var labeledDescriptors = [];
+    var GH_RAW = 'https://raw.githubusercontent.com/' + GH_REPO + '/main/';
+
+    console.log('📸 Analyse des photos de', contacts.length, 'contacts...');
+
+    for (var i = 0; i < contacts.length; i++) {
+      var c = contacts[i];
+      // Collecter toutes les photos (photo + photos[])
+      var allPhotos = [];
+      if (c.photo) allPhotos.push(c.photo);
+      if (c.photos && c.photos.length > 0) {
+        for (var p = 0; p < c.photos.length; p++) {
+          if (c.photos[p] && allPhotos.indexOf(c.photos[p]) === -1) allPhotos.push(c.photos[p]);
+        }
+      }
+      if (allPhotos.length === 0) continue;
+
+      var descriptors = [];
+      for (var j = 0; j < allPhotos.length; j++) {
+        try {
+          var imgUrl = allPhotos[j].startsWith('http') ? allPhotos[j] : GH_RAW + allPhotos[j];
+          var img = await faceAPI.fetchImage(imgUrl);
+          var detection = await faceAPI.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+          if (detection) {
+            descriptors.push(detection.descriptor);
+            console.log('  ✅', c.firstName, c.lastName, '- photo', (j+1) + '/' + allPhotos.length);
+          } else {
+            console.log('  ⚠️', c.firstName, c.lastName, '- photo', (j+1), ': pas de visage détecté');
+          }
+        } catch(e) {
+          console.log('  ❌', c.firstName, c.lastName, '- photo', (j+1), ': erreur chargement');
+        }
+      }
+
+      if (descriptors.length > 0) {
+        labeledDescriptors.push(new faceAPI.LabeledFaceDescriptors(c.id, descriptors));
+      }
+    }
+
+    if (labeledDescriptors.length === 0) { console.warn('⚠️ Aucun visage trouvé'); return null; }
+    console.log('🎯', labeledDescriptors.length, 'contacts enregistrés pour la reconnaissance');
+    return new faceAPI.FaceMatcher(labeledDescriptors, 0.6);
+  }
+
+  async function runFaceDetection() {
+    if (!faceRecActive || !faceMatcher || faceRecCooldown) return;
+    var video = document.getElementById('pgmVideo');
+    if (!video || !video.srcObject || video.readyState < 2) return;
+
+    try {
+      var detections = await faceAPI.detectAllFaces(video).withFaceLandmarks().withFaceDescriptors();
+      if (detections.length > 0) {
+        var biggest = detections.reduce(function(a, b) {
+          return a.detection.box.area > b.detection.box.area ? a : b;
+        });
+        var match = faceMatcher.findBestMatch(biggest.descriptor);
+        console.log('🔍 Scan:', match.label, 'distance:', match.distance.toFixed(3),
+          detections.length > 1 ? '(' + detections.length + ' visages détectés)' : '');
+
+        if (match.label !== 'unknown') {
+          var contact = contacts.find(function(c) { return c.id === match.label; });
+          if (contact && activeSynthe !== contact.id) {
+            console.log('✅ Reconnu:', contact.firstName, contact.lastName, '(distance:', match.distance.toFixed(3) + ')');
+            toggleSynthe(contact);
+            faceRecCooldown = true;
+            setTimeout(function() { faceRecCooldown = false; }, 5000);
+          }
+          lastRecognizedId = match.label;
+        }
+      }
+    } catch(e) { console.error('Erreur détection:', e); }
+  }
+
+  faceRecBtn.addEventListener('click', async function() {
+    if (faceRecActive) {
+      faceRecActive = false;
+      faceRecBtn.classList.remove('active');
+      faceRecBtn.querySelector('svg').setAttribute('stroke', '#888');
+      faceRecBtn.title = 'Reconnaissance faciale';
+      if (faceRecInterval) { clearInterval(faceRecInterval); faceRecInterval = null; }
+      return;
+    }
+
+    faceRecBtn.title = 'Chargement...';
+    var ok = await initFaceRecModels();
+    if (!ok) return;
+
+    if (!faceMatcher) {
+      faceRecBtn.title = 'Analyse des photos contacts...';
+      faceMatcher = await buildFaceMatcher();
+      if (!faceMatcher) {
+        faceRecBtn.title = 'Aucun visage dans les contacts';
+        setTimeout(function() { faceRecBtn.title = 'Reconnaissance faciale'; }, 3000);
+        return;
+      }
+    }
+
+    faceRecActive = true;
+    faceRecBtn.classList.add('active');
+    faceRecBtn.querySelector('svg').setAttribute('stroke', '#0f0');
+    var nbFaces = faceMatcher._labeledDescriptors.length;
+    faceRecBtn.title = 'Reconnaissance active (' + nbFaces + ' visages)';
+    console.log('🟢 Reconnaissance faciale activée -', nbFaces, 'visages, scan toutes les 1.5s');
+    faceRecInterval = setInterval(runFaceDetection, 1500);
+  });
+
+</script>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v2</div>
+</body>
+</html>
