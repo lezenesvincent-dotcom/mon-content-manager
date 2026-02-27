@@ -741,6 +741,13 @@
         if (!confirm('Supprimer cette alerte ?')) return;
         alerts = alerts.filter(x => x.id !== id);
         saveAlerts(); renderAlerts();
+        // Sync to server
+        fetch(API_URL + '/api/studio-alerts', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(alerts)
+        }).catch(() => {});
+        if (ws && ws.readyState === WebSocket.OPEN)
+            ws.send(JSON.stringify({ type: 'studio-alert-sync', data: alerts }));
     }
 
     function clearAllAlerts() {
@@ -959,13 +966,13 @@
         fetch(API_URL + '/api/studio-alerts', { signal: AbortSignal.timeout(4000) })
             .then(r => { if (!r.ok) throw new Error('fail'); return r.json(); })
             .then(data => {
-                if (!loaded && Array.isArray(data) && data.length > 0) { loaded = true; alerts = data; saveAlerts(); renderAlerts(); }
+                if (!loaded && Array.isArray(data)) { loaded = true; alerts = data; saveAlerts(); renderAlerts(); }
             }).catch(() => {});
         // Essayer Proxy en parallèle (pour PC EI)
         fetch(PROXY_URL + '?action=sync')
             .then(r => r.json())
             .then(data => {
-                if (!loaded && Array.isArray(data) && data.length > 0) { loaded = true; useProxy = true; alerts = data; saveAlerts(); renderAlerts(); }
+                if (!loaded && Array.isArray(data)) { loaded = true; useProxy = true; alerts = data; saveAlerts(); renderAlerts(); }
             }).catch(() => {});
     }
 
@@ -974,6 +981,6 @@
     // Check if there are unacknowledged alerts
     setTimeout(() => { if (alerts.some(a => a.status === 'sent')) startAlarm(); }, 1000);
     </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v39</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v40</div>
 </body>
 </html>
