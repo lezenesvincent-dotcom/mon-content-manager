@@ -1,15 +1,19 @@
-	
-name	"ecamm-graph-server"
-version	"1.0.0"
-description	"Serveur WebSocket pour graphique 3D"
-main	"server.js"
-scripts	
-start	"node server.js"
-dependencies	
-express	"^4.18.2"
-ws	"^8.14.2"
-cors	"^2.8.5"
-googleapis	"^126.0.0"
-multer	"^1.4.5-lts.1"
-engines	
-node	">=18.x"
+{
+  "name": "ecamm-graph-server",
+  "version": "1.0.0",
+  "description": "Serveur WebSocket pour graphique 3D",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "cors": "^2.8.5",
+    "googleapis": "^126.0.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
