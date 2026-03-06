@@ -64,20 +64,20 @@
     border-radius: 16px;
     display: flex;
     flex-direction: column;
-    flex: 1 1 0;
-    min-height: 0;
+    flex-shrink: 0;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   }
   .pgm-screen {
-    flex: 1 1 0;
+    width: 100%;
+    aspect-ratio: 16/9;
     background: #000;
     border-radius: 12px 12px 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 0;
     position: relative;
+    flex-shrink: 0;
   }
   .pgm-screen span { font-size: 2vw; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 4px; }
   .pgm-screen img {
@@ -106,7 +106,7 @@
   }
   .pgm-cam-label {
     position: absolute; top: 10px; right: 12px;
-    color: #4da8ff; font-size: 13px; font-weight: 700; display: none; z-index: 2;
+    color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 700; display: none; z-index: 2;
   }
 
   /* === SYNTHÉ OVERLAY ON PGM === */
@@ -158,12 +158,13 @@
   .cam-pills { display: flex; gap: 5px; padding: 8px 10px 10px; flex-shrink: 0; }
   .cam-pill {
     flex: 1; height: 34px;
-    background: rgba(255,255,255,0.06); border: none; border-radius: 17px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
     color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
     cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
   }
-  .cam-pill:hover { background: #444448; }
-  .cam-pill.active { background: #4da8ff; border: none; color: #000; font-weight: 700; box-shadow: 0 0 10px rgba(0,140,255,0.3); }
+  .cam-pill:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
+  .cam-pill.active { background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: #fff; font-weight: 700; box-shadow: 0 4px 16px rgba(102,126,234,0.4); }
 
   /* Conducteur */
   .conducteur {
@@ -182,9 +183,9 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   }
   .cond-item:hover { background: rgba(255,255,255,0.1); }
-  .cond-item.active { background: #4da8ff; border: none; color: #000; }
+  .cond-item.active { background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: #fff; }
   .cond-item .gear { position: absolute; top: 3px; right: 5px; font-size: 12px; opacity: 0.4; }
-  .cond-item.active .gear { opacity: 0.6; color: #000; }
+  .cond-item.active .gear { opacity: 0.6; color: rgba(255,255,255,0.7); }
   .cond-icon {
     width: 26px; height: 26px;
     background: rgba(255,255,255,0.15);
@@ -257,7 +258,7 @@
     padding: 5px 12px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.6); cursor: pointer;
   }
   .tag:hover { background: rgba(255,255,255,0.1); }
-  .tag.active { background: #4da8ff; border: none; color: #000; }
+  .tag.active { background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: #fff; }
   .search-btn {
     width: 28px; height: 28px; background: rgba(255,255,255,0.06); border: none;
     border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
@@ -294,7 +295,7 @@
 
   .synthe-pill {
     background: rgba(0,140,255,0.08);
-    border: 1.5px solid rgba(0,140,255,0.4);
+    border: 1.5px solid rgba(102,126,234,0.5);
     border-radius: 16px;
     padding: 5px 14px;
     font-size: 11px;
@@ -340,8 +341,8 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
   }
   .preview-screen {
-    background: #000; border-radius: 8px; height: 20vh;
-    position: relative; display: flex; align-items: center; justify-content: center;
+    background: #000; border-radius: 8px; width: 100%; aspect-ratio: 16/9;
+    position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
   .preview-screen span { font-size: 1.6vw; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 3px; }
   .preview-screen img {
@@ -363,21 +364,21 @@
     display: flex; align-items: center; justify-content: center; cursor: pointer;
   }
   .frame-slot:hover { background: rgba(255,255,255,0.15); }
-  .frame-slot.active { background: #4da8ff; }
+  .frame-slot.active { background: linear-gradient(135deg, #667eea, #764ba2); }
   .frame-slot svg .pf { fill: #aaa; }
-  .frame-slot.active svg .pf { fill: #000; }
+  .frame-slot.active svg .pf { fill: #fff; }
 
   /* Cam grid + D-pad */
   .cam-section { display: flex; gap: 8px; flex-shrink: 0; }
   .cam-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1; }
   .cam-g {
-    height: 44px; background: rgba(255,255,255,0.06); border: none; border-radius: 12px;
+    height: 44px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.5); cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: all 0.2s;
   }
-  .cam-g:hover { background: rgba(255,255,255,0.1); }
-  .cam-g.active { background: #4da8ff; border: none; color: #000; font-weight: 700; }
+  .cam-g:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
+  .cam-g.active { background: linear-gradient(135deg, #667eea, #764ba2); border: 1px solid rgba(118,75,162,0.5); color: #fff; font-weight: 700; box-shadow: 0 4px 16px rgba(102,126,234,0.3); }
   .cam-g.empty { color: #334; }
 
   /* D-pad */
@@ -389,8 +390,8 @@
   }
   .dpad-arrow:hover svg path { stroke: #fff; }
   .dpad-center-btn {
-    width: 40px; height: 40px; background: #4da8ff; border-radius: 50%; border: none;
-    font-size: 10px; font-weight: 800; color: #000; cursor: pointer;
+    width: 40px; height: 40px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; border: none;
+    font-size: 10px; font-weight: 800; color: #fff; cursor: pointer;
   }
   .dpad-x2 { font-size: 11px; font-weight: 700; color: #888; margin-top: 2px; }
 
@@ -471,9 +472,9 @@
     display: flex; align-items: center; justify-content: center; gap: 5px;
   }
   .m-btn:hover { opacity: 0.85; }
-  .m-btn.direct { background: #4da8ff; color: #000; box-shadow: 0 3px 12px rgba(0,140,255,0.3); }
-  .m-btn.morning { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-  .m-btn.autres { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+  .m-btn.direct { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; box-shadow: 0 4px 16px rgba(102,126,234,0.4); }
+  .m-btn.morning { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); box-shadow: none; }
+  .m-btn.autres { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); box-shadow: none; }
   .m-btn-icon {
     width: 22px; height: 22px;
     background: rgba(255,255,255,0.15);
@@ -481,7 +482,7 @@
     display: flex; align-items: center; justify-content: center;
     backdrop-filter: blur(4px);
   }
-  .m-btn.direct .m-btn-icon { background: rgba(0,0,0,0.12); }
+  .m-btn.direct .m-btn-icon { background: rgba(255,255,255,0.15); }
   .m-btn.morning .m-btn-icon, .m-btn.autres .m-btn-icon { background: rgba(255,255,255,0.12); }
   .m-btn-icon svg { width: 12px; height: 12px; stroke-width: 1.5; }
 
@@ -563,7 +564,7 @@
     transition: background 0.2s;
   }
   .cal-ev:hover { background: #2e3340; }
-  .cal-ev.active { background: rgba(0,140,255,0.12); border-left-color: #4da8ff; }
+  .cal-ev.active { background: rgba(102,126,234,0.15); border-left-color: #764ba2; }
   .cal-ev.past { opacity: 0.4; border-left-color: #555; }
   .cal-ev .cal-ev-time { font-size: 8px; font-weight: 700; color: #4da8ff; margin-bottom: 1px; }
   .cal-ev.past .cal-ev-time { color: #666; }
@@ -1854,6 +1855,6 @@
   });
 
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v3</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v4</div>
 </body>
 </html>
