@@ -336,41 +336,43 @@
   }
 
   .preview-panel {
-    background: rgba(255,255,255,0.04); border-radius: 16px; padding: 8px;
+    background: rgba(255,255,255,0.04); border-radius: 20px; padding: 10px;
     display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
   }
   .preview-screen {
-    background: #000; border-radius: 8px; width: 100%; aspect-ratio: 16/9;
+    background: #000; border-radius: 20px; width: 100%; aspect-ratio: 16/9;
     position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
   .preview-screen span { font-size: 1.6vw; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 3px; }
   .preview-screen img {
     position: absolute; inset: 0; width: 100%; height: 100%;
-    object-fit: cover; border-radius: 8px; display: none;
+    object-fit: cover; border-radius: 20px; display: none;
   }
-  .zoom-ctrls { position: absolute; top: 6px; right: 6px; display: flex; flex-direction: column; gap: 3px; z-index: 2; }
+  .zoom-ctrls { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 2px; z-index: 2; background: rgba(40,40,50,0.85); border-radius: 14px; padding: 4px; backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
   .zoom-btn {
-    width: 34px; height: 34px; background: rgba(255,255,255,0.1); border: none; border-radius: 50%;
-    color: #fff; font-size: 18px; font-weight: 500; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; background: none; border: none; border-radius: 10px;
+    color: rgba(255,255,255,0.8); font-size: 20px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
   }
-  .zoom-btn:hover { background: rgba(255,255,255,0.15); }
-  .home-icon { position: absolute; bottom: 6px; left: 8px; cursor: pointer; z-index: 2; }
+  .zoom-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .home-icon { position: absolute; bottom: 10px; left: 12px; cursor: pointer; z-index: 2; background: rgba(40,40,50,0.7); border-radius: 10px; padding: 6px; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08); }
 
-  .framing-bar { display: flex; gap: 4px; background: rgba(255,255,255,0.06); border-radius: 12px; padding: 4px; }
+  .framing-bar { display: flex; gap: 3px; background: rgba(255,255,255,0.04); border-radius: 14px; padding: 3px; }
   .frame-slot {
-    flex: 1; height: 40px; background: rgba(255,255,255,0.1); border-radius: 8px;
+    width: 44px; height: 36px; background: rgba(255,255,255,0.06); border-radius: 10px;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
+    flex-shrink: 0; transition: all 0.15s; border: 1px solid transparent;
   }
-  .frame-slot:hover { background: rgba(255,255,255,0.15); }
-  .frame-slot.active { background: linear-gradient(135deg, #667eea, #764ba2); }
-  .frame-slot svg .pf { fill: #aaa; }
+  .frame-slot:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.1); }
+  .frame-slot.active { background: linear-gradient(135deg, #667eea, #764ba2); border-color: rgba(118,75,162,0.5); }
+  .frame-slot svg { width: 28px; height: 22px; }
+  .frame-slot svg .pf { fill: rgba(255,255,255,0.5); }
   .frame-slot.active svg .pf { fill: #fff; }
 
   /* Cam grid + D-pad */
   .cam-section { display: flex; gap: 8px; flex-shrink: 0; }
-  .cam-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1; }
+  .cam-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 8px; border: 1px solid rgba(255,255,255,0.06); }
   .cam-g {
     height: 44px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
@@ -382,7 +384,7 @@
   .cam-g.empty { color: #334; }
 
   /* D-pad */
-  .dpad { width: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; gap: 2px; }
+  .dpad { width: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; gap: 2px; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 8px; border: 1px solid rgba(255,255,255,0.06); }
   .dpad-row { display: flex; align-items: center; justify-content: center; gap: 2px; }
   .dpad-arrow {
     background: none; border: none; cursor: pointer; padding: 4px;
@@ -710,7 +712,7 @@
       <div class="preview-screen">
         <span id="previewLabel">CAM 1</span>
         <img id="previewStream" alt="">
-        <video id="previewVideo" playsinline autoplay muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:none"></video>
+        <video id="previewVideo" playsinline autoplay muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:20px;display:none"></video>
         <div class="zoom-ctrls">
           <button class="zoom-btn">+</button>
           <button class="zoom-btn">−</button>
@@ -723,10 +725,20 @@
         </div>
       </div>
       <div class="framing-bar">
-        <div class="frame-slot"><svg width="16" height="26" viewBox="0 0 16 26"><circle cx="8" cy="5.5" r="4" class="pf"/><rect x="2" y="12" width="12" height="13" rx="3" class="pf"/></svg></div>
-        <div class="frame-slot active"><svg width="24" height="26" viewBox="0 0 24 26"><circle cx="7" cy="5.5" r="3.5" class="pf"/><rect x="2" y="12" width="10" height="13" rx="2.5" class="pf"/><circle cx="17" cy="5.5" r="3.5" class="pf"/><rect x="12" y="12" width="10" height="13" rx="2.5" class="pf"/></svg></div>
-        <div class="frame-slot"><svg width="32" height="26" viewBox="0 0 32 26"><circle cx="6" cy="5.5" r="3.2" class="pf"/><rect x="1.5" y="12" width="9" height="13" rx="2.2" class="pf"/><circle cx="16" cy="5.5" r="3.2" class="pf"/><rect x="11.5" y="12" width="9" height="13" rx="2.2" class="pf"/><circle cx="26" cy="5.5" r="3.2" class="pf"/><rect x="21.5" y="12" width="9" height="13" rx="2.2" class="pf"/></svg></div>
-        <div class="frame-slot"><svg width="38" height="26" viewBox="0 0 38 26"><circle cx="5.5" cy="6" r="2.8" class="pf"/><rect x="1.5" y="12" width="8" height="12.5" rx="2" class="pf"/><circle cx="14.5" cy="6" r="2.8" class="pf"/><rect x="10.5" y="12" width="8" height="12.5" rx="2" class="pf"/><circle cx="23.5" cy="6" r="2.8" class="pf"/><rect x="19.5" y="12" width="8" height="12.5" rx="2" class="pf"/><circle cx="32.5" cy="6" r="2.8" class="pf"/><rect x="28.5" y="12" width="8" height="12.5" rx="2" class="pf"/></svg></div>
+        <!-- 1: Plan large - perso droite -->
+        <div class="frame-slot" data-frame="1" title="Plan large - droite"><svg viewBox="0 0 28 22"><circle cx="21" cy="5" r="3" class="pf"/><rect x="17" y="10" width="8" height="11" rx="2" class="pf"/></svg></div>
+        <!-- 2: Plan américain - perso droite -->
+        <div class="frame-slot" data-frame="2" title="Plan américain - droite"><svg viewBox="0 0 28 22"><circle cx="19" cy="4" r="3.5" class="pf"/><rect x="14.5" y="9.5" width="9" height="12" rx="2.5" class="pf"/></svg></div>
+        <!-- 3: Plan serré - perso droite -->
+        <div class="frame-slot" data-frame="3" title="Plan serré - droite"><svg viewBox="0 0 28 22"><circle cx="18" cy="3.5" r="4" class="pf"/><rect x="12.5" y="9" width="11" height="13" rx="3" class="pf"/></svg></div>
+        <!-- 4: Plan serré - centré -->
+        <div class="frame-slot active" data-frame="4" title="Plan serré - centré"><svg viewBox="0 0 28 22"><circle cx="14" cy="3.5" r="4" class="pf"/><rect x="8.5" y="9" width="11" height="13" rx="3" class="pf"/></svg></div>
+        <!-- 5: Plan serré - perso gauche -->
+        <div class="frame-slot" data-frame="5" title="Plan serré - gauche"><svg viewBox="0 0 28 22"><circle cx="10" cy="3.5" r="4" class="pf"/><rect x="4.5" y="9" width="11" height="13" rx="3" class="pf"/></svg></div>
+        <!-- 6: Plan américain - perso gauche -->
+        <div class="frame-slot" data-frame="6" title="Plan américain - gauche"><svg viewBox="0 0 28 22"><circle cx="9" cy="4" r="3.5" class="pf"/><rect x="4.5" y="9.5" width="9" height="12" rx="2.5" class="pf"/></svg></div>
+        <!-- 7: Plan large - perso gauche -->
+        <div class="frame-slot" data-frame="7" title="Plan large - gauche"><svg viewBox="0 0 28 22"><circle cx="7" cy="5" r="3" class="pf"/><rect x="3" y="10" width="8" height="11" rx="2" class="pf"/></svg></div>
       </div>
     </div>
 
@@ -744,15 +756,15 @@
       </div>
       <div class="dpad">
         <div class="dpad-row">
-          <button class="dpad-arrow" data-dir="up"><svg width="30" height="22" viewBox="0 0 30 22" fill="none"><path d="M15 3L26 19H4L15 3Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+          <button class="dpad-arrow" data-dir="up"><svg width="28" height="18" viewBox="0 0 28 18" fill="none"><path d="M4 14L14 4L24 14" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <div class="dpad-row">
-          <button class="dpad-arrow" data-dir="left"><svg width="22" height="30" viewBox="0 0 22 30" fill="none"><path d="M3 15L19 4V26L3 15Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+          <button class="dpad-arrow" data-dir="left"><svg width="18" height="28" viewBox="0 0 18 28" fill="none"><path d="M14 4L4 14L14 24" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <button class="dpad-center-btn">slow</button>
-          <button class="dpad-arrow" data-dir="right"><svg width="22" height="30" viewBox="0 0 22 30" fill="none"><path d="M19 15L3 4V26L19 15Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+          <button class="dpad-arrow" data-dir="right"><svg width="18" height="28" viewBox="0 0 18 28" fill="none"><path d="M4 4L14 14L4 24" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <div class="dpad-row" style="flex-direction:column;align-items:center;">
-          <button class="dpad-arrow" data-dir="down"><svg width="30" height="22" viewBox="0 0 30 22" fill="none"><path d="M15 19L4 3H26L15 19Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+          <button class="dpad-arrow" data-dir="down"><svg width="28" height="18" viewBox="0 0 28 18" fill="none"><path d="M4 4L14 14L24 4" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <span class="dpad-x2">x2</span>
         </div>
       </div>
@@ -1855,6 +1867,6 @@
   });
 
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v4</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v5</div>
 </body>
 </html>
