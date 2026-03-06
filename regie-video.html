@@ -349,26 +349,27 @@
     position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: cover; border-radius: 20px; display: none;
   }
-  .zoom-ctrls { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 2px; z-index: 2; background: rgba(40,40,50,0.85); border-radius: 14px; padding: 4px; backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+  .zoom-ctrls { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; z-index: 2; }
   .zoom-btn {
-    width: 36px; height: 36px; background: none; border: none; border-radius: 10px;
-    color: rgba(255,255,255,0.8); font-size: 20px; font-weight: 600; cursor: pointer;
+    width: 40px; height: 40px; background: rgba(140,140,150,0.6); border: none; border-radius: 50%;
+    color: #fff; font-size: 22px; font-weight: 700; cursor: pointer;
     display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
-  .zoom-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
-  .home-icon { position: absolute; bottom: 10px; left: 12px; cursor: pointer; z-index: 2; background: rgba(40,40,50,0.7); border-radius: 10px; padding: 6px; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08); }
+  .zoom-btn:hover { background: rgba(160,160,170,0.75); }
+  .home-icon { position: absolute; bottom: 12px; left: 14px; cursor: pointer; z-index: 2; background: rgba(60,60,70,0.7); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
 
-  .framing-bar { display: flex; gap: 3px; background: rgba(255,255,255,0.04); border-radius: 14px; padding: 3px; }
+  .framing-bar { display: flex; gap: 4px; background: rgba(120,120,140,0.25); border-radius: 10px; padding: 4px; }
   .frame-slot {
-    width: 44px; height: 36px; background: rgba(255,255,255,0.06); border-radius: 10px;
+    flex: 1; height: 52px; background: rgba(100,100,120,0.35); border-radius: 8px;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
-    flex-shrink: 0; transition: all 0.15s; border: 1px solid transparent;
+    flex-shrink: 0; transition: all 0.15s; border: none; min-width: 52px;
   }
-  .frame-slot:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.1); }
-  .frame-slot.active { background: linear-gradient(135deg, #667eea, #764ba2); border-color: rgba(118,75,162,0.5); }
-  .frame-slot svg { width: 28px; height: 22px; }
-  .frame-slot svg .pf { fill: rgba(255,255,255,0.5); }
-  .frame-slot.active svg .pf { fill: #fff; }
+  .frame-slot:hover { background: rgba(140,140,160,0.4); }
+  .frame-slot.active { background: #4da8ff; }
+  .frame-slot svg { width: 36px; height: 36px; }
+  .frame-slot svg .pf { fill: rgba(180,180,200,0.7); }
+  .frame-slot.active svg .pf { fill: #1a2040; }
 
   /* Cam grid + D-pad */
   .cam-section { display: flex; gap: 8px; flex-shrink: 0; }
@@ -725,20 +726,20 @@
         </div>
       </div>
       <div class="framing-bar">
-        <!-- 1: Plan large - perso droite -->
-        <div class="frame-slot" data-frame="1" title="Plan large - droite"><svg viewBox="0 0 28 22"><circle cx="21" cy="5" r="3" class="pf"/><rect x="17" y="10" width="8" height="11" rx="2" class="pf"/></svg></div>
-        <!-- 2: Plan américain - perso droite -->
-        <div class="frame-slot" data-frame="2" title="Plan américain - droite"><svg viewBox="0 0 28 22"><circle cx="19" cy="4" r="3.5" class="pf"/><rect x="14.5" y="9.5" width="9" height="12" rx="2.5" class="pf"/></svg></div>
-        <!-- 3: Plan serré - perso droite -->
-        <div class="frame-slot" data-frame="3" title="Plan serré - droite"><svg viewBox="0 0 28 22"><circle cx="18" cy="3.5" r="4" class="pf"/><rect x="12.5" y="9" width="11" height="13" rx="3" class="pf"/></svg></div>
-        <!-- 4: Plan serré - centré -->
-        <div class="frame-slot active" data-frame="4" title="Plan serré - centré"><svg viewBox="0 0 28 22"><circle cx="14" cy="3.5" r="4" class="pf"/><rect x="8.5" y="9" width="11" height="13" rx="3" class="pf"/></svg></div>
-        <!-- 5: Plan serré - perso gauche -->
-        <div class="frame-slot" data-frame="5" title="Plan serré - gauche"><svg viewBox="0 0 28 22"><circle cx="10" cy="3.5" r="4" class="pf"/><rect x="4.5" y="9" width="11" height="13" rx="3" class="pf"/></svg></div>
-        <!-- 6: Plan américain - perso gauche -->
-        <div class="frame-slot" data-frame="6" title="Plan américain - gauche"><svg viewBox="0 0 28 22"><circle cx="9" cy="4" r="3.5" class="pf"/><rect x="4.5" y="9.5" width="9" height="12" rx="2.5" class="pf"/></svg></div>
-        <!-- 7: Plan large - perso gauche -->
-        <div class="frame-slot" data-frame="7" title="Plan large - gauche"><svg viewBox="0 0 28 22"><circle cx="7" cy="5" r="3" class="pf"/><rect x="3" y="10" width="8" height="11" rx="2" class="pf"/></svg></div>
+        <!-- 1: Plan large - perso droite (petite, à droite) -->
+        <div class="frame-slot" data-frame="1" title="Plan large - droite"><svg viewBox="0 0 40 40"><circle cx="29" cy="12" r="4" class="pf"/><rect x="24" y="18" width="10" height="16" rx="3" class="pf"/></svg></div>
+        <!-- 2: Plan américain - perso droite (moyenne, à droite) -->
+        <div class="frame-slot" data-frame="2" title="Plan américain - droite"><svg viewBox="0 0 40 40"><circle cx="27" cy="10" r="4.5" class="pf"/><rect x="21.5" y="17" width="11" height="18" rx="3.5" class="pf"/></svg></div>
+        <!-- 3: Plan serré - perso droite (grande, à droite) -->
+        <div class="frame-slot" data-frame="3" title="Plan serré - droite"><svg viewBox="0 0 40 40"><circle cx="25" cy="8" r="5.5" class="pf"/><rect x="18" y="15.5" width="14" height="22" rx="4" class="pf"/></svg></div>
+        <!-- 4: Plan serré - centré (grande, centrée) -->
+        <div class="frame-slot active" data-frame="4" title="Plan serré - centré"><svg viewBox="0 0 40 40"><circle cx="20" cy="8" r="5.5" class="pf"/><rect x="13" y="15.5" width="14" height="22" rx="4" class="pf"/></svg></div>
+        <!-- 5: Plan serré - perso gauche (grande, à gauche) -->
+        <div class="frame-slot" data-frame="5" title="Plan serré - gauche"><svg viewBox="0 0 40 40"><circle cx="15" cy="8" r="5.5" class="pf"/><rect x="8" y="15.5" width="14" height="22" rx="4" class="pf"/></svg></div>
+        <!-- 6: Plan américain - perso gauche (moyenne, à gauche) -->
+        <div class="frame-slot" data-frame="6" title="Plan américain - gauche"><svg viewBox="0 0 40 40"><circle cx="13" cy="10" r="4.5" class="pf"/><rect x="7.5" y="17" width="11" height="18" rx="3.5" class="pf"/></svg></div>
+        <!-- 7: Plan large - perso gauche (petite, à gauche) -->
+        <div class="frame-slot" data-frame="7" title="Plan large - gauche"><svg viewBox="0 0 40 40"><circle cx="11" cy="12" r="4" class="pf"/><rect x="6" y="18" width="10" height="16" rx="3" class="pf"/></svg></div>
       </div>
     </div>
 
@@ -1867,6 +1868,6 @@
   });
 
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v5</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v6</div>
 </body>
 </html>
