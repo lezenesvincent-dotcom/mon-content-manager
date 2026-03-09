@@ -237,6 +237,8 @@
     </div>
     
     <div class="preview-zone">
+        <!-- Décor video background (left half) -->
+        <video id="decorBgVideo" autoplay loop muted playsinline style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;z-index:0;"></video>
         <div class="decor-right-half"><div class="overlay-container" style="width:100%;height:100%;">
             <div class="header-row" id="header">
                 <span class="main-title" id="titre">MUSIC</span>
@@ -550,6 +552,11 @@ développement
                                 showGraph();
                             } else if (message.command === 'HIDE_GRAPH') {
                                 hideGraph();
+                            } else if (message.command === 'SET_DECOR_BG') {
+                                if (message.state && message.state.videoUrl) {
+                                    var vid = document.getElementById('decorBgVideo');
+                                    if (vid) { vid.src = message.state.videoUrl; vid.play().catch(function(){}); }
+                                }
                             } else if (message.command === 'GRAPH_CONTROL') {
                                 // Transférer les commandes de contrôle au graphique
                                 const frame = document.getElementById('graphFrame');
@@ -941,6 +948,14 @@ développement
         } catch (e) {}
         
         // Initialiser la connexion WebSocket
+        // Listen for decor background changes from regie
+        window.addEventListener('message', function(e) {
+            if (e.data && e.data.command === 'SET_DECOR_BG' && e.data.videoUrl) {
+                var vid = document.getElementById('decorBgVideo');
+                if (vid) { vid.src = e.data.videoUrl; vid.play().catch(function(){}); }
+            }
+        });
+
         connect();
         
         window.triggerIN = animateIN;
