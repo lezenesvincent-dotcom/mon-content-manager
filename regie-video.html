@@ -359,17 +359,33 @@
   .zoom-btn:hover { background: rgba(160,160,170,0.75); }
   .home-icon { position: absolute; bottom: 12px; left: 14px; cursor: pointer; z-index: 2; background: rgba(60,60,70,0.7); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
 
-  .framing-bar { display: flex; gap: 5px; background: rgba(50,50,60,0.8); border-radius: 14px; padding: 5px 6px; border: 1px solid rgba(80,80,90,0.5); }
-  .frame-slot {
-    width: 56px; height: 50px; background: rgba(90,90,100,0.45); border-radius: 10px;
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
-    flex-shrink: 0; transition: all 0.15s; border: none;
+  .framing-bar {
+    display: flex; gap: 4px; padding: 5px 6px;
+    background: url('regie-assets/bar-gris.png') center/100% 100% no-repeat;
+    height: 62px; align-items: center;
   }
-  .frame-slot:hover { background: rgba(110,110,120,0.55); }
-  .frame-slot.active { background: #5ac8fa; }
-  .frame-slot svg { width: 32px; height: 38px; overflow: visible; }
-  .frame-slot svg .pf { fill: rgba(160,160,170,0.65); }
-  .frame-slot.active svg .pf { fill: rgba(30,50,80,0.85); }
+  .frame-slot {
+    flex: 1; height: 48px; border-radius: 12px; cursor: pointer;
+    display: flex; align-items: flex-end; justify-content: center;
+    position: relative; overflow: hidden; transition: all 0.15s;
+    background-size: 100% 100%; background-repeat: no-repeat; background-position: center;
+  }
+  .frame-slot.gris { background-image: url('regie-assets/slot-gris.png'); }
+  .frame-slot.bleu { background-image: url('regie-assets/slot-bleu.png'); }
+  .frame-slot.fonce { background-image: url('regie-assets/slot-fonce.png'); }
+  .frame-slot:hover { filter: brightness(1.15); }
+  .frame-slot.active { background-image: url('regie-assets/slot-bleu.png'); }
+  .frame-slot .frame-person {
+    height: 70%; width: auto; object-fit: contain; position: absolute; bottom: 2px;
+    pointer-events: none; opacity: 0.65;
+  }
+  .frame-slot.active .frame-person { opacity: 0.85; }
+  .frame-slot .frame-person.pos-left { left: 4px; }
+  .frame-slot .frame-person.pos-center { left: 50%; transform: translateX(-50%); }
+  .frame-slot .frame-person.pos-right { right: 4px; }
+  .frame-slot .frame-person.size-large { height: 80%; }
+  .frame-slot .frame-person.size-moyen { height: 72%; }
+  .frame-slot .frame-person.size-serre { height: 65%; }
 
   /* Cam grid + D-pad */
   .cam-section { display: flex; gap: 8px; flex-shrink: 0; }
@@ -727,62 +743,33 @@
       </div>
       <div class="framing-bar">
         <!-- 1: Plan large - perso droite -->
-        <div class="frame-slot" data-frame="1" title="Plan large - droite"><svg viewBox="0 0 36 42">
-          <circle cx="26" cy="8" r="2.8" class="pf"/>
-          <rect x="23.5" y="12" width="5" height="8" rx="1.8" class="pf"/>
-          <rect x="21" y="13" width="2" height="5.5" rx="1" class="pf"/>
-          <rect x="30" y="13" width="2" height="5.5" rx="1" class="pf"/>
-          <rect x="24" y="20.5" width="2" height="7" rx="1" class="pf"/>
-          <rect x="27" y="20.5" width="2" height="7" rx="1" class="pf"/>
-        </svg></div>
+        <div class="frame-slot gris" data-frame="1" title="Plan large - droite">
+          <img class="frame-person size-large pos-right" src="regie-assets/homme-large.png">
+        </div>
         <!-- 2: Plan américain - perso droite -->
-        <div class="frame-slot" data-frame="2" title="Plan américain - droite"><svg viewBox="0 0 36 42">
-          <circle cx="25" cy="9" r="4" class="pf"/>
-          <rect x="20" y="14.5" width="10" height="12" rx="3" class="pf"/>
-          <rect x="17" y="15.5" width="3" height="8" rx="1.5" class="pf"/>
-          <rect x="30" y="15.5" width="3" height="8" rx="1.5" class="pf"/>
-          <rect x="21" y="27" width="3.5" height="8" rx="1.5" class="pf"/>
-          <rect x="25.5" y="27" width="3.5" height="8" rx="1.5" class="pf"/>
-        </svg></div>
+        <div class="frame-slot bleu active" data-frame="2" title="Plan américain - droite">
+          <img class="frame-person size-moyen pos-right" src="regie-assets/homme-moyen.png">
+        </div>
         <!-- 3: Plan serré - perso droite -->
-        <div class="frame-slot" data-frame="3" title="Plan serré - droite"><svg viewBox="0 0 36 42">
-          <circle cx="24" cy="10" r="5.5" class="pf"/>
-          <rect x="16" y="17" width="16" height="20" rx="5" class="pf"/>
-          <rect x="12" y="18.5" width="4" height="10" rx="2" class="pf"/>
-          <rect x="32" y="18.5" width="4" height="10" rx="2" class="pf"/>
-        </svg></div>
+        <div class="frame-slot gris" data-frame="3" title="Plan serré - droite">
+          <img class="frame-person size-serre pos-right" src="regie-assets/homme-serre.png">
+        </div>
         <!-- 4: Plan serré - centré -->
-        <div class="frame-slot active" data-frame="4" title="Plan serré - centré"><svg viewBox="0 0 36 42">
-          <circle cx="18" cy="10" r="5.5" class="pf"/>
-          <rect x="10" y="17" width="16" height="20" rx="5" class="pf"/>
-          <rect x="6" y="18.5" width="4" height="10" rx="2" class="pf"/>
-          <rect x="26" y="18.5" width="4" height="10" rx="2" class="pf"/>
-        </svg></div>
+        <div class="frame-slot fonce" data-frame="4" title="Plan serré - centré">
+          <img class="frame-person size-serre pos-center" src="regie-assets/homme-serre.png">
+        </div>
         <!-- 5: Plan serré - perso gauche -->
-        <div class="frame-slot" data-frame="5" title="Plan serré - gauche"><svg viewBox="0 0 36 42">
-          <circle cx="12" cy="10" r="5.5" class="pf"/>
-          <rect x="4" y="17" width="16" height="20" rx="5" class="pf"/>
-          <rect x="0" y="18.5" width="4" height="10" rx="2" class="pf"/>
-          <rect x="20" y="18.5" width="4" height="10" rx="2" class="pf"/>
-        </svg></div>
+        <div class="frame-slot gris" data-frame="5" title="Plan serré - gauche">
+          <img class="frame-person size-serre pos-left" src="regie-assets/homme-serre.png">
+        </div>
         <!-- 6: Plan américain - perso gauche -->
-        <div class="frame-slot" data-frame="6" title="Plan américain - gauche"><svg viewBox="0 0 36 42">
-          <circle cx="11" cy="9" r="4" class="pf"/>
-          <rect x="6" y="14.5" width="10" height="12" rx="3" class="pf"/>
-          <rect x="3" y="15.5" width="3" height="8" rx="1.5" class="pf"/>
-          <rect x="16" y="15.5" width="3" height="8" rx="1.5" class="pf"/>
-          <rect x="7" y="27" width="3.5" height="8" rx="1.5" class="pf"/>
-          <rect x="11.5" y="27" width="3.5" height="8" rx="1.5" class="pf"/>
-        </svg></div>
+        <div class="frame-slot gris" data-frame="6" title="Plan américain - gauche">
+          <img class="frame-person size-moyen pos-left" src="regie-assets/homme-moyen.png">
+        </div>
         <!-- 7: Plan large - perso gauche -->
-        <div class="frame-slot" data-frame="7" title="Plan large - gauche"><svg viewBox="0 0 36 42">
-          <circle cx="10" cy="8" r="2.8" class="pf"/>
-          <rect x="7.5" y="12" width="5" height="8" rx="1.8" class="pf"/>
-          <rect x="5" y="13" width="2" height="5.5" rx="1" class="pf"/>
-          <rect x="14" y="13" width="2" height="5.5" rx="1" class="pf"/>
-          <rect x="8" y="20.5" width="2" height="7" rx="1" class="pf"/>
-          <rect x="11" y="20.5" width="2" height="7" rx="1" class="pf"/>
-        </svg></div>
+        <div class="frame-slot gris" data-frame="7" title="Plan large - gauche">
+          <img class="frame-person size-large pos-left" src="regie-assets/homme-large.png">
+        </div>
       </div>
     </div>
 
@@ -1911,6 +1898,6 @@
   });
 
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v7</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v8</div>
 </body>
 </html>
