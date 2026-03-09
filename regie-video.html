@@ -678,15 +678,11 @@
           </div>
         </div>
       </div>
-      <div class="cam-pills" id="camPills">
-        <div class="cam-pill" data-cam="1">CAM 1</div>
-        <div class="cam-pill" data-cam="2">CAM 2</div>
-        <div class="cam-pill" data-cam="3">CAM 3</div>
-        <div class="cam-pill" data-cam="4">CAM 4</div>
-        <div class="cam-pill" data-cam="5">CAM 5</div>
-        <div class="cam-pill" data-cam="6">CAM 6</div>
-        <div class="cam-pill" data-cam="7">CAM 7</div>
-        <div class="cam-pill" data-cam="8">CAM 8</div>
+      <div class="cam-pills" id="overlayBtns">
+        <div class="cam-pill active" onclick="sendOverlayCmd('ANIMATE_IN')" style="background:linear-gradient(135deg,#43e97b,#38f9d7);color:#1a3a2a;font-weight:800;">▶ IN</div>
+        <div class="cam-pill" onclick="sendOverlayCmd('NEXT_FOCUS')">⏭ NEXT</div>
+        <div class="cam-pill" onclick="sendOverlayCmd('HIDE')" style="background:rgba(255,60,60,0.2);color:#ff6b6b;">✕ CLEAR</div>
+        <div class="cam-pill" onclick="sendOverlayCmd('SHOW_GRAPH')" style="background:rgba(102,126,234,0.2);color:#667eea;">📈 GRAPH</div>
       </div>
     </div>
 
@@ -827,12 +823,7 @@
           </button>
         </div>
       </div>
-      <div class="media-right-btns">
-        <button class="m-btn direct" onclick="sendOverlayCmd('ANIMATE_IN')"><div class="m-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>IN</button>
-        <button class="m-btn morning" onclick="sendOverlayCmd('NEXT_FOCUS')"><div class="m-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></div>NEXT</button>
-        <button class="m-btn autres" onclick="sendOverlayCmd('HIDE')"><div class="m-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>CLEAR</button>
-        <button class="m-btn direct" onclick="sendOverlayCmd('SHOW_GRAPH')" style="background:linear-gradient(135deg,#43e97b,#38f9d7);"><div class="m-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>GRAPH</button>
-      </div>
+
     </div>
   </div>
 
@@ -2027,7 +2018,7 @@
   });
 
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v10</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v11</div>
 
   <!-- DÉCOR UPLOAD MODAL -->
   <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
