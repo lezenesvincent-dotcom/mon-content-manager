@@ -1212,6 +1212,8 @@
         p4: item.p4 || { sujet: '', contenu: [] }
       })
     });
+    // Auto-send ANIMATE_IN after selecting content
+    setTimeout(function() { sendOverlayCmd('ANIMATE_IN'); }, 300);
   }
 
   loadContents();
@@ -1395,7 +1397,7 @@
   });
 
   // ===== CAM PILLS → PGM =====
-  document.querySelectorAll('.cam-pill').forEach(function(pill) {
+  document.querySelectorAll('.cam-pill[data-cam]').forEach(function(pill) {
     pill.addEventListener('click', function() {
       selectPgmCam(parseInt(pill.dataset.cam));
     });
@@ -1408,8 +1410,8 @@
     var pgmLive = document.getElementById('pgmLive');
     var pgmCamLabel = document.getElementById('pgmCamLabel');
 
-    document.querySelectorAll('.cam-pill').forEach(function(p) { p.classList.remove('active'); });
-    document.querySelector('.cam-pill[data-cam="' + camNum + '"]').classList.add('active');
+    document.querySelectorAll('.cam-pill[data-cam]').forEach(function(p) { p.classList.remove('active'); });
+    (document.querySelector('.cam-pill[data-cam="' + camNum + '"]') || {classList:{add:function(){},remove:function(){}}}).classList.add('active');
     activePgmCam = camNum;
 
     var src = camSources[camNum];
@@ -1583,7 +1585,7 @@
     pgmLive.style.display = 'none';
     pgmCamLabel.style.display = 'none';
 
-    document.querySelectorAll('.cam-pill').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.cam-pill[data-cam]').forEach(function(p) { p.classList.remove('active'); });
     activePgmCam = null;
 
     document.querySelectorAll('.m-thumb').forEach(function(t) { t.classList.remove('playing'); });
@@ -2018,7 +2020,7 @@
   });
 
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v11</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v12</div>
 
   <!-- DÉCOR UPLOAD MODAL -->
   <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">

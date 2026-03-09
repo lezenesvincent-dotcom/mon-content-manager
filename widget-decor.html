@@ -233,7 +233,7 @@
 <body>
     <!-- Conteneur du graphique 3D (iframe vers graph-embed.html) -->
     <div id="graphContainer">
-        <iframe id="graphFrame" src="graph-embed.html" frameborder="0" allowtransparency="true"></iframe>
+        <iframe id="graphFrame" src="about:blank" data-src="graph-embed.html" frameborder="0" allowtransparency="true"></iframe>
     </div>
     
     <div class="preview-zone">
@@ -548,7 +548,7 @@ développement
                                 hideCards();
                                 hideGraph(); // Aussi cacher le graphique
                             } else if (message.command === 'SHOW_GRAPH') {
-                                console.log('📈 SHOW_GRAPH reçu');
+                                console.log('📈 SHOW_GRAPH reçu'); var gf=document.getElementById('graphFrame'); if(gf&&gf.src.indexOf('graph-embed')<0&&gf.dataset.src){gf.src=gf.dataset.src;}
                                 showGraph();
                             } else if (message.command === 'HIDE_GRAPH') {
                                 hideGraph();
