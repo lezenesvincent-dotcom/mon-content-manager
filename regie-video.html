@@ -1212,8 +1212,20 @@
         p4: item.p4 || { sujet: '', contenu: [] }
       })
     });
+    // Send content directly to iframe
+    var frame = document.getElementById('pgmDecorFrame');
+    if (frame && frame.contentWindow) {
+      frame.contentWindow.postMessage({ type: 'update', data: {
+        titre: item.titre || item.title || '',
+        soustitre: item.soustitre || item.subtitle || '',
+        p1: item.p1 || { sujet: '', contenu: [] },
+        p2: item.p2 || { sujet: '', contenu: [] },
+        p3: item.p3 || { sujet: '', contenu: [] },
+        p4: item.p4 || { sujet: '', contenu: [] }
+      }}, '*');
+    }
     // Auto-send ANIMATE_IN after selecting content
-    setTimeout(function() { sendOverlayCmd('ANIMATE_IN'); }, 300);
+    setTimeout(function() { sendOverlayCmd('ANIMATE_IN'); }, 500);
   }
 
   loadContents();
@@ -1324,16 +1336,15 @@
   connectOverlayWS();
 
   function sendOverlayCmd(command) {
-    // Send via WebSocket
+    // Send directly to iframe via postMessage (most reliable)
+    var frame = document.getElementById('pgmDecorFrame');
+    if (frame && frame.contentWindow) {
+      frame.contentWindow.postMessage({ type: 'control', command: command }, '*');
+    }
+    // Also send via WebSocket for OBS/external widgets
     if (overlayWs && overlayWs.readyState === WebSocket.OPEN) {
       overlayWs.send(JSON.stringify({ type: 'control', command: command }));
     }
-    // Also send via HTTP POST for reliability
-    fetch(WS_SERVER + '/api/control', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ command: command })
-    }).catch(function() {});
     console.log('🎬 Overlay command:', command);
   }
 
@@ -2020,7 +2031,7 @@
   });
 
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v12</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v13</div>
 
   <!-- DÉCOR UPLOAD MODAL -->
   <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">

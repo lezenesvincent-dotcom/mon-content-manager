@@ -948,11 +948,28 @@ développement
         } catch (e) {}
         
         // Initialiser la connexion WebSocket
-        // Listen for decor background changes from regie
+        // Listen for ALL messages from regie (postMessage)
         window.addEventListener('message', function(e) {
-            if (e.data && e.data.command === 'SET_DECOR_BG' && e.data.videoUrl) {
+            if (!e.data) return;
+            // Decor background
+            if (e.data.command === 'SET_DECOR_BG' && e.data.videoUrl) {
                 var vid = document.getElementById('decorBgVideo');
                 if (vid) { vid.src = e.data.videoUrl; vid.play().catch(function(){}); }
+            }
+            // Content update
+            if (e.data.type === 'update' && e.data.data) {
+                updateContent(e.data.data);
+                console.log('📨 Content via postMessage');
+            }
+            // Control commands
+            if (e.data.type === 'control' && e.data.command) {
+                var cmd = e.data.command;
+                console.log('🎮 Command via postMessage:', cmd);
+                if (cmd === 'ANIMATE_IN') animateIN();
+                else if (cmd === 'NEXT_FOCUS') nextFocus();
+                else if (cmd === 'HIDE') { hideCards(); hideGraph(); }
+                else if (cmd === 'SHOW_GRAPH') showGraph();
+                else if (cmd === 'HIDE_GRAPH') hideGraph();
             }
         });
 
