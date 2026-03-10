@@ -290,8 +290,11 @@
     "function": "Stratégiste Actions & Matières Premières",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/nicolas-bouthors.png",
-    "id": "c29"
+    "id": "c29",
+    "photos": [
+      "contacts-photos/c29-1.png"
+    ],
+    "photo": "contacts-photos/c29-1.png"
   },
   {
     "firstName": "Nicolas",
