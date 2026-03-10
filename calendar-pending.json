@@ -41,7 +41,39 @@
       "createdAt": "2026-03-10T13:46:11.46Z",
       "status": "done",
       "processedAt": "2026-03-10T13:49:59Z"
+    },
+    {
+      "ficheId": "1773151975096",
+      "subject": "TEST MEDIAS",
+      "date": "2026-03-10",
+      "heurePrep": "12:30",
+      "heureDirect": "13:00",
+      "heureFin": null,
+      "entite": "",
+      "contact": "",
+      "mode": "studio",
+      "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
+      "application": "",
+      "intervenants": [],
+      "toggles": {
+        "appIBM": false,
+        "appZoom": false,
+        "appWebex": false,
+        "appTeams": false,
+        "replay": true,
+        "chat": true,
+        "qr": false,
+        "masquerQR": false,
+        "portailInscription": false,
+        "diffGen": true,
+        "fournisGen": true,
+        "studioGen": false,
+        "visite": true,
+        "synthes": true
+      },
+      "createdAt": "2026-03-10T14:14:31.247Z",
+      "status": "pending"
     }
   ],
-  "updatedAt": "2026-03-10T14:09:58Z"
+  "updatedAt": "2026-03-10T14:14:31.968Z"
 }
