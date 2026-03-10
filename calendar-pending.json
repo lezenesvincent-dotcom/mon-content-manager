@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-10T13:44:58Z",
+  "updatedAt": "2026-03-10T13:46:13.347Z",
   "pending": [
     {
       "action": "delete",
@@ -11,62 +11,36 @@
       "processedAt": "2026-02-17T09:40:24Z"
     },
     {
-      "ficheId": "1771422579195",
-      "subject": "CIC IDF",
-      "date": "2026-02-18",
-      "heurePrep": "14:30",
-      "heureDirect": "15:00",
-      "heureFin": null,
-      "entite": "",
-      "contact": "",
-      "mode": "studio",
-      "ibmChaine": "https://video.ibm.com/channel/wgYXBRG5D89",
-      "application": "",
-      "intervenants": [],
-      "toggles": {
-        "diffIBM": true,
-        "replay": true,
-        "chat": true,
-        "qr": false,
-        "masquerQR": false,
-        "synthes": true,
-        "diffGen": true,
-        "fournisGen": true,
-        "studioGen": false,
-        "visite": true
-      },
-      "createdAt": "2026-02-18T13:50:24.258Z",
-      "status": "done",
-      "processedAt": "2026-02-18T13:54:57Z"
-    },
-    {
-      "ficheId": "1771496063388",
-      "subject": "Test Laure",
-      "date": "2026-02-19",
+      "ficheId": "1773150284987",
+      "subject": "test thomas",
+      "date": "2026-03-12",
       "heurePrep": "12:30",
       "heureDirect": "13:00",
       "heureFin": null,
       "entite": "",
       "contact": "",
       "mode": "studio",
-      "ibmChaine": "",
+      "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
       "application": "",
       "intervenants": [],
       "toggles": {
-        "diffIBM": true,
+        "appIBM": false,
+        "appZoom": false,
+        "appWebex": false,
+        "appTeams": false,
         "replay": true,
         "chat": true,
         "qr": false,
         "masquerQR": false,
-        "synthes": true,
+        "portailInscription": false,
         "diffGen": true,
         "fournisGen": true,
         "studioGen": false,
-        "visite": true
+        "visite": true,
+        "synthes": true
       },
-      "createdAt": "2026-02-19T10:20:33.711Z",
-      "status": "done",
-      "processedAt": "2026-02-19T10:24:57Z"
+      "createdAt": "2026-03-10T13:46:11.460Z",
+      "status": "pending"
     }
   ]
 }
