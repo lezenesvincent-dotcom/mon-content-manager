@@ -58,8 +58,8 @@
         .em-decryptage{background:linear-gradient(135deg,#a18cd1,#fbc2eb)}
         .emission-btn:not(.active){opacity:0.5}
         .field{margin-bottom:8px}
-        .field input,.field select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:9px 12px;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif !important;font-size:13px;font-weight:500;outline:none;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
-        .field input{background-image:none}
+        .field input,.field select,.field textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:9px 12px;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif !important;font-size:13px;font-weight:500;outline:none;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+        .field input,.field textarea{background-image:none}
         .field input:focus,.field select:focus{border-color:rgba(0,140,255,0.5)}
         .field input::placeholder{color:rgba(255,255,255,0.2)}
         .field select option{background:#1a1c28;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif !important;text-transform:uppercase}
@@ -217,7 +217,7 @@
                 <div class="field"><select id="analystSelect" onchange="pickAnalyst()"><option value="">Choisir un intervenant...</option></select></div>
                 <div style="text-align:center;margin-top:-4px;margin-bottom:8px"><a href="#" onclick="event.preventDefault();openNewContact()" style="font-size:11px;color:#4da8ff;text-decoration:none">+ Créer un nouvel intervenant</a></div>
                 <div class="section-title">Valeur / Sujet</div>
-                <div class="field"><input type="text" id="fieldSubject" placeholder="Ex: VINCI, CAC 40..." oninput="updatePreview()"></div>
+                <div class="field"><textarea id="fieldSubject" placeholder="Ex: VINCI, CAC 40..." oninput="updatePreview()" rows="2" style="resize:none;line-height:1.3"></textarea></div>
                 <div class="section-title">Position</div>
                 <div style="display:flex;justify-content:center;align-items:flex-start;gap:12px">
                     <div class="joystick" id="sidebarJoystick">
@@ -471,7 +471,7 @@
         if(document.getElementById('chkFullTitle').checked&&selectedDraft&&selectedDraft.title){
             subject=selectedDraft.title;
         }
-        document.getElementById('previewSubject').textContent=subject;
+        document.getElementById('previewSubject').innerHTML=subject.replace(/\n/g,'<br>');
         updateEmissionTitle();
         var pc=document.getElementById('photosContainer');pc.innerHTML='';
         var n=selectedIntervenants.length;
@@ -1270,6 +1270,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v66</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v67</div>
 </body>
 </html>
