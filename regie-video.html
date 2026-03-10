@@ -662,7 +662,7 @@
     <div class="pgm-block">
       <div class="pgm-screen" id="pgmScreen">
         <span id="pgmLabel" style="z-index:3">DÉCOR</span>
-        <iframe id="pgmDecorFrame" src="widget-decor.html?v=1773128440" style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:20px 20px 0 0;z-index:1;background:#000;" allowtransparency="true"></iframe>
+        <iframe id="pgmDecorFrame" src="widget-decor.html?v=1773128440" style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:20px 20px 0 0;z-index:1;background:#000;" allowtransparency="true" onload="initDecorBg()"></iframe>
         <img id="pgmStream" alt="">
         <video id="pgmVideo" playsinline preload="auto"></video>
         <div class="pgm-live-badge" id="pgmLive" style="display:flex">● DÉCOR LIVE</div>
@@ -1153,13 +1153,9 @@
   var GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
 
   function loadPrsnetDrafts() {
-    fetch('https://api.github.com/repos/' + GH_REPO + '/contents/prsnet-drafts.json', {
-      headers: { 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store'
-    })
+    fetch('prsnet-drafts.json', { cache: 'no-store' })
     .then(function(r) { return r.json(); })
-    .then(function(d) {
-      var raw = decodeURIComponent(escape(atob(d.content.replace(/\s/g, ''))));
-      var data = JSON.parse(raw);
+    .then(function(data) {
       var drafts = Array.isArray(data.drafts) ? data.drafts : [];
       // Filter last 24h
       var now = new Date();
@@ -1222,6 +1218,9 @@
         selectContent(item);
         document.querySelectorAll('.cond-item').forEach(function(c) { c.classList.remove('active'); });
         el.classList.add('active');
+        // Activate IN button
+        var inBtn = document.querySelector('#overlayBtns .cam-pill');
+        if (inBtn) activateBtn(inBtn);
       });
       condItems.appendChild(el);
     });
@@ -1407,6 +1406,14 @@
       loadDecorVideos();
       selectDecorVideo(0);
     }, 500);
+  }
+
+  function initDecorBg() {
+    // Set default Paris background after iframe loads
+    var frame = document.getElementById('pgmDecorFrame');
+    if (frame && frame.contentWindow) {
+      frame.contentWindow.postMessage({ command: 'SET_DECOR_BG', videoUrl: 'https://drive.google.com/uc?export=download&id=1rdu0CPeMQhdWql7GNWi7oont95k-lfnv' }, '*');
+    }
   }
 
   function activateBtn(el) {
@@ -2121,7 +2128,7 @@
   });
 
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v15</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v16</div>
 
   <!-- DÉCOR UPLOAD MODAL -->
   <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
