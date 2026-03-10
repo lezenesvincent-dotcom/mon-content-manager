@@ -70,7 +70,7 @@
   }
   .pgm-screen {
     width: 100%;
-    aspect-ratio: 32/9;
+    aspect-ratio: 32/12;
     background: #000;
     border-radius: 20px 20px 0 0;
     display: flex;
@@ -164,6 +164,7 @@
     transition: all 0.2s;
   }
   .cam-pill:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
+  .cam-pill.active { background: linear-gradient(135deg, #667eea, #764ba2) !important; border: none !important; color: #fff !important; font-weight: 700; }
   .cam-pill.active { background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: #fff; font-weight: 700; box-shadow: 0 4px 16px rgba(102,126,234,0.4); }
 
   /* Conducteur */
@@ -679,10 +680,10 @@
         </div>
       </div>
       <div class="cam-pills" id="overlayBtns">
-        <div class="cam-pill" onclick="sendOverlayCmd('ANIMATE_IN')">▶ IN</div>
-        <div class="cam-pill" onclick="sendOverlayCmd('NEXT_FOCUS')">⏭ NEXT</div>
-        <div class="cam-pill" onclick="sendOverlayCmd('HIDE')">✕ CLEAR</div>
-        <div class="cam-pill" onclick="sendOverlayCmd('SHOW_GRAPH')">📈 GRAPH</div>
+        <div class="cam-pill" onclick="activateBtn(this);sendOverlayCmd('ANIMATE_IN')">▶ IN</div>
+        <div class="cam-pill" onclick="activateBtn(this);sendOverlayCmd('NEXT_FOCUS')">⏭ NEXT</div>
+        <div class="cam-pill" onclick="activateBtn(null);sendOverlayCmd('HIDE')">✕ CLEAR</div>
+        <div class="cam-pill" onclick="activateBtn(this);sendOverlayCmd('SHOW_GRAPH')">📈 GRAPH</div>
       </div>
     </div>
 
@@ -1148,6 +1149,83 @@
 
   // ===== OVERLAY CONTENTS =====
   var allContents = [];
+  var prsnetContents = [];
+  var GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+
+  function loadPrsnetDrafts() {
+    fetch('https://api.github.com/repos/' + GH_REPO + '/contents/prsnet-drafts.json', {
+      headers: { 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store'
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var raw = decodeURIComponent(escape(atob(d.content.replace(/\s/g, ''))));
+      var data = JSON.parse(raw);
+      var drafts = Array.isArray(data.drafts) ? data.drafts : [];
+      // Filter last 24h
+      var now = new Date();
+      var h24 = new Date(now.getTime() - 24*60*60*1000);
+      drafts = drafts.filter(function(d) {
+        if (!d.date) return true;
+        var parts = d.date.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+        if (!parts) return true;
+        var dt = new Date(parts[3]+'-'+parts[2]+'-'+parts[1]+'T'+parts[4]+':'+parts[5]+':'+parts[6]);
+        return dt >= h24;
+      });
+      // Convert to p1p4 format for conducteur
+      prsnetContents = drafts.map(function(d) {
+        var title = d.title || '';
+        // Extract subject from title (before colon if exists)
+        var subject = title.indexOf(':') > -1 ? title.split(':')[0].trim() : title;
+        return {
+          id: 'prsnet-' + (d.id || ''),
+          titre: subject,
+          soustitre: d.tags || '',
+          source: 'prsnet',
+          prsnetTitle: title,
+          p1: { sujet: subject, contenu: [title] },
+          p2: { sujet: '', contenu: [] },
+          p3: { sujet: '', contenu: [] },
+          p4: { sujet: '', contenu: [] }
+        };
+      });
+      // Refresh conducteur with merged contents
+      refreshConducteur();
+    })
+    .catch(function(e) { console.log('PRSNET load error:', e); });
+  }
+
+  function refreshConducteur() {
+    var merged = allContents.concat(prsnetContents);
+    // Deduplicate by title
+    var seen = {};
+    var unique = [];
+    merged.forEach(function(item) {
+      var key = (item.titre || '').toUpperCase();
+      if (!seen[key] && key) { seen[key] = true; unique.push(item); }
+    });
+    var condItems = document.getElementById('condItems');
+    condItems.innerHTML = '';
+    if (unique.length === 0) {
+      condItems.innerHTML = '<div class="cond-item" style="opacity:0.4;">Aucun contenu</div>';
+      return;
+    }
+    unique.forEach(function(item, idx) {
+      var title = item.titre || item.title || '';
+      var isPrsnet = item.source === 'prsnet';
+      var el = document.createElement('div');
+      el.className = 'cond-item' + (item.id === selectedContentId ? ' active' : '');
+      var icon = isPrsnet ? 
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' :
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+      el.innerHTML = '<div class="cond-icon">' + icon + '</div>' + title;
+      el.addEventListener('click', function() {
+        selectContent(item);
+        document.querySelectorAll('.cond-item').forEach(function(c) { c.classList.remove('active'); });
+        el.classList.add('active');
+      });
+      condItems.appendChild(el);
+    });
+  }
   function loadContents() {
     fetch(WS_SERVER + '/history')
       .then(function(r) { return r.json(); })
@@ -1166,32 +1244,13 @@
           if (!seen[key]) { seen[key] = true; unique.push(item); }
         });
         allContents = unique;
+        refreshConducteur();
 
         // Date du jour
         var days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
         var months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
         var now = new Date();
         document.getElementById('condTitle').textContent = days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()];
-
-        // CONDUCTEUR : un onglet par contenu
-        var condItems = document.getElementById('condItems');
-        condItems.innerHTML = '';
-        unique.forEach(function(item, idx) {
-          var title = item.titre || item.title || 'Sans titre';
-          var el = document.createElement('div');
-          el.className = 'cond-item' + (item.id === selectedContentId ? ' active' : '');
-          el.innerHTML = '<div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>' + title;
-          el.addEventListener('click', function() {
-            selectContent(item);
-            document.querySelectorAll('.cond-item').forEach(function(c) { c.classList.remove('active'); });
-            el.classList.add('active');
-            // Also highlight matching carousel card
-            document.querySelectorAll('.content-card').forEach(function(c) { c.classList.remove('selected'); });
-            var cards = document.querySelectorAll('.content-card');
-            if (cards[idx]) cards[idx].classList.add('selected');
-          });
-          condItems.appendChild(el);
-        });
 
         // CAROUSEL : garder aussi les cartes en bas
         var scroll = document.getElementById('pagesScroll');
@@ -1254,6 +1313,8 @@
 
   loadContents();
   setInterval(loadContents, 30000);
+  loadPrsnetDrafts();
+  setInterval(loadPrsnetDrafts, 60000);
 
 
   // ===== DÉCOR VIDEO MANAGEMENT =====
@@ -1346,6 +1407,11 @@
       loadDecorVideos();
       selectDecorVideo(0);
     }, 500);
+  }
+
+  function activateBtn(el) {
+    document.querySelectorAll('#overlayBtns .cam-pill').forEach(function(p) { p.classList.remove('active'); });
+    if (el) el.classList.add('active');
   }
 
   // ===== OVERLAY COMMANDS =====
@@ -2055,7 +2121,7 @@
   });
 
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v14</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v15</div>
 
   <!-- DÉCOR UPLOAD MODAL -->
   <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
