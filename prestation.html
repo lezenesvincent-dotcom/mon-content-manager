@@ -7,42 +7,18 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #111118;
+            background: #1a1a1a;
             color: #e4e4e4;
             font-family: Arial, Helvetica, sans-serif;
             min-height: 100vh;
             padding: 20px;
         }
-
-        /* ===== FOND APPLE MUSIC ===== */
-        .album-bg {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .album-bg .cover {
-            position: absolute;
-            top: -20%; left: -20%; right: -20%; bottom: -20%;
-            background-size: cover;
-            background-position: center;
-            filter: blur(80px) saturate(1.8) brightness(0.4);
-            transition: opacity 2s ease-in-out;
-            opacity: 0;
-        }
-        .album-bg .cover.active { opacity: 1; }
-        .album-bg::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.35);
-            z-index: 1;
-        }
-
-        .page-wrapper { max-width: 1024px; margin: 0 auto; position: relative; z-index: 2; }
+        .page-wrapper { max-width: 1200px; margin: 0 auto; }
 
         .header { text-align: center; padding: 20px 0 30px; }
-        .header img { width: 242px; height: auto; margin-bottom: 8px; }
+        .header img { width: 80px; height: auto; margin-bottom: 8px; }
+        .header h1 { font-size: 1.5rem; font-weight: bold; color: #fff; }
+        .header .sub { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 4px; }
 
         .fiches-grid {
             display: grid;
@@ -51,14 +27,12 @@
         }
 
         .fiche-card {
-            background: rgba(0, 0, 0, 0.45);
+            background: #3c3c3c;
             border-radius: 14px;
             padding: 20px;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(80,90,100,0.3);
             cursor: pointer;
             transition: all 0.15s;
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
         }
         .fiche-card:hover {
             border-color: rgba(0,200,255,0.4);
@@ -68,15 +42,14 @@
         .fiche-title {
             font-size: 18px; font-weight: bold; color: #fff;
             text-align: center; margin-bottom: 6px;
-            background: rgba(255,255,255,0.06);
+            background: #2a2d35;
             border-radius: 10px;
             padding: 10px;
         }
         .fiche-date {
             text-align: center;
-            font-size: 0.85rem;
-            color: #fff;
-            font-weight: 700;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
             margin-bottom: 12px;
         }
 
@@ -87,7 +60,7 @@
             margin-bottom: 6px;
         }
         .fiche-label {
-            background: rgba(255,255,255,0.12);
+            background: #555;
             color: #fff;
             font-size: 0.7rem;
             font-weight: bold;
@@ -144,538 +117,245 @@
             margin-bottom: 20px;
         }
         .new-btn {
-            background: linear-gradient(135deg, #00d4ff, #007AFF);
-            color: #fff;
+            background: #00d4ff;
+            color: #111;
             border: none;
-            padding: 12px 28px;
-            border-radius: 12px;
-            font-size: 0.9rem;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-size: 0.85rem;
             font-weight: bold;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-            box-shadow: 0 4px 12px rgba(0,200,255,0.3);
-            transition: all 0.15s;
         }
-        .new-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,200,255,0.4); }
+        .new-btn:hover { background: #00e8ff; }
 
         .count-badge {
             font-size: 0.8rem;
             color: rgba(255,255,255,0.4);
         }
 
-        .sync-status {
-            font-size: 0.7rem;
-            padding: 4px 10px;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .sync-ok { background: rgba(0,200,100,0.15); color: #00c864; }
-        .sync-err { background: rgba(255,60,60,0.15); color: #ff6060; }
-        .sync-loading { background: rgba(255,200,0,0.15); color: #ffc800; }
-
         .nav-back {
             display: inline-flex; align-items: center; gap: 6px;
-            color: #fda085; text-decoration: none;
-            font-size: 0.85rem; font-weight: 700;
-            padding: 10px 18px;
-            background: rgba(253,160,133,0.1);
-            border: 1px solid rgba(253,160,133,0.25);
-            border-radius: 10px;
-            transition: all 0.15s;
-            position: relative; z-index: 2;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif;
+            color: rgba(255,255,255,0.4); text-decoration: none;
+            font-size: 0.78rem; margin-bottom: 14px; transition: color 0.15s;
         }
-        .nav-back:hover { color: #fdb99b; background: rgba(253,160,133,0.18); }
+        .nav-back:hover { color: rgba(255,255,255,0.7); }
 
-        .delete-btn {
-            background: rgba(255,60,60,0.15);
-            color: #ff6060;
-            border: 1px solid rgba(255,60,60,0.3);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            cursor: pointer;
-            float: right;
-            transition: all 0.15s;
+        /* Status indicator */
+        .sync-status {
+            position: fixed;
+            top: 12px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            z-index: 100;
         }
-        .delete-btn:hover { background: rgba(255,60,60,0.3); }
-    
-/* === DOCK NAV === */
-
-/* === DOCK NAV === */
-.dock-nav{position:fixed;top:10px;right:12px;z-index:9999;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:13px;padding:4px 7px;}
-.dock-nav a,.dock-nav .dock-btn{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);position:relative;text-decoration:none;border:none;outline:none;}
-.dock-nav a:hover,.dock-nav .dock-btn:hover{transform:scale(1.3) translateY(-3px);z-index:10;}
-.dock-nav a:hover .dk-tip,.dock-nav .dock-btn:hover .dk-tip{opacity:1;transform:translateX(-50%) translateY(0);}
-.dock-nav svg{width:14px;height:14px;fill:none;stroke:rgba(255,255,255,0.9);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.dock-nav .dk-inv svg{stroke:rgba(0,0,0,0.6);}
-.dk-tip{position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%) translateY(-3px);background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);color:#fff;font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:all 0.15s ease;letter-spacing:0.2px;font-family:-apple-system,sans-serif;}
-.dk-act::after{content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.7);}
-.dk-sep{width:1px;height:20px;background:rgba(255,255,255,0.08);margin:0 1px;}
-.dk-home{background:rgba(255,255,255,0.08)!important;border-radius:8px!important;}
-.dk-home:hover{background:rgba(255,255,255,0.15)!important;}
-.dk-home svg{stroke:rgba(255,255,255,0.5)!important;}
-.dr{background:linear-gradient(135deg,#ff416c,#ff4b2b);}
-.dp{background:linear-gradient(135deg,#8b5cf6,#6366f1);}
-.dc{background:linear-gradient(135deg,#00d2ff,#3a7bd5);}
-.dv{background:linear-gradient(135deg,#667eea,#764ba2);}
-.dk{background:linear-gradient(135deg,#f093fb,#f5576c);}
-.dg{background:linear-gradient(135deg,#43e97b,#38f9d7);}
-.do{background:linear-gradient(135deg,#f6d365,#fda085);}
-.dt{background:linear-gradient(135deg,#0d9488,#06b6d4);}
-.dd{background:linear-gradient(135deg,#1c2028,#2d2d2d);border:1px solid rgba(255,255,255,0.1);}
-
-/* === END DOCK === */
-</style>
+        .sync-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #555;
+            transition: background 0.3s;
+        }
+        .sync-dot.connected { background: #00d4ff; }
+        .sync-dot.error { background: #ff4444; }
+    </style>
 </head>
 <body>
-<!-- DOCK START -->
-<nav class="dock-nav"><a href="studio-manager.html" class="dk-home"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Accueil</span></a><div class="dk-sep"></div><a href="regie-video.html" class="dr"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span class="dk-tip">R&eacute;gie</span></a><a href="agenda-studio.html" class="dp"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="dk-tip">Agenda</span></a><a href="vignettes.html" class="dc"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="2"/><path d="M21 15l-5-5L5 21"/></svg><span class="dk-tip">Vignettes</span></a><a href="creation.html" class="dv"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="dk-tip">Cr&eacute;ation</span></a><a href="manage-ei.html" class="dk"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Manage</span></a><div class="dk-sep"></div><a href="contact-studio.html" class="dg dk-inv"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="dk-tip">Contact</span></a><a href="prestation.html" class="do dk-inv dk-act"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="dk-tip">Prestations</span></a><a href="carnet.html" class="dt"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="dk-tip">Carnet</span></a><div class="dk-sep"></div><a href="studio-2027.html" class="dd"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="dk-tip">2027</span></a><a href="studio-alert.html" class="dr"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dk-tip">Alert</span></a><a href="dev-dashboard.html" class="dd"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span class="dk-tip">Dev</span></a></nav>
-<!-- DOCK END -->
+    <div class="sync-status">
+        <span class="sync-dot" id="syncDot"></span>
+        <span id="syncLabel">Connexion…</span>
+    </div>
 
-    <div class="album-bg" id="albumBg"></div>
-    <a href="index.html" class="nav-back">&larr; Retour Studio Manager</a>
+    <a href="index.html" class="nav-back">← Retour Content Manager</a>
     <div class="page-wrapper">
         <div class="header">
             <img src="logo-cic.png" alt="CIC">
+            <h1>Prestations Studio</h1>
+            <div class="sub">Toutes les fiches de réservation</div>
         </div>
 
         <div class="actions-bar">
-            <a href="#" class="new-btn" onclick="newFiche(); return false;">&#xFF0B; Nouvelle fiche</a>
-            <span>
-                <span class="count-badge" id="countBadge"></span>
-                <span class="sync-status sync-loading" id="syncStatus">&#x1F504; Chargement...</span>
-            </span>
+            <a href="contact-studio.html" class="new-btn" onclick="newFiche()">＋ Nouvelle fiche</a>
+            <span class="count-badge" id="countBadge"></span>
         </div>
 
         <div class="fiches-grid" id="fichesGrid"></div>
         <div class="empty-state" id="emptyState" style="display:none;">
-            Aucune prestation enregistr&eacute;e.<br>Cr&eacute;ez une nouvelle fiche pour commencer.
+            Aucune prestation enregistrée.<br>Créez une nouvelle fiche pour commencer.
         </div>
     </div>
 
     <script>
-    // ===== GITHUB SYNC =====
-    const GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(s=>s.split('').reverse().join('')).join('');
-    const GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
-    const GH_FILE = 'data/fiches.json';
-    const GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
+        // =============================================
+        // CONFIG
+        // =============================================
+        const WS_SERVER_URL = 'wss://ecamm-overlay-server.onrender.com';
+        const API_BASE_URL  = 'https://ecamm-overlay-server.onrender.com';
 
-    let fichesData = {};
-    let fileSha = null;
+        let ws = null;
+        let fichesData = {};
+        let reconnectTimer = null;
 
-    function formatDateFR(d) {
-        if (!d) return '';
-        var p = d.split('-');
-        if (p.length === 3) return p[2] + '/' + p[1] + '/' + p[0];
-        return d;
-    }
+        // =============================================
+        // SYNC STATUS UI
+        // =============================================
+        function setStatus(state, label) {
+            const dot = document.getElementById('syncDot');
+            const lbl = document.getElementById('syncLabel');
+            dot.className = 'sync-dot ' + state;
+            lbl.textContent = label;
+        }
 
-    async function loadFromGitHub() {
-        const status = document.getElementById('syncStatus');
-        status.className = 'sync-status sync-loading';
-        status.innerHTML = '&#x1F504; Sync...';
-
-        try {
-            const resp = await fetch(GH_API, {
-                headers: {
-                    'Authorization': 'token ' + GH_TOKEN,
-                    'Accept': 'application/vnd.github.v3+json'
-                },
-                cache: 'no-cache'
-            });
-
-            if (resp.status === 404) {
-                // Fichier n'existe pas encore, on le créera au premier save
-                fichesData = {};
-                fileSha = null;
-                status.className = 'sync-status sync-ok';
-                status.innerHTML = '&#x2705; Nouveau';
+        // =============================================
+        // LOAD FICHES VIA REST API (initial + fallback)
+        // =============================================
+        async function fetchFichesFromServer() {
+            try {
+                const res = await fetch(API_BASE_URL + '/api/fiches');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                fichesData = await res.json();
                 renderFiches();
+                // Also cache locally as fallback
+                localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+            } catch (err) {
+                console.warn('⚠️ API fetch failed, using localStorage cache:', err);
+                fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+                renderFiches();
+            }
+        }
+
+        // =============================================
+        // WEBSOCKET — real-time sync between machines
+        // =============================================
+        function connectWebSocket() {
+            if (ws && ws.readyState <= 1) return; // already open or connecting
+
+            setStatus('', 'Connexion…');
+            ws = new WebSocket(WS_SERVER_URL);
+
+            ws.onopen = () => {
+                setStatus('connected', 'Connecté');
+                // Request latest fiches
+                ws.send(JSON.stringify({ type: 'fiches_get' }));
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+
+                    if (msg.type === 'fiches_data') {
+                        // Full fiches object from server
+                        fichesData = msg.data || {};
+                        localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+                        renderFiches();
+                    }
+                    else if (msg.type === 'fiches_updated') {
+                        // Another client saved/deleted — refresh
+                        fichesData = msg.data || {};
+                        localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+                        renderFiches();
+                    }
+                } catch (err) {
+                    console.error('WS parse error:', err);
+                }
+            };
+
+            ws.onclose = () => {
+                setStatus('error', 'Déconnecté');
+                scheduleReconnect();
+            };
+
+            ws.onerror = () => {
+                setStatus('error', 'Erreur connexion');
+            };
+        }
+
+        function scheduleReconnect() {
+            if (reconnectTimer) return;
+            reconnectTimer = setTimeout(() => {
+                reconnectTimer = null;
+                connectWebSocket();
+            }, 3000);
+        }
+
+        // =============================================
+        // RENDER
+        // =============================================
+        function renderFiches() {
+            const grid = document.getElementById('fichesGrid');
+            const empty = document.getElementById('emptyState');
+            const count = document.getElementById('countBadge');
+            const entries = Object.values(fichesData).sort((a, b) =>
+                (b.updatedAt || '').localeCompare(a.updatedAt || '')
+            );
+
+            count.textContent = entries.length + ' prestation' + (entries.length > 1 ? 's' : '');
+
+            if (entries.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
                 return;
             }
 
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            grid.style.display = '';
+            empty.style.display = 'none';
 
-            const data = await resp.json();
-            fileSha = data.sha;
-            const raw = atob(data.content.replace(/\n/g, ''));
-            const content = decodeURIComponent(escape(raw));
-            fichesData = JSON.parse(content);
+            grid.innerHTML = entries.map(f => {
+                const toggleTags = Object.entries(f.toggles || {}).map(([k, v]) =>
+                    `<span class="fiche-tag ${v === 'oui' ? 'on' : ''}">${k}: ${v || '-'}</span>`
+                ).join('');
 
-            // Sync aussi en localStorage comme fallback
-            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
-
-            status.className = 'sync-status sync-ok';
-            status.innerHTML = '&#x2705; Sync&eacute;';
-            renderFiches();
-        } catch (err) {
-            console.error('GitHub load error:', err);
-            // Fallback localStorage
-            fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
-            status.className = 'sync-status sync-err';
-            status.innerHTML = '&#x26A0; Local';
-            renderFiches();
+                return `
+                <div class="fiche-card" onclick="openFiche('${f.id}')">
+                    <div class="fiche-title">${f.titre || 'Sans titre'}</div>
+                    <div class="fiche-date">${f.date || 'Date non définie'}</div>
+                    <div class="fiche-field">
+                        <span class="fiche-label">Entité groupe</span>
+                        <span class="fiche-value">${f.entite || '-'}</span>
+                    </div>
+                    <div class="fiche-field">
+                        <span class="fiche-label">Contact</span>
+                        <span class="fiche-value">${f.contact || '-'}</span>
+                    </div>
+                    <div class="fiche-heure">
+                        <span class="heure-badge heure-prep">Prépa: ${f.heurePrep || '--:--'}</span>
+                        <span class="heure-badge heure-direct">Direct: ${f.heureDirect || '--:--'}</span>
+                    </div>
+                    ${f.application ? `<div class="fiche-field"><span class="fiche-label">App</span><span class="fiche-value">${f.application}</span></div>` : ''}
+                    ${f.intervenants && f.intervenants.length ? `<div class="fiche-field"><span class="fiche-label">Intervenants</span><span class="fiche-value">${f.intervenants.length} personne(s)</span></div>` : ''}
+                    <div class="fiche-tags">${toggleTags}</div>
+                </div>`;
+            }).join('');
         }
-    }
 
-    async function saveToGitHub() {
-        const status = document.getElementById('syncStatus');
-        try {
-            status.className = 'sync-status sync-loading';
-            status.innerHTML = '&#x1F504; Save...';
-
-            const content = btoa(unescape(encodeURIComponent(JSON.stringify(fichesData, null, 2))));
-
-            const body = {
-                message: 'Update fiches ' + new Date().toISOString(),
-                content: content,
-                branch: 'main'
-            };
-            if (fileSha) body.sha = fileSha;
-
-            const resp = await fetch(GH_API, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': 'token ' + GH_TOKEN,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-
-            const data = await resp.json();
-            fileSha = data.content.sha;
-
-            // Aussi en localStorage
-            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
-
-            status.className = 'sync-status sync-ok';
-            status.innerHTML = '&#x2705; Sauv&eacute;';
-        } catch (err) {
-            console.error('GitHub save error:', err);
-            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
-            status.className = 'sync-status sync-err';
-            status.innerHTML = '&#x26A0; Local only';
+        // =============================================
+        // NAVIGATION
+        // =============================================
+        function openFiche(id) {
+            localStorage.setItem('currentFicheId', id);
+            window.location.href = 'contact-studio.html';
         }
-    }
 
-    // Supprimer une fiche
-    async function deleteFiche(id, ev) {
-        var e = ev || window.event;
-        if (e) { e.stopPropagation(); e.preventDefault(); }
-        if (!confirm('Supprimer cette fiche ?')) return;
-        delete fichesData[id];
-        await saveToGitHub();
+        function newFiche() {
+            localStorage.removeItem('currentFicheId');
+        }
+
+        // =============================================
+        // INIT
+        // =============================================
+        // 1. Load from localStorage immediately (instant display)
+        fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
         renderFiches();
-    }
 
-    function renderFiches() {
-        const grid = document.getElementById('fichesGrid');
-        const empty = document.getElementById('emptyState');
-        const count = document.getElementById('countBadge');
-        const entries = Object.values(fichesData).sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+        // 2. Then connect WebSocket for real-time sync
+        connectWebSocket();
 
-        count.textContent = entries.length + ' prestation' + (entries.length > 1 ? 's' : '');
-
-        if (entries.length === 0) {
-            grid.style.display = 'none';
-            empty.style.display = 'block';
-            return;
-        }
-
-        grid.style.display = 'grid';
-        empty.style.display = 'none';
-
-        grid.innerHTML = entries.map(function(f) {
-            var toggleTags = '';
-            if (f.toggles) {
-                Object.keys(f.toggles).forEach(function(k) {
-                    var v = f.toggles[k];
-                    toggleTags += '<span class="fiche-tag ' + (v === 'oui' ? 'on' : '') + '">' + k + ': ' + (v || '-') + '</span>';
-                });
-            }
-
-            return '<div class="fiche-card" onclick="openFiche(\'' + f.id + '\')">' +
-                '<button class="delete-btn" onclick="event.stopPropagation();deleteFiche(\'' + f.id + '\', event)">&#x2716; Supprimer</button>' +
-                '<div class="fiche-title">' + (f.titre || 'Sans titre') + '</div>' +
-                '<div class="fiche-date">' + formatDateFR(f.date) + '</div>' +
-                '<div class="fiche-field"><span class="fiche-label">Entit&eacute;</span><span class="fiche-value">' + (f.entite || '-') + '</span></div>' +
-                '<div class="fiche-field"><span class="fiche-label">Contact</span><span class="fiche-value">' + (f.contact || '-') + '</span></div>' +
-                '<div class="fiche-heure">' +
-                    '<span class="heure-badge heure-prep">Pr&eacute;pa: ' + (f.heurePrep || '--:--') + '</span>' +
-                    '<span class="heure-badge heure-direct">Direct: ' + (f.heureDirect || '--:--') + '</span>' +
-                '</div>' +
-                (f.application ? '<div class="fiche-field"><span class="fiche-label">App</span><span class="fiche-value">' + f.application + '</span></div>' : '') +
-                (f.intervenants && f.intervenants.length ? '<div class="fiche-field"><span class="fiche-label">Intervenants</span><span class="fiche-value">' + f.intervenants.length + ' personne(s)</span></div>' : '') +
-                '<div class="fiche-tags">' + toggleTags + '</div>' +
-            '</div>';
-        }).join('');
-    }
-
-    function openFiche(id) {
-        localStorage.setItem('currentFicheId', id);
-        window.location.href = 'contact-studio.html?fiche=' + id;
-    }
-
-    function newFiche() {
-        const newId = Date.now().toString();
-        localStorage.removeItem('currentFicheId');
-        window.location.href = 'contact-studio.html?fiche=' + newId;
-    }
-
-    // Chargement initial
-    loadFromGitHub();
-    // Refresh toutes les 15s
-    setInterval(loadFromGitHub, 15000);
+        // 3. Also fetch via REST API as backup
+        fetchFichesFromServer();
     </script>
-
-    <script>
-    // ===== FOND APPLE MUSIC =====
-    const ALBUMS = [
-        'https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228',
-        'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25',
-        'https://i.scdn.co/image/ab67616d0000b2734ce8b4e42588bf18182a1ad2',
-        'https://i.scdn.co/image/ab67616d0000b273e8b066f70c206551210d902b',
-        'https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0',
-        'https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e',
-        'https://i.scdn.co/image/ab67616d0000b273b0dd6a5cd1649c4a390f6f7a',
-        'https://i.scdn.co/image/ab67616d0000b2739a95e89d24214b94de36ccf7',
-        'https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72',
-        'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
-        'https://i.scdn.co/image/ab67616d0000b27390a50cfe99a4c19ff3cbfbdb',
-        'https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526',
-        'https://i.scdn.co/image/ab67616d0000b273de437d960dda1ac0a3ff0e47',
-        'https://i.scdn.co/image/ab67616d0000b2738399047ff71200928f5b6508',
-        'https://i.scdn.co/image/ab67616d0000b273407bd04707c463bbb3410424',
-        'https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856',
-    ];
-    let currentAlbumIndex = 0;
-    const bg = document.getElementById('albumBg');
-    const layer1 = document.createElement('div');
-    const layer2 = document.createElement('div');
-    layer1.className = 'cover active';
-    layer2.className = 'cover';
-    bg.appendChild(layer1);
-    bg.appendChild(layer2);
-    for (let i = ALBUMS.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [ALBUMS[i], ALBUMS[j]] = [ALBUMS[j], ALBUMS[i]];
-    }
-    layer1.style.backgroundImage = 'url(' + ALBUMS[0] + ')';
-    function nextAlbum() {
-        currentAlbumIndex = (currentAlbumIndex + 1) % ALBUMS.length;
-        const activeLayer = layer1.classList.contains('active') ? layer1 : layer2;
-        const nextLayer = activeLayer === layer1 ? layer2 : layer1;
-        nextLayer.style.backgroundImage = 'url(' + ALBUMS[currentAlbumIndex] + ')';
-        nextLayer.classList.add('active');
-        activeLayer.classList.remove('active');
-    }
-    setInterval(nextAlbum, 30000);
-    </script>
-
-
-<script>
-(function(){
-    var ALERT_WS_URL = 'wss://ecamm-overlay-server.onrender.com';
-    var ALERT_PROXY_URL = 'https://script.google.com/macros/s/AKfycbzjO0-wHGd-uIIJhnpmBAVQxIruHnQUpnvFpsrEqAsSDkerG8z0Cp47HYgojMHlOG9pFQ/exec';
-    var alertWs = null;
-    var alertAudioCtx = null;
-    var alertNodes = [];
-    var alertActive = false;
-    var alertBanner = null;
-
-    // Request notification permission
-    if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
-
-    function createAlertBanner() {
-        if (alertBanner) return;
-        alertBanner = document.createElement('div');
-        alertBanner.id = 'studioAlertBanner';
-        alertBanner.style.cssText = 'position:fixed;inset:0;z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,0,0,0.85);animation:alertFlash 0.5s infinite;cursor:pointer;';
-        alertBanner.innerHTML = '<div style="font-size:72px;margin-bottom:20px;">&#x1F6A8;</div>' +
-            '<div style="font-size:28px;font-weight:800;color:#fff;margin-bottom:12px;">ALERTE STUDIO</div>' +
-            '<div style="font-size:16px;color:rgba(255,255,255,0.8);margin-bottom:10px;" id="alertBannerMsg"></div>' +
-            '<div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:30px;" id="alertBannerSound">&#x1F50A; Cliquez n\'importe o\u00f9 pour activer le son</div>' +
-            '<button onclick="window._ackStudioAlert()" style="padding:18px 50px;font-size:18px;font-weight:800;background:#fff;color:#ff0000;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-transform:uppercase;">&#x2705; PRISE EN CHARGE</button>';
-        alertBanner.addEventListener('click', function(e) {
-            if (e.target.tagName !== 'BUTTON') forceAlertSound();
-        });
-        document.body.appendChild(alertBanner);
-        var style = document.createElement('style');
-        style.textContent = '@keyframes alertFlash{0%,100%{background:rgba(255,0,0,0.85);}50%{background:rgba(180,0,0,0.95);}}';
-        document.head.appendChild(style);
-    }
-
-    function showBanner(title, msg) {
-        // Ne pas sonner si cette machine est l'émettrice (flag < 15s)
-        var emitTime = parseInt(localStorage.getItem('alertEmitter') || '0');
-        if (Date.now() - emitTime < 15000) return;
-        createAlertBanner();
-        document.getElementById('alertBannerMsg').textContent = (title || 'Nouvelle alerte') + (msg ? ' \u2014 ' + msg : '');
-        alertBanner.style.display = 'flex';
-        forceAlertSound();
-        sendNotif(title, msg);
-    }
-
-    function hideBanner() { if (alertBanner) alertBanner.style.display = 'none'; }
-
-    function forceAlertSound() {
-        if (!alertAudioCtx) alertAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (alertAudioCtx.state === 'suspended') {
-            alertAudioCtx.resume().then(function() {
-                if (!alertActive) startOsc();
-                var el = document.getElementById('alertBannerSound'); if (el) el.style.display = 'none';
-            });
-        } else {
-            if (!alertActive) startOsc();
-            var el = document.getElementById('alertBannerSound'); if (el) el.style.display = 'none';
-        }
-    }
-
-    var alertChimeAudio = new Audio('alert-chime.mp3');
-    alertChimeAudio.preload = 'auto'; alertChimeAudio.volume = 0.3;
-    var alertLoopTimer = null;
-
-    function startOsc() {
-        alertActive = true;
-        function playSequence() {
-            if (!alertActive) return;
-            alertChimeAudio.currentTime = 0; alertChimeAudio.volume = 0.3;
-            alertChimeAudio.play().catch(function(){});
-            alertLoopTimer = setTimeout(function(){ if (!alertActive) return; speakAlert(); }, 8800);
-        }
-        function speakAlert() {
-            if (!('speechSynthesis' in window)) { scheduleNext(); return; }
-            var stored = [];
-            try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(e){}
-            var lastNew = null;
-            for (var i=0;i<stored.length;i++) { if (stored[i].status === 'sent') { lastNew = stored[i]; break; } }
-            var text = 'Attention, alerte studio.';
-            if (lastNew) {
-                var prenom = lastNew.emitter ? lastNew.emitter.name.split(' ')[0] : '';
-                var desc = lastNew.title || lastNew.description || '';
-                if (prenom && desc) text = prenom + ' signale : ' + desc;
-                else if (prenom) text = 'Alerte de ' + prenom;
-                else if (desc) text = 'Attention : ' + desc;
-            }
-            window.speechSynthesis.cancel();
-            var utt = new SpeechSynthesisUtterance(text);
-            utt.lang = 'fr-FR'; utt.rate = 0.9; utt.pitch = 1.05; utt.volume = 0.3;
-            var voices = window.speechSynthesis.getVoices();
-            var pref = null;
-            for (var v=0;v<voices.length;v++) {
-                if (voices[v].lang==='fr-FR' && voices[v].name.indexOf('Amelie')>-1) { pref=voices[v]; break; }
-                if (voices[v].lang==='fr-FR' && voices[v].name.indexOf('Thomas')>-1 && !pref) pref=voices[v];
-                if (voices[v].lang.indexOf('fr')===0 && !pref) pref=voices[v];
-            }
-            if (pref) utt.voice = pref;
-            utt.onend = function(){ scheduleNext(); };
-            utt.onerror = function(){ scheduleNext(); };
-            window.speechSynthesis.speak(utt);
-        }
-        function scheduleNext() { alertLoopTimer = setTimeout(function(){ if (alertActive) playSequence(); }, 2000); }
-        if ('speechSynthesis' in window) window.speechSynthesis.getVoices();
-        playSequence();
-    }
-
-    function stopSound() {
-        alertActive = false;
-        if (alertChimeAudio) { alertChimeAudio.pause(); alertChimeAudio.currentTime = 0; }
-        if (alertLoopTimer) { clearTimeout(alertLoopTimer); alertLoopTimer = null; }
-        if (window.speechSynthesis) window.speechSynthesis.cancel();
-        alertNodes.forEach(function(n){ try{n.osc.stop();}catch(e){} });
-        alertNodes = [];
-        hideBanner();
-    }
-
-    function sendNotif(title, msg) {
-        if (!('Notification' in window) || Notification.permission !== 'granted') return;
-        try {
-            var n = new Notification('\uD83D\uDEA8 ALERTE STUDIO', {
-                body: (title || 'Alerte') + (msg ? ' \u2014 ' + msg : ''),
-                requireInteraction: true, tag: 'studio-alert'
-            });
-            n.onclick = function() { window.focus(); n.close(); };
-        } catch(e) {}
-    }
-
-    window._ackStudioAlert = function() {
-        stopSound();
-        if (alertWs && alertWs.readyState === WebSocket.OPEN) {
-            var stored = [];
-            try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(e){}
-            stored.forEach(function(a) {
-                if (a.status === 'sent') {
-                    a.status = 'handled'; a.handledAt = new Date().toISOString();
-                    alertWs.send(JSON.stringify({type:'studio-alert-update', data:{id:a.id, status:'handled'}}));
-                }
-            });
-            localStorage.setItem('studioAlerts', JSON.stringify(stored));
-        }
-    };
-
-    var alertProxyTimer = null;
-    var alertWsFails = 0;
-    function startAlertProxyPolling() {
-        if (alertProxyTimer) return;
-        alertProxyTimer = setInterval(function() {
-            fetch(ALERT_PROXY_URL + '?action=sync').then(function(r){ return r.json(); }).then(function(data) {
-                if (!Array.isArray(data)) return;
-                var stored = [];
-                try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(e){}
-                var newOnes = data.filter(function(d){ return d.status === 'sent' && !stored.find(function(s){ return s.id === d.id; }); });
-                localStorage.setItem('studioAlerts', JSON.stringify(data));
-                if (newOnes.length > 0) {
-                    showBanner(newOnes[0].title, newOnes[0].emitter ? newOnes[0].emitter.name : '');
-                }
-                if (!data.some(function(d){ return d.status === 'sent'; })) { stopSound(); }
-            }).catch(function(){});
-        }, 3000);
-    }
-
-    function connectAlertWS() {
-        alertWs = new WebSocket(ALERT_WS_URL);
-        alertWs.onmessage = function(e) {
-            try {
-                var msg = JSON.parse(e.data);
-                if (msg.type === 'studio-alert' && msg.data && msg.data.status === 'sent') {
-                    var stored = [];
-                    try { stored = JSON.parse(localStorage.getItem('studioAlerts') || '[]'); } catch(ex){}
-                    if (!stored.find(function(a){return a.id === msg.data.id;})) {
-                        stored.unshift(msg.data); localStorage.setItem('studioAlerts', JSON.stringify(stored));
-                    }
-                    showBanner(msg.data.title, msg.data.emitter ? msg.data.emitter.name : '');
-                }
-                if (msg.type === 'studio-alert-update' && msg.data && msg.data.status !== 'sent') { stopSound(); }
-            } catch(err) {}
-        };
-        alertWs.onclose = function(){
-            alertWsFails = (alertWsFails || 0) + 1;
-            if (alertWsFails >= 1) { startAlertProxyPolling(); } else { setTimeout(connectAlertWS, 3000); }
-        };
-        alertWs.onerror = function(){ alertWs.close(); };
-    }
-
-    // Check on load
-    try {
-        var existing = JSON.parse(localStorage.getItem('studioAlerts') || '[]');
-        if (existing.some(function(a){return a.status === 'sent';})) {
-            var last = existing.find(function(a){return a.status === 'sent';});
-            setTimeout(function(){ showBanner(last.title, last.emitter ? last.emitter.name : ''); }, 500);
-        }
-    } catch(e){}
-
-    connectAlertWS();
-})();
-</script>
-
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v39</div>
 </body>
 </html>
