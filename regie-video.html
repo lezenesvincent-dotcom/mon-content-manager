@@ -661,7 +661,7 @@
     <div class="pgm-block">
       <div class="pgm-screen" id="pgmScreen">
         <span id="pgmLabel" style="z-index:3">DÉCOR</span>
-        <iframe id="pgmDecorFrame" src="widget-decor.html" style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:20px 20px 0 0;z-index:1;background:#000;" allowtransparency="true"></iframe>
+        <iframe id="pgmDecorFrame" src="widget-decor.html?v=1773128440" style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:20px 20px 0 0;z-index:1;background:#000;" allowtransparency="true"></iframe>
         <img id="pgmStream" alt="">
         <video id="pgmVideo" playsinline preload="auto"></video>
         <div class="pgm-live-badge" id="pgmLive" style="display:flex">● DÉCOR LIVE</div>
@@ -679,21 +679,17 @@
         </div>
       </div>
       <div class="cam-pills" id="overlayBtns">
-        <div class="cam-pill active" onclick="sendOverlayCmd('ANIMATE_IN')" style="background:linear-gradient(135deg,#43e97b,#38f9d7);color:#1a3a2a;font-weight:800;">▶ IN</div>
+        <div class="cam-pill" onclick="sendOverlayCmd('ANIMATE_IN')">▶ IN</div>
         <div class="cam-pill" onclick="sendOverlayCmd('NEXT_FOCUS')">⏭ NEXT</div>
-        <div class="cam-pill" onclick="sendOverlayCmd('HIDE')" style="background:rgba(255,60,60,0.2);color:#ff6b6b;">✕ CLEAR</div>
-        <div class="cam-pill" onclick="sendOverlayCmd('SHOW_GRAPH')" style="background:rgba(102,126,234,0.2);color:#667eea;">📈 GRAPH</div>
+        <div class="cam-pill" onclick="sendOverlayCmd('HIDE')">✕ CLEAR</div>
+        <div class="cam-pill" onclick="sendOverlayCmd('SHOW_GRAPH')">📈 GRAPH</div>
       </div>
     </div>
 
     <div class="conducteur">
-      <div class="cond-title">Mardi 10 février</div>
-      <div class="cond-items">
-        <div class="cond-item"><div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>UNIVERSAL<span class="gear">⚙</span></div>
-        <div class="cond-item active"><div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>REXEL<span class="gear">⚙</span></div>
-        <div class="cond-item"><div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>REMY<span class="gear">⚙</span></div>
-        <div class="cond-item"><div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>POINT TAUX<span class="gear">⚙</span></div>
-        <div class="cond-item"><div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>ÉCLAIREUR<span class="gear">⚙</span></div>
+      <div class="cond-title" id="condTitle"></div>
+      <div class="cond-items" id="condItems">
+        <div class="cond-item" style="opacity:0.4;justify-content:center;">Chargement...</div>
       </div>
     </div>
 
@@ -1151,49 +1147,77 @@
   setInterval(initSynthes, 120000);
 
   // ===== OVERLAY CONTENTS =====
+  var allContents = [];
   function loadContents() {
     fetch(WS_SERVER + '/history')
       .then(function(r) { return r.json(); })
       .then(function(history) {
-        var scroll = document.getElementById('pagesScroll');
-        scroll.innerHTML = '';
-
         if (!history || history.length === 0) {
-          scroll.innerHTML = '<div class="content-card-empty">Aucun contenu</div>';
+          document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Aucun contenu</div>';
+          document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Aucun contenu</div>';
           return;
         }
 
+        // Dédupliquer par titre
         var seen = {};
         var unique = [];
         history.forEach(function(item) {
           var key = item.titre || item.title || 'Sans titre';
-          if (!seen[key]) {
-            seen[key] = true;
-            unique.push(item);
-          }
+          if (!seen[key]) { seen[key] = true; unique.push(item); }
+        });
+        allContents = unique;
+
+        // Date du jour
+        var days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+        var months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+        var now = new Date();
+        document.getElementById('condTitle').textContent = days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()];
+
+        // CONDUCTEUR : un onglet par contenu
+        var condItems = document.getElementById('condItems');
+        condItems.innerHTML = '';
+        unique.forEach(function(item, idx) {
+          var title = item.titre || item.title || 'Sans titre';
+          var el = document.createElement('div');
+          el.className = 'cond-item' + (item.id === selectedContentId ? ' active' : '');
+          el.innerHTML = '<div class="cond-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>' + title;
+          el.addEventListener('click', function() {
+            selectContent(item);
+            document.querySelectorAll('.cond-item').forEach(function(c) { c.classList.remove('active'); });
+            el.classList.add('active');
+            // Also highlight matching carousel card
+            document.querySelectorAll('.content-card').forEach(function(c) { c.classList.remove('selected'); });
+            var cards = document.querySelectorAll('.content-card');
+            if (cards[idx]) cards[idx].classList.add('selected');
+          });
+          condItems.appendChild(el);
         });
 
-        unique.forEach(function(item) {
+        // CAROUSEL : garder aussi les cartes en bas
+        var scroll = document.getElementById('pagesScroll');
+        scroll.innerHTML = '';
+        unique.forEach(function(item, idx) {
           var card = document.createElement('div');
           card.className = 'content-card';
           if (item.id === selectedContentId) card.classList.add('selected');
-
           var title = item.titre || item.title || 'Sans titre';
           var sub = item.soustitre || item.subtitle || '';
           if (!sub && item.p1 && item.p1.sujet) sub = item.p1.sujet;
-
           card.innerHTML = '<div class="cc-title">' + title + '</div><div class="cc-sub">' + sub + '</div>';
-
           card.addEventListener('click', function() {
             selectContent(item);
             document.querySelectorAll('.content-card').forEach(function(c) { c.classList.remove('selected'); });
             card.classList.add('selected');
+            // Also highlight matching conducteur item
+            document.querySelectorAll('.cond-item').forEach(function(c) { c.classList.remove('active'); });
+            var conds = document.querySelectorAll('.cond-item');
+            if (conds[idx]) conds[idx].classList.add('active');
           });
-
           scroll.appendChild(card);
         });
       })
       .catch(function() {
+        document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Serveur hors ligne</div>';
         document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Serveur hors ligne</div>';
       });
   }
@@ -2031,7 +2055,7 @@
   });
 
 </script>
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v13</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v14</div>
 
   <!-- DÉCOR UPLOAD MODAL -->
   <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
