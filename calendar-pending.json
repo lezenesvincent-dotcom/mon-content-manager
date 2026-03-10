@@ -1,5 +1,4 @@
 {
-  "updatedAt": "2026-03-10T14:15:40.466Z",
   "pending": [
     {
       "action": "delete",
@@ -105,8 +104,10 @@
         "visite": true,
         "synthes": true
       },
-      "createdAt": "2026-03-10T14:15:40.200Z",
-      "status": "pending"
+      "createdAt": "2026-03-10T14:15:40.2Z",
+      "status": "done",
+      "processedAt": "2026-03-10T14:19:59Z"
     }
-  ]
+  ],
+  "updatedAt": "2026-03-10T14:19:59Z"
 }
