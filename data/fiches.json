@@ -746,7 +746,7 @@
   "1773151975096": {
     "id": "1773151975096",
     "titre": "TEST MEDIAS",
-    "date": "2026-03-10",
+    "date": "2026-03-12",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -774,6 +774,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-10T14:13:35.125Z"
+    "updatedAt": "2026-03-10T14:14:12.191Z"
   }
 }
