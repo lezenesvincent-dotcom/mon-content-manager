@@ -415,7 +415,10 @@
     }
     function centerPhoto(idx){
         var photoEl=document.querySelector('.photo-item[data-idx="'+idx+'"]');
-        if(photoEl){photoEl.dataset.tx=0;photoEl.dataset.ty=0;photoEl.style.transform='';selectIntervenant(idx);}
+        if(photoEl){photoEl.dataset.tx=0;photoEl.dataset.ty=0;photoEl.style.transform='';
+            var nameEl=document.querySelector('.bottom-person[data-idx="'+idx+'"]');
+            if(nameEl){nameEl.style.transform='';nameEl.style.transition='';}
+            selectIntervenant(idx);}
     }
     function mirrorPhoto(idx){
         var c=selectedIntervenants[idx];if(!c)return;
@@ -511,19 +514,28 @@
         if(n>2){
             bn.style.flexDirection='row';bn.style.alignItems='center';bn.style.gap='8px';bn.style.justifyContent='center';
             selectedIntervenants.forEach(function(c,i){
-                var d=document.createElement('div');d.className='bottom-person';
+                var d=document.createElement('div');d.className='bottom-person';d.dataset.idx=i;
                 d.innerHTML='<div class="person-name" ondblclick="makeEditable(event,this)" style="font-size:clamp(14px,1.7vw,21px)">'+c.firstName+' '+c.lastName+'</div>';
                 bn.appendChild(d);
                 if(i<n-1){var sep=document.createElement('span');sep.style.cssText='color:rgba(255,255,255,0.3);font-size:10px';sep.textContent='·';bn.appendChild(sep);}
             });
         }else{
             bn.style.flexDirection='';bn.style.alignItems='';bn.style.gap='24px';bn.style.justifyContent='';
-            selectedIntervenants.forEach(function(c){
-                var d=document.createElement('div');d.className='bottom-person';
+            selectedIntervenants.forEach(function(c,i){
+                var d=document.createElement('div');d.className='bottom-person';d.dataset.idx=i;
                 d.innerHTML='<div class="person-name" ondblclick="makeEditable(event,this)">'+c.firstName+' '+c.lastName+'</div>'+(c.function?'<div class="person-title" ondblclick="makeEditable(event,this)">'+c.function+'</div>':'')+'<div class="person-company" ondblclick="makeEditable(event,this)">'+(c.company||'')+'</div>';
                 bn.appendChild(d);
             });
         }
+        // Sync position des noms avec les photos déjà déplacées
+        selectedIntervenants.forEach(function(c,i){
+            var photoEl=document.querySelector('.photo-item[data-idx="'+i+'"]');
+            var nameEl=document.querySelector('.bottom-person[data-idx="'+i+'"]');
+            if(photoEl && nameEl){
+                var ptx=parseFloat(photoEl.dataset.tx||0),pty=parseFloat(photoEl.dataset.ty||0);
+                if(ptx!==0||pty!==0){nameEl.style.transform='translateX('+ptx+'px) translateY('+pty+'px)';nameEl.style.transition='none';}
+            }
+        });
     }
 
     function resetForm(){selectedDraft=null;document.getElementById('fieldSubject').value='';selectedIntervenants=[];activeIntervenantIdx=-1;photoOverride=null;
@@ -549,7 +561,20 @@
     function selectLayer(e,el){e.stopPropagation();document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});el.classList.add('selected');selectedLayer=el;document.getElementById('sidebarJoystick').style.opacity='1';activeIntervenantIdx=-1;renderIntervenants();updateAdjDisplay();}
     function deselectAll(e){if(e&&e.target&&(e.target.classList.contains('drag-layer')||e.target.classList.contains('photo-item')))return;document.querySelectorAll('.drag-layer,.photo-item').forEach(function(d){d.classList.remove('selected');});selectedLayer=null;activeIntervenantIdx=-1;renderIntervenants();document.getElementById('sidebarJoystick').style.opacity='0.3';updateAdjDisplay();}
     function startMove(dx,dy){if(!selectedLayer)return;moveOnce(dx,dy);moveInterval=setInterval(function(){moveOnce(dx,dy);},50);}
-    function moveOnce(dx,dy){if(!selectedLayer)return;var tx=parseFloat(selectedLayer.dataset.tx||0)+dx,ty=parseFloat(selectedLayer.dataset.ty||0)+dy;selectedLayer.dataset.tx=tx;selectedLayer.dataset.ty=ty;applyLayerTransform(selectedLayer);}
+    function moveOnce(dx,dy){
+        if(!selectedLayer)return;
+        var tx=parseFloat(selectedLayer.dataset.tx||0)+dx,ty=parseFloat(selectedLayer.dataset.ty||0)+dy;
+        selectedLayer.dataset.tx=tx;selectedLayer.dataset.ty=ty;
+        applyLayerTransform(selectedLayer);
+        // Si c'est une photo d'intervenant, bouger aussi le texte nom correspondant
+        if(activeIntervenantIdx>=0 && selectedLayer.classList.contains('photo-item')){
+            var nameEl=document.querySelector('.bottom-person[data-idx="'+activeIntervenantIdx+'"]');
+            if(nameEl){
+                nameEl.style.transform='translateX('+tx+'px) translateY('+ty+'px)';
+                nameEl.style.transition='none';
+            }
+        }
+    }
     function stopMove(){if(moveInterval){clearInterval(moveInterval);moveInterval=null;}}
 
     var adjInterval=null;
@@ -1254,6 +1279,6 @@
 })();
 </script>
 
-<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v63</div>
+<div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v64</div>
 </body>
 </html>
