@@ -647,7 +647,7 @@
   "1773150284987": {
     "id": "1773150284987",
     "titre": "test thomas",
-    "date": "",
+    "date": "2026-03-12",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -675,6 +675,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-10T13:46:02.054Z"
+    "updatedAt": "2026-03-10T13:46:09.173Z"
   }
 }
