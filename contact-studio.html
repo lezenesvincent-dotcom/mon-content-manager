@@ -1501,7 +1501,7 @@
         scheduleAutoSave();
     }
 
-    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytB2y_D5uPdcXauKiiycdBoDoVFU88x9Kvt82XMTM7vexjQht8EeuT2_LMqp0memdh/exec';
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCntcq4rc6FeZ-boJtEjn1ehy5leRZLDuSk3Fgbs3glHNEINgJ6Oi5W5745MkSPkh7/exec';
 
     async function uploadToGitHub(file, slotId, label) {
         try {
@@ -1510,20 +1510,8 @@
             reader.onload = async function(e) {
                 var b64 = e.target.result.split(',')[1];
 
-                // Upload vers Google Drive via Apps Script
-                try {
-                    var driveFileName = FICHE_ID + '_' + label.toLowerCase() + '_' + file.name.replace(/\s+/g, '_');
-                    await fetch(APPS_SCRIPT_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            fileName: driveFileName,
-                            fileData: b64,
-                            mimeType: file.type || 'application/octet-stream'
-                        })
-                    });
-                } catch (driveEx) {
-                    console.warn('Drive upload failed:', driveEx);
-                }
+                // Stocker le base64 pour envoi Drive à la soumission
+                uploadedFiles[slotId].b64 = b64;
 
                 // Upload vers GitHub (comportement existant)
                 var path = 'data/uploads/' + FICHE_ID + '/' + label.toLowerCase() + '-' + file.name.replace(/\s+/g, '_');
@@ -1569,6 +1557,29 @@
             console.error('Upload:', ex);
             showToast('⚠️ Upload échoué');
         }
+    }
+
+    async function uploadAllToDrive(folderName) {
+        var files = Object.values(uploadedFiles).filter(function(f) { return f.b64; });
+        if (files.length === 0) return;
+        showToast('☁️ Envoi vers Drive...');
+        for (var i = 0; i < files.length; i++) {
+            var f = files[i];
+            try {
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        folderName: folderName,
+                        fileName: f.name,
+                        fileData: f.b64,
+                        mimeType: (f.file && f.file.type) ? f.file.type : 'application/octet-stream'
+                    })
+                });
+            } catch (ex) {
+                console.warn('Drive upload failed for', f.name, ex);
+            }
+        }
+        showToast('✅ Médias envoyés sur Drive');
     }
 
     function downloadFile(slotId) {
@@ -1786,6 +1797,15 @@
             showToast('⚠️ Date requise');
             return;
         }
+
+        // Construire le nom du dossier Drive : JJ-MM - Titre
+        var dateObj = new Date(data.date);
+        var day = String(dateObj.getDate()).padStart(2, '0');
+        var month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        var driveFolderName = day + '-' + month + ' - ' + data.titre;
+
+        // Envoyer les médias sur Drive
+        await uploadAllToDrive(driveFolderName);
 
         showToast('📅 Envoi vers le planning...');
 
@@ -2263,6 +2283,6 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v41</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v42</div>
 </body>
 </html>
