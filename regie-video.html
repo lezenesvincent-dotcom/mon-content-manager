@@ -2328,13 +2328,25 @@
             condItems.appendChild(el);
         });
     }
+    var GIST_ID = 'cd535a80f0ecd71bc36ce70522edfd8a';
+    var GIST_FILENAME = 'content-store-p1p4.json';
+
     function loadContents() {
-        fetch(WS_SERVER + '/api/history')
-        .then(function(r) {
-            return r.json();
+        fetch('https://api.github.com/gists/' + GIST_ID, {
+            headers: { 'Accept': 'application/vnd.github.v3+json' },
+            cache: 'no-cache'
         })
-        .then(function(history) {
-            if (!history || history.length === 0) {
+        .then(function(r) { return r.json(); })
+        .then(function(gist) {
+            var fileContent = gist.files && gist.files[GIST_FILENAME] && gist.files[GIST_FILENAME].content;
+            if (!fileContent) {
+                document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Aucun contenu</div>';
+                document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Aucun contenu</div>';
+                return;
+            }
+            var data = JSON.parse(fileContent);
+            var items = data.contents || data || [];
+            if (!Array.isArray(items) || items.length === 0) {
                 document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Aucun contenu</div>';
                 document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Aucun contenu</div>';
                 return;
@@ -2343,12 +2355,9 @@
             // Dédupliquer par titre
             var seen = {};
             var unique = [];
-            history.forEach(function(item) {
+            items.forEach(function(item) {
                 var key = item.titre || item.title || 'Sans titre';
-                if (!seen[key]) {
-                    seen[key] = true;
-                    unique.push(item);
-                }
+                if (!seen[key]) { seen[key] = true; unique.push(item); }
             });
             allContents = unique;
             refreshConducteur();
@@ -2359,13 +2368,12 @@
             var now = new Date();
             document.getElementById('condTitle').textContent = days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()];
 
-            // CAROUSEL : garder aussi les cartes en bas
-            // Afficher les vignettes P1-P4 du contenu sélectionné
             renderPageCards(unique);
         })
-        .catch(function() {
-            document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Serveur hors ligne</div>';
-            document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Serveur hors ligne</div>';
+        .catch(function(e) {
+            console.error('Erreur chargement Gist:', e);
+            document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Erreur chargement</div>';
+            document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Erreur chargement</div>';
         });
     }
 
@@ -3472,7 +3480,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v28</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v29</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
