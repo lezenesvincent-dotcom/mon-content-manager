@@ -1671,26 +1671,6 @@
                 </div>
             </div>
 
-            <!-- Ligne Détecté -->
-            <div class="detected-row" id="detectedRow">
-                <div class="detected-header">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#00c864" stroke-width="2">
-                        <circle cx="12" cy="10" r="3"/>
-                        <path d="M7 20c0-3 2.5-5 5-5s5 2 5 5"/>
-                    </svg>
-
-                            Détecté
-                            
-                    <div class="detected-toggle" id="autoOnToggle">
-                        <div class="detected-toggle-track" id="autoOnTrack">
-                            <div class="detected-toggle-thumb"></div>
-                        </div>
-                        <span class="detected-toggle-label">auto on</span>
-                    </div>
-                </div>
-                <div class="detected-suggestions" id="detectedSuggestions"></div>
-            </div>
-
             <!-- Bibliothèque synthés -->
             <div class="right-tags" id="synthesZone">
                 <div class="tag-row">
@@ -1718,6 +1698,13 @@
                 <div class="search-row" id="searchRow" style="display:none;">
                     <input type="text" id="searchInput" placeholder="Rechercher un intervenant..." class="search-input">
                 </div>
+                <!-- Zone détection proposée -->
+                <div class="detected-row" id="detectedRow">
+                    <div class="detected-suggestions" id="detectedSuggestions">
+                        <span style="font-size:10px;color:rgba(0,200,100,0.4);">Aucun visage détecté</span>
+                    </div>
+                </div>
+
                 <div class="synthe-pills-wrap" id="synthesGrid">
                     <span style="font-size:10px;color:#444;">Chargement...</span>
                 </div>
@@ -3464,7 +3451,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v24</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v25</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
