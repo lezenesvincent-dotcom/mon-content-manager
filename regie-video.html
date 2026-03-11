@@ -1668,73 +1668,63 @@
                 </div>
             </div>
 
-            <!-- Zone diapo retour + vignettes + synthés -->
-            <div class="slides-synthe-block">
-
-                <!-- Retour diapo -->
-                <div class="diapo-preview" id="diapoPreview">
-                    <span class="diapo-placeholder">Aucune présentation</span>
+            <!-- Vignettes P1-P4 -->
+            <div class="pages-panel" id="pagesPanel">
+                <div class="pages-scroll" id="pagesScroll">
+                    <div class="content-card-empty">Chargement...</div>
                 </div>
+            </div>
 
-                <!-- Vignettes P1-P4 -->
-                <div class="pages-panel" id="pagesPanel">
-                    <div class="pages-scroll" id="pagesScroll">
-                        <div class="content-card-empty">Chargement...</div>
+            <!-- Ligne Détecté -->
+            <div class="detected-row" id="detectedRow">
+                <div class="detected-header">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#00c864" stroke-width="2">
+                        <circle cx="12" cy="10" r="3"/>
+                        <path d="M7 20c0-3 2.5-5 5-5s5 2 5 5"/>
+                    </svg>
+
+                            Détecté
+                            
+                    <div class="detected-toggle" id="autoOnToggle">
+                        <div class="detected-toggle-track" id="autoOnTrack">
+                            <div class="detected-toggle-thumb"></div>
+                        </div>
+                        <span class="detected-toggle-label">auto on</span>
                     </div>
                 </div>
+                <div class="detected-suggestions" id="detectedSuggestions"></div>
+            </div>
 
-                <!-- Ligne Détecté -->
-                <div class="detected-row" id="detectedRow">
-                    <div class="detected-header">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#00c864" stroke-width="2">
+            <!-- Bibliothèque synthés -->
+            <div class="right-tags" id="synthesZone">
+                <div class="tag-row">
+                    <span class="tag active" data-filter="Actions">Actions</span>
+                    <span class="tag" data-filter="Eco">Eco</span>
+                    <span class="tag" data-filter="Autre">Autre</span>
+                    <span class="tag" data-filter="">Tous</span>
+                    <div class="search-btn" id="searchToggle">
+                        <svg width="12" height="12" viewBox="0 0 24 24">
+                            <circle cx="10" cy="10" r="7" fill="none" stroke="#888" stroke-width="1.5"/>
+                            <line x1="15" y1="15" x2="21" y2="21" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="search-btn" id="faceRecToggle" title="Reconnaissance faciale">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 2H5a2 2 0 00-2 2v4"/>
+                            <path d="M15 2h4a2 2 0 012 2v4"/>
+                            <path d="M15 22h4a2 2 0 002-2v-4"/>
+                            <path d="M9 22H5a2 2 0 01-2-2v-4"/>
                             <circle cx="12" cy="10" r="3"/>
                             <path d="M7 20c0-3 2.5-5 5-5s5 2 5 5"/>
                         </svg>
-
-                                  Détecté
-                                  
-                        <div class="detected-toggle" id="autoOnToggle">
-                            <div class="detected-toggle-track" id="autoOnTrack">
-                                <div class="detected-toggle-thumb"></div>
-                            </div>
-                            <span class="detected-toggle-label">auto on</span>
-                        </div>
-                    </div>
-                    <div class="detected-suggestions" id="detectedSuggestions"></div>
-                </div>
-
-                <!-- Bibliothèque synthés -->
-                <div class="right-tags" id="synthesZone">
-                    <div class="tag-row">
-                        <span class="tag active" data-filter="Actions">Actions</span>
-                        <span class="tag" data-filter="Eco">Eco</span>
-                        <span class="tag" data-filter="Autre">Autre</span>
-                        <span class="tag" data-filter="">Tous</span>
-                        <div class="search-btn" id="searchToggle">
-                            <svg width="12" height="12" viewBox="0 0 24 24">
-                                <circle cx="10" cy="10" r="7" fill="none" stroke="#888" stroke-width="1.5"/>
-                                <line x1="15" y1="15" x2="21" y2="21" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <div class="search-btn" id="faceRecToggle" title="Reconnaissance faciale">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M9 2H5a2 2 0 00-2 2v4"/>
-                                <path d="M15 2h4a2 2 0 012 2v4"/>
-                                <path d="M15 22h4a2 2 0 002-2v-4"/>
-                                <path d="M9 22H5a2 2 0 01-2-2v-4"/>
-                                <circle cx="12" cy="10" r="3"/>
-                                <path d="M7 20c0-3 2.5-5 5-5s5 2 5 5"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="search-row" id="searchRow" style="display:none;">
-                        <input type="text" id="searchInput" placeholder="Rechercher un intervenant..." class="search-input">
-                    </div>
-                    <div class="synthe-pills-wrap" id="synthesGrid">
-                        <span style="font-size:10px;color:#444;">Chargement...</span>
                     </div>
                 </div>
-
+                <div class="search-row" id="searchRow" style="display:none;">
+                    <input type="text" id="searchInput" placeholder="Rechercher un intervenant..." class="search-input">
+                </div>
+                <div class="synthe-pills-wrap" id="synthesGrid">
+                    <span style="font-size:10px;color:#444;">Chargement...</span>
+                </div>
             </div>
         </div>
 
@@ -3478,7 +3468,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v22</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v23</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
