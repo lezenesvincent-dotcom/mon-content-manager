@@ -334,6 +334,40 @@
         width: 10px;
         height: 10px;
         stroke-width: 1.5;
+    }/* Nouveau bloc slides + synthés */
+
+    .slides-synthe-block {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .diapo-preview {
+        background: rgba(0, 0, 0, 0.35);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        aspect-ratio: 16/9;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .diapo-preview img, .diapo-preview iframe {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 12px;
+    }
+
+    .diapo-placeholder {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.2);
     }/* Bottom left: carousel + tags */
 
     .bottom-left {
@@ -532,7 +566,7 @@
         background: rgba(0, 200, 100, 0.06);
         border: 1px solid rgba(0, 200, 100, 0.2);
         border-radius: 10px;
-        margin-bottom: 6px;
+        flex-shrink: 0;
     }
 
     .detected-row.visible {
@@ -542,7 +576,7 @@
     .detected-header {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         font-size: 10px;
         color: rgba(255, 255, 255, 0.4);
         font-weight: 600;
@@ -1634,12 +1668,42 @@
                 </div>
             </div>
 
-            <div class="bottom-left">
+            <!-- Zone diapo retour + vignettes + synthés -->
+            <div class="slides-synthe-block">
+
+                <!-- Retour diapo -->
+                <div class="diapo-preview" id="diapoPreview">
+                    <span class="diapo-placeholder">Aucune présentation</span>
+                </div>
+
+                <!-- Vignettes P1-P4 -->
                 <div class="pages-panel" id="pagesPanel">
                     <div class="pages-scroll" id="pagesScroll">
                         <div class="content-card-empty">Chargement...</div>
                     </div>
                 </div>
+
+                <!-- Ligne Détecté -->
+                <div class="detected-row" id="detectedRow">
+                    <div class="detected-header">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#00c864" stroke-width="2">
+                            <circle cx="12" cy="10" r="3"/>
+                            <path d="M7 20c0-3 2.5-5 5-5s5 2 5 5"/>
+                        </svg>
+
+                                  Détecté
+                                  
+                        <div class="detected-toggle" id="autoOnToggle">
+                            <div class="detected-toggle-track" id="autoOnTrack">
+                                <div class="detected-toggle-thumb"></div>
+                            </div>
+                            <span class="detected-toggle-label">auto on</span>
+                        </div>
+                    </div>
+                    <div class="detected-suggestions" id="detectedSuggestions"></div>
+                </div>
+
+                <!-- Bibliothèque synthés -->
                 <div class="right-tags" id="synthesZone">
                     <div class="tag-row">
                         <span class="tag active" data-filter="Actions">Actions</span>
@@ -1666,28 +1730,11 @@
                     <div class="search-row" id="searchRow" style="display:none;">
                         <input type="text" id="searchInput" placeholder="Rechercher un intervenant..." class="search-input">
                     </div>
-                    <div class="detected-row" id="detectedRow">
-                        <div class="detected-header">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#00c864" stroke-width="2">
-                                <circle cx="12" cy="10" r="3"/>
-                                <path d="M7 20c0-3 2.5-5 5-5s5 2 5 5"/>
-                            </svg>
-
-                                        Détecté
-                                        
-                            <div class="detected-toggle" id="autoOnToggle" title="Auto : affiche la synthé automatiquement">
-                                <div class="detected-toggle-track" id="autoOnTrack">
-                                    <div class="detected-toggle-thumb"></div>
-                                </div>
-                                <span class="detected-toggle-label">auto on</span>
-                            </div>
-                        </div>
-                        <div class="detected-suggestions" id="detectedSuggestions"></div>
-                    </div>
                     <div class="synthe-pills-wrap" id="synthesGrid">
                         <span style="font-size:10px;color:#444;">Chargement...</span>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -3297,7 +3344,7 @@
     }
 
     var autoOnActive = false;
-    var detectedContacts = []; // liste des visages détectés dans le scan courant
+    var detectedContacts = [];
 
     function updateDetectedRow() {
         var row = document.getElementById('detectedRow');
@@ -3324,7 +3371,6 @@
         });
     }
 
-    // Toggle auto on
     var autoOnTrack = document.getElementById('autoOnTrack');
     var autoOnToggle = document.getElementById('autoOnToggle');
     if (autoOnToggle) {
@@ -3342,11 +3388,9 @@
         var video = document.getElementById('pgmVideo');
         if (!video || !video.srcObject || video.readyState < 2)
             return;
-
         try {
             var detections = await faceAPI.detectAllFaces(video).withFaceLandmarks().withFaceDescriptors();
             if (detections.length > 0) {
-                // Collecter tous les visages reconnus
                 var recognized = [];
                 detections.forEach(function(det) {
                     var match = faceMatcher.findBestMatch(det.descriptor);
@@ -3356,17 +3400,13 @@
                         });
                         if (contact && !recognized.find(function(r) {
                             return r.id === contact.id;
-                        })) {
+                        }))
                             recognized.push(contact);
-                        }
                     }
                 });
-
                 if (recognized.length > 0) {
                     detectedContacts = recognized;
                     updateDetectedRow();
-
-                    // Si auto on activé : déclenche la synthé du visage le plus grand
                     if (autoOnActive) {
                         var biggest = detections.reduce(function(a, b) {
                             return a.detection.box.area > b.detection.box.area ? a : b;
