@@ -438,35 +438,23 @@
 
     .content-card .cc-preview {
         flex: 1;
-        padding: 6px 6px 2px 6px;
+        padding: 6px;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 3px;
         overflow: hidden;
     }
 
-    .content-card .cc-sujet {
-        font-size: 7.5px;
-        font-weight: 700;
-        color: rgba(255,255,255,0.95);
-        line-height: 1.3;
-        margin-bottom: 3px;
-        word-break: break-word;
+    .content-card .cc-preview-line {
+        height: 5px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 3px;
     }
 
-    .content-card .cc-ligne {
-        font-size: 6.5px;
-        color: rgba(255,255,255,0.6);
-        line-height: 1.3;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .content-card .cc-vide {
-        font-size: 6.5px;
-        color: rgba(255,255,255,0.25);
-        font-style: italic;
+    .content-card .cc-preview-line.bold {
+        height: 7px;
+        background: rgba(255, 255, 255, 0.3);
+        width: 70%;
     }
 
     .content-card .cc-label {
@@ -2404,21 +2392,14 @@
             var page = selected[pKey] || {};
             var card = document.createElement('div');
             card.className = 'content-card';
-            var html = '<div class="cc-preview">';
-            if (page.sujet) {
-                html += '<div class="cc-sujet">' + page.sujet + '</div>';
-            }
-            var lignes = page.contenu || [];
-            lignes.slice(0, 8).forEach(function(l) {
-                var txt = typeof l === 'string' ? l : (l.texte || l.text || '');
-                if (txt) html += '<div class="cc-ligne">' + txt + '</div>';
-            });
-            if (!page.sujet && lignes.length === 0) {
-                html += '<div class="cc-vide">Vide</div>';
-            }
-            html += '</div><div class="cc-label">P' + (idx + 1) + '</div>';
-            card.innerHTML = html;
+            var lines = (page.contenu || []).slice(0, 6).map(function(l, i) {
+                return '<div class="cc-preview-line' + (i === 0 ? ' bold' : '') + '"></div>';
+            }).join('');
+            if (!lines)
+                lines = '<div class="cc-preview-line bold"></div><div class="cc-preview-line"></div><div class="cc-preview-line"></div>';
+            card.innerHTML = '<div class="cc-preview">' + lines + '</div><div class="cc-label">P' + (idx + 1) + '</div>';
             card.addEventListener('click', function() {
+                // Sélectionner ce contenu et envoyer la page
                 selectContent(selected);
             });
             scroll.appendChild(card);
@@ -3496,7 +3477,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v33</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v32</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
