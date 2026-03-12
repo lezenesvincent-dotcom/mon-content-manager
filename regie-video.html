@@ -438,23 +438,19 @@
 
     .content-card .cc-preview {
         flex: 1;
-        padding: 6px;
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
         overflow: hidden;
+        position: relative;
+        border-radius: 10px 10px 0 0;
     }
 
-    .content-card .cc-preview-line {
-        height: 5px;
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 3px;
-    }
-
-    .content-card .cc-preview-line.bold {
-        height: 7px;
-        background: rgba(255, 255, 255, 0.3);
-        width: 70%;
+    .content-card .cc-preview iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1920px;
+        height: 1080px;
+        border: none;
+        transform-origin: top left;
+        pointer-events: none;
     }
 
     .content-card .cc-label {
@@ -2392,20 +2388,36 @@
         scroll.innerHTML = '';
         var pages = ['p1', 'p2', 'p3', 'p4'];
         pages.forEach(function(pKey, idx) {
-            var page = selected[pKey] || {};
             var card = document.createElement('div');
             card.className = 'content-card';
-            var lines = (page.contenu || []).slice(0, 6).map(function(l, i) {
-                return '<div class="cc-preview-line' + (i === 0 ? ' bold' : '') + '"></div>';
-            }).join('');
-            if (!lines)
-                lines = '<div class="cc-preview-line bold"></div><div class="cc-preview-line"></div><div class="cc-preview-line"></div>';
-            card.innerHTML = '<div class="cc-preview">' + lines + '</div><div class="cc-label">P' + (idx + 1) + '</div>';
-            card.addEventListener('click', function() {
-                // Sélectionner ce contenu et envoyer la page
-                selectContent(selected);
-            });
+            var preview = document.createElement('div');
+            preview.className = 'cc-preview';
+            var frame = document.createElement('iframe');
+            frame.src = 'widget-decor.html';
+            frame.scrolling = 'no';
+            preview.appendChild(frame);
+            var label = document.createElement('div');
+            label.className = 'cc-label';
+            label.textContent = 'P' + (idx + 1);
+            card.appendChild(preview);
+            card.appendChild(label);
+            card.addEventListener('click', function() { selectContent(selected); });
             scroll.appendChild(card);
+            frame.addEventListener('load', function() {
+                var w = preview.offsetWidth || 160;
+                var scale = w / 1920;
+                frame.style.transform = 'scale(' + scale + ')';
+                var data = {
+                    titre: selected.titre || selected.title || '',
+                    soustitre: selected.soustitre || selected.subtitle || '',
+                    p1: selected.p1 || { sujet: '', contenu: [] },
+                    p2: selected.p2 || { sujet: '', contenu: [] },
+                    p3: selected.p3 || { sujet: '', contenu: [] },
+                    p4: selected.p4 || { sujet: '', contenu: [] },
+                    activePage: pKey
+                };
+                frame.contentWindow.postMessage({ type: 'update', data: data }, '*');
+            });
         });
     }
 
@@ -3480,7 +3492,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v29</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v30</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
