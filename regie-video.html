@@ -438,19 +438,23 @@
 
     .content-card .cc-preview {
         flex: 1;
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
         overflow: hidden;
-        position: relative;
-        border-radius: 10px 10px 0 0;
     }
 
-    .content-card .cc-preview iframe {
-        position: absolute;
-        top: 0; left: 0;
-        width: 1920px;
-        height: 1080px;
-        border: none;
-        transform-origin: top left;
-        pointer-events: none;
+    .content-card .cc-preview-line {
+        height: 5px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 3px;
+    }
+
+    .content-card .cc-preview-line.bold {
+        height: 7px;
+        background: rgba(255, 255, 255, 0.3);
+        width: 70%;
     }
 
     .content-card .cc-label {
@@ -2324,41 +2328,24 @@
             condItems.appendChild(el);
         });
     }
-    var GIST_ID = 'cd535a80f0ecd71bc36ce70522edfd8a';
-    var GIST_FILENAME = 'content-store-p1p4.json';
-
     function loadContents() {
-        fetch('https://api.github.com/gists/' + GIST_ID, {
-            headers: { 'Accept': 'application/vnd.github.v3+json' },
-            cache: 'no-cache'
-        })
+        fetch(WS_SERVER + '/api/history')
         .then(function(r) { return r.json(); })
-        .then(function(gist) {
-            var fileContent = gist.files && gist.files[GIST_FILENAME] && gist.files[GIST_FILENAME].content;
-            if (!fileContent) {
+        .then(function(history) {
+            if (!history || history.length === 0) {
                 document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Aucun contenu</div>';
                 document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Aucun contenu</div>';
                 return;
             }
-            var data = JSON.parse(fileContent);
-            var items = data.contents || data || [];
-            if (!Array.isArray(items) || items.length === 0) {
-                document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Aucun contenu</div>';
-                document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Aucun contenu</div>';
-                return;
-            }
-
-            // Dédupliquer par titre
             var seen = {};
             var unique = [];
-            items.forEach(function(item) {
+            history.forEach(function(item) {
                 var key = item.titre || item.title || 'Sans titre';
                 if (!seen[key]) { seen[key] = true; unique.push(item); }
             });
             allContents = unique;
             refreshConducteur();
 
-            // Date du jour
             var days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
             var months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
             var now = new Date();
@@ -2366,10 +2353,9 @@
 
             renderPageCards(unique);
         })
-        .catch(function(e) {
-            console.error('Erreur chargement Gist:', e);
-            document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Erreur chargement</div>';
-            document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Erreur chargement</div>';
+        .catch(function() {
+            document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Serveur hors ligne</div>';
+            document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Serveur hors ligne</div>';
         });
     }
 
@@ -2388,36 +2374,20 @@
         scroll.innerHTML = '';
         var pages = ['p1', 'p2', 'p3', 'p4'];
         pages.forEach(function(pKey, idx) {
+            var page = selected[pKey] || {};
             var card = document.createElement('div');
             card.className = 'content-card';
-            var preview = document.createElement('div');
-            preview.className = 'cc-preview';
-            var frame = document.createElement('iframe');
-            frame.src = 'widget-decor.html';
-            frame.scrolling = 'no';
-            preview.appendChild(frame);
-            var label = document.createElement('div');
-            label.className = 'cc-label';
-            label.textContent = 'P' + (idx + 1);
-            card.appendChild(preview);
-            card.appendChild(label);
-            card.addEventListener('click', function() { selectContent(selected); });
-            scroll.appendChild(card);
-            frame.addEventListener('load', function() {
-                var w = preview.offsetWidth || 160;
-                var scale = w / 1920;
-                frame.style.transform = 'scale(' + scale + ')';
-                var data = {
-                    titre: selected.titre || selected.title || '',
-                    soustitre: selected.soustitre || selected.subtitle || '',
-                    p1: selected.p1 || { sujet: '', contenu: [] },
-                    p2: selected.p2 || { sujet: '', contenu: [] },
-                    p3: selected.p3 || { sujet: '', contenu: [] },
-                    p4: selected.p4 || { sujet: '', contenu: [] },
-                    activePage: pKey
-                };
-                frame.contentWindow.postMessage({ type: 'update', data: data }, '*');
+            var lines = (page.contenu || []).slice(0, 6).map(function(l, i) {
+                return '<div class="cc-preview-line' + (i === 0 ? ' bold' : '') + '"></div>';
+            }).join('');
+            if (!lines)
+                lines = '<div class="cc-preview-line bold"></div><div class="cc-preview-line"></div><div class="cc-preview-line"></div>';
+            card.innerHTML = '<div class="cc-preview">' + lines + '</div><div class="cc-label">P' + (idx + 1) + '</div>';
+            card.addEventListener('click', function() {
+                // Sélectionner ce contenu et envoyer la page
+                selectContent(selected);
             });
+            scroll.appendChild(card);
         });
     }
 
