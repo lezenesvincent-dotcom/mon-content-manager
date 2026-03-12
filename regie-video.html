@@ -2432,9 +2432,21 @@
             }
             html += '</div><div class="cc-label">P' + (idx + 1) + '</div>';
             card.innerHTML = html;
-            card.addEventListener('click', function() {
-                selectContent(selected);
-            });
+            card.addEventListener('click', (function(pKey, idx) {
+                return function() {
+                    var page = selected[pKey] || {};
+                    var itemForPage = {
+                        id: selected.id,
+                        titre: selected.titre || selected.title || '',
+                        soustitre: page.sujet || selected.soustitre || selected.subtitle || '',
+                        p1: page,
+                        p2: { sujet: '', contenu: [] },
+                        p3: { sujet: '', contenu: [] },
+                        p4: { sujet: '', contenu: [] }
+                    };
+                    selectContent(itemForPage);
+                };
+            })(pKey, idx));
             scroll.appendChild(card);
         });
     }
@@ -3510,7 +3522,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v40 — 2026-03-12 10:31:39</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v41 — 2026-03-12 10:31:39</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
