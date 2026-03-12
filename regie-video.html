@@ -1718,7 +1718,7 @@
                     </div>
                 </div>
 
-                <div class="synthe-pills-wrap" id="synthesGrid">
+                <div class="synthe-pills-wrap" id="synthesGrid" style="display:none;">
                     <span style="font-size:10px;color:#444;">Chargement...</span>
                 </div>
             </div>
@@ -2128,9 +2128,11 @@
     // ===== SEARCH TOGGLE =====
     document.getElementById('searchToggle').addEventListener('click', function() {
         var row = document.getElementById('searchRow');
+        var grid = document.getElementById('synthesGrid');
         var btn = document.getElementById('searchToggle');
         if (row.style.display === 'none') {
             row.style.display = 'block';
+            grid.style.display = '';
             btn.classList.add('active');
             document.getElementById('searchInput').focus();
             // Clear filter when searching
@@ -2140,6 +2142,7 @@
             });
         } else {
             row.style.display = 'none';
+            grid.style.display = 'none';
             btn.classList.remove('active');
             searchQuery = '';
             document.getElementById('searchInput').value = '';
