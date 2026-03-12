@@ -2304,7 +2304,7 @@
         var seen = {};
         var unique = [];
         merged.forEach(function(item) {
-            var key = (item.titre || '').toUpperCase();
+            var key = (item.title || item.titre || '').toUpperCase();
             if (!seen[key] && key) {
                 seen[key] = true;
                 unique.push(item);
@@ -2435,8 +2435,8 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                titre: item.titre || item.title || '',
-                soustitre: item.soustitre || item.subtitle || '',
+                titre: item.title || item.titre || '',
+                soustitre: item.subtitle || item.soustitre || '',
                 p1: item.p1 || {
                     sujet: '',
                     contenu: []
@@ -2461,8 +2461,8 @@
             frame.contentWindow.postMessage({
                 type: 'update',
                 data: {
-                    titre: item.titre || item.title || '',
-                    soustitre: item.soustitre || item.subtitle || '',
+                    titre: item.title || item.titre || '',
+                    soustitre: item.subtitle || item.soustitre || '',
                     p1: item.p1 || {
                         sujet: '',
                         contenu: []
@@ -3498,7 +3498,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v38 — 2026-03-12 10:31:39</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v39</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
