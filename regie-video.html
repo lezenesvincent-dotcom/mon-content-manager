@@ -2328,10 +2328,23 @@
             condItems.appendChild(el);
         });
     }
+    var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoSIgN07Vwk0OKfnbdc5N7gUWlsh5DB5ojI07vlmuqqAFHppsmG3YgPzgYjT_i0N_Qjg/exec';
+
     function loadContents() {
-        fetch(WS_SERVER + '/api/history')
-        .then(function(r) { return r.json(); })
-        .then(function(history) {
+        var callbackName = 'regieCallback_' + Date.now();
+        var script = document.createElement('script');
+        var timeout = setTimeout(function() {
+            if (window[callbackName]) {
+                delete window[callbackName];
+                if (document.head.contains(script)) document.head.removeChild(script);
+                document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Erreur chargement</div>';
+                document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Erreur chargement</div>';
+            }
+        }, 10000);
+        window[callbackName] = function(history) {
+            clearTimeout(timeout);
+            delete window[callbackName];
+            if (document.head.contains(script)) document.head.removeChild(script);
             if (!history || history.length === 0) {
                 document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Aucun contenu</div>';
                 document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Aucun contenu</div>';
@@ -2345,18 +2358,20 @@
             });
             allContents = unique;
             refreshConducteur();
-
             var days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
             var months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
             var now = new Date();
             document.getElementById('condTitle').textContent = days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()];
-
             renderPageCards(unique);
-        })
-        .catch(function() {
-            document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Serveur hors ligne</div>';
-            document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Serveur hors ligne</div>';
-        });
+        };
+        script.src = GOOGLE_SCRIPT_URL + '?action=getAll&callback=' + callbackName;
+        script.onerror = function() {
+            clearTimeout(timeout);
+            delete window[callbackName];
+            document.getElementById('condItems').innerHTML = '<div class="cond-item" style="opacity:0.4;">Erreur chargement</div>';
+            document.getElementById('pagesScroll').innerHTML = '<div class="content-card-empty">Erreur chargement</div>';
+        };
+        document.head.appendChild(script);
     }
 
     function renderPageCards(items) {
@@ -3462,7 +3477,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v31</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v32</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
