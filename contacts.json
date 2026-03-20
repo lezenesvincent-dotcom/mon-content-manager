@@ -538,5 +538,15 @@
       "contacts-photos/c_1772016205689-3.png"
     ],
     "photo": "contacts-photos/c_1772016205689-1.png"
+  },
+  {
+    "id": "c1773992709249",
+    "firstName": "Alexandre",
+    "lastName": "Plaud",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photo": ""
   }
 ]
