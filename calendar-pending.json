@@ -1,4 +1,5 @@
 {
+  "updatedAt": "2026-03-25T10:04:56Z",
   "pending": [
     {
       "action": "delete",
@@ -108,6 +109,5 @@
       "status": "done",
       "processedAt": "2026-03-10T14:19:59Z"
     }
-  ],
-  "updatedAt": "2026-03-25T09:59:57Z"
+  ]
 }
