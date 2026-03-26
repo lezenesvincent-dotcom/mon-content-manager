@@ -911,7 +911,7 @@
   "1774535569395": {
     "id": "1774535569395",
     "titre": "ddd",
-    "date": "",
+    "date": "2026-03-27",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -939,6 +939,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-26T14:32:54.177Z"
+    "updatedAt": "2026-03-26T14:32:57.780Z"
   }
 }
