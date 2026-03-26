@@ -1541,6 +1541,125 @@
         background: linear-gradient(135deg, #1c2028, #2d2d2d);
         border: 1px solid rgba(255, 255, 255, 0.1);
     }/* === END DOCK === */
+
+    /* ===== MORNING PPT ROW ===== */
+    .morning-ppt-row {
+        margin: 8px 0 6px 0;
+        background: rgba(255,255,255,0.03);
+        border-radius: 10px;
+        border: 1px solid rgba(255,200,60,0.15);
+        overflow: hidden;
+    }
+    .morning-ppt-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        font-size: 9px;
+        font-weight: 700;
+        color: rgba(255,200,60,0.7);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-bottom: 1px solid rgba(255,200,60,0.1);
+        cursor: pointer;
+        user-select: none;
+    }
+    .morning-ppt-header:hover { background: rgba(255,200,60,0.05); }
+    .morning-ppt-header .ppt-count {
+        background: rgba(255,200,60,0.15);
+        color: rgba(255,200,60,0.9);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 8px;
+    }
+    .morning-ppt-header .ppt-status {
+        margin-left: auto;
+        font-size: 8px;
+        color: rgba(255,255,255,0.3);
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+    .morning-ppt-list {
+        display: flex;
+        flex-direction: row;
+        gap: 6px;
+        padding: 8px;
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
+    .morning-ppt-card {
+        flex-shrink: 0;
+        background: rgba(255,200,60,0.07);
+        border: 1px solid rgba(255,200,60,0.2);
+        border-radius: 8px;
+        padding: 8px 10px;
+        cursor: pointer;
+        transition: all 0.15s;
+        min-width: 160px;
+        max-width: 200px;
+    }
+    .morning-ppt-card:hover {
+        background: rgba(255,200,60,0.15);
+        border-color: rgba(255,200,60,0.5);
+        transform: translateY(-1px);
+    }
+    .morning-ppt-card.loading {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    .morning-ppt-name {
+        font-size: 9px;
+        font-weight: 700;
+        color: rgba(255,200,60,0.9);
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .morning-ppt-titre {
+        font-size: 10px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 2px;
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .morning-ppt-sub {
+        font-size: 8px;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 4px;
+    }
+    .morning-ppt-cartes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        margin-top: 4px;
+    }
+    .morning-ppt-carte-tag {
+        font-size: 7px;
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.4);
+        padding: 1px 5px;
+        border-radius: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80px;
+    }
+    .morning-ppt-empty {
+        font-size: 10px;
+        color: rgba(255,255,255,0.25);
+        padding: 10px;
+        text-align: center;
+        width: 100%;
+    }
+    .morning-ppt-list::-webkit-scrollbar { height: 3px; }
+    .morning-ppt-list::-webkit-scrollbar-track { background: transparent; }
+    .morning-ppt-list::-webkit-scrollbar-thumb { background: rgba(255,200,60,0.3); border-radius: 2px; }
     </style>
 </head>
 <body>
@@ -1717,6 +1836,17 @@
                 </div>
             </div>
 
+            <!-- ===== MORNING PPT ROW ===== -->
+            <div class="morning-ppt-row" id="morningPptRow">
+                <div class="morning-ppt-header" onclick="toggleMorningRow()">
+                    📊 PPT MORNING
+                    <span class="ppt-count" id="morningPptCount">0</span>
+                    <span class="ppt-status" id="morningPptStatus">Chargement...</span>
+                </div>
+                <div class="morning-ppt-list" id="morningPptList" style="display:none;">
+                    <div class="morning-ppt-empty">Aucun PPT détecté</div>
+                </div>
+            </div>
 
             <!-- Bibliothèque synthés -->
             <div class="right-tags" id="synthesZone">
@@ -3988,6 +4118,103 @@
     if (open && (!slotWS || slotWS.readyState > 1)) connectSlotWS();
   }
   </script>
+
+    <script>
+    // ===================================================================
+    // MORNING PPT — lit morning-ppt.json depuis Google Drive
+    // ===================================================================
+    var MORNING_PPT_GDRIVE_FILE_ID = 'VOTRE_FILE_ID_GDRIVE'; // <- a remplir apres 1er upload PowerShell
+    var morningPptData = [];
+    var morningPptVisible = false;
+
+    function toggleMorningRow() {
+        morningPptVisible = !morningPptVisible;
+        var list = document.getElementById('morningPptList');
+        if (list) list.style.display = morningPptVisible ? 'flex' : 'none';
+    }
+
+    function loadMorningPpt() {
+        var status = document.getElementById('morningPptStatus');
+        if (MORNING_PPT_GDRIVE_FILE_ID === 'VOTRE_FILE_ID_GDRIVE') {
+            if (status) status.textContent = 'ID Google Drive non configuré';
+            return;
+        }
+        var url = 'https://drive.google.com/uc?export=download&id=' + MORNING_PPT_GDRIVE_FILE_ID + '&t=' + Date.now();
+        fetch(url)
+            .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(function(data) {
+                morningPptData = data.ppts || [];
+                renderMorningPpt(data);
+            })
+            .catch(function(e) {
+                console.warn('Morning PPT load error:', e);
+                var s = document.getElementById('morningPptStatus');
+                if (s) s.textContent = 'Non disponible';
+            });
+    }
+
+    function renderMorningPpt(data) {
+        var list = document.getElementById('morningPptList');
+        var count = document.getElementById('morningPptCount');
+        var status = document.getElementById('morningPptStatus');
+        if (!list) return;
+        var ppts = data.ppts || [];
+        if (count) count.textContent = ppts.length;
+        if (status) status.textContent = data.date ? 'Mis à jour ' + data.generatedAt.substring(11,16) : '';
+        if (ppts.length === 0) {
+            list.innerHTML = '<div class="morning-ppt-empty">Aucun PPT Morning détecté aujourd'hui</div>';
+            return;
+        }
+        list.innerHTML = ppts.map(function(ppt, idx) {
+            var cartesTags = (ppt.cartes || []).slice(0, 4).map(function(c) {
+                return '<span class="morning-ppt-carte-tag">' + (c.sujet || '').substring(0, 16) + '</span>';
+            }).join('');
+            return '<div class="morning-ppt-card" id="mppt-' + idx + '" onclick="loadPptIntoRegie(' + idx + ')">' +
+                '<div class="morning-ppt-name">📄 ' + (ppt.fichier || '').replace('.pptx','').replace('.PPTX','').substring(0, 25) + '</div>' +
+                '<div class="morning-ppt-titre">' + (ppt.titre || '—') + '</div>' +
+                (ppt.sousTitre ? '<div class="morning-ppt-sub">' + ppt.sousTitre + '</div>' : '') +
+                '<div class="morning-ppt-cartes">' + cartesTags + '</div>' +
+                '</div>';
+        }).join('');
+    }
+
+    function loadPptIntoRegie(idx) {
+        var ppt = morningPptData[idx];
+        if (!ppt) return;
+        var cartes = ppt.cartes || [];
+        function makeSlot(c) {
+            return {
+                sujet: c ? (c.sujet || '') : '',
+                contenu: c ? (c.contenu || '').split('
+').filter(Boolean).map(function(l){ return {text: l}; }) : []
+            };
+        }
+        var item = {
+            id: 'ppt-' + idx,
+            titre: ppt.titre || '',
+            soustitre: ppt.sousTitre || '',
+            source: 'morning-ppt',
+            p1: makeSlot(cartes[0]),
+            p2: makeSlot(cartes[1]),
+            p3: makeSlot(cartes[2]),
+            p4: makeSlot(cartes[3])
+        };
+        // Charger dans la régie — même pipeline que PRSNET
+        if (typeof handleItemSelect === 'function') { handleItemSelect(item); }
+        else if (typeof loadItemIntoRegie === 'function') { loadItemIntoRegie(item); }
+        else if (typeof sendToOverlay === 'function') { sendToOverlay(item); }
+        else { console.log('PPT loaded:', JSON.stringify(item)); }
+        // Feedback visuel
+        document.querySelectorAll('.morning-ppt-card').forEach(function(c, i) {
+            c.style.background = i === idx ? 'rgba(255,200,60,0.25)' : 'rgba(255,200,60,0.07)';
+            c.style.borderColor = i === idx ? 'rgba(255,200,60,0.8)' : 'rgba(255,200,60,0.2)';
+        });
+    }
+
+    // Charger au démarrage et toutes les 2 minutes
+    setTimeout(loadMorningPpt, 2500);
+    setInterval(loadMorningPpt, 120000);
+    </script>
 
 </body>
 </html>
