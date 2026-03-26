@@ -424,28 +424,34 @@
         let _pendingDeleteId = null;
         let _pendingDeleteAll = false;
 
+        function showConfirm() {
+            const overlay = document.getElementById('confirmOverlay');
+            overlay.style.display = 'flex';
+        }
+
         function confirmDeleteFiche(id, titre) {
             _pendingDeleteId = id;
             _pendingDeleteAll = false;
             document.getElementById('confirmTitle').textContent = 'Supprimer cette fiche ?';
             document.getElementById('confirmMsg').textContent = '"' + titre + '" sera définitivement supprimée.';
             document.getElementById('confirmYesBtn').onclick = executePendingDelete;
-            document.getElementById('confirmOverlay').classList.add('active');
+            showConfirm();
         }
 
         function confirmDeleteAll() {
             const count = Object.keys(fichesData).length;
-            if (count === 0) return;
             _pendingDeleteId = null;
             _pendingDeleteAll = true;
             document.getElementById('confirmTitle').textContent = 'Tout supprimer ?';
-            document.getElementById('confirmMsg').textContent = count + ' prestation' + (count > 1 ? 's' : '') + ' seront définitivement supprimées.';
+            document.getElementById('confirmMsg').textContent = count > 0
+                ? count + ' prestation' + (count > 1 ? 's' : '') + ' seront définitivement supprimées.'
+                : 'Toutes les prestations seront supprimées.';
             document.getElementById('confirmYesBtn').onclick = executePendingDelete;
-            document.getElementById('confirmOverlay').classList.add('active');
+            showConfirm();
         }
 
         function closeConfirm() {
-            document.getElementById('confirmOverlay').classList.remove('active');
+            document.getElementById('confirmOverlay').style.display = 'none';
             _pendingDeleteId = null;
             _pendingDeleteAll = false;
         }
@@ -459,19 +465,23 @@
             }
             // Sauvegarder en localStorage
             localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+            renderFiches();
             // Envoyer via WS
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({ type: 'fiches_save', data: fichesData }));
             }
-            // Sauvegarder via REST API
+            // Sauvegarder via REST API (Render)
             try {
-                await fetch(API_BASE_URL + '/api/fiches', {
+                const res = await fetch(API_BASE_URL + '/api/fiches', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(fichesData)
                 });
-            } catch(e) { console.warn('API save failed:', e); }
-            renderFiches();
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                console.log('✅ Fiches sauvegardées sur le serveur');
+            } catch(e) {
+                console.warn('⚠️ API save failed:', e);
+            }
         }
 
         // =============================================
