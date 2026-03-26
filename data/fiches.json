@@ -1142,7 +1142,7 @@
   "1774538020392": {
     "id": "1774538020392",
     "titre": "rrrr",
-    "date": "",
+    "date": "2026-03-26",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -1170,6 +1170,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-26T15:13:45.280Z"
+    "updatedAt": "2026-03-26T15:13:47.607Z"
   }
 }
