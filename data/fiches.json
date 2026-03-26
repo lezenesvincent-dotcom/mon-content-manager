@@ -944,7 +944,7 @@
   "1774535742985": {
     "id": "1774535742985",
     "titre": "rrrrrr",
-    "date": "",
+    "date": "2026-04-02",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -972,6 +972,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-26T14:35:51.163Z"
+    "updatedAt": "2026-03-26T14:35:54.139Z"
   }
 }
