@@ -162,6 +162,76 @@
         }
         .sync-dot.connected { background: #00d4ff; }
         .sync-dot.error { background: #ff4444; }
+
+        .delete-all-btn {
+            background: rgba(255,60,60,0.15);
+            color: #ff6060;
+            border: 1px solid rgba(255,60,60,0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .delete-all-btn:hover {
+            background: rgba(255,60,60,0.3);
+            border-color: rgba(255,60,60,0.6);
+        }
+
+        .fiche-card { position: relative; }
+        .fiche-delete-btn {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: rgba(255,60,60,0.12);
+            color: rgba(255,80,80,0.7);
+            border: 1px solid rgba(255,60,60,0.2);
+            border-radius: 7px;
+            width: 28px; height: 28px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s;
+            z-index: 2;
+        }
+        .fiche-delete-btn:hover {
+            background: rgba(255,60,60,0.35);
+            color: #fff;
+            border-color: rgba(255,60,60,0.6);
+        }
+
+        /* Modal confirmation */
+        .confirm-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .confirm-overlay.active { display: flex; }
+        .confirm-box {
+            background: #2a2d35;
+            border-radius: 14px;
+            padding: 28px 32px;
+            text-align: center;
+            border: 1px solid rgba(255,60,60,0.3);
+            max-width: 340px;
+            width: 90%;
+        }
+        .confirm-box h3 { color: #fff; margin-bottom: 10px; font-size: 1rem; }
+        .confirm-box p { color: rgba(255,255,255,0.5); font-size: 0.82rem; margin-bottom: 22px; }
+        .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+        .confirm-yes {
+            background: rgba(255,60,60,0.8); color: #fff;
+            border: none; padding: 9px 22px; border-radius: 8px;
+            font-weight: bold; font-size: 0.85rem; cursor: pointer;
+        }
+        .confirm-yes:hover { background: rgba(255,60,60,1); }
+        .confirm-no {
+            background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);
+            border: none; padding: 9px 22px; border-radius: 8px;
+            font-size: 0.85rem; cursor: pointer;
+        }
+        .confirm-no:hover { background: rgba(255,255,255,0.15); }
     </style>
 </head>
 <body>
@@ -180,7 +250,22 @@
 
         <div class="actions-bar">
             <a href="contact-studio.html" class="new-btn" onclick="newFiche()">＋ Nouvelle fiche</a>
-            <span class="count-badge" id="countBadge"></span>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <span class="count-badge" id="countBadge"></span>
+                <button class="delete-all-btn" onclick="confirmDeleteAll()">🗑 Tout supprimer</button>
+            </div>
+        </div>
+
+        <!-- Modal confirmation suppression -->
+        <div class="confirm-overlay" id="confirmOverlay">
+            <div class="confirm-box">
+                <h3 id="confirmTitle">Confirmer la suppression</h3>
+                <p id="confirmMsg">Cette action est irréversible.</p>
+                <div class="confirm-actions">
+                    <button class="confirm-yes" id="confirmYesBtn">Supprimer</button>
+                    <button class="confirm-no" onclick="closeConfirm()">Annuler</button>
+                </div>
+            </div>
         </div>
 
         <div class="fiches-grid" id="fichesGrid"></div>
@@ -311,6 +396,7 @@
 
                 return `
                 <div class="fiche-card" onclick="openFiche('${f.id}')">
+                    <button class="fiche-delete-btn" onclick="event.stopPropagation(); confirmDeleteFiche('${f.id}', '${(f.titre||'cette fiche').replace(/'/g,'\'')}')" title="Supprimer cette fiche">✕</button>
                     <div class="fiche-title">${f.titre || 'Sans titre'}</div>
                     <div class="fiche-date">${f.date || 'Date non définie'}</div>
                     <div class="fiche-field">
@@ -330,6 +416,62 @@
                     <div class="fiche-tags">${toggleTags}</div>
                 </div>`;
             }).join('');
+        }
+
+        // =============================================
+        // SUPPRESSION
+        // =============================================
+        let _pendingDeleteId = null;
+        let _pendingDeleteAll = false;
+
+        function confirmDeleteFiche(id, titre) {
+            _pendingDeleteId = id;
+            _pendingDeleteAll = false;
+            document.getElementById('confirmTitle').textContent = 'Supprimer cette fiche ?';
+            document.getElementById('confirmMsg').textContent = '"' + titre + '" sera définitivement supprimée.';
+            document.getElementById('confirmYesBtn').onclick = executePendingDelete;
+            document.getElementById('confirmOverlay').classList.add('active');
+        }
+
+        function confirmDeleteAll() {
+            const count = Object.keys(fichesData).length;
+            if (count === 0) return;
+            _pendingDeleteId = null;
+            _pendingDeleteAll = true;
+            document.getElementById('confirmTitle').textContent = 'Tout supprimer ?';
+            document.getElementById('confirmMsg').textContent = count + ' prestation' + (count > 1 ? 's' : '') + ' seront définitivement supprimées.';
+            document.getElementById('confirmYesBtn').onclick = executePendingDelete;
+            document.getElementById('confirmOverlay').classList.add('active');
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmOverlay').classList.remove('active');
+            _pendingDeleteId = null;
+            _pendingDeleteAll = false;
+        }
+
+        async function executePendingDelete() {
+            closeConfirm();
+            if (_pendingDeleteAll) {
+                fichesData = {};
+            } else if (_pendingDeleteId) {
+                delete fichesData[_pendingDeleteId];
+            }
+            // Sauvegarder en localStorage
+            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+            // Envoyer via WS
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'fiches_save', data: fichesData }));
+            }
+            // Sauvegarder via REST API
+            try {
+                await fetch(API_BASE_URL + '/api/fiches', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(fichesData)
+                });
+            } catch(e) { console.warn('API save failed:', e); }
+            renderFiches();
         }
 
         // =============================================
