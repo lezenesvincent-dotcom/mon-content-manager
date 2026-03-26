@@ -1896,9 +1896,11 @@
     var CAMERA_IP = '192.168.1.54';
     var WS_SERVER = 'https://ecamm-overlay-server.onrender.com';
     var GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+    // Détection Mac vs PC pour la source caméra
+    var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     var camSources = {
-        1: 'capture',
-        // Boitier de capture USB (getUserMedia)
+        1: isMac ? 'https://admin:admin@192.168.1.54/image3' : 'capture',
+        // Mac : flux réseau Sony FR7 | PC : boitier de capture USB
         2: null,
         3: null,
         4: null,
@@ -3549,7 +3551,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v80 — 2026-03-26 14:53:43</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v81 — 2026-03-26 17:30:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
