@@ -1570,9 +1570,15 @@
         "prenom": "David",
         "fonction": "Opérateur",
         "entreprise": "Cic"
+      },
+      {
+        "nom": "thomas",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:07:18.412Z"
+    "updatedAt": "2026-03-27T14:07:30.291Z"
   }
 }
