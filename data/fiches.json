@@ -1825,8 +1825,8 @@
     "titreSynthe": "",
     "commentaires": "",
     "toggles": {
-      "appIBM": true,
-      "appZoom": false,
+      "appIBM": false,
+      "appZoom": true,
       "appWebex": false,
       "appTeams": false,
       "replay": true,
@@ -1840,9 +1840,9 @@
       "visite": true,
       "synthes": true
     },
-    "application": "IBM",
+    "application": "ZOOM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:42:37.077Z"
+    "updatedAt": "2026-03-27T14:42:41.858Z"
   }
 }
