@@ -1564,8 +1564,15 @@
       "synthes": true
     },
     "application": null,
-    "intervenants": [],
+    "intervenants": [
+      {
+        "nom": "David",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
+      }
+    ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:07:01.031Z"
+    "updatedAt": "2026-03-27T14:07:05.223Z"
   }
 }
