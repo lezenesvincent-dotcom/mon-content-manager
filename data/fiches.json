@@ -1816,8 +1816,8 @@
     "id": "1774621981717",
     "titre": "Université Mutualiste",
     "date": "2026-06-03",
-    "entite": "Université Mu",
-    "contact": "",
+    "entite": "Université Mutualiste",
+    "contact": "Pascale Worling",
     "heureDirect": "18:00",
     "heurePrep": "17:15",
     "prepDuration": 45,
@@ -1843,6 +1843,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:40:04.726Z"
+    "updatedAt": "2026-03-27T14:40:17.678Z"
   }
 }
