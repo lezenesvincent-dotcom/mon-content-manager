@@ -1141,9 +1141,9 @@
   },
   "1774538020392": {
     "id": "1774538020392",
-    "titre": "rrrr",
+    "titre": "TEST FICHE DEBUG",
     "date": "2026-03-26",
-    "entite": "",
+    "entite": "Test Entite",
     "contact": "",
     "heureDirect": "13:00",
     "heurePrep": "12:30",
@@ -1170,7 +1170,7 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T13:51:16.211Z"
+    "updatedAt": "2026-03-27T13:51:32.131Z"
   },
   "1774538053803": {
     "id": "1774538053803",
