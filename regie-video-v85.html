@@ -4159,7 +4159,7 @@
         if (count) count.textContent = ppts.length;
         if (status) status.textContent = data.date ? 'Mis à jour ' + data.generatedAt.substring(11,16) : '';
         if (ppts.length === 0) {
-            list.innerHTML = '<div class="morning-ppt-empty">Aucun PPT Morning détecté aujourd'hui</div>';
+            list.innerHTML = '<div class="morning-ppt-empty">Aucun PPT Morning detecte</div>';
             return;
         }
         list.innerHTML = ppts.map(function(ppt, idx) {
