@@ -4123,7 +4123,7 @@
     // ===================================================================
     // MORNING PPT — lit morning-ppt.json depuis Google Drive
     // ===================================================================
-    var MORNING_PPT_GDRIVE_FILE_ID = 'VOTRE_FILE_ID_GDRIVE'; // <- a remplir apres 1er upload PowerShell
+    var MORNING_PPT_URL = 'https://raw.githubusercontent.com/lezenesvincent-dotcom/mon-content-manager/main/morning-ppt.json';
     var morningPptData = [];
     var morningPptVisible = false;
 
@@ -4135,11 +4135,8 @@
 
     function loadMorningPpt() {
         var status = document.getElementById('morningPptStatus');
-        if (MORNING_PPT_GDRIVE_FILE_ID === 'VOTRE_FILE_ID_GDRIVE') {
-            if (status) status.textContent = 'ID Google Drive non configuré';
-            return;
-        }
-        var url = 'https://drive.google.com/uc?export=download&id=' + MORNING_PPT_GDRIVE_FILE_ID + '&t=' + Date.now();
+
+        var url = MORNING_PPT_URL + '?t=' + Date.now();
         fetch(url)
             .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
             .then(function(data) {
