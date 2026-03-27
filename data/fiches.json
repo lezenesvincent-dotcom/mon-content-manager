@@ -1831,8 +1831,8 @@
       "appTeams": false,
       "replay": false,
       "chat": true,
-      "qr": true,
-      "masquerQR": true,
+      "qr": false,
+      "masquerQR": false,
       "portailInscription": false,
       "diffGen": true,
       "fournisGen": true,
@@ -1843,6 +1843,6 @@
     "application": "IBM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:45:25.398Z"
+    "updatedAt": "2026-03-27T14:45:27.014Z"
   }
 }
