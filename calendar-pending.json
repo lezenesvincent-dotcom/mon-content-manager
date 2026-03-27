@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-27T15:04:56Z",
+  "updatedAt": "2026-03-27T15:06:54.530Z",
   "pending": [
     {
       "action": "delete",
@@ -11,37 +11,49 @@
       "processedAt": "2026-02-17T09:40:24Z"
     },
     {
-      "ficheId": "1774535569395",
-      "subject": "ddd",
-      "date": "2026-03-27",
-      "heurePrep": "12:30",
-      "heureDirect": "13:00",
+      "ficheId": "1774621981717",
+      "subject": "Université Mutualiste",
+      "date": "2026-06-03",
+      "heurePrep": "17:15",
+      "heureDirect": "18:00",
       "heureFin": null,
-      "entite": "",
-      "contact": "",
+      "entite": "Université Mutualiste",
+      "contact": "Pascale Wotling",
       "mode": "studio",
-      "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
-      "application": "",
-      "intervenants": [],
+      "ibmChaine": "https://video.ibm.com/channel/tSuADdWrBtZ",
+      "application": "IBM",
+      "intervenants": [
+        {
+          "nom": "Lang",
+          "prenom": "David",
+          "fonction": "Opérateur",
+          "entreprise": "Cic Cib"
+        },
+        {
+          "nom": "Lezenes",
+          "prenom": "Vincent",
+          "fonction": "Opérateur",
+          "entreprise": "Cib Cib"
+        }
+      ],
       "toggles": {
-        "appIBM": false,
+        "appIBM": true,
         "appZoom": false,
         "appWebex": false,
         "appTeams": false,
-        "replay": true,
+        "replay": false,
         "chat": true,
         "qr": false,
         "masquerQR": false,
-        "portailInscription": false,
+        "portailInscription": true,
         "diffGen": true,
-        "fournisGen": true,
-        "studioGen": false,
+        "fournisGen": false,
+        "studioGen": true,
         "visite": true,
         "synthes": true
       },
-      "createdAt": "2026-03-26T14:32:58.738Z",
-      "status": "done",
-      "processedAt": "2026-03-26T14:34:57Z"
+      "createdAt": "2026-03-27T15:06:53.859Z",
+      "status": "pending"
     }
   ]
 }
