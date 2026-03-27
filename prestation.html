@@ -346,16 +346,35 @@
 
             ws.onopen = () => {
                 setStatus('connected', 'Connecté');
-                // Request latest fiches
-                ws.send(JSON.stringify({ type: 'fiches_get' }));
+                // Envoyer nos fiches locales AU SERVEUR (localStorage = source de vérité)
+                const local = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+                if (Object.keys(local).length > 0) {
+                    ws.send(JSON.stringify({ type: 'fiches_save', data: local }));
+                } else {
+                    // Seulement si localStorage vide, on demande au serveur
+                    ws.send(JSON.stringify({ type: 'fiches_get' }));
+                }
             };
 
             ws.onmessage = (event) => {
                 try {
                     const msg = JSON.parse(event.data);
-                    if (msg.type === 'fiches_data' || msg.type === 'fiches_updated') {
+                    if (msg.type === 'fiches_data') {
+                        // Données initiales du serveur : merger avec localStorage
                         if (!window._isDeleting) {
-                            fichesData = msg.data || {};
+                            const serverData = msg.data || {};
+                            const localData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+                            // localStorage TOUJOURS prioritaire
+                            fichesData = Object.assign({}, serverData, localData);
+                            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+                            renderFiches();
+                        }
+                    } else if (msg.type === 'fiches_updated') {
+                        // Mise à jour d'un autre client : merger sans écraser le local
+                        if (!window._isDeleting) {
+                            const serverData = msg.data || {};
+                            const localData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+                            fichesData = Object.assign({}, serverData, localData);
                             localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
                             renderFiches();
                         }
@@ -576,7 +595,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v10 — 2026-03-27 13:55';
+            if (b) b.textContent = 'v11 — 2026-03-27 13:59';
         })();
 
         // 1. Load from localStorage immediately (instant display)
