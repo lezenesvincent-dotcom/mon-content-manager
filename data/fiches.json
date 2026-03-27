@@ -1841,8 +1841,15 @@
       "synthes": true
     },
     "application": "IBM",
-    "intervenants": [],
+    "intervenants": [
+      {
+        "nom": "Lang",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
+      }
+    ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:45:53.297Z"
+    "updatedAt": "2026-03-27T14:49:09.358Z"
   }
 }
