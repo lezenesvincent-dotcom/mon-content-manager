@@ -1814,12 +1814,12 @@
   },
   "1774621981717": {
     "id": "1774621981717",
-    "titre": "Scénario CIC François Duhen",
-    "date": "",
+    "titre": "Université Mutualiste",
+    "date": "2026-06-03",
     "entite": "",
     "contact": "",
-    "heureDirect": "13:00",
-    "heurePrep": "12:30",
+    "heureDirect": "18:00",
+    "heurePrep": "17:30",
     "prepDuration": 30,
     "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
     "titreSynthe": "",
@@ -1843,6 +1843,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:34:33.286Z"
+    "updatedAt": "2026-03-27T14:39:32.208Z"
   }
 }
