@@ -1683,7 +1683,7 @@
   "1774621113204": {
     "id": "1774621113204",
     "titre": "dd",
-    "date": "",
+    "date": "2026-03-27",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -1711,6 +1711,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:18:35.966Z"
+    "updatedAt": "2026-03-27T14:18:37.344Z"
   }
 }
