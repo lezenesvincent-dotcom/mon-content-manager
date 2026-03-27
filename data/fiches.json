@@ -1829,10 +1829,10 @@
       "appZoom": false,
       "appWebex": false,
       "appTeams": false,
-      "replay": true,
-      "chat": true,
+      "replay": false,
+      "chat": false,
       "qr": true,
-      "masquerQR": false,
+      "masquerQR": true,
       "portailInscription": false,
       "diffGen": true,
       "fournisGen": true,
@@ -1843,6 +1843,6 @@
     "application": "IBM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:43:36.162Z"
+    "updatedAt": "2026-03-27T14:43:41.038Z"
   }
 }
