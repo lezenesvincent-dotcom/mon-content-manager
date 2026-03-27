@@ -1844,7 +1844,7 @@
     "intervenants": [
       {
         "nom": "Lang",
-        "prenom": "DAVID",
+        "prenom": "David",
         "fonction": "Opérateur",
         "entreprise": "Cic Cib"
       },
@@ -1856,6 +1856,6 @@
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:50:01.956Z"
+    "updatedAt": "2026-03-27T14:53:06.346Z"
   }
 }
