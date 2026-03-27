@@ -1716,7 +1716,7 @@
   "1774621160651": {
     "id": "1774621160651",
     "titre": "yyy",
-    "date": "",
+    "date": "2026-03-27",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -1744,6 +1744,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:19:24.068Z"
+    "updatedAt": "2026-03-27T14:19:26.050Z"
   }
 }
