@@ -360,18 +360,18 @@
                 try {
                     const msg = JSON.parse(event.data);
                     if (msg.type === 'fiches_data') {
-                        // Données initiales du serveur : merger avec localStorage
                         if (!window._isDeleting) {
+                            // Ignorer si suppression faite il y a moins de 15s
+                            if (window._lastDeleteAt && Date.now() - window._lastDeleteAt < 15000) return;
                             const serverData = msg.data || {};
                             const localData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
-                            // localStorage TOUJOURS prioritaire
                             fichesData = Object.assign({}, serverData, localData);
                             localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
                             renderFiches();
                         }
                     } else if (msg.type === 'fiches_updated') {
-                        // Mise à jour d'un autre client : merger sans écraser le local
                         if (!window._isDeleting) {
+                            if (window._lastDeleteAt && Date.now() - window._lastDeleteAt < 15000) return;
                             const serverData = msg.data || {};
                             const localData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
                             fichesData = Object.assign({}, serverData, localData);
@@ -492,7 +492,6 @@
         }
 
         async function executePendingDelete() {
-            // Sauvegarder les valeurs AVANT closeConfirm qui les remet à null
             var deleteId = _pendingDeleteId;
             var deleteAll = _pendingDeleteAll;
             closeConfirm();
@@ -503,10 +502,11 @@
             }
             localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
             renderFiches();
-            // Bloquer le re-render du broadcast WS pendant 2s
             window._isDeleting = true;
-            setTimeout(() => { window._isDeleting = false; }, 2000);
-            // REST API d abord
+            window._lastDeleteAt = Date.now();
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'fiches_save', data: fichesData }));
+            }
             try {
                 await fetch(API_BASE_URL + '/api/fiches', {
                     method: 'POST',
@@ -514,10 +514,7 @@
                     body: JSON.stringify(fichesData)
                 });
             } catch(e) { console.warn('API save failed:', e); }
-            // WS pour notifier les autres clients
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({ type: 'fiches_save', data: fichesData }));
-            }
+            setTimeout(() => { window._isDeleting = false; }, 10000);
         }
 
         // =============================================
@@ -595,7 +592,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v11 — 2026-03-27 13:59';
+            if (b) b.textContent = 'v12 — 2026-03-27 14:10';
         })();
 
         // 1. Load from localStorage immediately (instant display)
