@@ -345,18 +345,19 @@
                     const msg = JSON.parse(event.data);
 
                     if (msg.type === 'fiches_data') {
-                        // Full fiches object from server
-                        fichesData = msg.data || {};
-                        localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
-                        renderFiches();
+                        if (!window._isDeleting) {
+                            fichesData = msg.data || {};
+                            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+                            renderFiches();
+                        }
                     }
                     else if (msg.type === 'fiches_updated') {
-                        // Another client saved/deleted — refresh
-                        fichesData = msg.data || {};
-                        localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
-                        renderFiches();
+                        if (!window._isDeleting) {
+                            fichesData = msg.data || {};
+                            localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
+                            renderFiches();
+                        }
                     }
-                } catch (err) {
                     console.error('WS parse error:', err);
                 }
             };
@@ -475,24 +476,22 @@
             } else if (_pendingDeleteId) {
                 delete fichesData[_pendingDeleteId];
             }
-            // Sauvegarder en localStorage
             localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
             renderFiches();
-            // Envoyer via WS
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({ type: 'fiches_save', data: fichesData }));
-            }
-            // Sauvegarder via REST API (Render)
+            // Bloquer le re-render du broadcast WS pendant 2s
+            window._isDeleting = true;
+            setTimeout(() => { window._isDeleting = false; }, 2000);
+            // REST API d abord
             try {
-                const res = await fetch(API_BASE_URL + '/api/fiches', {
+                await fetch(API_BASE_URL + '/api/fiches', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(fichesData)
                 });
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                console.log('✅ Fiches sauvegardées sur le serveur');
-            } catch(e) {
-                console.warn('⚠️ API save failed:', e);
+            } catch(e) { console.warn('API save failed:', e); }
+            // WS pour notifier les autres clients
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'fiches_save', data: fichesData }));
             }
         }
 
@@ -569,7 +568,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v4 — 2026-03-26 15:55';
+            if (b) b.textContent = 'v5 — 2026-03-27 10:27';
         })();
 
         // 1. Load from localStorage immediately (instant display)
