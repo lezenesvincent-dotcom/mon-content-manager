@@ -1835,7 +1835,7 @@
       "masquerQR": false,
       "portailInscription": true,
       "diffGen": true,
-      "fournisGen": true,
+      "fournisGen": false,
       "studioGen": false,
       "visite": true,
       "synthes": true
@@ -1856,6 +1856,6 @@
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T15:00:04.974Z"
+    "updatedAt": "2026-03-27T15:00:07.806Z"
   }
 }
