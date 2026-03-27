@@ -240,7 +240,7 @@
     <div class="sync-status">
         <span class="sync-dot" id="syncDot"></span>
         <span id="syncLabel">Connexion…</span>
-        <span style="margin-left:10px;color:rgba(255,255,255,0.7);font-size:0.72rem;font-weight:bold;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:6px;" id="versionBadgePresta">v9 — 2026-03-27 13:45</span>
+        <span style="margin-left:10px;color:rgba(255,255,255,0.6);font-size:0.72rem;font-weight:bold;background:rgba(255,255,255,0.07);padding:3px 8px;border-radius:6px;" id="versionBadgePresta"></span>
     </div>
 
     <a href="index.html" class="nav-back">← Retour Content Manager</a>
@@ -473,11 +473,14 @@
         }
 
         async function executePendingDelete() {
+            // Sauvegarder les valeurs AVANT closeConfirm qui les remet à null
+            var deleteId = _pendingDeleteId;
+            var deleteAll = _pendingDeleteAll;
             closeConfirm();
-            if (_pendingDeleteAll) {
+            if (deleteAll) {
                 fichesData = {};
-            } else if (_pendingDeleteId) {
-                delete fichesData[_pendingDeleteId];
+            } else if (deleteId) {
+                delete fichesData[deleteId];
             }
             localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
             renderFiches();
@@ -573,7 +576,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v9 — 2026-03-27 13:45';
+            if (b) b.textContent = 'v10 — 2026-03-27 13:55';
         })();
 
         // 1. Load from localStorage immediately (instant display)
