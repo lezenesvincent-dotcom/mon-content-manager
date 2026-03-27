@@ -1859,9 +1859,15 @@
         "prenom": "Stépahnie",
         "fonction": "La Patronne",
         "entreprise": "Cic Cib"
+      },
+      {
+        "nom": "Valaize",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T15:15:26.427Z"
+    "updatedAt": "2026-03-27T15:15:39.790Z"
   }
 }
