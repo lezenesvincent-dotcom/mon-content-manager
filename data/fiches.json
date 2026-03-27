@@ -1566,13 +1566,13 @@
     "application": null,
     "intervenants": [
       {
-        "nom": "David",
+        "nom": "Lang",
         "prenom": "",
         "fonction": "",
         "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:07:05.223Z"
+    "updatedAt": "2026-03-27T14:07:09.638Z"
   }
 }
