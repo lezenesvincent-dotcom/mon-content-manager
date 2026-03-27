@@ -1822,7 +1822,7 @@
     "heurePrep": "17:15",
     "prepDuration": 45,
     "ibmChaine": "https://video.ibm.com/channel/tSuADdWrBtZ",
-    "titreSynthe": "Ré",
+    "titreSynthe": "Résultats ",
     "commentaires": "",
     "toggles": {
       "appIBM": true,
@@ -1856,6 +1856,6 @@
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:59:42.323Z"
+    "updatedAt": "2026-03-27T14:59:45.099Z"
   }
 }
