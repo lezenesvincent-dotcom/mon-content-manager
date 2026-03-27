@@ -1846,10 +1846,16 @@
         "nom": "Lang",
         "prenom": "David",
         "fonction": "Opérateur",
-        "entreprise": "CIC CIB"
+        "entreprise": "Cic Cib"
+      },
+      {
+        "nom": "Lezenes",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:49:22.528Z"
+    "updatedAt": "2026-03-27T14:49:29.644Z"
   }
 }
