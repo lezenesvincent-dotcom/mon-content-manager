@@ -1307,7 +1307,7 @@
   "1774619318701": {
     "id": "1774619318701",
     "titre": "Z",
-    "date": "",
+    "date": "2026-03-27",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -1335,6 +1335,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T13:48:41.939Z"
+    "updatedAt": "2026-03-27T13:48:44.847Z"
   }
 }
