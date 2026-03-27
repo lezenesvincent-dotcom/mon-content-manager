@@ -1853,9 +1853,15 @@
         "prenom": "Vincent",
         "fonction": "Opérateur",
         "entreprise": "Cib Cib"
+      },
+      {
+        "nom": "Sthar",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T15:13:27.763Z"
+    "updatedAt": "2026-03-27T15:15:06.158Z"
   }
 }
