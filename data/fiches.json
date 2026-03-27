@@ -1816,7 +1816,7 @@
     "id": "1774621981717",
     "titre": "Université Mutualiste",
     "date": "2026-06-03",
-    "entite": "Univ",
+    "entite": "Université ",
     "contact": "",
     "heureDirect": "18:00",
     "heurePrep": "17:15",
@@ -1843,6 +1843,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:40:00.749Z"
+    "updatedAt": "2026-03-27T14:40:03.219Z"
   }
 }
