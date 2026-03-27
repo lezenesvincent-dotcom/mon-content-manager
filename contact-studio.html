@@ -879,6 +879,7 @@
     </style>
 </head>
 <body>
+<div id="syncIndicator" style="position:fixed;top:12px;right:16px;width:10px;height:10px;border-radius:50%;background:#4ade80;opacity:0;transition:all 0.4s;z-index:9999;" title="Sauvegarde auto"></div>
     <div class="album-bg" id="albumBg"></div>
     <div class="layout">
         <!-- LEFT SIDEBAR -->
@@ -1657,7 +1658,27 @@
         var fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
         if (wsRender && wsRender.readyState === WebSocket.OPEN) {
             wsRender.send(JSON.stringify({ type: 'fiches_save', data: fiches }));
+            showSyncIndicator();
+        } else {
+            // WS pas prêt — reconnecter et réessayer dans 2s
+            connectWS();
+            setTimeout(function() {
+                if (wsRender && wsRender.readyState === WebSocket.OPEN) {
+                    wsRender.send(JSON.stringify({ type: 'fiches_save', data: fiches }));
+                    showSyncIndicator();
+                }
+            }, 2000);
         }
+    }
+    function showSyncIndicator() {
+        var dot = document.getElementById('syncIndicator');
+        if (!dot) return;
+        dot.style.opacity = '1';
+        dot.style.background = '#f5a623';
+        setTimeout(function() {
+            dot.style.background = '#4ade80';
+            setTimeout(function() { dot.style.opacity = '0'; }, 1000);
+        }, 400);
     }
     // ── Auto-save: localStorage immédiat + WS debounce 1s ─
     function scheduleAutoSave() {
@@ -1800,6 +1821,11 @@
         if (local[FICHE_ID]) {
             applyData(local[FICHE_ID]);
             showToast('✅ Fiche locale');
+        } else {
+            // Nouvelle fiche — sauvegarder immédiatement en localStorage
+            var emptyData = collectData();
+            local[FICHE_ID] = emptyData;
+            localStorage.setItem('fiches_studio', JSON.stringify(local));
         }
     }
 
