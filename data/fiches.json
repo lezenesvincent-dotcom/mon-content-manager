@@ -1817,7 +1817,7 @@
     "titre": "Université Mutualiste",
     "date": "2026-06-03",
     "entite": "Université Mutualiste",
-    "contact": "Pascale Worling",
+    "contact": "Pascale Worting",
     "heureDirect": "18:00",
     "heurePrep": "17:15",
     "prepDuration": 45,
@@ -1843,6 +1843,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:40:17.678Z"
+    "updatedAt": "2026-03-27T14:40:21.334Z"
   }
 }
