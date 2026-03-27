@@ -1572,13 +1572,13 @@
         "entreprise": "Cic"
       },
       {
-        "nom": "thomas",
-        "prenom": "",
+        "nom": "Thomas",
+        "prenom": "Thomas",
         "fonction": "",
         "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:07:30.291Z"
+    "updatedAt": "2026-03-27T14:07:38.297Z"
   }
 }
