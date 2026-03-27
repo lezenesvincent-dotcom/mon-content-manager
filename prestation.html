@@ -582,7 +582,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v6 — 2026-03-27 10:36';
+            if (b) b.textContent = 'v7 — 2026-03-27 10:44';
         })();
 
         // 1. Load from localStorage immediately (instant display)
@@ -592,8 +592,8 @@
         // 2. Then connect WebSocket for real-time sync
         connectWebSocket();
 
-        setTimeout(fetchFichesFromServer, 800);
-        fetchFichesFromServer();
+        // fetchFichesFromServer appelé via WS uniquement
+        // NE PAS fetch au démarrage — localStorage est la source de vérité
     </script>
 </body>
 </html>
