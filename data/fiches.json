@@ -1208,7 +1208,7 @@
   "1774605310721": {
     "id": "1774605310721",
     "titre": "achtiung",
-    "date": "",
+    "date": "2026-04-03",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -1236,6 +1236,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T09:55:15.944Z"
+    "updatedAt": "2026-03-27T09:55:17.887Z"
   }
 }
