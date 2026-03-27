@@ -1830,8 +1830,8 @@
       "appWebex": false,
       "appTeams": false,
       "replay": true,
-      "chat": true,
-      "qr": true,
+      "chat": false,
+      "qr": false,
       "masquerQR": false,
       "portailInscription": false,
       "diffGen": true,
@@ -1843,6 +1843,6 @@
     "application": "IBM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:43:11.155Z"
+    "updatedAt": "2026-03-27T14:43:13.130Z"
   }
 }
