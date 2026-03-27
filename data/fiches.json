@@ -1534,5 +1534,38 @@
     "intervenants": [],
     "mode": "studio",
     "updatedAt": "2026-03-27T14:06:39.534Z"
+  },
+  "1774620408639": {
+    "id": "1774620408639",
+    "titre": "CIC CIB",
+    "date": "",
+    "entite": "",
+    "contact": "",
+    "heureDirect": "13:00",
+    "heurePrep": "12:30",
+    "prepDuration": 30,
+    "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "titreSynthe": "",
+    "commentaires": "",
+    "toggles": {
+      "appIBM": false,
+      "appZoom": false,
+      "appWebex": false,
+      "appTeams": false,
+      "replay": true,
+      "chat": true,
+      "qr": false,
+      "masquerQR": false,
+      "portailInscription": false,
+      "diffGen": true,
+      "fournisGen": true,
+      "studioGen": false,
+      "visite": true,
+      "synthes": true
+    },
+    "application": null,
+    "intervenants": [],
+    "mode": "studio",
+    "updatedAt": "2026-03-27T14:07:01.031Z"
   }
 }
