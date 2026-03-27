@@ -1825,10 +1825,10 @@
     "titreSynthe": "",
     "commentaires": "",
     "toggles": {
-      "appIBM": false,
+      "appIBM": true,
       "appZoom": false,
       "appWebex": false,
-      "appTeams": true,
+      "appTeams": false,
       "replay": true,
       "chat": true,
       "qr": false,
@@ -1840,9 +1840,9 @@
       "visite": true,
       "synthes": true
     },
-    "application": "TEAMS",
+    "application": "IBM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:42:50.503Z"
+    "updatedAt": "2026-03-27T14:42:59.274Z"
   }
 }
