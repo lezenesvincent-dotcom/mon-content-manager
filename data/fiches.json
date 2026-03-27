@@ -1782,7 +1782,7 @@
   "1774621321510": {
     "id": "1774621321510",
     "titre": "iiii",
-    "date": "",
+    "date": "2026-03-27",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -1810,6 +1810,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:22:04.911Z"
+    "updatedAt": "2026-03-27T14:22:06.406Z"
   }
 }
