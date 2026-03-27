@@ -346,12 +346,15 @@
 
             ws.onopen = () => {
                 setStatus('connected', 'Connecté');
-                // Envoyer nos fiches locales AU SERVEUR (localStorage = source de vérité)
+                var lda = parseInt(localStorage.getItem('_lastDeleteAt') || '0');
+                var suppressionRecente = lda && Date.now() - lda < 15000;
                 const local = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
-                if (Object.keys(local).length > 0) {
+                if (suppressionRecente) {
+                    // Suppression récente — envoyer l'état vide au serveur, pas de fiches_get
+                    ws.send(JSON.stringify({ type: 'fiches_save', data: local }));
+                } else if (Object.keys(local).length > 0) {
                     ws.send(JSON.stringify({ type: 'fiches_save', data: local }));
                 } else {
-                    // Seulement si localStorage vide, on demande au serveur
                     ws.send(JSON.stringify({ type: 'fiches_get' }));
                 }
             };
@@ -362,7 +365,8 @@
                     if (msg.type === 'fiches_data') {
                         if (!window._isDeleting) {
                             // Ignorer si suppression faite il y a moins de 15s
-                            if (window._lastDeleteAt && Date.now() - window._lastDeleteAt < 15000) return;
+                            var lda = parseInt(localStorage.getItem('_lastDeleteAt') || '0');
+                            if (lda && Date.now() - lda < 15000) return;
                             const serverData = msg.data || {};
                             const localData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
                             fichesData = Object.assign({}, serverData, localData);
@@ -371,7 +375,8 @@
                         }
                     } else if (msg.type === 'fiches_updated') {
                         if (!window._isDeleting) {
-                            if (window._lastDeleteAt && Date.now() - window._lastDeleteAt < 15000) return;
+                            var lda2 = parseInt(localStorage.getItem('_lastDeleteAt') || '0');
+                            if (lda2 && Date.now() - lda2 < 15000) return;
                             const serverData = msg.data || {};
                             const localData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
                             fichesData = Object.assign({}, serverData, localData);
@@ -504,6 +509,7 @@
             renderFiches();
             window._isDeleting = true;
             window._lastDeleteAt = Date.now();
+            localStorage.setItem('_lastDeleteAt', String(Date.now()));
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({ type: 'fiches_save', data: fichesData }));
             }
@@ -592,7 +598,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v12 — 2026-03-27 14:10';
+            if (b) b.textContent = 'v13 — 2026-03-27 14:19';
         })();
 
         // 1. Load from localStorage immediately (instant display)
