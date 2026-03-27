@@ -1584,7 +1584,7 @@
   "1774620489378": {
     "id": "1774620489378",
     "titre": "rrr",
-    "date": "",
+    "date": "2026-03-27",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -1612,6 +1612,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-27T14:08:13.225Z"
+    "updatedAt": "2026-03-27T14:08:14.703Z"
   }
 }
