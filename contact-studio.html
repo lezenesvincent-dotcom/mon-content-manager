@@ -1643,17 +1643,33 @@
         saveTimer,
         ghSaveTimer,
         lastSavedJson = '';
+    // ── WS Render — sync temps réel ──────────────────────
+    var wsRender = null;
+    function connectWS() {
+        if (wsRender && wsRender.readyState <= 1) return;
+        wsRender = new WebSocket('wss://ecamm-overlay-server.onrender.com');
+        wsRender.onopen = function() { console.log('WS Render connecté'); };
+        wsRender.onclose = function() { setTimeout(connectWS, 3000); };
+        wsRender.onerror = function() {};
+    }
+    connectWS();
+    function syncFichesWS() {
+        var fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+        if (wsRender && wsRender.readyState === WebSocket.OPEN) {
+            wsRender.send(JSON.stringify({ type: 'fiches_save', data: fiches }));
+        }
+    }
+    // ── Auto-save: localStorage immédiat + WS debounce 1s ─
     function scheduleAutoSave() {
-        // Always save to localStorage IMMEDIATELY
         var data = collectData();
         var fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
         fiches[FICHE_ID] = data;
         localStorage.setItem('fiches_studio', JSON.stringify(fiches));
-        // Debounce GitHub save
         clearTimeout(ghSaveTimer);
         ghSaveTimer = setTimeout(function() {
+            syncFichesWS();
             forceSaveGitHub();
-        }, 2000);
+        }, 1000);
     }
     function autoSave() {
         scheduleAutoSave();
