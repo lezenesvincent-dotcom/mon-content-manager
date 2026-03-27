@@ -305,19 +305,33 @@
                 const res = await fetch(API_BASE_URL + '/api/fiches');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 const serverData = await res.json();
-                // Merger : localStorage + serveur (localStorage prioritaire pour les fiches locales)
+                // localStorage TOUJOURS prioritaire
                 const localData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
                 fichesData = Object.assign({}, serverData, localData);
-                renderFiches();
                 localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
-                // Si localStorage avait des fiches absentes du serveur → sync auto
-                const localKeys = Object.keys(localData);
-                const serverKeys = Object.keys(serverData);
-                const newLocals = localKeys.filter(k => !serverKeys.includes(k));
-                if (newLocals.length > 0 && ws && ws.readyState === WebSocket.OPEN) {
-                    console.log('Auto-sync ' + newLocals.length + ' fiche(s) locale(s) vers serveur');
-                    ws.send(JSON.stringify({ type: 'fiches_save', data: fichesData }));
+                renderFiches();
+                // Auto-sync fiches locales absentes du serveur
+                const newLocals = Object.keys(localData).filter(k => !serverData[k]);
+                if (newLocals.length > 0) {
+                    const syncFn = () => {
+                        if (ws && ws.readyState === WebSocket.OPEN) {
+                            ws.send(JSON.stringify({ type: 'fiches_save', data: fichesData }));
+                        } else {
+                            fetch(API_BASE_URL + '/api/fiches', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(fichesData)
+                            }).catch(e => console.warn('Auto-sync failed:', e));
+                        }
+                    };
+                    setTimeout(syncFn, 500);
                 }
+            } catch (err) {
+                console.warn('API fetch failed, using localStorage:', err);
+                fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+                renderFiches();
+            }
+        }
             } catch (err) {
                 console.warn('⚠️ API fetch failed, using localStorage cache:', err);
                 fichesData = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
@@ -568,7 +582,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v5 — 2026-03-27 10:27';
+            if (b) b.textContent = 'v6 — 2026-03-27 10:36';
         })();
 
         // 1. Load from localStorage immediately (instant display)
@@ -578,7 +592,7 @@
         // 2. Then connect WebSocket for real-time sync
         connectWebSocket();
 
-        // 3. Also fetch via REST API as backup
+        setTimeout(fetchFichesFromServer, 800);
         fetchFichesFromServer();
     </script>
 </body>
