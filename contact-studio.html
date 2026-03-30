@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-03-30 16:15:19 -->
+    <!-- deploy: 2026-03-30 16:16:55 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -976,6 +976,43 @@
         0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
     }
     .btn-submit:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+    .version-badge-cs {
+        position: fixed; bottom: 6px; left: 10px;
+        font-size: 9px; font-weight: 700;
+        color: rgba(255,255,255,0.35);
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 6px; padding: 2px 7px;
+        z-index: 999; pointer-events: none;
+    }
+
+    .bottom-dock {
+        position: fixed; bottom: 24px; left: 50%;
+        transform: translateX(-50%); z-index: 200;
+        display: flex; align-items: flex-end; gap: 10px;
+        background: rgba(20,22,35,0.78);
+        backdrop-filter: blur(24px) saturate(1.8);
+        -webkit-backdrop-filter: blur(24px) saturate(1.8);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 22px; padding: 10px 16px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+    .bottom-dock .dock-btn {
+        width: 48px; height: 48px; border-radius: 14px;
+        transition: transform 0.15s cubic-bezier(.34,1.56,.64,1);
+    }
+    .bottom-dock .dock-btn:hover { transform: translateY(-8px) scale(1.15); }
+    .bottom-dock .dock-btn .dock-tip {
+        bottom: -26px; font-size: 10px;
+        background: rgba(0,0,0,0.85); padding: 3px 8px; border-radius: 6px;
+    }
+    .bottom-dock .dock-sep {
+        width: 1px; height: 36px; background: rgba(255,255,255,0.1);
+        margin: 0 2px; align-self: center;
+    }
+    body { padding-bottom: 110px; }
+    .panel-hero > div:last-child { display:none!important; }
     </style>
 </head>
 <body>
@@ -1055,6 +1092,7 @@
                         <label>Chaîne</label>
                         <select id="ibmChaine" onchange="onChaineSelect(this)">
                             <option value="">Chaîne...</option>
+                            <option value="__nouveau__" style="font-weight:700;color:#00c864;">➕ Nouveau client...</option>
                             <option value="https://video.ibm.com/channel/dhWaG6DN5VF" selected>Solutions de marchés CIC</option>
                             <option value="https://video.ibm.com/channel/6JAvvSqAWfG">Crédit Mutuel Alliance Fédérale</option>
                             <option value="https://video.ibm.com/channel/wgYXBRG5D89">Ligne métier communication</option>
@@ -1078,6 +1116,16 @@
                             <option value="https://video.ibm.com/channel/tSuADdWrBtZ">Université Mutualiste</option>
                             <option value="https://video.ibm.com/channel/6PFpRYafesd">Webinaire BECM</option>
                         </select>
+                    </div>
+                    <div id="nouveauClientSection" style="display:none;margin-top:6px;">
+                        <div class="field">
+                            <label>Nom du nouveau client</label>
+                            <input type="text" id="nouveauClientNom"
+                                placeholder="Ex: Crédit Mutuel Normandie"
+                                spellcheck="false"
+                                oninput="onNouveauClientInput(this.value)"
+                                style="border-color:rgba(0,200,100,0.3);background:rgba(0,200,100,0.04);">
+                        </div>
                     </div>
                 </div>
                 <div class="toggle-row">
@@ -2502,5 +2550,7 @@
             </div>
         </div>
     </div>
+
+    <div class="version-badge-cs" id="versionBadgeCS">v42 — 30/3/2026 16:16</div>
 </body>
 </html>
