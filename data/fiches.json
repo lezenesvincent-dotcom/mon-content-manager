@@ -66,7 +66,7 @@
     "heureDirect": "13:00",
     "heurePrep": "12:30",
     "prepDuration": 30,
-    "ibmChaine": "https://video.ibm.com/channel/QqqjDP8aRSK",
+    "ibmChaine": "__nouveau__",
     "titreSynthe": "",
     "commentaires": "",
     "toggles": {
@@ -88,7 +88,7 @@
     "application": "IBM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-30T15:37:30.990Z"
+    "updatedAt": "2026-03-30T15:38:46.303Z"
   },
   "fiche-1774619317764": {
     "id": "fiche-1774619317764",
