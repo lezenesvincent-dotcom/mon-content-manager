@@ -410,6 +410,70 @@
         // =============================================
         // RENDER
         // =============================================
+        // ── Vue courante et sélection ──────────────────────
+        var currentView = localStorage.getItem('prestaView') || 'grille';
+        var selectedIds = new Set();
+
+        function setView(v) {
+            currentView = v;
+            localStorage.setItem('prestaView', v);
+            document.getElementById('fichesGrid').classList.toggle('list-view', v === 'liste');
+            document.getElementById('btnGrille').classList.toggle('active', v === 'grille');
+            document.getElementById('btnListe').classList.toggle('active', v === 'liste');
+        }
+
+        function toggleSelect(id, el, event) {
+            event.stopPropagation();
+            if (selectedIds.has(id)) {
+                selectedIds.delete(id);
+                el.classList.remove('checked');
+                el.closest('.fiche-card').classList.remove('selected');
+            } else {
+                selectedIds.add(id);
+                el.classList.add('checked');
+                el.closest('.fiche-card').classList.add('selected');
+            }
+            updateSelectionBar();
+        }
+
+        function updateSelectionBar() {
+            var bar = document.getElementById('selectionBar');
+            var cnt = document.getElementById('selCount');
+            var n = selectedIds.size;
+            bar.classList.toggle('visible', n > 0);
+            cnt.textContent = n + ' sélectionnée' + (n > 1 ? 's' : '');
+        }
+
+        function selectAll() {
+            Object.keys(fichesData).forEach(function(id) { selectedIds.add(id); });
+            document.querySelectorAll('.fiche-checkbox').forEach(function(cb) {
+                cb.classList.add('checked');
+                cb.closest('.fiche-card').classList.add('selected');
+            });
+            updateSelectionBar();
+        }
+
+        function selectNone() {
+            selectedIds.clear();
+            document.querySelectorAll('.fiche-checkbox').forEach(function(cb) {
+                cb.classList.remove('checked');
+                cb.closest('.fiche-card').classList.remove('selected');
+            });
+            updateSelectionBar();
+        }
+
+        function confirmDeleteSelected() {
+            if (selectedIds.size === 0) return;
+            var n = selectedIds.size;
+            _pendingDeleteSelected = new Set(selectedIds);
+            _pendingDeleteAll = false;
+            _pendingDeleteId = null;
+            document.getElementById('confirmTitle').textContent = 'Supprimer ' + n + ' fiche' + (n > 1 ? 's' : '') + ' ?';
+            document.getElementById('confirmMsg').textContent = n + ' prestation' + (n > 1 ? 's' : '') + ' seront définitivement supprimées.';
+            document.getElementById('confirmYesBtn').onclick = executePendingDelete;
+            showConfirm();
+        }
+
         function renderFiches() {
             const grid = document.getElementById('fichesGrid');
             const empty = document.getElementById('emptyState');
@@ -419,10 +483,12 @@
             );
 
             count.textContent = entries.length + ' prestation' + (entries.length > 1 ? 's' : '');
+            grid.classList.toggle('list-view', currentView === 'liste');
 
             if (entries.length === 0) {
                 grid.style.display = 'none';
                 empty.style.display = 'block';
+                selectNone();
                 return;
             }
 
@@ -430,13 +496,17 @@
             empty.style.display = 'none';
 
             grid.innerHTML = entries.map(f => {
+                const isSelected = selectedIds.has(f.id);
                 const toggleTags = Object.entries(f.toggles || {}).map(([k, v]) =>
                     `<span class="fiche-tag ${v === 'oui' ? 'on' : ''}">${k}: ${v || '-'}</span>`
                 ).join('');
-
+                const titre = (f.titre || 'cette fiche').replace(/'/g, "\'");
                 return `
-                <div class="fiche-card" onclick="openFiche('${f.id}')">
-                    <button class="fiche-delete-btn" onclick="event.stopPropagation(); confirmDeleteFiche('${f.id}', '${(f.titre||'cette fiche').replace(/'/g,'\'')}')" title="Supprimer cette fiche">✕</button>
+                <div class="fiche-card${isSelected ? ' selected' : ''}" onclick="openFiche('${f.id}')">
+                    <div class="fiche-checkbox${isSelected ? ' checked' : ''}"
+                        onclick="toggleSelect('${f.id}', this, event)"
+                        title="Sélectionner"></div>
+                    <button class="fiche-delete-btn" onclick="event.stopPropagation(); confirmDeleteFiche('${f.id}', '${titre}')" title="Supprimer">✕</button>
                     <div class="fiche-title">${f.titre || 'Sans titre'}</div>
                     <div class="fiche-date">${f.date || 'Date non définie'}</div>
                     <div class="fiche-field">
@@ -457,6 +527,7 @@
                 </div>`;
             }).join('');
         }
+
 
         // =============================================
         // SUPPRESSION
@@ -598,7 +669,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v13 — 2026-03-27 14:19';
+            if (b) b.textContent = 'v14 — 2026-03-30 09:17';
         })();
 
         // 1. Load from localStorage immediately (instant display)
