@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-03-30 15:18:35 -->
+    <!-- deploy: 2026-03-30 15:29:04 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -1698,13 +1698,16 @@
     async function forceSaveGitHub() {
         var data = collectData();
         var json = JSON.stringify(data);
-        if (json === lastSavedJson)
-            return; // Skip if nothing changed
+        if (json === lastSavedJson) return;
         try {
             var gh = await ghLoadFiches() || {};
             gh[FICHE_ID] = data;
             await ghSaveFiches(gh);
             lastSavedJson = json;
+            // Notifier prestation de recharger depuis GitHub
+            if (wsRender && wsRender.readyState === WebSocket.OPEN) {
+                wsRender.send(JSON.stringify({ type: 'fiches_save', data: gh }));
+            }
         } catch (e) {
             console.warn('GH:', e);
         }
