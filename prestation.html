@@ -628,6 +628,7 @@
         // =============================================
         let _pendingDeleteId = null;
         let _pendingDeleteAll = false;
+        let _pendingDeleteSelected = null;
 
         function showConfirm() {
             const overlay = document.getElementById('confirmOverlay');
@@ -664,11 +665,18 @@
         async function executePendingDelete() {
             var deleteId = _pendingDeleteId;
             var deleteAll = _pendingDeleteAll;
+            var deleteSelected = _pendingDeleteSelected;
+            _pendingDeleteSelected = null;
             closeConfirm();
             if (deleteAll) {
                 fichesData = {};
+                selectedIds.clear();
+            } else if (deleteSelected && deleteSelected.size > 0) {
+                deleteSelected.forEach(function(id) { delete fichesData[id]; selectedIds.delete(id); });
+                updateSelectionBar();
             } else if (deleteId) {
                 delete fichesData[deleteId];
+                selectedIds.delete(deleteId);
             }
             localStorage.setItem('fiches_studio', JSON.stringify(fichesData));
             renderFiches();
@@ -763,7 +771,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v14 — 2026-03-30 09:32';
+            if (b) b.textContent = 'v15 — 2026-03-30 10:51';
         })();
 
         // 1. Load from localStorage immediately (instant display)
