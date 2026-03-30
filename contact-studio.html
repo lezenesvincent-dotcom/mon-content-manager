@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-03-30 15:29:04 -->
+    <!-- deploy: 2026-03-30 15:33:34 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -876,6 +876,59 @@
     .nav-back:hover {
         background: rgba(0, 140, 255, 0.12)
     }
+
+    /* ── Cadenas + modal mot de passe ── */
+    .lock-btn {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.5); font-size: 16px;
+        cursor: pointer; display: flex; align-items: center;
+        justify-content: center; transition: all 0.2s; flex-shrink: 0;
+    }
+    .lock-btn.unlocked {
+        background: rgba(0,200,100,0.15);
+        border-color: rgba(0,200,100,0.4);
+        color: #00c864;
+    }
+    .lock-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+        z-index: 300; display: none; align-items: center; justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+    .lock-overlay.visible { display: flex; }
+    .lock-box {
+        background: rgba(20,22,35,0.98); border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 18px; padding: 28px 32px; width: 280px;
+        display: flex; flex-direction: column; gap: 14px; align-items: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .lock-box-icon { font-size: 32px; }
+    .lock-box-title { font-size: 15px; font-weight: 700; color: #fff; }
+    .lock-box-input {
+        width: 100%; background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+        padding: 10px 14px; color: #fff; font-size: 14px; outline: none;
+        text-align: center; letter-spacing: 2px;
+    }
+    .lock-box-input:focus { border-color: rgba(0,140,255,0.5); }
+    .lock-box-input.error { border-color: rgba(255,60,60,0.6); animation: shake 0.3s; }
+    .lock-box-btns { display: flex; gap: 8px; width: 100%; }
+    .lock-box-ok {
+        flex: 1; padding: 10px; border-radius: 10px;
+        background: linear-gradient(135deg,#0070f3,#0050c8);
+        border: none; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .lock-box-cancel {
+        padding: 10px 16px; border-radius: 10px;
+        background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.5); font-size: 13px; cursor: pointer;
+    }
+    .lock-box-error { font-size: 11px; color: rgba(255,80,80,0.9); min-height: 14px; }
+    @keyframes shake {
+        0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+    }
+    .btn-submit:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -894,7 +947,8 @@
                     </div>
                     <div class="hero-text">Contact Studio</div>
                     <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
-                        <button class="btn-submit" onclick="transmettreParMail()" style="width:auto;padding:6px 14px;font-size:11px;border-radius:8px;box-shadow:none">
+                        <button class="lock-btn" id="lockBtn" onclick="toggleLock()" title="Déverrouiller">🔒</button>
+                        <button class="btn-submit" id="transmettreBtn" onclick="transmettreParMail()" disabled style="width:auto;padding:6px 14px;font-size:11px;border-radius:8px;box-shadow:none;opacity:0.35;cursor:not-allowed;">
                             <svg viewBox="0 0 24 24" style="width:13px;height:13px">
                                 <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                             </svg>
@@ -1248,7 +1302,7 @@
                 </div>
             </div>
 
-            <button class="btn-submit" onclick="transmettreParMail()">
+            <button class="btn-submit" id="transmettreBtn2" onclick="transmettreParMail()" disabled style="opacity:0.35;cursor:not-allowed;">
                 <svg viewBox="0 0 24 24">
                     <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
@@ -2020,6 +2074,59 @@
         b.classList.add('active');
         a.classList.remove('active');
     }, 30000);
+    var _unlocked = false;
+
+    function toggleLock() {
+        if (_unlocked) {
+            // Reverrouiller
+            _unlocked = false;
+            document.getElementById('lockBtn').textContent = '🔒';
+            document.getElementById('lockBtn').classList.remove('unlocked');
+            var b1 = document.getElementById('transmettreBtn');
+            var b2 = document.getElementById('transmettreBtn2');
+            if (b1) { b1.disabled = true; b1.style.opacity='0.35'; b1.style.cursor='not-allowed'; }
+            if (b2) { b2.disabled = true; b2.style.opacity='0.35'; b2.style.cursor='not-allowed'; }
+        } else {
+            openLockModal();
+        }
+    }
+
+    function openLockModal() {
+        var overlay = document.getElementById('lockOverlay');
+        var input = document.getElementById('lockInput');
+        var err = document.getElementById('lockError');
+        overlay.classList.add('visible');
+        input.value = '';
+        err.textContent = '';
+        input.classList.remove('error');
+        setTimeout(function() { input.focus(); }, 100);
+    }
+
+    function closeLockModal() {
+        document.getElementById('lockOverlay').classList.remove('visible');
+    }
+
+    function checkLockPassword() {
+        var input = document.getElementById('lockInput');
+        var err = document.getElementById('lockError');
+        if (input.value.toLowerCase().trim() === 'piano') {
+            _unlocked = true;
+            closeLockModal();
+            document.getElementById('lockBtn').textContent = '🔓';
+            document.getElementById('lockBtn').classList.add('unlocked');
+            var b1 = document.getElementById('transmettreBtn');
+            var b2 = document.getElementById('transmettreBtn2');
+            if (b1) { b1.disabled = false; b1.style.opacity='1'; b1.style.cursor='pointer'; }
+            if (b2) { b2.disabled = false; b2.style.opacity='1'; b2.style.cursor='pointer'; }
+            showToast('✅ Accès déverrouillé');
+        } else {
+            err.textContent = 'Mot de passe incorrect';
+            input.classList.add('error');
+            input.value = '';
+            setTimeout(function() { input.classList.remove('error'); }, 400);
+        }
+    }
+
     </script>
 
     <script>
@@ -2329,5 +2436,20 @@
     </script>
 
     <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v42</div>
+    <!-- Modal mot de passe Transmettre -->
+    <div class="lock-overlay" id="lockOverlay">
+        <div class="lock-box">
+            <div class="lock-box-icon">🔒</div>
+            <div class="lock-box-title">Accès protégé</div>
+            <input class="lock-box-input" id="lockInput" type="password"
+                placeholder="Mot de passe" autocomplete="off"
+                onkeydown="if(event.key==='Enter')checkLockPassword()">
+            <div class="lock-box-error" id="lockError"></div>
+            <div class="lock-box-btns">
+                <button class="lock-box-cancel" onclick="closeLockModal()">Annuler</button>
+                <button class="lock-box-ok" onclick="checkLockPassword()">Valider</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
