@@ -344,30 +344,115 @@
         .dock-btn-selall:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
 
         
-        body { padding-bottom: 60px; }
 
-        /* ── Dock Studio Manager ── */
-        .dock-nav { position:fixed; bottom:10px; right:12px; z-index:9999; display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.06); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.08); border-radius:13px; padding:4px 7px; }
-        .dock-nav a, .dock-nav .dock-btn { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.2s cubic-bezier(0.34,1.56,0.64,1); position:relative; text-decoration:none; border:none; outline:none; }
-        .dock-nav a:hover { transform:scale(1.3) translateY(-3px); z-index:10; }
-        .dock-nav a:hover .dk-tip { opacity:1; transform:translateX(-50%) translateY(0); }
-        .dock-nav svg { width:14px; height:14px; fill:none; stroke:rgba(255,255,255,0.9); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-        .dock-nav .dk-inv svg { stroke:rgba(0,0,0,0.6); }
-        .dk-tip { position:absolute; top:calc(100% + 5px); left:50%; transform:translateX(-50%) translateY(-3px); background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); color:#fff; font-size:8px; font-weight:600; padding:2px 6px; border-radius:4px; white-space:nowrap; opacity:0; pointer-events:none; transition:0.15s; letter-spacing:0.2px; }
-        .dk-act::after { content:""; position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,0.7); }
-        .dk-sep { width:1px; height:20px; background:rgba(255,255,255,0.08); margin:0 1px; }
-        .dk-home { background:rgba(255,255,255,0.08)!important; }
-        .dk-home:hover { background:rgba(255,255,255,0.15)!important; }
-        .dk-home svg { stroke:rgba(255,255,255,0.5)!important; }
-        .dr { background:linear-gradient(135deg,#ff416c,#ff4b2b); }
-        .dp { background:linear-gradient(135deg,#8b5cf6,#6366f1); }
-        .dc { background:linear-gradient(135deg,#00d2ff,#3a7bd5); }
-        .dv { background:linear-gradient(135deg,#667eea,#764ba2); }
-        .dk { background:linear-gradient(135deg,#f093fb,#f5576c); }
-        .dg { background:linear-gradient(135deg,#43e97b,#38f9d7); }
-        .do { background:linear-gradient(135deg,#f6d365,#fda085); }
-        .dd { background:linear-gradient(135deg,#1c2028,#2d2d2d); }
-        .dt { background:linear-gradient(135deg,#0d9488,#06b6d4); }
+
+        
+        /* HIDE_BARS */
+        .actions-bar { display: none !important; }
+        .selection-bar { display: none !important; }
+        body { padding-bottom: 70px; }
+
+        /* ── Dock Studio Manager — style v20, centré en bas ── */
+        .dock-nav {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            background: rgba(20,22,35,0.72);
+            backdrop-filter: blur(24px) saturate(1.8);
+            -webkit-backdrop-filter: blur(24px) saturate(1.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 8px 14px 8px 14px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.07) inset;
+        }
+        .dock-nav a, .dock-nav button.dk-btn {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
+            position: relative;
+            text-decoration: none;
+            border: none; outline: none;
+            flex-shrink: 0;
+        }
+        .dock-nav a:hover, .dock-nav button.dk-btn:hover {
+            transform: translateY(-8px) scale(1.12);
+            z-index: 10;
+        }
+        .dock-nav a:hover .dk-tip, .dock-nav button.dk-btn:hover .dk-tip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .dock-nav svg {
+            width: 18px; height: 18px;
+            fill: none; stroke: rgba(255,255,255,0.92);
+            stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+        }
+        .dock-nav .dk-inv svg { stroke: rgba(0,0,0,0.65); }
+        .dk-tip {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-4px);
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            font-size: 9px; font-weight: 600;
+            padding: 3px 7px; border-radius: 5px;
+            white-space: nowrap; opacity: 0;
+            pointer-events: none; transition: 0.15s;
+            letter-spacing: 0.2px;
+        }
+        .dk-act::after {
+            content: "";
+            position: absolute; bottom: -4px; left: 50%;
+            transform: translateX(-50%);
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.75);
+        }
+        .dk-sep {
+            width: 1px; height: 28px;
+            background: rgba(255,255,255,0.1);
+            margin: 0 2px; align-self: center;
+        }
+        .dk-home { background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+        .dk-home:hover { background: rgba(255,255,255,0.15) !important; }
+        .dk-home svg { stroke: rgba(255,255,255,0.55) !important; }
+        .dr { background: linear-gradient(135deg,#ff416c,#ff4b2b); box-shadow: 0 3px 10px rgba(255,65,108,0.35); }
+        .dp { background: linear-gradient(135deg,#8b5cf6,#6366f1); box-shadow: 0 3px 10px rgba(139,92,246,0.35); }
+        .dc { background: linear-gradient(135deg,#00d2ff,#3a7bd5); box-shadow: 0 3px 10px rgba(0,210,255,0.3); }
+        .dv { background: linear-gradient(135deg,#667eea,#764ba2); box-shadow: 0 3px 10px rgba(102,126,234,0.3); }
+        .dk2 { background: linear-gradient(135deg,#f093fb,#f5576c); box-shadow: 0 3px 10px rgba(240,147,251,0.3); }
+        .dg { background: linear-gradient(135deg,#43e97b,#38f9d7); box-shadow: 0 3px 10px rgba(67,233,123,0.3); }
+        .do { background: linear-gradient(135deg,#f6d365,#fda085); box-shadow: 0 3px 10px rgba(246,211,101,0.3); }
+        .dd { background: linear-gradient(135deg,#1c2028,#2d2d2d); border: 1px solid rgba(255,255,255,0.08); }
+        .dt { background: linear-gradient(135deg,#0d9488,#06b6d4); box-shadow: 0 3px 10px rgba(13,148,136,0.3); }
+
+        /* ── Barre de sélection flottante ── */
+        #selectionBar {
+            position: fixed !important;
+            bottom: 90px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 9998 !important;
+            background: rgba(0,200,255,0.12) !important;
+            border: 1px solid rgba(0,200,255,0.35) !important;
+            border-radius: 14px !important;
+            padding: 10px 20px !important;
+            display: none;
+            align-items: center !important;
+            gap: 12px !important;
+            backdrop-filter: blur(16px) !important;
+            white-space: nowrap !important;
+        }
+        #selectionBar.visible { display: flex !important; }
     </style>
 </head>
 <body>
@@ -835,7 +920,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v21 — 30/3/2026 14:29';
+            if (b) b.textContent = 'v22 — 30/3/2026 14:38';
         })();
 
         // 1. Load from localStorage immediately (instant display)
@@ -876,6 +961,7 @@
             🗑<span class="dock-tip">Tout supprimer</span>
         </button>
     </div>
+
     <nav class="dock-nav">
         <a href="studio-manager.html" class="dk-home">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
@@ -898,7 +984,7 @@
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             <span class="dk-tip">Création</span>
         </a>
-        <a href="manage-ei.html" class="dk">
+        <a href="manage-ei.html" class="dk2">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
             <span class="dk-tip">Manage</span>
         </a>
