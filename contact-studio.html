@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-03-30 17:42:55 -->
+    <!-- deploy: 2026-03-30 17:49:23 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -1215,6 +1215,16 @@
                     <label>Contact</label>
                     <input type="text" id="contactField" placeholder="Nom du contact" spellcheck="false">
                 </div>
+                <div class="row-2">
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" id="contactEmail" placeholder="email@exemple.com" spellcheck="false">
+                    </div>
+                    <div class="field">
+                        <label>Téléphone</label>
+                        <input type="tel" id="contactPhone" placeholder="06 00 00 00 00" spellcheck="false">
+                    </div>
+                </div>
             </div>
             <div class="panel">
                 <div class="section-title">Diffusion</div>
@@ -1288,10 +1298,7 @@
                     <span class="toggle-label-text">Q&R</span>
                     <div class="toggle-switch" data-field="qr" onclick="toggleSwitch(this)"></div>
                 </div>
-                <div class="toggle-row">
-                    <span class="toggle-label-text">Questions visibles</span>
-                    <div class="toggle-switch" data-field="masquerQR" onclick="toggleSwitch(this)"></div>
-                </div>
+
                 <div class="toggle-row">
                     <span class="toggle-label-text">Portail d'inscription</span>
                     <div class="toggle-switch" data-field="portailInscription" onclick="toggleSwitch(this)"></div>
@@ -1359,6 +1366,14 @@
                     <div class="summary-item">
                         <div class="summary-item-label">Contact</div>
                         <div class="summary-item-value" id="summaryContact">—</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-item-label">Email</div>
+                        <div class="summary-item-value" id="summaryEmail" style="font-size:10px;">—</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-item-label">Téléphone</div>
+                        <div class="summary-item-value" id="summaryPhone">—</div>
                     </div>
                     <div class="summary-item">
                         <div class="summary-item-label">Mode</div>
@@ -1671,6 +1686,10 @@
         document.getElementById('summaryPrep').textContent = document.getElementById('heurePrepDisplay').dataset.time || '12:30';
         document.getElementById('summaryEntite').textContent = document.getElementById('entiteGroupe').value || '—';
         document.getElementById('summaryContact').textContent = document.getElementById('contactField').value || '—';
+        var emailEl = document.getElementById('contactEmail');
+        var phoneEl = document.getElementById('contactPhone');
+        if (document.getElementById('summaryEmail')) document.getElementById('summaryEmail').textContent = (emailEl && emailEl.value) ? emailEl.value : '—';
+        if (document.getElementById('summaryPhone')) document.getElementById('summaryPhone').textContent = (phoneEl && phoneEl.value) ? phoneEl.value : '—';
         document.getElementById('summaryMode').textContent = document.getElementById('modeStudio').classList.contains('active') ? 'Studio' : 'Visio';
         var appEl = document.querySelector('[data-field^="app"].active');
         var appMap = {appIBM:'IBM', appZoom:'Zoom', appWebex:'Webex', appTeams:'Teams'};
@@ -1894,6 +1913,8 @@
             date: document.getElementById('dateEvent').value,
             entite: document.getElementById('entiteGroupe').value,
             contact: document.getElementById('contactField').value,
+            contactEmail: document.getElementById('contactEmail') ? document.getElementById('contactEmail').value : '',
+            contactPhone: document.getElementById('contactPhone') ? document.getElementById('contactPhone').value : '',
             heureDirect: document.getElementById('heureDirect').textContent,
             heurePrep: document.getElementById('heurePrepDisplay').dataset.time || '12:30',
             prepDuration: prepDuration,
@@ -2052,6 +2073,10 @@
             document.getElementById('entiteGroupe').value = data.entite;
         if (data.contact)
             document.getElementById('contactField').value = data.contact;
+        if (data.contactEmail && document.getElementById('contactEmail'))
+            document.getElementById('contactEmail').value = data.contactEmail;
+        if (data.contactPhone && document.getElementById('contactPhone'))
+            document.getElementById('contactPhone').value = data.contactPhone;
         if (data.heureDirect)
             document.getElementById('heureDirect').textContent = data.heureDirect;
         if (data.prepDuration)
