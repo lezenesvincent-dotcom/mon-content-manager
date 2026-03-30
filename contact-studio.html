@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-03-30 17:01:40 -->
+    <!-- deploy: 2026-03-30 17:29:30 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -1016,6 +1016,50 @@
 
     
 
+
+    /* ── Dock Studio Manager — centré en bas ── */
+    .dock-nav {
+        position: fixed; bottom: 16px; left: 50%;
+        transform: translateX(-50%); z-index: 9999;
+        display: flex; align-items: flex-end; gap: 6px;
+        background: rgba(20,22,35,0.72);
+        backdrop-filter: blur(24px) saturate(1.8);
+        -webkit-backdrop-filter: blur(24px) saturate(1.8);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 20px; padding: 8px 14px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.07) inset;
+    }
+    .dock-nav a, .dock-nav button.dk-btn {
+        width: 44px; height: 44px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
+        position: relative; text-decoration: none; border: none; outline: none; flex-shrink: 0;
+    }
+    .dock-nav a:hover, .dock-nav button.dk-btn:hover { transform: translateY(-8px) scale(1.12); z-index: 10; }
+    .dock-nav a:hover .dk-tip, .dock-nav button.dk-btn:hover .dk-tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .dock-nav svg { width: 18px; height: 18px; fill: none; stroke: rgba(255,255,255,0.92); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .dock-nav .dk-inv svg { stroke: rgba(0,0,0,0.65); }
+    .dk-tip { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%) translateY(-4px); background: rgba(0,0,0,0.88); color: #fff; font-size: 9px; font-weight: 600; padding: 3px 7px; border-radius: 5px; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.15s; }
+    .dk-act::after { content: ""; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.75); }
+    .dk-sep { width: 1px; height: 28px; background: rgba(255,255,255,0.1); margin: 0 2px; align-self: center; }
+    .dk-home { background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+    .dk-home:hover { background: rgba(255,255,255,0.15) !important; }
+    .dk-home svg { stroke: rgba(255,255,255,0.55) !important; }
+    .dr { background: linear-gradient(135deg,#ff416c,#ff4b2b); }
+    .dp { background: linear-gradient(135deg,#8b5cf6,#6366f1); }
+    .dc { background: linear-gradient(135deg,#00d2ff,#3a7bd5); }
+    .dv { background: linear-gradient(135deg,#667eea,#764ba2); }
+    .dk2 { background: linear-gradient(135deg,#f093fb,#f5576c); }
+    .dg { background: linear-gradient(135deg,#43e97b,#38f9d7); }
+    .do { background: linear-gradient(135deg,#f6d365,#fda085); }
+    .dd { background: linear-gradient(135deg,#1c2028,#2d2d2d); border: 1px solid rgba(255,255,255,0.08); }
+    .dt { background: linear-gradient(135deg,#0d9488,#06b6d4); }
+    /* Cadenas et Transmettre dans le dock */
+    .dk-lock { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #fff; font-size: 18px; }
+    .dk-lock.unlocked { background: linear-gradient(135deg,#00c864,#00a050); box-shadow: 0 3px 10px rgba(0,200,100,0.4); }
+    .dk-send { background: linear-gradient(135deg,#0070f3,#0050c8); box-shadow: 0 3px 10px rgba(0,112,243,0.4); font-size: 18px; }
+    .dk-send:disabled { background: rgba(255,255,255,0.08); box-shadow: none; opacity: 0.4; cursor: not-allowed; transform: none !important; }
+    body { padding-bottom: 80px; }
 
     /* ── Dock Studio Manager — centré en bas ── */
     .dock-nav {
