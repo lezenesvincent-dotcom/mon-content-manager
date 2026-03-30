@@ -342,6 +342,69 @@
         .dock-btn-grid.active { background: rgba(0,200,255,0.2); border-color: rgba(0,200,255,0.5); }
         .dock-btn-selall { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7); width: auto; padding: 0 12px; }
         .dock-btn-selall:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
+
+        /* ── Dock fixe en bas ── */
+        .bottom-dock {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            background: rgba(20,22,35,0.75);
+            backdrop-filter: blur(24px) saturate(1.8);
+            -webkit-backdrop-filter: blur(24px) saturate(1.8);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 22px;
+            padding: 10px 16px 10px 16px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.08) inset;
+        }
+        .bottom-dock .dock-btn {
+            width: 48px; height: 48px; border-radius: 14px;
+            transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), box-shadow 0.15s;
+        }
+        .bottom-dock .dock-btn:hover {
+            transform: translateY(-8px) scale(1.15);
+        }
+        .bottom-dock .dock-btn .dock-tip {
+            bottom: -26px; font-size: 10px;
+            background: rgba(0,0,0,0.85);
+            padding: 3px 8px; border-radius: 6px;
+        }
+        .bottom-dock .dock-sep {
+            width: 1px; height: 36px;
+            background: rgba(255,255,255,0.1);
+            margin: 0 2px; align-self: center;
+        }
+        .bottom-dock .dock-count {
+            font-size: 11px; font-weight: 700;
+            color: rgba(255,255,255,0.4);
+            white-space: nowrap; align-self: center;
+            padding: 0 4px;
+        }
+        .bottom-dock .dock-btn-selall {
+            width: auto; padding: 0 14px;
+            font-size: 11px; font-weight: 700;
+            color: rgba(255,255,255,0.65);
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px; height: 38px;
+        }
+        .bottom-dock .dock-btn-selall:hover {
+            background: rgba(255,255,255,0.13);
+            transform: translateY(-4px);
+        }
+        .bottom-dock .dock-btn-grid {
+            width: 38px; height: 38px; border-radius: 10px;
+            font-size: 16px;
+        }
+        /* Masquer l'ancienne barre d'actions */
+        .actions-bar { display: none !important; }
+        .selection-bar { display: none !important; }
+        /* Padding bas pour ne pas cacher le contenu */
+        body { padding-bottom: 110px; }
     </style>
 </head>
 <body>
@@ -351,7 +414,7 @@
         <span style="margin-left:10px;color:rgba(255,255,255,0.6);font-size:0.72rem;font-weight:bold;background:rgba(255,255,255,0.07);padding:3px 8px;border-radius:6px;" id="versionBadgePresta"></span>
     </div>
 
-    <button class="dock-btn dock-btn-back" onclick="window.location.href='index.html'" style="width:auto;padding:0 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);">
+    <button class="dock-btn dock-btn-back" onclick="window.location.href='studio-manager.html'" style="width:auto;padding:0 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);">
                 ← Retour<span class="dock-tip">Content Manager</span>
             </button>
     <div class="page-wrapper">
@@ -809,7 +872,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v18 — 2026-03-30 13:52';
+            if (b) b.textContent = 'v19 — 2026-03-30 14:12';
         })();
 
         // 1. Load from localStorage immediately (instant display)
@@ -821,5 +884,53 @@
         // Puis rafraîchir depuis GitHub (source de vérité unique)
         refreshFromGitHub();
     </script>
+
+    <!-- ── Dock fixe en bas ── -->
+    <div class="bottom-dock" id="bottomDock">
+        <!-- Retour -->
+        <button class="dock-btn dock-btn-back" onclick="window.location.href='studio-manager.html'">
+            ←<span class="dock-tip">Retour</span>
+        </button>
+        <div class="dock-sep"></div>
+        <!-- Nouvelle fiche -->
+        <button class="dock-btn dock-btn-new" onclick="newFiche()">
+            ➕<span class="dock-tip">Nouvelle fiche</span>
+        </button>
+        <div class="dock-sep"></div>
+        <!-- Compteur -->
+        <span class="dock-count" id="countBadge">—</span>
+        <!-- Vue grille/liste -->
+        <button class="dock-btn dock-btn-grid active" id="btnGrille" onclick="setView('grille')">
+            ⊞<span class="dock-tip">Grille</span>
+        </button>
+        <button class="dock-btn dock-btn-grid" id="btnListe" onclick="setView('liste')">
+            ☰<span class="dock-tip">Liste</span>
+        </button>
+        <!-- Tout sélectionner -->
+        <button class="dock-btn dock-btn-selall" id="btnSelectAll" onclick="toggleSelectAll()">
+            ☑ Tout sélectionner
+        </button>
+        <div class="dock-sep"></div>
+        <!-- Sync -->
+        <button class="dock-btn dock-btn-sync" id="syncBtn" onclick="forceSyncToServer()">
+            ☁️<span class="dock-tip">Synchroniser</span>
+        </button>
+        <!-- Supprimer tout -->
+        <button class="dock-btn dock-btn-delete" onclick="confirmDeleteAll()">
+            🗑<span class="dock-tip">Tout supprimer</span>
+        </button>
+    </div>
+    <!-- Barre de sélection (au-dessus du dock) -->
+    <div id="selectionBar" class="selection-bar" style="
+        position:fixed; bottom:100px; left:50%; transform:translateX(-50%);
+        z-index:99; background:rgba(0,200,255,0.12);
+        border:1px solid rgba(0,200,255,0.35); border-radius:14px;
+        padding:10px 20px; display:none; align-items:center; gap:12px;
+        backdrop-filter:blur(16px); white-space:nowrap;">
+        <span class="sel-count" id="selCount">0 sélectionnée(s)</span>
+        <button class="sel-btn sel-btn-all" onclick="selectAll()">Tout sélectionner</button>
+        <button class="sel-btn sel-btn-none" onclick="selectNone()">Tout décocher</button>
+        <button class="sel-btn sel-btn-delete" onclick="confirmDeleteSelected()">🗑 Supprimer la sélection</button>
+    </div>
 </body>
 </html>
