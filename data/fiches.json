@@ -1909,7 +1909,7 @@
     "date": "2026-03-30",
     "entite": "",
     "contact": "",
-    "heureDirect": "13:00",
+    "heureDirect": "00:00",
     "heurePrep": "12:30",
     "prepDuration": 30,
     "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
@@ -1934,6 +1934,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-30T13:10:30.057Z"
+    "updatedAt": "2026-03-30T13:10:32.565Z"
   }
 }
