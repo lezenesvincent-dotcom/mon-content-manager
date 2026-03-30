@@ -253,11 +253,23 @@
 
         <div class="actions-bar">
             <a href="contact-studio.html" class="new-btn" onclick="newFiche()">＋ Nouvelle fiche</a>
-            <div style="display:flex;align-items:center;gap:12px;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <span class="count-badge" id="countBadge"></span>
+                <div class="view-toggle">
+                    <button class="view-btn active" id="btnGrille" onclick="setView('grille')" title="Vue grille">⊞</button>
+                    <button class="view-btn" id="btnListe" onclick="setView('liste')" title="Vue liste">☰</button>
+                </div>
                 <button onclick="forceSyncToServer()" id="syncBtn" style="background:rgba(0,200,255,0.12);color:#00d4ff;border:1px solid rgba(0,200,255,0.3);padding:10px 16px;border-radius:10px;font-size:0.8rem;font-weight:bold;cursor:pointer;">☁️ Sync</button>
                 <button class="delete-all-btn" onclick="confirmDeleteAll()">🗑 Tout supprimer</button>
             </div>
+        </div>
+        <!-- Barre de sélection -->
+        <div class="selection-bar" id="selectionBar">
+            <span class="sel-count" id="selCount">0 sélectionnée(s)</span>
+            <button class="sel-btn sel-btn-all" onclick="selectAll()">Tout sélectionner</button>
+            <button class="sel-btn sel-btn-none" onclick="selectNone()">Tout décocher</button>
+            <button class="sel-btn sel-btn-delete" onclick="confirmDeleteSelected()">🗑 Supprimer la sélection</button>
+        </div>
         </div>
 
         <!-- Modal confirmation suppression -->
@@ -669,7 +681,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v14 — 2026-03-30 09:17';
+            if (b) b.textContent = 'v14 — 2026-03-30 09:32';
         })();
 
         // 1. Load from localStorage immediately (instant display)
