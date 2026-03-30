@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-03-30 15:33:34 -->
+    <!-- deploy: 2026-03-30 15:51:47 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -859,6 +859,56 @@
         background: rgba(255, 255, 255, 0.08)
     }
 
+    /* ── Boutons style Dock macOS ── */
+    .dock-btn {
+        width: 42px; height: 42px;
+        border-radius: 12px;
+        border: none;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; text-decoration: none;
+        font-size: 20px;
+        transition: transform 0.15s, box-shadow 0.15s;
+        flex-shrink: 0;
+        position: relative;
+    }
+    .dock-btn:hover {
+        transform: translateY(-3px) scale(1.08);
+    }
+    .dock-btn:active { transform: scale(0.95); }
+    .dock-btn .dock-tooltip {
+        position: absolute; bottom: -22px; left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.75); color: #fff;
+        font-size: 9px; font-weight: 600;
+        padding: 2px 7px; border-radius: 5px;
+        white-space: nowrap; opacity: 0;
+        pointer-events: none; transition: opacity 0.15s;
+    }
+    .dock-btn:hover .dock-tooltip { opacity: 1; }
+
+    /* Couleurs spécifiques */
+    .dock-btn-lock {
+        background: rgba(255,255,255,0.1);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .dock-btn-lock.unlocked {
+        background: linear-gradient(135deg, #00c864, #00a050);
+        box-shadow: 0 4px 14px rgba(0,200,100,0.4);
+    }
+    .dock-btn-send {
+        background: linear-gradient(135deg, #0070f3, #0050c8);
+        box-shadow: 0 4px 14px rgba(0,112,243,0.5);
+    }
+    .dock-btn-send:disabled {
+        background: rgba(255,255,255,0.08);
+        box-shadow: none; opacity: 0.4;
+        cursor: not-allowed; transform: none;
+    }
+    .dock-btn-home {
+        background: linear-gradient(135deg, #7c3aed, #5b21b6);
+        box-shadow: 0 4px 14px rgba(124,58,237,0.45);
+    }
+
     .nav-back {
         display: inline-flex;
         align-items: center;
@@ -872,13 +922,10 @@
         border: 1px solid rgba(0, 140, 255, 0.15);
         border-radius: 8px
     }
-
-    .nav-back:hover {
-        background: rgba(0, 140, 255, 0.12)
-    }
+    .nav-back:hover { background: rgba(0, 140, 255, 0.12) }
 
     /* ── Cadenas + modal mot de passe ── */
-    .lock-btn {
+    /* .lock-btn remplacé par .dock-btn */ .lock-btn-legacy {
         width: 36px; height: 36px; border-radius: 10px;
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.1);
@@ -946,15 +993,19 @@
                         </svg>
                     </div>
                     <div class="hero-text">Contact Studio</div>
-                    <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
-                        <button class="lock-btn" id="lockBtn" onclick="toggleLock()" title="Déverrouiller">🔒</button>
-                        <button class="btn-submit" id="transmettreBtn" onclick="transmettreParMail()" disabled style="width:auto;padding:6px 14px;font-size:11px;border-radius:8px;box-shadow:none;opacity:0.35;cursor:not-allowed;">
-                            <svg viewBox="0 0 24 24" style="width:13px;height:13px">
-                                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                            </svg>
-                             Transmettre
+                    <div style="margin-left:auto;display:flex;gap:8px;align-items:center;padding-right:2px;">
+                        <button class="dock-btn dock-btn-lock" id="lockBtn" onclick="toggleLock()">
+                            🔒
+                            <span class="dock-tooltip">Déverrouiller</span>
                         </button>
-                        <a href="#" class="nav-back" onclick="saveAndGo('prestation.html');return false;">← Accueil</a>
+                        <button class="dock-btn dock-btn-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>
+                            ✉️
+                            <span class="dock-tooltip">Transmettre</span>
+                        </button>
+                        <button class="dock-btn dock-btn-home" onclick="saveAndGo('prestation.html')">
+                            🏠
+                            <span class="dock-tooltip">Accueil</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1302,7 +1353,7 @@
                 </div>
             </div>
 
-            <button class="btn-submit" id="transmettreBtn2" onclick="transmettreParMail()" disabled style="opacity:0.35;cursor:not-allowed;">
+            <button class="btn-submit" id="transmettreBtn2" onclick="transmettreParMail()" disabled style="opacity:0.4;cursor:not-allowed;border-radius:14px;font-size:14px;padding:14px;gap:10px;">
                 <svg viewBox="0 0 24 24">
                     <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
@@ -2080,7 +2131,7 @@
         if (_unlocked) {
             // Reverrouiller
             _unlocked = false;
-            document.getElementById('lockBtn').textContent = '🔒';
+            document.getElementById('lockBtn').innerHTML = '🔒<span class="dock-tooltip">Déverrouiller</span>';
             document.getElementById('lockBtn').classList.remove('unlocked');
             var b1 = document.getElementById('transmettreBtn');
             var b2 = document.getElementById('transmettreBtn2');
@@ -2112,7 +2163,7 @@
         if (input.value.toLowerCase().trim() === 'piano') {
             _unlocked = true;
             closeLockModal();
-            document.getElementById('lockBtn').textContent = '🔓';
+            document.getElementById('lockBtn').innerHTML = '🔓<span class="dock-tooltip">Verrouiller</span>';
             document.getElementById('lockBtn').classList.add('unlocked');
             var b1 = document.getElementById('transmettreBtn');
             var b2 = document.getElementById('transmettreBtn2');
