@@ -740,7 +740,7 @@
                         title="Sélectionner"></div>
                     <button class="fiche-delete-btn" onclick="event.stopPropagation(); confirmDeleteFiche('${f.id}', '${titre}')" title="Supprimer">✕</button>
                     <div class="fiche-title">${f.titre || 'Sans titre'}</div>
-                    <div class="fiche-date">${f.date || 'Date non définie'}</div>
+                    <div class="fiche-date">${f.date ? (function(d){ var p=d.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; })(f.date) : 'Date non définie'}</div>
                     <div class="fiche-field">
                         <span class="fiche-label">Entité groupe</span>
                         <span class="fiche-value">${f.entite || '-'}</span>
@@ -872,7 +872,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v19 — 2026-03-30 14:12';
+            if (b) b.textContent = 'v20 — 30/3/2026 14:15';
         })();
 
         // 1. Load from localStorage immediately (instant display)
