@@ -1939,7 +1939,7 @@
   "1774876792973": {
     "id": "1774876792973",
     "titre": "dada",
-    "date": "",
+    "date": "2026-03-30",
     "entite": "",
     "contact": "",
     "heureDirect": "13:00",
@@ -1967,6 +1967,6 @@
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-03-30T13:19:59.224Z"
+    "updatedAt": "2026-03-30T13:20:02.244Z"
   }
 }
