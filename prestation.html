@@ -316,6 +316,32 @@
         }
         .fiches-grid.list-view .fiche-delete-btn { position:static !important; }
         .fiches-grid.list-view .fiche-checkbox { position:static !important; }
+
+        /* ── Boutons style Dock macOS ── */
+        .dock-btn {
+            width: 44px; height: 44px; border-radius: 12px; border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 20px; text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.15s;
+            flex-shrink: 0; position: relative;
+        }
+        .dock-btn:hover { transform: translateY(-3px) scale(1.1); }
+        .dock-btn:active { transform: scale(0.93); }
+        .dock-btn .dock-tip {
+            position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: #fff; font-size: 9px; font-weight: 600;
+            padding: 2px 7px; border-radius: 5px; white-space: nowrap;
+            opacity: 0; pointer-events: none; transition: opacity 0.15s;
+        }
+        .dock-btn:hover .dock-tip { opacity: 1; }
+        .dock-btn-new    { background: linear-gradient(135deg,#00c864,#009e50); box-shadow: 0 4px 14px rgba(0,200,100,0.4); }
+        .dock-btn-sync   { background: linear-gradient(135deg,#00bcd4,#0097a7); box-shadow: 0 4px 14px rgba(0,188,212,0.4); }
+        .dock-btn-delete { background: linear-gradient(135deg,#ef4444,#b91c1c); box-shadow: 0 4px 14px rgba(239,68,68,0.4); }
+        .dock-btn-back   { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .dock-btn-grid   { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+        .dock-btn-grid.active { background: rgba(0,200,255,0.2); border-color: rgba(0,200,255,0.5); }
+        .dock-btn-selall { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7); width: auto; padding: 0 12px; }
+        .dock-btn-selall:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -325,7 +351,9 @@
         <span style="margin-left:10px;color:rgba(255,255,255,0.6);font-size:0.72rem;font-weight:bold;background:rgba(255,255,255,0.07);padding:3px 8px;border-radius:6px;" id="versionBadgePresta"></span>
     </div>
 
-    <a href="index.html" class="nav-back">← Retour Content Manager</a>
+    <button class="dock-btn dock-btn-back" onclick="window.location.href='index.html'" style="width:auto;padding:0 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);">
+                ← Retour<span class="dock-tip">Content Manager</span>
+            </button>
     <div class="page-wrapper">
         <div class="header">
             <img src="logo-cic.png" alt="CIC">
@@ -333,20 +361,29 @@
             <div class="sub">Toutes les fiches de réservation</div>
         </div>
 
-        <div class="actions-bar">
-            <a href="contact-studio.html" class="new-btn" onclick="newFiche()">＋ Nouvelle fiche</a>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                <span class="count-badge" id="countBadge"></span>
-                <div class="view-toggle">
-                    <button class="view-btn active" id="btnGrille" onclick="setView('grille')" title="Vue grille">⊞</button>
-                    <button class="view-btn" id="btnListe" onclick="setView('liste')" title="Vue liste">☰</button>
-                </div>
-                <button id="btnSelectAll" onclick="toggleSelectAll()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 12px;color:rgba(255,255,255,0.6);cursor:pointer;font-size:0.8rem;font-weight:bold;">☑ Tout sélectionner</button>
-                <button onclick="forceSyncToServer()" id="syncBtn" style="background:rgba(0,200,255,0.12);color:#00d4ff;border:1px solid rgba(0,200,255,0.3);padding:10px 16px;border-radius:10px;font-size:0.8rem;font-weight:bold;cursor:pointer;">☁️ Sync</button>
-                <button class="delete-all-btn" onclick="confirmDeleteAll()">🗑 Tout supprimer</button>
-            </div>
+                <div class="actions-bar" style="gap:10px;align-items:center;padding-bottom:8px;">
+            <button class="dock-btn dock-btn-new" onclick="newFiche()" title="Nouvelle fiche">
+                ➕<span class="dock-tip">Nouvelle fiche</span>
+            </button>
+            <div style="flex:1;"></div>
+            <span class="count-badge" id="countBadge"></span>
+            <button class="dock-btn dock-btn-grid active" id="btnGrille" onclick="setView('grille')">
+                ⊞<span class="dock-tip">Vue grille</span>
+            </button>
+            <button class="dock-btn dock-btn-grid" id="btnListe" onclick="setView('liste')">
+                ☰<span class="dock-tip">Vue liste</span>
+            </button>
+            <button class="dock-btn-selall dock-btn" id="btnSelectAll" onclick="toggleSelectAll()">
+                ☑ Tout sélectionner
+            </button>
+            <button class="dock-btn dock-btn-sync" id="syncBtn" onclick="forceSyncToServer()">
+                ☁️<span class="dock-tip">Synchroniser</span>
+            </button>
+            <button class="dock-btn dock-btn-delete" onclick="confirmDeleteAll()">
+                🗑<span class="dock-tip">Tout supprimer</span>
+            </button>
         </div>
-        <!-- Barre de sélection -->
+                <!-- Barre de sélection -->
         <div class="selection-bar" id="selectionBar">
             <span class="sel-count" id="selCount">0 sélectionnée(s)</span>
             <button class="sel-btn sel-btn-all" onclick="selectAll()">Tout sélectionner</button>
@@ -772,7 +809,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v17 — 2026-03-30 13:36';
+            if (b) b.textContent = 'v18 — 2026-03-30 13:52';
         })();
 
         // 1. Load from localStorage immediately (instant display)
