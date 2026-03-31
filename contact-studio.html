@@ -1719,6 +1719,107 @@
             </div>
 
         </div>
+
+
+        <!-- === COLONNE DROITE : Facturation + Livraison === -->
+        <div class="right-col">
+
+            <!-- FACTURATION -->
+            <div class="right-panel">
+                <div class="right-panel-title">
+                    <div class="rp-icon rp-icon-fact">&#x1F4B6;</div>
+                    <span>Facturation</span>
+                    <div class="rp-toggle on" id="factToggle" onclick="this.classList.toggle('on');document.getElementById('factContent').style.display=this.classList.contains('on')?'':'none'" style="margin-left:auto;"></div>
+                </div>
+                <div id="factContent">
+                    <div class="rp-row">
+                        <span class="rp-label" style="font-size:12px;font-weight:700;color:#fff;">Ev&#233;nement factur&#233;</span>
+                        <div class="rp-toggle on" id="eventFacture"></div>
+                    </div>
+                    <div class="rp-row">
+                        <div class="rp-toggle on" id="tLive" onclick="rpTgl(this);calcTotal()"></div>
+                        <span class="rp-label">Live</span>
+                        <div class="rp-pills">
+                            <span class="rp-pill" onclick="selPill(this,'live');calcTotal()">Direct simple</span>
+                            <span class="rp-pill sel" onclick="selPill(this,'live');calcTotal()">Direct complexe</span>
+                        </div>
+                        <span class="rp-price on" id="pLive">1500 HT</span>
+                    </div>
+                    <div class="rp-row">
+                        <div class="rp-toggle" id="tDemi" onclick="rpTgl(this);calcTotal()"></div>
+                        <span class="rp-label">Demie heure supp.</span>
+                        <span class="rp-price" id="pDemi">400 HT</span>
+                    </div>
+                    <div class="rp-row">
+                        <div class="rp-toggle" id="tMontage" onclick="rpTgl(this);calcTotal()"></div>
+                        <span class="rp-label">Nouveau montage</span>
+                        <span class="rp-price" id="pMontage">500 HT</span>
+                    </div>
+                    <div class="rp-row">
+                        <div class="rp-toggle" id="tDecli" onclick="rpTgl(this);calcTotal()"></div>
+                        <span class="rp-label">D&#233;clinaison film unitaire</span>
+                        <span class="rp-price" id="pDecli">&#x2014;</span>
+                    </div>
+                    <div class="rp-row">
+                        <div class="rp-toggle on" id="tST" onclick="rpTgl(this);calcTotal()"></div>
+                        <span class="rp-label">Sous-titres</span>
+                        <span class="rp-price on" id="pST">400 HT</span>
+                    </div>
+                    <div class="rp-row">
+                        <div class="rp-toggle on" id="tGen" onclick="rpTgl(this);calcTotal()"></div>
+                        <span class="rp-label">Cr&#233;ation g&#233;n&#233;rique</span>
+                        <div class="rp-pills" style="width:100%;padding-left:36px;">
+                            <span class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Std+logo 500</span>
+                            <span class="rp-pill sel" onclick="selPill(this,'gen');calcTotal()">Std+perso 870</span>
+                            <span class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Original 1500</span>
+                        </div>
+                    </div>
+                    <div class="rp-row">
+                        <div class="rp-toggle on" id="tFilm" onclick="rpTgl(this);calcTotal()"></div>
+                        <span class="rp-label">Cr&#233;ation de film</span>
+                        <div class="rp-pills" style="width:100%;padding-left:36px;">
+                            <span class="rp-pill sel" onclick="selPill(this,'film');calcTotal()">Film 8400</span>
+                            <span class="rp-pill" onclick="selPill(this,'film');calcTotal()">Vid&#233;o 3200</span>
+                        </div>
+                    </div>
+                    <div class="rp-total">
+                        <span class="rp-total-label">Total estim&#233;</span>
+                        <span class="rp-total-price" id="factTotal">11 270 EUR HT</span>
+                    </div>
+                    <div class="rp-note">Tournage au studio &#x2013; Script pr&#233;alable &#x2013; Habillage vid&#233;o sonore et graphique</div>
+                </div>
+            </div>
+
+            <!-- LIVRAISON -->
+            <div class="right-panel">
+                <div class="right-panel-title">
+                    <div class="rp-icon rp-icon-livr">&#x1F4E6;</div>
+                    <span>Livraison</span>
+                    <span style="font-size:10px;color:rgba(255,255,255,0.3);margin-left:4px;">T&#233;l&#233;chargements</span>
+                </div>
+                <div class="livr-grid">
+                    <div class="livr-file" onclick="showToast('T&#233;l&#233;chargement...')">
+                        <span class="livr-icon">&#x1F4C4;</span>Fichier 1 dispo
+                    </div>
+                    <div class="livr-file unavail"><span class="livr-icon">&#x1F4C4;</span>Fichier 2 command&#233;</div>
+                    <div class="livr-file unavail"><span class="livr-icon">&#x1F4C4;</span>Fichier 3</div>
+                    <div class="livr-file unavail"><span class="livr-icon">&#x1F4C4;</span>Fichier 4</div>
+                </div>
+                <button class="livr-cmd" onclick="window.location.href='mailto:eiwebevent@e-i.com?subject=Commande+nouvelle+version'">
+                    Commander une nouvelle version
+                </button>
+                <div style="margin-top:10px;">
+                    <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:6px;">Versions collaboratif</div>
+                    <div class="livr-grid">
+                        <div class="livr-file"><span class="livr-icon">&#x1F3AC;</span>V1 collab</div>
+                        <div class="livr-file unavail"><span class="livr-icon">&#x1F3AC;</span>V2 collab</div>
+                        <div class="livr-file unavail"><span class="livr-icon">&#x1F3AC;</span>V3 collab</div>
+                        <div class="livr-file unavail"><span class="livr-icon">&#x1F3AC;</span>V4 collab</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
 </div>
     </div>
     <div id="timePickerOverlay" class="tp-overlay" style="display:none;" onclick="closeTimePicker()">
@@ -2898,6 +2999,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v46 31/3/2026 11:31</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v46 31/3/2026 11:36</div>
 </body>
 </html>
