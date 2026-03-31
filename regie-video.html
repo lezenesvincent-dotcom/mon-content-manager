@@ -1586,7 +1586,10 @@
         gap: 6px;
         padding: 8px;
         overflow-x: auto;
+        overflow-y: hidden;
         scrollbar-width: thin;
+        min-height: 80px;
+        align-items: stretch;
     }
     .morning-ppt-card {
         flex-shrink: 0;
@@ -1657,7 +1660,7 @@
         text-align: center;
         width: 100%;
     }
-    .morning-ppt-list::-webkit-scrollbar { height: 3px; }
+    .morning-ppt-list::-webkit-scrollbar { height: 5px; }
     .morning-ppt-list::-webkit-scrollbar-track { background: transparent; }
     .morning-ppt-list::-webkit-scrollbar-thumb { background: rgba(255,200,60,0.3); border-radius: 2px; }
     </style>
@@ -1837,7 +1840,7 @@
                     <span class="ppt-count" id="morningPptCount">0</span>
                     <span class="ppt-status" id="morningPptStatus">Chargement...</span>
                 </div>
-                <div class="morning-ppt-list" id="morningPptList" style="display:none;">
+                <div class="morning-ppt-list" id="morningPptList" style="display:flex;">
                     <div class="morning-ppt-empty">Aucun PPT détecté</div>
                 </div>
             </div>
@@ -3683,7 +3686,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v86 — 2026-03-27 10:33:49</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v87 — 2026-03-31 10:30:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
