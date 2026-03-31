@@ -219,7 +219,7 @@
             display: none;
             position: fixed; inset: 0;
             background: rgba(0,0,0,0.7);
-            z-index: 1000;
+            z-index: 10000;
             align-items: center; justify-content: center;
         }
         .confirm-overlay.active { display: flex; }
@@ -894,6 +894,7 @@
 
         function newFiche() {
             localStorage.removeItem('currentFicheId');
+            window.location.href = 'contact-studio.html';
         }
 
         // =============================================
@@ -928,7 +929,7 @@
         // Badge version
         (function() {
             var b = document.getElementById('versionBadgePresta');
-            if (b) b.textContent = 'v25 — 30/3/2026 15:34';
+            if (b) b.textContent = 'v26 — 30/3/2026 16:35';
         })();
 
         // 1. Load from localStorage immediately (instant display)
