@@ -3686,7 +3686,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v87 — 2026-03-31 10:30:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v88 — 2026-03-31 11:45:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4189,7 +4189,7 @@
             var raw = c.contenu;
             // Splitter sur \n (JSON escape) ou retour chariot réel
             var lines = raw.split(/\n|\r\n|\r/).filter(function(l){ return l.trim().length > 0; });
-            return lines.map(function(l){ return { text: l.trim() }; });
+            return lines.map(function(l){ return l.trim(); });
         }
 
         // Sujet = titre de la carte (1ère ligne si pas de sujet dédié)
@@ -4218,6 +4218,8 @@
         };
 
         if (typeof selectContent === 'function') { selectContent(item); }
+        // Forcer l'affichage des vignettes P1-P4
+        if (typeof renderPageCards === 'function') { renderPageCards([item]); }
 
         // Feedback visuel
         document.querySelectorAll('.morning-ppt-card').forEach(function(c, i) {
