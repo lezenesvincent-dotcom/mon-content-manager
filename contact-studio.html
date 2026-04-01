@@ -1221,6 +1221,24 @@
     .main-area { flex: 1 1 0% !important; min-width: 380px !important; }
     .sidebar { flex: 0 0 300px !important; width: 300px !important; }
     .right-col { flex: 0 0 380px !important; min-width: 380px !important; }
+    <style id="v53">
+    /* v53 spotify style */
+    body { background: #111118; }
+    .layout { max-width: 1800px; gap: 0; align-items: stretch; }
+    .sidebar { flex: 0 0 300px; width: 300px; position: relative; background: #111118; border-radius: 0; padding: 16px; overflow: hidden; }
+    .sidebar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 35%; background: linear-gradient(180deg, rgba(52,160,90,0.55) 0%, rgba(30,100,55,0.20) 60%, transparent 100%); pointer-events: none; z-index: 0; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, rgba(52,160,90,0.3) 0%, rgba(52,160,90,0.08) 40%, transparent 100%); z-index: 1; }
+    .sidebar > * { position: relative; z-index: 2; }
+    .main-area { flex: 1 1 0%; min-width: 380px; position: relative; background: #111118; border-radius: 0; padding: 16px; overflow: hidden; }
+    .main-area::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30%; background: linear-gradient(180deg, rgba(200,155,40,0.50) 0%, rgba(150,110,20,0.18) 55%, transparent 100%); pointer-events: none; z-index: 0; }
+    .main-area::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, rgba(200,155,40,0.3) 0%, rgba(200,155,40,0.08) 40%, transparent 100%); z-index: 1; }
+    .main-area > * { position: relative; z-index: 2; }
+    .right-col { flex: 0 0 380px; min-width: 380px; position: relative; background: #111118; border-radius: 0; padding: 16px; overflow: hidden; }
+    .right-col::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 28%; background: linear-gradient(180deg, rgba(0,90,200,0.50) 0%, rgba(0,60,140,0.18) 55%, transparent 100%); pointer-events: none; z-index: 0; }
+    .right-col > * { position: relative; z-index: 2; }
+    .right-panel { background: rgba(0,20,60,0.3); border-color: rgba(0,90,200,0.12); }
+    .rp-total { background: rgba(0,112,243,0.12); border-color: rgba(0,112,243,0.2); }
+    .rp-total-price { color: #60a5fa; }</style>
     </style>
 </head>
 <body>
@@ -2920,6 +2938,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v52 — 1/4/2026 15:27</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v53 — 1/4/2026 15:32</div>
 </body>
 </html>
