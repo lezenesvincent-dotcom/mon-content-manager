@@ -1216,6 +1216,11 @@
     .rp-total-price { color: #60a5fa; }
     .mode-card.active { background: linear-gradient(135deg, rgba(99,102,241,0.4), rgba(124,58,237,0.4)); border-color: rgba(124,58,237,0.6); }
 </style>
+
+    /* v52 layout fix */
+    .main-area { flex: 1 1 0% !important; min-width: 380px !important; }
+    .sidebar { flex: 0 0 300px !important; width: 300px !important; }
+    .right-col { flex: 0 0 380px !important; min-width: 380px !important; }
     </style>
 </head>
 <body>
@@ -2555,6 +2560,22 @@
         if(typeof calcTotal==='function') calcTotal();
         if(typeof scheduleAutoSave==='function') scheduleAutoSave();
     }
+    var _ds = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d'un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
+    var _dc = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l'événement)';
+    function setDirect(type) {
+        var btnS=document.getElementById('btnSimple'),btnC=document.getElementById('btnComplex'),d=document.getElementById('directDesc');
+        if (type==='simple') {
+            if(btnS){btnS.style.background='linear-gradient(135deg,#f6d365,#fda085)';btnS.style.color='rgba(0,0,0,0.75)';btnS.style.boxShadow='0 2px 8px rgba(246,211,101,0.3)';}
+            if(btnC){btnC.style.background='transparent';btnC.style.color='rgba(255,255,255,0.4)';btnC.style.boxShadow='none';}
+            if(d) d.textContent=_ds;
+        } else {
+            if(btnC){btnC.style.background='linear-gradient(135deg,#ff416c,#ff4b2b)';btnC.style.color='#fff';btnC.style.boxShadow='0 2px 8px rgba(255,65,108,0.35)';}
+            if(btnS){btnS.style.background='transparent';btnS.style.color='rgba(255,255,255,0.4)';btnS.style.boxShadow='none';}
+            if(d) d.textContent=_dc;
+        }
+        if(typeof calcTotal==='function') calcTotal();
+        if(typeof scheduleAutoSave==='function') scheduleAutoSave();
+    }
     </script>
 
     <script>
@@ -2899,6 +2920,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v51 — 1/4/2026 15:01</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v52 — 1/4/2026 15:27</div>
 </body>
 </html>
