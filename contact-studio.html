@@ -1250,6 +1250,17 @@
     .sidebar { flex: 0 0 280px; width: 280px; min-width: 280px; }
     .main-area { flex: 1 1 0%; min-width: 350px; }
     .right-col { flex: 0 0 380px; min-width: 340px; max-width: 420px; }</style>
+    <style id="v55">
+    /* v55 fix pseudo-elements bloquant les clics */
+    .sidebar::before, .sidebar::after,
+    .main-area::before, .main-area::after,
+    .right-col::before, .right-col::after {
+        pointer-events: none;
+    }
+    .sidebar > *, .main-area > *, .right-col > * {
+        position: relative;
+        z-index: 2;
+    }</style>
     </style>
 </head>
 <body>
@@ -2949,6 +2960,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v54 — 1/4/2026 15:36</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v55 — 1/4/2026 15:39</div>
 </body>
 </html>
