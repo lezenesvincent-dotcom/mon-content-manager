@@ -1243,6 +1243,13 @@
     /* v54 - col3 flexible */
     .main-area { flex: 0 0 460px !important; min-width: 0 !important; }
     .right-col { flex: 1 1 0% !important; min-width: 340px !important; }</style>
+    <style id="v54">
+    /* v54 - layout centré + col2 flexible */
+    body { display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 0; margin: 0; }
+    .layout { width: 100%; max-width: 1800px; margin: 0 auto; flex: 1; }
+    .sidebar { flex: 0 0 280px; width: 280px; min-width: 280px; }
+    .main-area { flex: 1 1 0%; min-width: 350px; }
+    .right-col { flex: 0 0 380px; min-width: 340px; max-width: 420px; }</style>
     </style>
 </head>
 <body>
@@ -2942,6 +2949,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v54 — 1/4/2026 15:34</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v54 — 1/4/2026 15:36</div>
 </body>
 </html>
