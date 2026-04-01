@@ -1261,6 +1261,17 @@
         position: relative;
         z-index: 2;
     }</style>
+    <style id="v55">
+    /* v55 fix pseudo-elements bloquant les clics */
+    .sidebar::before, .sidebar::after,
+    .main-area::before, .main-area::after,
+    .right-col::before, .right-col::after {
+        pointer-events: none;
+    }
+    .sidebar > *, .main-area > *, .right-col > * {
+        position: relative;
+        z-index: 2;
+    }</style>
     </style>
 </head>
 <body>
@@ -2960,6 +2971,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v55 — 1/4/2026 15:39</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v55 — 1/4/2026 15:46</div>
 </body>
 </html>
