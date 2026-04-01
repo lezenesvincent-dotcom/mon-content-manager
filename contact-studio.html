@@ -60,28 +60,9 @@
         z-index: 1
     }
 
-    .layout {
-        display: flex;
-        gap: 0;
-        max-width: 1800px;
-        margin: 0 auto;
-        padding: 10px 14px;
-        position: relative;
-        z-index: 2;
-        height: 100vh
-    }/* LEFT SIDEBAR */
+    .layout { display: flex; gap: 0; max-width: 1800px; margin: 0 auto; padding: 12px 0 80px 0; min-height: 100vh; align-items: flex-start; }/* LEFT SIDEBAR */
 
-    .sidebar {
-        width: 280px;
-        flex: 0 0 280px;
-        flex-shrink: 0;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255,255,255,0.1) transparent;
-        position: relative;
-    }
+    .sidebar { width: 280px; flex: 0 0 280px; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
 
     .sidebar::-webkit-scrollbar {
         width: 4px
@@ -385,17 +366,7 @@
         border: none
     }/* RIGHT MAIN AREA */
 
-    .main-area {
-        flex: 1 1 0%;
-        min-width: 350px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255,255,255,0.1) transparent;
-        position: relative;
-    }
+    .main-area { flex: 1 1 0%; min-width: 350px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; position: relative; }
 
     .main-area::-webkit-scrollbar {
         width: 4px
@@ -1151,17 +1122,7 @@
     .dk-send:disabled { background: rgba(255,255,255,0.08); box-shadow: none; opacity: 0.4; cursor: not-allowed; transform: none !important; }
     body { padding-bottom: 80px; }
     
-    .right-col {
-        flex: 0 0 380px;
-        min-width: 340px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255,255,255,0.1) transparent;
-        position: relative;
-    }.right-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:14px;backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);}.right-panel-title{font-size:14px;font-weight:800;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;}.rp-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}.rp-icon-fact{background:linear-gradient(135deg,#667eea,#764ba2);}.rp-icon-livr{background:linear-gradient(135deg,#0070f3,#0050c8);}.rp-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;}.rp-row:last-child{border-bottom:none;}.rp-label{flex:1;font-size:11px;font-weight:600;color:rgba(255,255,255,0.75);min-width:80px;}.rp-price{font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);white-space:nowrap;}.rp-price.on{color:#a78bfa;}.rp-toggle{width:28px;height:16px;border-radius:8px;background:rgba(255,255,255,0.1);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;}.rp-toggle.on{background:#7c3aed;}.rp-toggle::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform 0.2s;}.rp-toggle.on::after{transform:translateX(12px);}.rp-pills{display:flex;gap:4px;flex-wrap:wrap;}.rp-pill{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.15s;}.rp-pill.sel{background:rgba(124,58,237,0.25);border-color:rgba(124,58,237,0.5);color:#c4b5fd;}.livr-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}.livr-file{background:rgba(0,112,243,0.12);border:1px solid rgba(0,112,243,0.25);border-radius:10px;padding:8px;text-align:center;cursor:pointer;font-size:10px;font-weight:600;color:rgba(100,180,255,0.9);transition:background 0.15s;}.livr-file:hover{background:rgba(0,112,243,0.22);}.livr-file .livr-icon{font-size:18px;display:block;margin-bottom:3px;}.livr-file.unavail{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.07);color:rgba(255,255,255,0.2);cursor:default;}.livr-cmd{margin-top:8px;width:100%;padding:8px;background:rgba(0,112,243,0.15);border:1px solid rgba(0,112,243,0.3);border-radius:10px;color:#60a5fa;font-size:11px;font-weight:700;cursor:pointer;}.rp-total{margin-top:10px;padding:8px 12px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);border-radius:10px;display:flex;justify-content:space-between;align-items:center;}.rp-total-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);}.rp-total-price{font-size:16px;font-weight:800;color:#a78bfa;}.rp-note{font-size:9px;color:rgba(255,255,255,0.3);margin-top:6px;line-height:1.5;}
+    .right-col { flex: 0 0 380px; min-width: 340px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; position: relative; }.right-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:14px;backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);}.right-panel-title{font-size:14px;font-weight:800;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;}.rp-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}.rp-icon-fact{background:linear-gradient(135deg,#667eea,#764ba2);}.rp-icon-livr{background:linear-gradient(135deg,#0070f3,#0050c8);}.rp-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;}.rp-row:last-child{border-bottom:none;}.rp-label{flex:1;font-size:11px;font-weight:600;color:rgba(255,255,255,0.75);min-width:80px;}.rp-price{font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);white-space:nowrap;}.rp-price.on{color:#a78bfa;}.rp-toggle{width:28px;height:16px;border-radius:8px;background:rgba(255,255,255,0.1);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;}.rp-toggle.on{background:#7c3aed;}.rp-toggle::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform 0.2s;}.rp-toggle.on::after{transform:translateX(12px);}.rp-pills{display:flex;gap:4px;flex-wrap:wrap;}.rp-pill{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.15s;}.rp-pill.sel{background:rgba(124,58,237,0.25);border-color:rgba(124,58,237,0.5);color:#c4b5fd;}.livr-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}.livr-file{background:rgba(0,112,243,0.12);border:1px solid rgba(0,112,243,0.25);border-radius:10px;padding:8px;text-align:center;cursor:pointer;font-size:10px;font-weight:600;color:rgba(100,180,255,0.9);transition:background 0.15s;}.livr-file:hover{background:rgba(0,112,243,0.22);}.livr-file .livr-icon{font-size:18px;display:block;margin-bottom:3px;}.livr-file.unavail{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.07);color:rgba(255,255,255,0.2);cursor:default;}.livr-cmd{margin-top:8px;width:100%;padding:8px;background:rgba(0,112,243,0.15);border:1px solid rgba(0,112,243,0.3);border-radius:10px;color:#60a5fa;font-size:11px;font-weight:700;cursor:pointer;}.rp-total{margin-top:10px;padding:8px 12px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);border-radius:10px;display:flex;justify-content:space-between;align-items:center;}.rp-total-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);}.rp-total-price{font-size:16px;font-weight:800;color:#a78bfa;}.rp-note{font-size:9px;color:rgba(255,255,255,0.3);margin-top:6px;line-height:1.5;}
     
     
     .main-area { flex: 0 0 460px !important; min-width: 0 !important; }
@@ -1228,6 +1189,29 @@
     .rp-total { background: rgba(0,112,243,0.12); border-color: rgba(0,112,243,0.2); }
     .rp-total-price { color: #60a5fa; }
 
+
+    /* ===== v57 CLEAN ===== */
+    body { background: #111118; }
+
+    /* Dégradés Spotify haut seulement + séparateurs */
+    .sidebar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 35%; background: linear-gradient(180deg, rgba(52,160,90,0.55) 0%, transparent 100%); pointer-events: none; z-index: 0; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, rgba(52,160,90,0.3) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+    .main-area::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30%; background: linear-gradient(180deg, rgba(200,155,40,0.50) 0%, transparent 100%); pointer-events: none; z-index: 0; }
+    .main-area::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, rgba(200,155,40,0.3) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+    .right-col::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 28%; background: linear-gradient(180deg, rgba(0,90,200,0.50) 0%, transparent 100%); pointer-events: none; z-index: 0; }
+
+    /* CRITIQUE : pseudo-éléments jamais cliquables */
+    .sidebar::before, .sidebar::after,
+    .main-area::before, .main-area::after,
+    .right-col::before { pointer-events: none !important; }
+
+    /* Tous les enfants au-dessus des dégradés */
+    .sidebar > *, .main-area > *, .right-col > * { position: relative; z-index: 1; }
+
+    /* Panels */
+    .right-panel { background: rgba(0,20,60,0.35); border-color: rgba(0,90,200,0.15); }
+    .rp-total { background: rgba(0,112,243,0.12); border-color: rgba(0,112,243,0.2); }
+    .rp-total-price { color: #60a5fa; }
     </style>
 </head>
 <body>
@@ -1660,8 +1644,7 @@
                     <span>Facturation</span>
                     <div class="rp-toggle on" id="factToggle" onclick="this.classList.toggle('on');document.getElementById('factContent').style.display=this.classList.contains('on')?'':'none'" style="margin-left:auto;"></div>
                 </div>
-                <div id="factContent">
-                    <div class="rp-row"><span class="rp-label" style="font-size:12px;font-weight:700;color:#fff;">Ev&#233;nement factur&#233;</span><div class="rp-toggle on" id="eventFacture"></div></div>
+                <div id="factContent"></div>
                     <div class="rp-row">
                         <div class="rp-toggle on" id="tLive" onclick="rpTgl(this);calcTotal()"></div>
                         <span class="rp-label">Live</span>
@@ -2927,6 +2910,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v56 — 1/4/2026 15:47</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v57 — 1/4/2026 15:55</div>
 </body>
 </html>
