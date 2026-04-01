@@ -1193,6 +1193,29 @@
     .mode-card:hover { transform: translateY(-2px); }
     .mode-card.active { background: linear-gradient(135deg, rgba(99,102,241,.4), rgba(124,58,237,.4)); border-color: rgba(124,58,237,.6); box-shadow: 0 4px 14px rgba(124,58,237,.25); }
 </style>
+    <style id="v50">
+    body { background: #111118; background-image: radial-gradient(ellipse at 80% 10%, rgba(180,80,40,0.18) 0%, transparent 60%); }
+    .layout { max-width: 1800px; gap: 0; }
+    .sidebar { width: 300px; flex: 0 0 300px; background: linear-gradient(160deg, #1a3a2a 0%, #0d2218 60%, #111118 100%); border-radius: 20px 0 0 20px; border-right: 1px solid rgba(67,233,123,0.12); padding: 16px; }
+    .main-area { flex: 1 1 0%; min-width: 380px; background: linear-gradient(160deg, #2a2010 0%, #1a1508 60%, #111118 100%); border-right: 1px solid rgba(246,211,101,0.12); padding: 16px; }
+    .right-col { flex: 0 0 380px; min-width: 380px; background: linear-gradient(160deg, #0a1a2e 0%, #060e1a 60%, #111118 100%); border-radius: 0 20px 20px 0; border-left: 1px solid rgba(0,112,243,0.15); padding: 16px; }
+    .rp-pill { padding: 5px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; border: none; cursor: pointer; transition: all .2s; white-space: nowrap; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+    .rp-pill:hover { transform: translateY(-1px); background: rgba(255,255,255,0.14); color: #fff; }
+    .rp-pill.sel { background: linear-gradient(135deg, #43e97b, #38f9d7); color: rgba(0,0,0,0.75); box-shadow: 0 3px 10px rgba(67,233,123,0.4); }
+    [onclick*=live].sel { background: linear-gradient(135deg, #ff416c, #ff4b2b); color: #fff; box-shadow: 0 3px 10px rgba(255,65,108,0.4); }
+    [onclick*=gen].sel { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; box-shadow: 0 3px 10px rgba(102,126,234,0.4); }
+    [onclick*=film].sel { background: linear-gradient(135deg, #f093fb, #f5576c); color: #fff; box-shadow: 0 3px 10px rgba(240,147,251,0.4); }
+    .livr-cmd { background: linear-gradient(135deg, #0070f3, #0050c8); color: #fff; font-weight: 800; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,112,243,0.35); border: none; width: 100%; padding: 11px 16px; cursor: pointer; font-size: 12px; margin-top: 10px; }
+    .livr-cmd:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,112,243,0.5); }
+    .livr-file { background: rgba(0,112,243,0.1); border: 1px solid rgba(0,112,243,0.2); border-radius: 12px; color: #60a5fa; font-weight: 700; transition: all .2s; }
+    .livr-file:hover { background: rgba(0,112,243,0.22); transform: translateY(-2px); }
+    .livr-file.unavail { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.2); cursor: default; }
+    .livr-file.unavail:hover { transform: none; }
+    .right-panel { background: rgba(0,30,70,0.4); border-color: rgba(0,112,243,0.15); }
+    .rp-total { background: rgba(0,112,243,0.12); border-color: rgba(0,112,243,0.25); }
+    .rp-total-price { color: #60a5fa; }
+    .mode-card.active { background: linear-gradient(135deg, rgba(99,102,241,0.4), rgba(124,58,237,0.4)); border-color: rgba(124,58,237,0.6); }
+</style>
     </style>
 </head>
 <body>
@@ -2851,6 +2874,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v50 — 1/4/2026 14:47</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v50 — 1/4/2026 14:52</div>
 </body>
 </html>
