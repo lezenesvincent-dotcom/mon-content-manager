@@ -1239,6 +1239,10 @@
     .right-panel { background: rgba(0,20,60,0.3); border-color: rgba(0,90,200,0.12); }
     .rp-total { background: rgba(0,112,243,0.12); border-color: rgba(0,112,243,0.2); }
     .rp-total-price { color: #60a5fa; }</style>
+    <style id="v54fix">
+    /* v54 - col3 flexible */
+    .main-area { flex: 0 0 460px !important; min-width: 0 !important; }
+    .right-col { flex: 1 1 0% !important; min-width: 340px !important; }</style>
     </style>
 </head>
 <body>
@@ -2938,6 +2942,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v53 — 1/4/2026 15:32</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v54 — 1/4/2026 15:34</div>
 </body>
 </html>
