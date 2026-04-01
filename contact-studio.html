@@ -1653,7 +1653,11 @@
                     <div class="rp-row">
                         <div class="rp-toggle on" id="tLive" onclick="rpTgl(this);calcTotal()"></div>
                         <span class="rp-label">Live</span>
-                        <div class="rp-pills"><span class="rp-pill" onclick="selPill(this,'live');calcTotal()">Direct simple</span><span class="rp-pill sel" onclick="selPill(this,'live');calcTotal()">Direct complexe</span></div>
+                        <div id="directSlider" style="display:flex;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:3px;gap:0;width:100%;margin-top:4px;">
+                            <button id="btnSimple" onclick="setDirect('simple')" style="flex:1;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;border:none;cursor:pointer;transition:all .25s;letter-spacing:.2px;background:transparent;color:rgba(255,255,255,0.4);">Direct simple</button>
+                            <button id="btnComplex" onclick="setDirect('complexe')" style="flex:1;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;border:none;cursor:pointer;transition:all .25s;letter-spacing:.2px;background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff;box-shadow:0 2px 8px rgba(255,65,108,0.35);">Direct complexe</button>
+                        </div>
+                        <div id="directDesc" style="width:100%;margin-top:8px;font-size:9.5px;line-height:1.6;color:rgba(255,255,255,0.5);padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.06);">Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l'événement)</div>
                         <span class="rp-price on" id="pLive">1500 HT</span>
                     </div>
                     <div class="rp-row"><div class="rp-toggle" id="tDemi" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Demie heure supp.</span><span class="rp-price" id="pDemi">400 HT</span></div>
@@ -2530,6 +2534,27 @@
         if(document.getElementById('tFilm')&&document.getElementById('tFilm').classList.contains('on')){var sf=document.querySelector('[onclick*="film"].sel');t+=(sf&&sf.textContent.includes('3200'))?3200:8400;}
         var el=document.getElementById('factTotal');if(el)el.textContent=t.toLocaleString('fr-FR')+' EUR HT';
     }
+    var _descSimple = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d'un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
+    var _descComplex = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l'événement)';
+    function setDirect(type) {
+        var btnS = document.getElementById('btnSimple');
+        var btnC = document.getElementById('btnComplex');
+        var d = document.getElementById('directDesc');
+        var p = document.getElementById('pLive');
+        if (type === 'simple') {
+            btnS.style.cssText += ';background:linear-gradient(135deg,#f6d365,#fda085);color:rgba(0,0,0,0.75);box-shadow:0 2px 8px rgba(246,211,101,0.3);';
+            btnC.style.cssText += ';background:transparent;color:rgba(255,255,255,0.4);box-shadow:none;';
+            if(d) d.textContent = _descSimple;
+            if(p) p.textContent = '1200 HT';
+        } else {
+            btnC.style.cssText += ';background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff;box-shadow:0 2px 8px rgba(255,65,108,0.35);';
+            btnS.style.cssText += ';background:transparent;color:rgba(255,255,255,0.4);box-shadow:none;';
+            if(d) d.textContent = _descComplex;
+            if(p) p.textContent = '1500 HT';
+        }
+        if(typeof calcTotal==='function') calcTotal();
+        if(typeof scheduleAutoSave==='function') scheduleAutoSave();
+    }
     </script>
 
     <script>
@@ -2874,6 +2899,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v50 — 1/4/2026 14:52</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v51 — 1/4/2026 15:01</div>
 </body>
 </html>
