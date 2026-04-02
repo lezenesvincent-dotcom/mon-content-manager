@@ -1649,26 +1649,19 @@
                     <div class="rp-toggle on" id="factToggle" onclick="this.classList.toggle('on');document.getElementById('factContent').style.display=this.classList.contains('on')?'':'none'" style="margin-left:auto;"></div>
                 </div>
                 <div id="factContent">
-                    <div class="rp-row"><span class="rp-label" style="font-size:12px;font-weight:700;color:#fff;">Ev&#233;nement factur&#233;</span><div class="rp-toggle on" id="eventFacture"></div></div>
-                    <div class="rp-row">
-                        <div class="rp-toggle on" id="tLive" onclick="rpTgl(this);calcTotal()"></div>
-                        <span class="rp-label">Live</span>
-                        <div class="rp-pills"><span class="rp-pill" onclick="selPill(this,'live');calcTotal()">Direct simple</span><span class="rp-pill sel" onclick="selPill(this,'live');calcTotal()">Direct complexe</span></div>
-                        <span class="rp-price on" id="pLive">1500 HT</span>
-                    </div>
-                    <div class="rp-row"><div class="rp-toggle" id="tDemi" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Demie heure supp.</span><span class="rp-price" id="pDemi">400 HT</span></div>
-                    <div class="rp-row"><div class="rp-toggle" id="tMontage" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Nouveau montage</span><span class="rp-price" id="pMontage">500 HT</span></div>
-                    <div class="rp-row"><div class="rp-toggle" id="tDecli" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">D&#233;clinaison film unitaire</span><span class="rp-price" id="pDecli">&#x2014;</span></div>
-                    <div class="rp-row"><div class="rp-toggle on" id="tST" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Sous-titres</span><span class="rp-price on" id="pST">400 HT</span></div>
-                    <div class="rp-row">
-                        <div class="rp-toggle on" id="tGen" onclick="rpTgl(this);calcTotal()"></div>
-                        <span class="rp-label">Cr&#233;ation g&#233;n&#233;rique</span>
-                        <div class="rp-pills" style="width:100%;padding-left:36px;"><span class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Std+logo 500</span><span class="rp-pill sel" onclick="selPill(this,'gen');calcTotal()">Std+perso 870</span><span class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Original 1500</span></div>
-                    </div>
-                    <div class="rp-row">
+                    <div class="rp-row" style="flex-wrap:wrap;gap:6px;">
                         <div class="rp-toggle on" id="tFilm" onclick="rpTgl(this);calcTotal()"></div>
-                        <span class="rp-label">Cr&#233;ation de film</span>
-                        <div class="rp-pills" style="width:100%;padding-left:36px;"><span class="rp-pill sel" onclick="selPill(this,'film');calcTotal()">Film 8400</span><span class="rp-pill" onclick="selPill(this,'film');calcTotal()">Vid&#233;o 3200</span></div>
+                        <span class="rp-label">Création de film</span>
+                        <div style="width:100%;display:flex;gap:4px;flex-wrap:wrap;padding-left:36px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:3px 0;">
+                                <button class="rp-pill sel" onclick="selPill(this,'film');calcTotal()">Film long</button>
+                                <span class="rp-price on" style="min-width:60px;text-align:right;">6400 HT</span>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:3px 0;">
+                                <button class="rp-pill" onclick="selPill(this,'film');calcTotal()">Vidéo courte</button>
+                                <span class="rp-price" style="min-width:60px;text-align:right;">2000 HT</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="rp-total"><span class="rp-total-label">Total estim&#233;</span><span class="rp-total-price" id="factTotal">11 270 EUR HT</span></div>
                     <div class="rp-note">Tournage au studio &#x2013; Script pr&#233;alable &#x2013; Habillage vid&#233;o sonore et graphique</div>
@@ -2530,6 +2523,23 @@
         if(document.getElementById('tFilm')&&document.getElementById('tFilm').classList.contains('on')){var sf=document.querySelector('[onclick*="film"].sel');t+=(sf&&sf.textContent.includes('3200'))?3200:8400;}
         var el=document.getElementById('factTotal');if(el)el.textContent=t.toLocaleString('fr-FR')+' EUR HT';
     }
+    var _ds = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d’un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
+    var _dc = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l’événement)';
+    function setDirect(type) {
+        var btnS=document.getElementById('btnSimple'),btnC=document.getElementById('btnComplex'),d=document.getElementById('directDesc'),p=document.getElementById('pLive');
+        if(type==='simple'){
+            if(btnS){btnS.style.background='linear-gradient(135deg,#f6d365,#fda085)';btnS.style.color='rgba(0,0,0,0.75)';}
+            if(btnC){btnC.style.background='transparent';btnC.style.color='rgba(255,255,255,0.4)';btnC.style.boxShadow='none';}
+            if(d) d.textContent=_ds;
+            if(p) p.textContent='1500 HT';
+        } else {
+            if(btnC){btnC.style.background='linear-gradient(135deg,#ff416c,#ff4b2b)';btnC.style.color='#fff';btnC.style.boxShadow='0 2px 8px rgba(255,65,108,0.35)';}
+            if(btnS){btnS.style.background='transparent';btnS.style.color='rgba(255,255,255,0.4)';}
+            if(d) d.textContent=_dc;
+            if(p) p.textContent='1900 HT';
+        }
+        if(typeof calcTotal==='function') calcTotal();
+    }
     </script>
 
     <script>
@@ -2874,6 +2884,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v58 — 2/4/2026 08:16</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v59 — 2/4/2026 08:29</div>
 </body>
 </html>
