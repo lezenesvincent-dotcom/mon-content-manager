@@ -29,16 +29,9 @@
       "synthes": true
     },
     "application": null,
-    "intervenants": [
-      {
-        "nom": "Jhvdubvq,kebtkivbkqgdvlk",
-        "prenom": "",
-        "fonction": "",
-        "entreprise": ""
-      }
-    ],
+    "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-04-02T06:38:51.127Z"
+    "updatedAt": "2026-04-02T06:38:55.127Z"
   },
   "1774944871163": {
     "id": "1774944871163",
