@@ -1204,9 +1204,9 @@
         pointer-events:none !important; z-index:0; }
 
     /* CRITIQUE : les enfants directs au-dessus des pseudo-éléments */
-    .sidebar > * { position:relative !important; z-index:1 !important; }
-    .main-area > * { position:relative !important; z-index:1 !important; }
-    .right-col > * { position:relative !important; z-index:1 !important; }
+    
+    
+    
 
     /* Panels */
     .right-panel { background:rgba(0,20,60,0.35); border-color:rgba(0,90,200,0.15); }
@@ -1223,16 +1223,15 @@
     .sidebar { position: relative; overflow: hidden; }
     .sidebar::before { content:''; position:absolute; top:0; left:0; right:0; height:35%; background:linear-gradient(180deg,rgba(52,160,90,0.45) 0%,transparent 100%); pointer-events:none; z-index:0; }
     .sidebar::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:linear-gradient(180deg,rgba(52,160,90,0.25) 0%,transparent 50%); pointer-events:none; z-index:0; }
-    .sidebar > * { position:relative; z-index:1; }
+    
     .main-area { position:relative; overflow:hidden; flex:1 1 0% !important; min-width:340px !important; }
     .main-area::before { content:''; position:absolute; top:0; left:0; right:0; height:30%; background:linear-gradient(180deg,rgba(246,211,101,0.45) 0%,rgba(253,160,133,0.15) 50%,transparent 100%); pointer-events:none; z-index:0; }
     .main-area::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:linear-gradient(180deg,rgba(246,211,101,0.3) 0%,transparent 50%); pointer-events:none; z-index:0; }
-    .main-area > * { position:relative; z-index:1; }
+    
     .right-col { position:relative; overflow:hidden; flex:0 0 380px !important; min-width:340px !important; }
     .right-col::before { content:''; position:absolute; top:0; left:0; right:0; height:28%; background:linear-gradient(180deg,rgba(0,90,200,0.45) 0%,transparent 100%); pointer-events:none; z-index:0; }
-    .right-col > * { position:relative; z-index:1; }
+    
 
-    /* v68 : labels facturation blanc fort */
     .rp-label { color: rgba(255,255,255,0.92) !important; font-weight: 600 !important; }
     .rp-price { color: rgba(255,255,255,0.55) !important; font-weight: 700 !important; }
     .rp-price.on { color: #a78bfa !important; }
@@ -1244,6 +1243,17 @@
     [onclick*="live"].sel { background: linear-gradient(135deg,#ff416c,#ff4b2b) !important; color: #fff !important; }
     .rp-note { color: rgba(255,255,255,0.45) !important; }
     .right-panel-title span { color: #fff !important; }
+
+    /* v69 : fix pointer-events - AUCUNE règle > * */
+    .sidebar::before, .sidebar::after,
+    .main-area::before, .main-area::after,
+    .right-col::before, .right-col::after { pointer-events: none !important; }
+    /* Labels facturation blanc fort - sans toucher au layout */
+    .rp-label { color: rgba(255,255,255,0.92) !important; font-weight: 600 !important; }
+    .rp-price { color: rgba(255,255,255,0.55) !important; }
+    .rp-price.on { color: #a78bfa !important; }
+    .rp-pill { color: rgba(255,255,255,0.65) !important; font-weight: 700 !important; }
+    .rp-pill.sel { color: #fff !important; }
     </style>
 </head>
 <body>
@@ -3104,6 +3114,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v68 — 2/4/2026 10:42</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v69 — 2/4/2026 10:48</div>
 </body>
 </html>
