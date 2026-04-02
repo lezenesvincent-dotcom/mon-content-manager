@@ -1665,6 +1665,29 @@
                 </div>
                 <div id="factContent">
                     <div class="rp-row" style="flex-wrap:wrap;gap:6px;">
+                        <div class="rp-toggle on" id="tLive" onclick="rpTgl(this);calcTotal()"></div>
+                        <span class="rp-label">Live</span>
+                        <span class="rp-price on" id="pLive" style="margin-left:auto;">1500 HT</span>
+                        <div style="width:100%;display:flex;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:3px;">
+                            <button id="btnSimple" onclick="setDirect('simple')" style="flex:1;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;border:none;cursor:pointer;transition:all .25s;background:transparent;color:rgba(255,255,255,0.4);">Direct simple</button>
+                            <button id="btnComplex" onclick="setDirect('complexe')" style="flex:1;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;border:none;cursor:pointer;transition:all .25s;background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff;box-shadow:0 2px 8px rgba(255,65,108,0.35);">Direct complexe</button>
+                        </div>
+                        <div id="directDesc" style="width:100%;font-size:9.5px;line-height:1.6;color:rgba(255,255,255,0.5);padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.06);">Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l’événement)</div>
+                    </div>
+                    <div class="rp-row"><div class="rp-toggle" id="tDemi" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Demie heure supp.</span><span class="rp-price" id="pDemi" style="margin-left:auto;">400 HT</span></div>
+                    <div class="rp-row"><div class="rp-toggle" id="tMontage" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Nouveau montage</span><span class="rp-price" id="pMontage" style="margin-left:auto;">500 HT</span></div>
+                    <div class="rp-row"><div class="rp-toggle" id="tDecli" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Déclinaison film unitaire</span><span class="rp-price" id="pDecli" style="margin-left:auto;">—</span></div>
+                    <div class="rp-row"><div class="rp-toggle on" id="tST" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Sous-titres</span><span class="rp-price on" id="pST" style="margin-left:auto;">400 HT</span></div>
+                    <div class="rp-row" style="flex-wrap:wrap;gap:6px;">
+                        <div class="rp-toggle on" id="tGen" onclick="rpTgl(this);calcTotal()"></div>
+                        <span class="rp-label">Création générique</span>
+                        <div style="width:100%;display:flex;flex-direction:column;gap:4px;padding-left:36px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;"><button class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique groupe + logo</button><span class="rp-price" style="min-width:60px;text-align:right;">500 HT</span></div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;"><button class="rp-pill sel" onclick="selPill(this,'gen');calcTotal()">Générique groupe personnalisé</button><span class="rp-price on" style="min-width:60px;text-align:right;">870 HT</span></div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;"><button class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique original</button><span class="rp-price" style="min-width:60px;text-align:right;">1500 HT</span></div>
+                        </div>
+                    </div>
+                    <div class="rp-row" style="flex-wrap:wrap;gap:6px;">
                         <div class="rp-toggle on" id="tFilm" onclick="rpTgl(this);calcTotal()"></div>
                         <span class="rp-label">Création de film</span>
                         <div style="width:100%;display:flex;gap:4px;flex-wrap:wrap;padding-left:36px;">
@@ -2948,6 +2971,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v64 — 2/4/2026 09:35</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v65 — 2/4/2026 09:43</div>
 </body>
 </html>
