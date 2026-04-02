@@ -60,9 +60,28 @@
         z-index: 1
     }
 
-    .layout { display: flex; gap: 0; max-width: 1800px; margin: 0 auto; padding: 12px 0 80px 0; min-height: 100vh; align-items: flex-start; }/* LEFT SIDEBAR */
+    .layout {
+        display: flex;
+        gap: 14px;
+        max-width: 1800px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        position: relative;
+        z-index: 2;
+        height: 100vh
+    }/* LEFT SIDEBAR */
 
-    .sidebar { width: 280px; flex: 0 0 280px; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+    .sidebar {
+        width: 240px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow-y: auto;
+        padding-right: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent
+    }
 
     .sidebar::-webkit-scrollbar {
         width: 4px
@@ -366,7 +385,16 @@
         border: none
     }/* RIGHT MAIN AREA */
 
-    .main-area { flex: 1 1 0%; min-width: 350px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; position: relative; }
+    .main-area {
+        flex: 0 0 460px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent
+    }
 
     .main-area::-webkit-scrollbar {
         width: 4px
@@ -1122,7 +1150,7 @@
     .dk-send:disabled { background: rgba(255,255,255,0.08); box-shadow: none; opacity: 0.4; cursor: not-allowed; transform: none !important; }
     body { padding-bottom: 80px; }
     
-    .right-col { flex: 0 0 380px; min-width: 340px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; position: relative; }.right-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:14px;backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);}.right-panel-title{font-size:14px;font-weight:800;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;}.rp-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}.rp-icon-fact{background:linear-gradient(135deg,#667eea,#764ba2);}.rp-icon-livr{background:linear-gradient(135deg,#0070f3,#0050c8);}.rp-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;}.rp-row:last-child{border-bottom:none;}.rp-label{flex:1;font-size:11px;font-weight:600;color:rgba(255,255,255,0.75);min-width:80px;}.rp-price{font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);white-space:nowrap;}.rp-price.on{color:#a78bfa;}.rp-toggle{width:28px;height:16px;border-radius:8px;background:rgba(255,255,255,0.1);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;}.rp-toggle.on{background:#7c3aed;}.rp-toggle::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform 0.2s;}.rp-toggle.on::after{transform:translateX(12px);}.rp-pills{display:flex;gap:4px;flex-wrap:wrap;}.rp-pill{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.15s;}.rp-pill.sel{background:rgba(124,58,237,0.25);border-color:rgba(124,58,237,0.5);color:#c4b5fd;}.livr-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}.livr-file{background:rgba(0,112,243,0.12);border:1px solid rgba(0,112,243,0.25);border-radius:10px;padding:8px;text-align:center;cursor:pointer;font-size:10px;font-weight:600;color:rgba(100,180,255,0.9);transition:background 0.15s;}.livr-file:hover{background:rgba(0,112,243,0.22);}.livr-file .livr-icon{font-size:18px;display:block;margin-bottom:3px;}.livr-file.unavail{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.07);color:rgba(255,255,255,0.2);cursor:default;}.livr-cmd{margin-top:8px;width:100%;padding:8px;background:rgba(0,112,243,0.15);border:1px solid rgba(0,112,243,0.3);border-radius:10px;color:#60a5fa;font-size:11px;font-weight:700;cursor:pointer;}.rp-total{margin-top:10px;padding:8px 12px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);border-radius:10px;display:flex;justify-content:space-between;align-items:center;}.rp-total-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);}.rp-total-price{font-size:16px;font-weight:800;color:#a78bfa;}.rp-note{font-size:9px;color:rgba(255,255,255,0.3);margin-top:6px;line-height:1.5;}
+    .right-col{flex:1;min-width:300px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;scrollbar-width:thin;padding-bottom:80px;}.right-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:14px;backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);}.right-panel-title{font-size:14px;font-weight:800;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;}.rp-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}.rp-icon-fact{background:linear-gradient(135deg,#667eea,#764ba2);}.rp-icon-livr{background:linear-gradient(135deg,#0070f3,#0050c8);}.rp-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;}.rp-row:last-child{border-bottom:none;}.rp-label{flex:1;font-size:11px;font-weight:600;color:rgba(255,255,255,0.75);min-width:80px;}.rp-price{font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);white-space:nowrap;}.rp-price.on{color:#a78bfa;}.rp-toggle{width:28px;height:16px;border-radius:8px;background:rgba(255,255,255,0.1);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;}.rp-toggle.on{background:#7c3aed;}.rp-toggle::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform 0.2s;}.rp-toggle.on::after{transform:translateX(12px);}.rp-pills{display:flex;gap:4px;flex-wrap:wrap;}.rp-pill{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.15s;}.rp-pill.sel{background:rgba(124,58,237,0.25);border-color:rgba(124,58,237,0.5);color:#c4b5fd;}.livr-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}.livr-file{background:rgba(0,112,243,0.12);border:1px solid rgba(0,112,243,0.25);border-radius:10px;padding:8px;text-align:center;cursor:pointer;font-size:10px;font-weight:600;color:rgba(100,180,255,0.9);transition:background 0.15s;}.livr-file:hover{background:rgba(0,112,243,0.22);}.livr-file .livr-icon{font-size:18px;display:block;margin-bottom:3px;}.livr-file.unavail{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.07);color:rgba(255,255,255,0.2);cursor:default;}.livr-cmd{margin-top:8px;width:100%;padding:8px;background:rgba(0,112,243,0.15);border:1px solid rgba(0,112,243,0.3);border-radius:10px;color:#60a5fa;font-size:11px;font-weight:700;cursor:pointer;}.rp-total{margin-top:10px;padding:8px 12px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);border-radius:10px;display:flex;justify-content:space-between;align-items:center;}.rp-total-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);}.rp-total-price{font-size:16px;font-weight:800;color:#a78bfa;}.rp-note{font-size:9px;color:rgba(255,255,255,0.3);margin-top:6px;line-height:1.5;}
     
     
     .main-area { flex: 0 0 460px !important; min-width: 0 !important; }
@@ -1144,74 +1172,50 @@
     .upload-slot{background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.12);border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;transition:all .2s;font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;}
     .upload-slot:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.7);transform:translateY(-2px);}
     .upload-slot.filled{background:rgba(67,233,123,.08);border:1px solid rgba(67,233,123,.25);color:#6ee7b7;}
-    
-    
 
-    /* v52 layout fix */
-    .main-area { flex: 1 1 0% !important; min-width: 380px !important; }
-    .sidebar { flex: 0 0 300px !important; width: 300px !important; }
-    .right-col { flex: 0 0 380px !important; min-width: 380px !important; }
-    
-    <style id="v54fix">
-    /* v54 - col3 flexible */
-    .main-area { flex: 0 0 460px !important; min-width: 0 !important; }
-    .right-col { flex: 1 1 0% !important; min-width: 340px !important; }</style>
-    
-    
-    
+    /* === v58 : fix vide + boutons + couleurs === */
 
-    /* ====== v56 CLEAN - layout centré + spotify style ====== */
-    body { background: #111118; }
-    .layout { max-width: 1800px !important; gap: 0 !important; margin: 0 auto !important; }
+    /* Pas de vide en haut */
+    body { background: #111118; padding-top: 0 !important; margin-top: 0 !important; }
+    #albumBg { display: none !important; }
+    .layout { margin-top: 0 !important; padding-top: 12px !important; }
 
-    /* Dégradés Spotify en haut seulement */
-    .sidebar { overflow: hidden !important; }
-    .sidebar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 35%; background: linear-gradient(180deg, rgba(52,160,90,0.55) 0%, transparent 100%); pointer-events: none; z-index: 0; }
-    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, rgba(52,160,90,0.3) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+    /* Colonnes : sidebar fixe, main flexible, right fixe */
+    .layout { max-width: 1800px !important; margin-left: auto !important; margin-right: auto !important; gap: 0 !important; }
+    .sidebar { flex: 0 0 280px !important; width: 280px !important; overflow: hidden !important; }
+    .main-area { flex: 1 1 0% !important; min-width: 340px !important; overflow: hidden !important; }
+    .right-col { flex: 0 0 380px !important; min-width: 340px !important; overflow: hidden !important; }
 
-    .main-area { overflow: hidden !important; }
-    .main-area::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30%; background: linear-gradient(180deg, rgba(200,155,40,0.50) 0%, transparent 100%); pointer-events: none; z-index: 0; }
-    .main-area::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, rgba(200,155,40,0.3) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+    /* Dégradés Spotify — haut seulement, pointer-events:none OBLIGATOIRE */
+    .sidebar::before { content:''; position:absolute; top:0; left:0; right:0; height:35%;
+        background:linear-gradient(180deg,rgba(52,160,90,0.55) 0%,transparent 100%);
+        pointer-events:none !important; z-index:0; }
+    .sidebar::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px;
+        background:linear-gradient(180deg,rgba(52,160,90,0.3) 0%,transparent 50%);
+        pointer-events:none !important; z-index:0; }
+    .main-area::before { content:''; position:absolute; top:0; left:0; right:0; height:30%;
+        background:linear-gradient(180deg,rgba(200,155,40,0.50) 0%,transparent 100%);
+        pointer-events:none !important; z-index:0; }
+    .main-area::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px;
+        background:linear-gradient(180deg,rgba(200,155,40,0.3) 0%,transparent 50%);
+        pointer-events:none !important; z-index:0; }
+    .right-col::before { content:''; position:absolute; top:0; left:0; right:0; height:28%;
+        background:linear-gradient(180deg,rgba(0,90,200,0.50) 0%,transparent 100%);
+        pointer-events:none !important; z-index:0; }
 
-    .right-col { overflow: hidden !important; }
-    .right-col::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 28%; background: linear-gradient(180deg, rgba(0,90,200,0.50) 0%, transparent 100%); pointer-events: none; z-index: 0; }
-
-    /* CRITIQUE: pseudo-éléments ne bloquent PAS les clics */
-    .sidebar::before, .sidebar::after,
-    .main-area::before, .main-area::after,
-    .right-col::before { pointer-events: none !important; }
-
-    /* Tous les enfants directs au-dessus des pseudo-éléments */
-    .sidebar > *, .main-area > *, .right-col > * { position: relative; z-index: 1; }
-
-    /* Panels facturation */
-    .right-panel { background: rgba(0,20,60,0.35); border-color: rgba(0,90,200,0.15); }
-    .rp-total { background: rgba(0,112,243,0.12); border-color: rgba(0,112,243,0.2); }
-    .rp-total-price { color: #60a5fa; }
-
-
-    /* ===== v57 CLEAN ===== */
-    body { background: #111118; }
-
-    /* Dégradés Spotify haut seulement + séparateurs */
-    .sidebar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 35%; background: linear-gradient(180deg, rgba(52,160,90,0.55) 0%, transparent 100%); pointer-events: none; z-index: 0; }
-    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, rgba(52,160,90,0.3) 0%, transparent 50%); pointer-events: none; z-index: 0; }
-    .main-area::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30%; background: linear-gradient(180deg, rgba(200,155,40,0.50) 0%, transparent 100%); pointer-events: none; z-index: 0; }
-    .main-area::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, rgba(200,155,40,0.3) 0%, transparent 50%); pointer-events: none; z-index: 0; }
-    .right-col::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 28%; background: linear-gradient(180deg, rgba(0,90,200,0.50) 0%, transparent 100%); pointer-events: none; z-index: 0; }
-
-    /* CRITIQUE : pseudo-éléments jamais cliquables */
-    .sidebar::before, .sidebar::after,
-    .main-area::before, .main-area::after,
-    .right-col::before { pointer-events: none !important; }
-
-    /* Tous les enfants au-dessus des dégradés */
-    .sidebar > *, .main-area > *, .right-col > * { position: relative; z-index: 1; }
+    /* CRITIQUE : les enfants directs au-dessus des pseudo-éléments */
+    .sidebar > * { position:relative !important; z-index:1 !important; }
+    .main-area > * { position:relative !important; z-index:1 !important; }
+    .right-col > * { position:relative !important; z-index:1 !important; }
 
     /* Panels */
-    .right-panel { background: rgba(0,20,60,0.35); border-color: rgba(0,90,200,0.15); }
-    .rp-total { background: rgba(0,112,243,0.12); border-color: rgba(0,112,243,0.2); }
-    .rp-total-price { color: #60a5fa; }
+    .right-panel { background:rgba(0,20,60,0.35); border-color:rgba(0,90,200,0.15); }
+    .rp-total { background:rgba(0,112,243,0.12); border-color:rgba(0,112,243,0.2); }
+    .rp-total-price { color:#60a5fa; }
+
+    /* Supprimer ligne Evénement facturé */
+    #eventFacture { display:none !important; }
+    #eventFacture ~ * { display:none !important; }
     </style>
 </head>
 <body>
@@ -1644,15 +1648,12 @@
                     <span>Facturation</span>
                     <div class="rp-toggle on" id="factToggle" onclick="this.classList.toggle('on');document.getElementById('factContent').style.display=this.classList.contains('on')?'':'none'" style="margin-left:auto;"></div>
                 </div>
-                <div id="factContent"></div>
+                <div id="factContent">
+                    <div class="rp-row"><span class="rp-label" style="font-size:12px;font-weight:700;color:#fff;">Ev&#233;nement factur&#233;</span><div class="rp-toggle on" id="eventFacture"></div></div>
                     <div class="rp-row">
                         <div class="rp-toggle on" id="tLive" onclick="rpTgl(this);calcTotal()"></div>
                         <span class="rp-label">Live</span>
-                        <div id="directSlider" style="display:flex;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:3px;gap:0;width:100%;margin-top:4px;">
-                            <button id="btnSimple" onclick="setDirect('simple')" style="flex:1;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;border:none;cursor:pointer;transition:all .25s;letter-spacing:.2px;background:transparent;color:rgba(255,255,255,0.4);">Direct simple</button>
-                            <button id="btnComplex" onclick="setDirect('complexe')" style="flex:1;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;border:none;cursor:pointer;transition:all .25s;letter-spacing:.2px;background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff;box-shadow:0 2px 8px rgba(255,65,108,0.35);">Direct complexe</button>
-                        </div>
-                        <div id="directDesc" style="width:100%;margin-top:8px;font-size:9.5px;line-height:1.6;color:rgba(255,255,255,0.5);padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.06);">Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l'événement)</div>
+                        <div class="rp-pills"><span class="rp-pill" onclick="selPill(this,'live');calcTotal()">Direct simple</span><span class="rp-pill sel" onclick="selPill(this,'live');calcTotal()">Direct complexe</span></div>
                         <span class="rp-price on" id="pLive">1500 HT</span>
                     </div>
                     <div class="rp-row"><div class="rp-toggle" id="tDemi" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Demie heure supp.</span><span class="rp-price" id="pDemi">400 HT</span></div>
@@ -2529,43 +2530,6 @@
         if(document.getElementById('tFilm')&&document.getElementById('tFilm').classList.contains('on')){var sf=document.querySelector('[onclick*="film"].sel');t+=(sf&&sf.textContent.includes('3200'))?3200:8400;}
         var el=document.getElementById('factTotal');if(el)el.textContent=t.toLocaleString('fr-FR')+' EUR HT';
     }
-    var _descSimple = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d'un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
-    var _descComplex = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l'événement)';
-    function setDirect(type) {
-        var btnS = document.getElementById('btnSimple');
-        var btnC = document.getElementById('btnComplex');
-        var d = document.getElementById('directDesc');
-        var p = document.getElementById('pLive');
-        if (type === 'simple') {
-            btnS.style.cssText += ';background:linear-gradient(135deg,#f6d365,#fda085);color:rgba(0,0,0,0.75);box-shadow:0 2px 8px rgba(246,211,101,0.3);';
-            btnC.style.cssText += ';background:transparent;color:rgba(255,255,255,0.4);box-shadow:none;';
-            if(d) d.textContent = _descSimple;
-            if(p) p.textContent = '1200 HT';
-        } else {
-            btnC.style.cssText += ';background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff;box-shadow:0 2px 8px rgba(255,65,108,0.35);';
-            btnS.style.cssText += ';background:transparent;color:rgba(255,255,255,0.4);box-shadow:none;';
-            if(d) d.textContent = _descComplex;
-            if(p) p.textContent = '1500 HT';
-        }
-        if(typeof calcTotal==='function') calcTotal();
-        if(typeof scheduleAutoSave==='function') scheduleAutoSave();
-    }
-    var _ds = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d'un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
-    var _dc = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l'événement)';
-    function setDirect(type) {
-        var btnS=document.getElementById('btnSimple'),btnC=document.getElementById('btnComplex'),d=document.getElementById('directDesc');
-        if (type==='simple') {
-            if(btnS){btnS.style.background='linear-gradient(135deg,#f6d365,#fda085)';btnS.style.color='rgba(0,0,0,0.75)';btnS.style.boxShadow='0 2px 8px rgba(246,211,101,0.3)';}
-            if(btnC){btnC.style.background='transparent';btnC.style.color='rgba(255,255,255,0.4)';btnC.style.boxShadow='none';}
-            if(d) d.textContent=_ds;
-        } else {
-            if(btnC){btnC.style.background='linear-gradient(135deg,#ff416c,#ff4b2b)';btnC.style.color='#fff';btnC.style.boxShadow='0 2px 8px rgba(255,65,108,0.35)';}
-            if(btnS){btnS.style.background='transparent';btnS.style.color='rgba(255,255,255,0.4)';btnS.style.boxShadow='none';}
-            if(d) d.textContent=_dc;
-        }
-        if(typeof calcTotal==='function') calcTotal();
-        if(typeof scheduleAutoSave==='function') scheduleAutoSave();
-    }
     </script>
 
     <script>
@@ -2910,6 +2874,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v57 — 1/4/2026 15:55</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v58 — 2/4/2026 08:16</div>
 </body>
 </html>
