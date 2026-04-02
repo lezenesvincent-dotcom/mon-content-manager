@@ -2540,6 +2540,96 @@
         }
         if(typeof calcTotal==='function') calcTotal();
     }
+    // ── Livraison ─────────────────────────────────────────────
+    var _livrUnlocked = false;
+    var _livrFiles = {
+        main: [null, null, null, null],
+        collab: [null, null, null, null, null, null]
+    };
+
+    function openLivrLock() {
+        document.getElementById('livrLockOverlay').style.display = 'flex';
+        var inp = document.getElementById('livrPwdInput');
+        inp.value = ''; inp.classList.remove('error');
+        document.getElementById('livrPwdError').textContent = '';
+        setTimeout(function(){ inp.focus(); }, 100);
+    }
+    function closeLivrLock() {
+        document.getElementById('livrLockOverlay').style.display = 'none';
+    }
+    function checkLivrPwd() {
+        var inp = document.getElementById('livrPwdInput');
+        if (inp.value.trim() === '0153') {
+            _livrUnlocked = true;
+            closeLivrLock();
+            document.getElementById('livrLockIcon').textContent = '\uD83D\uDD13';
+            document.getElementById('livrLockLabel').textContent = 'Upload actif';
+            document.getElementById('livrLockBtn').style.background = 'rgba(67,233,123,0.15)';
+            document.getElementById('livrLockBtn').style.borderColor = 'rgba(67,233,123,0.3)';
+            document.getElementById('livrLockBtn').style.color = '#6ee7b7';
+            renderLivrGrid();
+        } else {
+            document.getElementById('livrPwdError').textContent = 'Mot de passe incorrect';
+            inp.value = '';
+        }
+    }
+
+    function renderLivrGrid() {
+        renderGrid('livrGrid', _livrFiles.main, 'main');
+        renderGrid('livrCollabGrid', _livrFiles.collab, 'collab');
+    }
+
+    function renderGrid(gridId, files, type) {
+        var grid = document.getElementById(gridId);
+        if (!grid) return;
+        var labels = type === 'collab'
+            ? ['V1 collab','V2 collab','V3 collab','V4 collab','V5 collab','V6 collab']
+            : ['Fichier 1','Fichier 2','Fichier 3','Fichier 4'];
+        grid.innerHTML = '';
+        files.forEach(function(file, i) {
+            var cell = document.createElement('div');
+            if (file) {
+                // État rempli : bouton download
+                cell.className = 'livr-file';
+                cell.innerHTML = '<span class="livr-icon">\uD83D\uDCC4</span>'
+                    + '<div style="font-size:9px;font-weight:700;margin-bottom:4px;">' + labels[i] + '</div>'
+                    + '<a href="' + file.url + '" download style="font-size:9px;color:#60a5fa;text-decoration:none;display:inline-flex;align-items:center;gap:3px;">\u2B07\uFE0F T\u00e9l\u00e9charger</a>';
+            } else if (_livrUnlocked) {
+                // État vide + déverrouillé : bouton upload
+                cell.className = 'livr-file livr-empty';
+                cell.style.cssText = 'border-style:dashed;border-color:rgba(67,233,123,0.25);background:rgba(67,233,123,0.04);cursor:pointer;';
+                cell.innerHTML = '<span class="livr-icon" style="opacity:0.4;">\uD83D\uDCE4</span>'
+                    + '<div style="font-size:9px;color:rgba(255,255,255,0.35);margin-bottom:4px;">' + labels[i] + '</div>'
+                    + '<div style="font-size:9px;color:rgba(67,233,123,0.6);">+ Ajouter</div>';
+                cell.onclick = (function(idx, t){ return function(){ uploadLivrFile(idx, t); }; })(i, type);
+            } else {
+                // État vide + verrouillé : case grise
+                cell.className = 'livr-file unavail';
+                cell.innerHTML = '<span class="livr-icon" style="opacity:0.2;">\uD83D\uDCC4</span>'
+                    + '<div style="font-size:9px;color:rgba(255,255,255,0.2);">' + labels[i] + '</div>';
+            }
+            grid.appendChild(cell);
+        });
+    }
+
+    function uploadLivrFile(idx, type) {
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.onchange = function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            var url = URL.createObjectURL(file);
+            _livrFiles[type][idx] = { name: file.name, url: url };
+            renderLivrGrid();
+            showToast('\u2705 ' + file.name + ' ajout\u00e9');
+        };
+        input.click();
+    }
+
+    // Init grille au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(renderLivrGrid, 300);
+    });
     </script>
 
     <script>
@@ -2884,6 +2974,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v59 — 2/4/2026 08:29</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v60 — 2/4/2026 08:36</div>
 </body>
 </html>
