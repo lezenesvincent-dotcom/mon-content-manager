@@ -1231,6 +1231,19 @@
     .right-col { position:relative; overflow:hidden; flex:0 0 380px !important; min-width:340px !important; }
     .right-col::before { content:''; position:absolute; top:0; left:0; right:0; height:28%; background:linear-gradient(180deg,rgba(0,90,200,0.45) 0%,transparent 100%); pointer-events:none; z-index:0; }
     .right-col > * { position:relative; z-index:1; }
+
+    /* v68 : labels facturation blanc fort */
+    .rp-label { color: rgba(255,255,255,0.92) !important; font-weight: 600 !important; }
+    .rp-price { color: rgba(255,255,255,0.55) !important; font-weight: 700 !important; }
+    .rp-price.on { color: #a78bfa !important; }
+    .rp-row { border-bottom-color: rgba(255,255,255,0.08) !important; }
+    .rp-pill { color: rgba(255,255,255,0.65) !important; font-weight: 700 !important; }
+    .rp-pill.sel { color: #fff !important; background: linear-gradient(135deg,#667eea,#764ba2) !important; }
+    [onclick*="gen"].sel { background: linear-gradient(135deg,#8b5cf6,#6366f1) !important; color: #fff !important; }
+    [onclick*="film"].sel { background: linear-gradient(135deg,#f093fb,#f5576c) !important; color: #fff !important; }
+    [onclick*="live"].sel { background: linear-gradient(135deg,#ff416c,#ff4b2b) !important; color: #fff !important; }
+    .rp-note { color: rgba(255,255,255,0.45) !important; }
+    .right-panel-title span { color: #fff !important; }
     </style>
 </head>
 <body>
@@ -2568,9 +2581,41 @@
 
     function rpTgl(el){el.classList.toggle('on');var pid='p'+el.id.substring(1);var pe=document.getElementById(pid);if(pe)pe.classList.toggle('on',el.classList.contains('on'));}
     function selPill(pill,group){var parent=pill.closest('.rp-pills');parent.querySelectorAll('.rp-pill').forEach(function(p){p.classList.remove('sel');});pill.classList.add('sel');}
-    function calcTotal(){
-        var t=0;
-        if(document.getElementById('tLive')&&document.getElementById('tLive').classList.contains('on')){var s=document.querySelector('[onclick*="selPill(this,\'live\'"].sel');t+=(s&&s.textContent.includes('complexe'))?1500:1200;}
+    function calcTotal() {
+        var t = 0;
+        // Live
+        if (document.getElementById('tLive') && document.getElementById('tLive').classList.contains('on')) {
+            var btnC = document.getElementById('btnComplex');
+            var isComplex = btnC && (btnC.style.background.includes('ff416') || btnC.style.background.includes('ff4b2b') || btnC.classList.contains('active-complex'));
+            var livePrice = isComplex ? 1900 : 1500;
+            t += livePrice;
+            var pLive = document.getElementById('pLive');
+            if (pLive) pLive.textContent = livePrice + ' HT';
+        }
+        if (document.getElementById('tDemi') && document.getElementById('tDemi').classList.contains('on')) t += 400;
+        if (document.getElementById('tMontage') && document.getElementById('tMontage').classList.contains('on')) t += 500;
+        if (document.getElementById('tST') && document.getElementById('tST').classList.contains('on')) t += 400;
+        // Generique
+        if (document.getElementById('tGen') && document.getElementById('tGen').classList.contains('on')) {
+            var sg = document.querySelector('[onclick*=\'gen\'].sel');
+            if (sg) {
+                var sib = sg.parentElement && sg.parentElement.querySelector('.rp-price');
+                var m = (sib ? sib.textContent : '870').match(/\d+/);
+                t += m ? parseInt(m[0]) : 870;
+            } else { t += 870; }
+        }
+        // Film
+        if (document.getElementById('tFilm') && document.getElementById('tFilm').classList.contains('on')) {
+            var sf = document.querySelector('[onclick*=\'film\'].sel');
+            if (sf) {
+                var sib2 = sf.parentElement && sf.parentElement.querySelector('.rp-price');
+                var m2 = (sib2 ? sib2.textContent : '6400').match(/\d+/);
+                t += m2 ? parseInt(m2[0]) : 6400;
+            } else { t += 6400; }
+        }
+        var el = document.getElementById('factTotal');
+        if (el) el.textContent = t.toLocaleString('fr-FR') + ' EUR HT';
+    }
         if(document.getElementById('tDemi')&&document.getElementById('tDemi').classList.contains('on'))t+=400;
         if(document.getElementById('tMontage')&&document.getElementById('tMontage').classList.contains('on'))t+=500;
         if(document.getElementById('tST')&&document.getElementById('tST').classList.contains('on'))t+=400;
@@ -2582,8 +2627,21 @@
     var _dc = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l’événement)';
     function setDirect(type) {
         var btnS=document.getElementById('btnSimple'),btnC=document.getElementById('btnComplex'),d=document.getElementById('directDesc'),p=document.getElementById('pLive');
+        var DS = typeof _ds !== 'undefined' ? _ds : '';
+        var DC = typeof _dc !== 'undefined' ? _dc : '';
         if(type==='simple'){
             if(btnS){btnS.style.background='linear-gradient(135deg,#f6d365,#fda085)';btnS.style.color='rgba(0,0,0,0.75)';}
+            if(btnC){btnC.style.background='transparent';btnC.style.color='rgba(255,255,255,0.4)';btnC.style.boxShadow='none';btnC.classList.remove('active-complex');}
+            if(d && DS) d.textContent=DS;
+            if(p) p.textContent='1500 HT';
+        } else {
+            if(btnC){btnC.style.background='linear-gradient(135deg,#ff416c,#ff4b2b)';btnC.style.color='#fff';btnC.style.boxShadow='0 2px 8px rgba(255,65,108,0.35)';btnC.classList.add('active-complex');}
+            if(btnS){btnS.style.background='transparent';btnS.style.color='rgba(255,255,255,0.4)';}
+            if(d && DC) d.textContent=DC;
+            if(p) p.textContent='1900 HT';
+        }
+        calcTotal();
+    }
             if(btnC){btnC.style.background='transparent';btnC.style.color='rgba(255,255,255,0.4)';btnC.style.boxShadow='none';}
             if(d) d.textContent=_ds;
             if(p) p.textContent='1500 HT';
@@ -3046,6 +3104,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v67 — 2/4/2026 10:10</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v68 — 2/4/2026 10:42</div>
 </body>
 </html>
