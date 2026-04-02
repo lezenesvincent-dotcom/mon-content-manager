@@ -1182,9 +1182,9 @@
 
     /* Colonnes : sidebar fixe, main flexible, right fixe */
     .layout { max-width: 1800px !important; margin-left: auto !important; margin-right: auto !important; gap: 0 !important; }
-    .sidebar { flex: 0 0 280px !important; width: 280px !important; overflow: hidden !important; }
-    .main-area { flex: 1 1 0% !important; min-width: 340px !important; overflow: hidden !important; }
-    .right-col { flex: 0 0 380px !important; min-width: 340px !important; overflow: hidden !important; }
+    
+    
+    
 
     /* Dégradés Spotify — haut seulement, pointer-events:none OBLIGATOIRE */
     .sidebar::before { content:''; position:absolute; top:0; left:0; right:0; height:35%;
@@ -1220,7 +1220,7 @@
     body { background: #111118; }
     #albumBg { display: none !important; }
     .layout { max-width: 1800px; margin: 0 auto; gap: 0; }
-    .sidebar { position: relative; overflow: hidden; }
+    
     .sidebar::before { content:''; position:absolute; top:0; left:0; right:0; height:35%; background:linear-gradient(180deg,rgba(52,160,90,0.45) 0%,transparent 100%); pointer-events:none; z-index:0; }
     .sidebar::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:linear-gradient(180deg,rgba(52,160,90,0.25) 0%,transparent 50%); pointer-events:none; z-index:0; }
     
@@ -1254,6 +1254,17 @@
     .rp-price.on { color: #a78bfa !important; }
     .rp-pill { color: rgba(255,255,255,0.65) !important; font-weight: 700 !important; }
     .rp-pill.sel { color: #fff !important; }
+
+    /* v70 : colonnes sans overflow:hidden - clics fonctionnels */
+    .sidebar { flex: 0 0 280px !important; width: 280px !important; position: relative; overflow-y: auto; }
+    .main-area { flex: 1 1 0% !important; min-width: 340px !important; position: relative; overflow-y: auto; }
+    .right-col { flex: 0 0 380px !important; min-width: 340px !important; position: relative; overflow-y: auto; }
+    /* Pseudo-elements dégradés — pointer-events:none OBLIGATOIRE */
+    .sidebar::before { content:''; position:absolute; top:0; left:0; right:0; height:35%; background:linear-gradient(180deg,rgba(52,160,90,0.45) 0%,transparent 100%); pointer-events:none; z-index:0; }
+    .sidebar::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:linear-gradient(180deg,rgba(52,160,90,0.25) 0%,transparent 50%); pointer-events:none; z-index:0; }
+    .main-area::before { content:''; position:absolute; top:0; left:0; right:0; height:30%; background:linear-gradient(180deg,rgba(246,211,101,0.45) 0%,rgba(253,160,133,0.15) 50%,transparent 100%); pointer-events:none; z-index:0; }
+    .main-area::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:linear-gradient(180deg,rgba(246,211,101,0.3) 0%,transparent 50%); pointer-events:none; z-index:0; }
+    .right-col::before { content:''; position:absolute; top:0; left:0; right:0; height:28%; background:linear-gradient(180deg,rgba(0,90,200,0.45) 0%,transparent 100%); pointer-events:none; z-index:0; }
     </style>
 </head>
 <body>
@@ -3114,6 +3125,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v69 — 2/4/2026 10:48</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v70 — 2/4/2026 10:57</div>
 </body>
 </html>
