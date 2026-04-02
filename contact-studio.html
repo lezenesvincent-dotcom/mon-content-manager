@@ -2589,11 +2589,26 @@
         files.forEach(function(file, i) {
             var cell = document.createElement('div');
             if (file) {
-                // État rempli : bouton download
-                cell.className = 'livr-file';
-                cell.innerHTML = '<span class="livr-icon">\uD83D\uDCC4</span>'
-                    + '<div style="font-size:9px;font-weight:700;margin-bottom:4px;">' + labels[i] + '</div>'
-                    + '<a href="' + file.url + '" download style="font-size:9px;color:#60a5fa;text-decoration:none;display:inline-flex;align-items:center;gap:3px;">\u2B07\uFE0F T\u00e9l\u00e9charger</a>';
+                // État rempli : style dégradé jaune Prestations
+                cell.style.cssText = [
+                    'background:linear-gradient(135deg,#f6d365 0%,#fda085 100%)',
+                    'border:none',
+                    'border-radius:14px',
+                    'padding:10px 8px',
+                    'text-align:center',
+                    'cursor:pointer',
+                    'box-shadow:0 5px 15px rgba(0,0,0,0.25)',
+                    'transition:all .2s',
+                    'display:flex',
+                    'flex-direction:column',
+                    'align-items:center',
+                    'gap:4px'
+                ].join(';');
+                cell.onmouseenter = function(){ this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(246,211,101,0.4)'; };
+                cell.onmouseleave = function(){ this.style.transform='none'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.25)'; };
+                cell.innerHTML = '<span style="font-size:20px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.2));">\uD83D\uDCC4</span>'
+                    + '<div style="font-size:9px;font-weight:800;color:rgba(0,0,0,0.7);letter-spacing:.3px;">' + labels[i] + '</div>'
+                    + '<a href="' + file.url + '" download onclick="event.stopPropagation()" style="font-size:9px;font-weight:700;color:rgba(0,0,0,0.55);text-decoration:none;background:rgba(0,0,0,0.1);border-radius:6px;padding:2px 8px;display:inline-flex;align-items:center;gap:3px;">\u2B07\uFE0F T\u00e9l\u00e9charger</a>';
             } else if (_livrUnlocked) {
                 // État vide + déverrouillé : bouton upload
                 cell.className = 'livr-file livr-empty';
@@ -2974,6 +2989,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v60 — 2/4/2026 08:36</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v61 — 2/4/2026 08:38</div>
 </body>
 </html>
