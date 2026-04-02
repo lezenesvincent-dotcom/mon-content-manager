@@ -2637,12 +2637,6 @@
         var el = document.getElementById('factTotal');
         if (el) el.textContent = t.toLocaleString('fr-FR') + ' EUR HT';
     }
-        if(document.getElementById('tDemi')&&document.getElementById('tDemi').classList.contains('on'))t+=400;
-        if(document.getElementById('tMontage')&&document.getElementById('tMontage').classList.contains('on'))t+=500;
-        if(document.getElementById('tST')&&document.getElementById('tST').classList.contains('on'))t+=400;
-        if(document.getElementById('tGen')&&document.getElementById('tGen').classList.contains('on')){var sg=document.querySelector('[onclick*="gen"].sel');var gp=sg?parseInt((sg.textContent.match(/\d+/)||[870])[0]):870;t+=gp;}
-        if(document.getElementById('tFilm')&&document.getElementById('tFilm').classList.contains('on')){var sf=document.querySelector('[onclick*="film"].sel');t+=(sf&&sf.textContent.includes('3200'))?3200:8400;}
-        var el=document.getElementById('factTotal');if(el)el.textContent=t.toLocaleString('fr-FR')+' EUR HT';
     }
     var _ds = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d’un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
     var _dc = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l’événement)';
