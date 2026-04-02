@@ -2637,12 +2637,6 @@
         var el = document.getElementById('factTotal');
         if (el) el.textContent = t.toLocaleString('fr-FR') + ' EUR HT';
     }
-    }
-    var _ds = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d’un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
-    var _dc = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l’événement)';
-    function setDirect(type) {
-        var btnS=document.getElementById('btnSimple'),btnC=document.getElementById('btnComplex'),d=document.getElementById('directDesc'),p=document.getElementById('pLive');
-        var DS = typeof _ds !== 'undefined' ? _ds : '';
         var DC = typeof _dc !== 'undefined' ? _dc : '';
         if(type==='simple'){
             if(btnS){btnS.style.background='linear-gradient(135deg,#f6d365,#fda085)';btnS.style.color='rgba(0,0,0,0.75)';}
