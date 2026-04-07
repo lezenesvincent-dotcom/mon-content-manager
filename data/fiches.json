@@ -59,9 +59,15 @@
         "prenom": "Tom",
         "fonction": "Opérateur",
         "entreprise": "CIC"
+      },
+      {
+        "nom": "david",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-07T13:41:14.368Z"
+    "updatedAt": "2026-04-07T13:41:59.284Z"
   }
 }
