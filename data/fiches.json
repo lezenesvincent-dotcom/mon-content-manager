@@ -65,15 +65,9 @@
         "prenom": "re",
         "fonction": "Opérateur",
         "entreprise": "CIC"
-      },
-      {
-        "nom": "arnaud",
-        "prenom": "",
-        "fonction": "",
-        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-07T14:27:12.843Z"
+    "updatedAt": "2026-04-07T14:27:28.499Z"
   }
 }
