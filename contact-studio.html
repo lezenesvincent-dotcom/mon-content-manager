@@ -1437,7 +1437,7 @@
         background: linear-gradient(160deg, #f6b91a 0%, #e8a010 55%, #c87800 100%);
         clip-path: polygon(14% 0%, 86% 0%, 100% 100%, 0% 100%);
         box-shadow: 0 8px 40px rgba(200,120,0,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
-        z-index: 2;
+        z-index: 3;
     }
     .ss-seat {
         position: absolute;
@@ -1452,6 +1452,15 @@
         width: 90px; height: 90px;
         object-fit: contain;
         filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7));
+        position: relative;
+        z-index: 1; /* derrière la table pour chaises du fond */
+    }
+    .ss-seat:not(.front) img {
+        z-index: 1; /* fond : chaise sous la table */
+    }
+    .ss-seat:not(.front) .ss-seat-controls {
+        position: relative;
+        z-index: 5; /* contrôles toujours au-dessus de la table */
     }
     .ss-seat-controls {
         display: flex; flex-direction: column; gap: 4px; align-items: center;
@@ -3189,14 +3198,14 @@
 
     // Positions des chaises (layout en U autour de la table)
     var SS_POSITIONS = [
-        {id:0, x:18, y:18, label:'P1', front:false},
-        {id:1, x:36, y:10, label:'P2', front:false},
-        {id:2, x:56, y:10, label:'P3', front:false},
-        {id:3, x:74, y:18, label:'P4', front:false},
-        {id:4, x:8,  y:48, label:'P5', front:true},
-        {id:5, x:26, y:68, label:'P6', front:true},
-        {id:6, x:72, y:62, label:'P7', front:true},
-        {id:7, x:88, y:45, label:'P8', front:true},
+        {id:0, x:50, y:12,  label:'P1', front:false}, // centre haut
+        {id:1, x:66, y:15,  label:'P2', front:false}, // droite centre
+        {id:2, x:34, y:15,  label:'P3', front:false}, // gauche centre
+        {id:3, x:80, y:22,  label:'P4', front:false}, // droite ext
+        {id:4, x:20, y:22,  label:'P5', front:false}, // gauche ext
+        {id:5, x:50, y:72,  label:'P6', front:true},  // centre avant
+        {id:6, x:68, y:78,  label:'P7', front:true},  // droite avant
+        {id:7, x:32, y:78,  label:'P8', front:true},  // gauche avant
     ];
 
     var ssData = SS_POSITIONS.map(function(p){
@@ -3639,7 +3648,7 @@
 
     function ssResize(delta) {
         var step = 8;
-        ss_seatSizes[ss_selectedSlot] = Math.max(32, Math.min(120, ss_seatSizes[ss_selectedSlot] + delta * step));
+        ss_seatSizes[ss_selectedSlot] = Math.max(32, Math.min(180, ss_seatSizes[ss_selectedSlot] + delta * step));
         var seats = document.querySelectorAll('.ss-seat');
         if (seats[ss_selectedSlot]) {
             var img = seats[ss_selectedSlot].querySelector('img');
@@ -4164,7 +4173,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v86 — 07/04/2026 17:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v87 — 07/04/2026 17:15</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4202,6 +4211,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v86 — 07/04/2026 17:00</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v87 — 07/04/2026 17:15</div>
 </body>
 </html>
