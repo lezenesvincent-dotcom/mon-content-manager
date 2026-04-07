@@ -1628,6 +1628,69 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ── Joystick chaises ── -->
+            <div class="panel" id="ssJoystickPanel">
+                <div class="section-title" style="margin-bottom:8px;">🎮 Chaises — positionnement</div>
+                <div class="ss-toolbar">
+                    <!-- Slot -->
+                    <div class="ss-toolbar-row" style="margin-bottom:4px;">
+                        <span class="ss-size-label" style="min-width:28px;">Slot</span>
+                        <div class="ss-seat-selector" id="ssSlotSelector"></div>
+                    </div>
+                    <!-- Joystick + Taille + Pas -->
+                    <div class="ss-toolbar-row" style="align-items:flex-start;gap:10px;flex-wrap:wrap;">
+                        <div class="ss-joystick-wrap">
+                            <span class="ss-size-label">Position</span>
+                            <div class="ss-joy-row">
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                                <div class="ss-joy-btn" onclick="ssMove(0,-1)" title="Haut">↑</div>
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                            </div>
+                            <div class="ss-joy-row">
+                                <div class="ss-joy-btn" onclick="ssMove(-1,0)" title="Gauche">←</div>
+                                <div class="ss-joy-btn ss-joy-center" style="font-size:9px;color:rgba(255,255,255,0.2);">✛</div>
+                                <div class="ss-joy-btn" onclick="ssMove(1,0)" title="Droite">→</div>
+                            </div>
+                            <div class="ss-joy-row">
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                                <div class="ss-joy-btn" onclick="ssMove(0,1)" title="Bas">↓</div>
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                            </div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <div class="ss-size-wrap">
+                                <span class="ss-size-label">Taille</span>
+                                <div class="ss-size-btns">
+                                    <div class="ss-size-btn" onclick="ssResize(-1)" title="Réduire">−</div>
+                                    <div class="ss-size-btn" onclick="ssResize(1)" title="Agrandir">+</div>
+                                </div>
+                                <span class="ss-pos-display" id="ssSizeDisplay">72px</span>
+                            </div>
+                            <div class="ss-step-wrap">
+                                <span class="ss-size-label">Pas</span>
+                                <select class="ss-step-select" id="ssMoveStep">
+                                    <option value="0.5">0.5%</option>
+                                    <option value="1" selected>1%</option>
+                                    <option value="2">2%</option>
+                                    <option value="5">5%</option>
+                                </select>
+                                <span class="ss-pos-display" id="ssPosDisplay">x:- y:-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Save / Reset -->
+                    <div style="display:flex;gap:6px;margin-top:8px;">
+                        <button class="ss-save-btn" id="ssSaveBtn" onclick="ssSavePositions()" style="flex:1;">
+                            💾 Sauvegarder
+                        </button>
+                        <button class="ss-save-btn" style="flex:1;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);box-shadow:none;" onclick="ssResetPositions()">
+                            ↺ Réinit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- RIGHT MAIN AREA -->
@@ -1721,73 +1784,6 @@
                     <div class="ss-table"></div>
                 </div>
                 <p class="ss-hint">Définissez les intervenants, positions, rôles et contenus</p>
-
-                <!-- ── Toolbar Setup Studio ── -->
-                <div class="ss-toolbar" id="ssToolbar">
-
-                    <!-- Ligne 1 : sélection du slot -->
-                    <div class="ss-toolbar-row">
-                        <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.5px;min-width:36px;">Slot</span>
-                        <div class="ss-seat-selector" id="ssSlotSelector"></div>
-                    </div>
-
-                    <!-- Ligne 2 : joystick + taille + step + save -->
-                    <div class="ss-toolbar-row" style="align-items:flex-start;gap:12px;">
-
-                        <!-- Joystick -->
-                        <div class="ss-joystick-wrap">
-                            <span class="ss-size-label">Position</span>
-                            <div class="ss-joy-row">
-                                <div class="ss-joy-btn ss-joy-center"></div>
-                                <div class="ss-joy-btn" onclick="ssMove(0,-1)" title="Haut">↑</div>
-                                <div class="ss-joy-btn ss-joy-center"></div>
-                            </div>
-                            <div class="ss-joy-row">
-                                <div class="ss-joy-btn" onclick="ssMove(-1,0)" title="Gauche">←</div>
-                                <div class="ss-joy-btn ss-joy-center" style="font-size:9px;color:rgba(255,255,255,0.2);">✛</div>
-                                <div class="ss-joy-btn" onclick="ssMove(1,0)" title="Droite">→</div>
-                            </div>
-                            <div class="ss-joy-row">
-                                <div class="ss-joy-btn ss-joy-center"></div>
-                                <div class="ss-joy-btn" onclick="ssMove(0,1)" title="Bas">↓</div>
-                                <div class="ss-joy-btn ss-joy-center"></div>
-                            </div>
-                        </div>
-
-                        <!-- Taille -->
-                        <div class="ss-size-wrap">
-                            <span class="ss-size-label">Taille</span>
-                            <div class="ss-size-btns">
-                                <div class="ss-size-btn" onclick="ssResize(-1)" title="Réduire">−</div>
-                                <div class="ss-size-btn" onclick="ssResize(1)" title="Agrandir">+</div>
-                            </div>
-                            <span class="ss-pos-display" id="ssSizeDisplay">72px</span>
-                        </div>
-
-                        <!-- Pas de déplacement -->
-                        <div class="ss-step-wrap">
-                            <span class="ss-size-label">Pas</span>
-                            <select class="ss-step-select" id="ssMoveStep">
-                                <option value="0.5">0.5%</option>
-                                <option value="1" selected>1%</option>
-                                <option value="2">2%</option>
-                                <option value="5">5%</option>
-                            </select>
-                            <span class="ss-pos-display" id="ssPosDisplay">x:- y:-</span>
-                        </div>
-
-                        <!-- Save -->
-                        <div style="display:flex;flex-direction:column;gap:6px;margin-left:auto;">
-                            <button class="ss-save-btn" id="ssSaveBtn" onclick="ssSavePositions()">
-                                💾 Sauvegarder positions
-                            </button>
-                            <button class="ss-save-btn" style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);box-shadow:none;" onclick="ssResetPositions()">
-                                ↺ Réinitialiser
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
             </div>
 
             <div class="panel">
@@ -2860,7 +2856,14 @@
     }
 
     function rpTgl(el){el.classList.toggle('on');var pid='p'+el.id.substring(1);var pe=document.getElementById(pid);if(pe)pe.classList.toggle('on',el.classList.contains('on'));}
-    function selPill(pill,group){var parent=pill.closest('.rp-pills')||pill.parentElement;parent.querySelectorAll('.rp-pill').forEach(function(p){p.classList.remove('sel');});pill.classList.add('sel');if(typeof calcTotal==='function')calcTotal();}
+    function selPill(pill,group){
+        // Désactiver toutes les pills du même groupe (data-group)
+        document.querySelectorAll('button.rp-pill[data-group="'+group+'"]').forEach(function(p){
+            p.classList.remove('sel');
+        });
+        pill.classList.add('sel');
+        if(typeof calcTotal==='function')calcTotal();
+    }
     
 
     var _ds = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d’un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
@@ -3827,7 +3830,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v42</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v83 — 07/04/2026 16:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -3865,6 +3868,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v83 — 7/4/2026 12:34</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v83 — 07/04/2026 16:00</div>
 </body>
 </html>
