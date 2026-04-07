@@ -3686,7 +3686,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v88 — 2026-03-31 11:45:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v89 — 2026-04-07 15:55:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4217,9 +4217,23 @@
             p4: { sujet: getSujet(cartes[3]), contenu: makeBullets(cartes[3]) }
         };
 
-        if (typeof selectContent === 'function') { selectContent(item); }
-        // Forcer l'affichage des vignettes P1-P4
-        if (typeof renderPageCards === 'function') { renderPageCards([item]); }
+        // Mettre à jour uniquement les vignettes P1-P4 sans toucher au conducteur
+        if (typeof updatePgmCards === 'function') { updatePgmCards(item); }
+        // Envoyer vers l'overlay via postMessage
+        var frame = document.getElementById('pgmDecorFrame');
+        if (frame && frame.contentWindow) {
+            frame.contentWindow.postMessage({
+                type: 'update',
+                data: {
+                    titre: item.titre || '',
+                    soustitre: item.soustitre || '',
+                    p1: item.p1 || { sujet: '', contenu: [] },
+                    p2: item.p2 || { sujet: '', contenu: [] },
+                    p3: item.p3 || { sujet: '', contenu: [] },
+                    p4: item.p4 || { sujet: '', contenu: [] }
+                }
+            }, '*');
+        }
 
         // Feedback visuel
         document.querySelectorAll('.morning-ppt-card').forEach(function(c, i) {
