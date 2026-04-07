@@ -1340,6 +1340,99 @@
         margin-top: 8px; font-style: italic;
     }
 
+
+    /* ── Setup Studio Toolbar ── */
+    .ss-toolbar {
+        margin-top: 10px;
+        display: flex; flex-direction: column; gap: 8px;
+    }
+    .ss-toolbar-row {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .ss-seat-selector {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .ss-slot-btn {
+        width: 28px; height: 28px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 700;
+        cursor: pointer; transition: all 0.15s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .ss-slot-btn.active {
+        background: linear-gradient(135deg,#6366f1,#8b5cf6);
+        border-color: rgba(99,102,241,0.6);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(99,102,241,0.4);
+    }
+    .ss-joystick-wrap {
+        display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    .ss-joy-row {
+        display: flex; gap: 3px;
+    }
+    .ss-joy-btn {
+        width: 32px; height: 32px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.07);
+        color: rgba(255,255,255,0.8); font-size: 14px;
+        cursor: pointer; transition: all 0.12s;
+        display: flex; align-items: center; justify-content: center;
+        user-select: none;
+    }
+    .ss-joy-btn:hover { background: rgba(99,102,241,0.35); border-color: rgba(99,102,241,0.5); }
+    .ss-joy-btn:active { transform: scale(0.92); }
+    .ss-joy-center {
+        width: 32px; height: 32px; border-radius: 8px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    .ss-size-wrap {
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .ss-size-label {
+        font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.35);
+        text-transform: uppercase; letter-spacing: .5px;
+    }
+    .ss-size-btns {
+        display: flex; gap: 3px;
+    }
+    .ss-size-btn {
+        width: 32px; height: 32px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.07);
+        color: rgba(255,255,255,0.8); font-size: 16px; font-weight: 700;
+        cursor: pointer; transition: all 0.12s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .ss-size-btn:hover { background: rgba(0,112,243,0.35); }
+    .ss-save-btn {
+        padding: 8px 16px; border-radius: 10px;
+        background: linear-gradient(135deg,#43e97b,#38f9d7);
+        border: none; color: rgba(0,0,0,0.75); font-size: 11px; font-weight: 800;
+        cursor: pointer; display: flex; align-items: center; gap: 6px;
+        box-shadow: 0 2px 10px rgba(67,233,123,0.3);
+        transition: all 0.15s;
+    }
+    .ss-save-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(67,233,123,0.45); }
+    .ss-save-btn.saved {
+        background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4);
+        box-shadow: none; transform: none;
+    }
+    .ss-pos-display {
+        font-size: 9px; color: rgba(255,255,255,0.3);
+        font-family: monospace; min-width: 80px;
+    }
+    .ss-step-wrap {
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .ss-step-select {
+        background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 6px; color: rgba(255,255,255,0.6); font-size: 9px;
+        padding: 3px 6px; cursor: pointer;
+    }
+
     </style>
 </head>
 <body>
@@ -1628,6 +1721,73 @@
                     <div class="ss-table"></div>
                 </div>
                 <p class="ss-hint">Définissez les intervenants, positions, rôles et contenus</p>
+
+                <!-- ── Toolbar Setup Studio ── -->
+                <div class="ss-toolbar" id="ssToolbar">
+
+                    <!-- Ligne 1 : sélection du slot -->
+                    <div class="ss-toolbar-row">
+                        <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.5px;min-width:36px;">Slot</span>
+                        <div class="ss-seat-selector" id="ssSlotSelector"></div>
+                    </div>
+
+                    <!-- Ligne 2 : joystick + taille + step + save -->
+                    <div class="ss-toolbar-row" style="align-items:flex-start;gap:12px;">
+
+                        <!-- Joystick -->
+                        <div class="ss-joystick-wrap">
+                            <span class="ss-size-label">Position</span>
+                            <div class="ss-joy-row">
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                                <div class="ss-joy-btn" onclick="ssMove(0,-1)" title="Haut">↑</div>
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                            </div>
+                            <div class="ss-joy-row">
+                                <div class="ss-joy-btn" onclick="ssMove(-1,0)" title="Gauche">←</div>
+                                <div class="ss-joy-btn ss-joy-center" style="font-size:9px;color:rgba(255,255,255,0.2);">✛</div>
+                                <div class="ss-joy-btn" onclick="ssMove(1,0)" title="Droite">→</div>
+                            </div>
+                            <div class="ss-joy-row">
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                                <div class="ss-joy-btn" onclick="ssMove(0,1)" title="Bas">↓</div>
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                            </div>
+                        </div>
+
+                        <!-- Taille -->
+                        <div class="ss-size-wrap">
+                            <span class="ss-size-label">Taille</span>
+                            <div class="ss-size-btns">
+                                <div class="ss-size-btn" onclick="ssResize(-1)" title="Réduire">−</div>
+                                <div class="ss-size-btn" onclick="ssResize(1)" title="Agrandir">+</div>
+                            </div>
+                            <span class="ss-pos-display" id="ssSizeDisplay">72px</span>
+                        </div>
+
+                        <!-- Pas de déplacement -->
+                        <div class="ss-step-wrap">
+                            <span class="ss-size-label">Pas</span>
+                            <select class="ss-step-select" id="ssMoveStep">
+                                <option value="0.5">0.5%</option>
+                                <option value="1" selected>1%</option>
+                                <option value="2">2%</option>
+                                <option value="5">5%</option>
+                            </select>
+                            <span class="ss-pos-display" id="ssPosDisplay">x:- y:-</span>
+                        </div>
+
+                        <!-- Save -->
+                        <div style="display:flex;flex-direction:column;gap:6px;margin-left:auto;">
+                            <button class="ss-save-btn" id="ssSaveBtn" onclick="ssSavePositions()">
+                                💾 Sauvegarder positions
+                            </button>
+                            <button class="ss-save-btn" style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);box-shadow:none;" onclick="ssResetPositions()">
+                                ↺ Réinitialiser
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
             </div>
 
             <div class="panel">
@@ -3063,6 +3223,135 @@
     }
     // ──────────────────────────────────────────────────────────
 
+    // ══ JOYSTICK SETUP STUDIO ══════════════════════════════════
+    var ss_selectedSlot = 0;
+    var ss_seatSizes = [72,72,72,72,72,72,72,72]; // taille px par slot
+
+    // Positions par défaut (backup)
+    var SS_DEFAULT_POSITIONS = null;
+
+    function ssInitToolbar() {
+        // Sauvegarder les positions par défaut
+        if (!SS_DEFAULT_POSITIONS) {
+            SS_DEFAULT_POSITIONS = SS_POSITIONS.map(function(p){ return {x:p.x, y:p.y}; });
+        }
+
+        // Charger positions sauvegardées depuis localStorage
+        var saved = localStorage.getItem('ss_positions');
+        if (saved) {
+            try {
+                var parsed = JSON.parse(saved);
+                parsed.forEach(function(p, i) {
+                    if (SS_POSITIONS[i]) { SS_POSITIONS[i].x = p.x; SS_POSITIONS[i].y = p.y; }
+                });
+                var savedSizes = localStorage.getItem('ss_sizes');
+                if (savedSizes) ss_seatSizes = JSON.parse(savedSizes);
+                console.log('✅ Positions Setup Studio chargées');
+            } catch(e) {}
+        }
+
+        // Générer les boutons slots
+        var sel = document.getElementById('ssSlotSelector');
+        if (!sel) return;
+        sel.innerHTML = '';
+        SS_POSITIONS.forEach(function(pos, i) {
+            var btn = document.createElement('div');
+            btn.className = 'ss-slot-btn' + (i === ss_selectedSlot ? ' active' : '');
+            btn.textContent = 'P' + (i+1);
+            btn.onclick = (function(idx){ return function(){ ssSelectSlot(idx); }; })(i);
+            btn.id = 'ssSlotBtn' + i;
+            sel.appendChild(btn);
+        });
+        ssUpdateDisplays();
+    }
+
+    function ssSelectSlot(idx) {
+        ss_selectedSlot = idx;
+        document.querySelectorAll('.ss-slot-btn').forEach(function(b, i){
+            b.classList.toggle('active', i === idx);
+        });
+        ssUpdateDisplays();
+        // Highlight la chaise sélectionnée
+        document.querySelectorAll('.ss-seat').forEach(function(s, i){
+            s.style.outline = (i === idx) ? '2px solid #6366f1' : 'none';
+            s.style.outlineOffset = '4px';
+        });
+    }
+
+    function ssMove(dx, dy) {
+        var step = parseFloat(document.getElementById('ssMoveStep')?.value || 1);
+        var pos = SS_POSITIONS[ss_selectedSlot];
+        if (!pos) return;
+        pos.x = Math.max(0, Math.min(100, pos.x + dx * step));
+        pos.y = Math.max(0, Math.min(95, pos.y + dy * step));
+        // Mettre à jour la chaise dans la scène
+        var seats = document.querySelectorAll('.ss-seat');
+        if (seats[ss_selectedSlot]) {
+            seats[ss_selectedSlot].style.left = pos.x + '%';
+            seats[ss_selectedSlot].style.top = pos.y + '%';
+        }
+        ssUpdateDisplays();
+        ssClearSaved();
+    }
+
+    function ssResize(delta) {
+        var step = 8;
+        ss_seatSizes[ss_selectedSlot] = Math.max(32, Math.min(120, ss_seatSizes[ss_selectedSlot] + delta * step));
+        var seats = document.querySelectorAll('.ss-seat');
+        if (seats[ss_selectedSlot]) {
+            var img = seats[ss_selectedSlot].querySelector('img');
+            if (img) {
+                var sz = ss_seatSizes[ss_selectedSlot] + 'px';
+                img.style.width = sz; img.style.height = sz;
+            }
+        }
+        ssUpdateDisplays();
+        ssClearSaved();
+    }
+
+    function ssUpdateDisplays() {
+        var pos = SS_POSITIONS[ss_selectedSlot];
+        var posEl = document.getElementById('ssPosDisplay');
+        var sizeEl = document.getElementById('ssSizeDisplay');
+        if (posEl && pos) posEl.textContent = 'x:' + pos.x.toFixed(1) + ' y:' + pos.y.toFixed(1);
+        if (sizeEl) sizeEl.textContent = ss_seatSizes[ss_selectedSlot] + 'px';
+    }
+
+    function ssSavePositions() {
+        var positions = SS_POSITIONS.map(function(p){ return {x:p.x, y:p.y}; });
+        localStorage.setItem('ss_positions', JSON.stringify(positions));
+        localStorage.setItem('ss_sizes', JSON.stringify(ss_seatSizes));
+        var btn = document.getElementById('ssSaveBtn');
+        if (btn) {
+            btn.classList.add('saved');
+            btn.textContent = '✅ Sauvegardé !';
+            setTimeout(function(){
+                btn.classList.remove('saved');
+                btn.innerHTML = '💾 Sauvegarder positions';
+            }, 2000);
+        }
+        // Retirer les outlines
+        document.querySelectorAll('.ss-seat').forEach(function(s){ s.style.outline = 'none'; });
+    }
+
+    function ssResetPositions() {
+        if (!SS_DEFAULT_POSITIONS) return;
+        SS_DEFAULT_POSITIONS.forEach(function(p, i){
+            if (SS_POSITIONS[i]) { SS_POSITIONS[i].x = p.x; SS_POSITIONS[i].y = p.y; }
+        });
+        ss_seatSizes = [72,72,72,72,72,72,72,72];
+        localStorage.removeItem('ss_positions');
+        localStorage.removeItem('ss_sizes');
+        ssRenderSeats();
+        ssInitToolbar();
+    }
+
+    function ssClearSaved() {
+        var btn = document.getElementById('ssSaveBtn');
+        if (btn && btn.classList.contains('saved')) btn.classList.remove('saved');
+    }
+    // ══════════════════════════════════════════════════════════
+
     </script>
 
     <script>
@@ -3408,6 +3697,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v80 — 7/4/2026 09:44</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v80 — 7/4/2026 12:26</div>
 </body>
 </html>
