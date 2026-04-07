@@ -31,10 +31,10 @@
     "application": null,
     "intervenants": [
       {
-        "nom": "vincent",
-        "prenom": "",
-        "fonction": "",
-        "entreprise": ""
+        "nom": "Vincent",
+        "prenom": "Lezenes",
+        "fonction": "Responsable Studio",
+        "entreprise": "Cic"
       },
       {
         "nom": "Marc",
@@ -68,6 +68,6 @@
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-07T14:26:21.987Z"
+    "updatedAt": "2026-04-07T14:26:23.241Z"
   }
 }
