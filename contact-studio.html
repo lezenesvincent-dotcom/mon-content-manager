@@ -1269,8 +1269,8 @@
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 12px;
         position: relative;
-        height: 360px;
-        overflow: hidden;
+        height: 420px;
+        overflow: visible;
     }
     .ss-table {
         position: absolute;
@@ -1291,7 +1291,7 @@
         z-index: 4;
     }
     .ss-seat img {
-        width: 72px; height: 72px;
+        width: 90px; height: 90px;
         object-fit: contain;
         filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7));
     }
@@ -2855,14 +2855,14 @@
 
     // Positions des chaises (layout en U autour de la table)
     var SS_POSITIONS = [
-        {id:0, x:18, y:14, label:'P1', front:false},  // haut gauche (derrière table)
-        {id:1, x:36, y:8,  label:'P2', front:false},  // haut centre-gauche
-        {id:2, x:56, y:8,  label:'P3', front:false},  // haut centre-droit
-        {id:3, x:74, y:14, label:'P4', front:false},  // haut droite
-        {id:4, x:6,  y:42, label:'P5', front:true},   // gauche devant
-        {id:5, x:24, y:58, label:'P6', front:true},   // bas gauche
-        {id:6, x:70, y:52, label:'P7', front:true},   // droite milieu
-        {id:7, x:86, y:38, label:'P8', front:true},   // droite haut
+        {id:0, x:18, y:18, label:'P1', front:false},
+        {id:1, x:36, y:10, label:'P2', front:false},
+        {id:2, x:56, y:10, label:'P3', front:false},
+        {id:3, x:74, y:18, label:'P4', front:false},
+        {id:4, x:8,  y:48, label:'P5', front:true},
+        {id:5, x:26, y:68, label:'P6', front:true},
+        {id:6, x:72, y:62, label:'P7', front:true},
+        {id:7, x:88, y:45, label:'P8', front:true},
     ];
 
     var ssData = SS_POSITIONS.map(function(p){
@@ -2986,10 +2986,82 @@
     // Init au chargement
     document.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
+            if (window.ss_initialized) return;
+            window.ss_initialized = true;
             ssRenderSeats();
-        }, 500);
+
+            // Sync temps réel : écouter les frappes dans les champs intervenants
+            function attachSsListeners() {
+                var body = document.getElementById('intervenantsBody');
+                if (!body) return;
+                if (body._ssListenerAttached) return;
+                body._ssListenerAttached = true;
+
+                // Écouter les input events (frappe en temps réel)
+                body.addEventListener('input', function(e) {
+                    if (e.target.tagName === 'INPUT') ssRefresh();
+                });
+                body.addEventListener('blur', function(e) {
+                    if (e.target.tagName === 'INPUT') syncCarnetFromSynthe();
+                }, true);
+
+                // Écouter les nouvelles lignes (+Ajouter)
+                new MutationObserver(function() { ssRefresh(); })
+                    .observe(body, { childList: true, subtree: true });
+            }
+            attachSsListeners();
+
+            // Retry si intervenantsBody pas encore dans le DOM
+            var retry = 0;
+            var retryInterval = setInterval(function() {
+                attachSsListeners();
+                retry++;
+                if (retry > 10) clearInterval(retryInterval);
+            }, 300);
+
+        }, 600);
     });
     // ══════════════════════════════════════════════════════════
+
+    // ── Carnet d'adresses : sync depuis Setup Studio ──────────
+    function syncCarnetFromSynthe() {
+        var body = document.getElementById('intervenantsBody');
+        if (!body) return;
+        var rows = body.querySelectorAll('.interv-row');
+        rows.forEach(function(row) {
+            var inputs = row.querySelectorAll('input');
+            var prenom = inputs[0] ? inputs[0].value.trim() : '';
+            var nom    = inputs[1] ? inputs[1].value.trim() : '';
+            var fonc   = inputs[2] ? inputs[2].value.trim() : '';
+            var ent    = inputs[3] ? inputs[3].value.trim() : '';
+            if (!prenom && !nom) return;
+            var full = (prenom + ' ' + nom).trim();
+            // Vérifier dans localStorage carnet
+            var carnet = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
+            var exists = carnet.find(function(c) {
+                return (c.prenom + ' ' + c.nom).trim().toLowerCase() === full.toLowerCase();
+            });
+            if (exists) {
+                // Doublon — afficher alerte discrète une seule fois
+                if (!row._doublonAlerte) {
+                    row._doublonAlerte = true;
+                    showToast('⚠️ ' + full + ' existe déjà dans le Carnet');
+                    row.style.outline = '2px solid rgba(255,180,0,0.6)';
+                    setTimeout(function(){ row.style.outline = ''; row._doublonAlerte = false; }, 4000);
+                }
+            } else if (full.length > 1) {
+                // Ajouter au carnet
+                carnet.push({
+                    prenom: prenom, nom: nom,
+                    fonction: fonc, entreprise: ent,
+                    source: 'contact-studio',
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('carnet_studio', JSON.stringify(carnet));
+            }
+        });
+    }
+    // ──────────────────────────────────────────────────────────
 
     </script>
 
@@ -3336,6 +3408,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v79 — 7/4/2026 09:38</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v80 — 7/4/2026 09:44</div>
 </body>
 </html>
