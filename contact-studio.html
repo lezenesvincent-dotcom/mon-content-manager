@@ -1341,8 +1341,8 @@
     /* Colonnes : sidebar fixe, main flexible, right fixe */
     .layout { max-width: 1800px !important; margin-left: auto !important; margin-right: auto !important; gap: 0 !important; }
     .sidebar { flex: 0 0 280px !important; width: 280px !important; overflow-y: auto !important; overflow-x: hidden !important; }
-    .main-area { flex: 1 1 0% !important; min-width: 340px !important; overflow: hidden !important; }
-    .right-col { flex: 0 0 380px !important; min-width: 340px !important; overflow: hidden !important; }
+    .main-area { flex: 1 1 0% !important; min-width: 340px !important; overflow: visible !important; }
+    .right-col { flex: 0 0 380px !important; min-width: 340px !important; overflow: visible !important; }
 
     /* Dégradés Spotify — haut seulement, pointer-events:none OBLIGATOIRE */
     .sidebar::before { content:''; position:absolute; top:0; left:0; right:0; height:35%;
@@ -1382,11 +1382,11 @@
     .sidebar::before { content:''; position:absolute; top:0; left:0; right:0; height:35%; background:linear-gradient(180deg,rgba(52,160,90,0.45) 0%,transparent 100%); pointer-events:none; z-index:0; }
     .sidebar::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:linear-gradient(180deg,rgba(52,160,90,0.25) 0%,transparent 50%); pointer-events:none; z-index:0; }
     .sidebar > * { position:relative; z-index:1; }
-    .main-area { position:relative; overflow:hidden; flex:1 1 0% !important; min-width:340px !important; }
+    .main-area { position:relative; overflow:visible; flex:1 1 0% !important; min-width:340px !important; }
     .main-area::before { content:''; position:absolute; top:0; left:0; right:0; height:30%; background:linear-gradient(180deg,rgba(246,211,101,0.45) 0%,rgba(253,160,133,0.15) 50%,transparent 100%); pointer-events:none; z-index:0; }
     .main-area::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:linear-gradient(180deg,rgba(246,211,101,0.3) 0%,transparent 50%); pointer-events:none; z-index:0; }
     .main-area > * { position:relative; z-index:1; }
-    .right-col { position:relative; overflow:hidden; flex:0 0 380px !important; min-width:340px !important; }
+    .right-col { position:relative; overflow:visible; flex:0 0 380px !important; min-width:340px !important; }
     .right-col::before { content:''; position:absolute; top:0; left:0; right:0; height:28%; background:linear-gradient(180deg,rgba(0,90,200,0.45) 0%,transparent 100%); pointer-events:none; z-index:0; }
     .right-col > * { position:relative; z-index:1; }
 
@@ -1869,7 +1869,13 @@
         <!-- RIGHT MAIN AREA -->
         <div class="main-area">
             <div class="summary-card">
-                <div class="summary-title" id="summaryTitle">Titre événement</div>
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                    <div class="summary-title" id="summaryTitle">Titre événement</div>
+                    <button onclick="exportResumeEvent()" title="Télécharger le résumé" style="flex-shrink:0;background:linear-gradient(135deg,#f093fb,#f5576c);border:none;border-radius:10px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;">
+                        <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Résumé
+                    </button>
+                </div>
                 <div class="summary-date" id="summaryDate">—</div>
                 <div class="summary-grid">
                     <div class="summary-item">
@@ -4162,7 +4168,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v88 — 07/04/2026 17:30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v89 — 07/04/2026 17:45</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4200,6 +4206,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v88 — 07/04/2026 17:30</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v89 — 07/04/2026 17:45</div>
 </body>
 </html>
