@@ -296,46 +296,79 @@
 
     .mode-row {
         display: flex;
-        gap: 5px
+        gap: 8px
     }
 
     .mode-card {
         flex: 1;
-        padding: 8px;
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        background: rgba(255, 255, 255, 0.03);
+        padding: 12px 8px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: linear-gradient(135deg, rgba(99,102,241,0.25) 0%, rgba(124,58,237,0.15) 100%);
         cursor: pointer;
-        text-align: center
+        text-align: center;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mode-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99,102,241,0.25);
+        border-color: rgba(99,102,241,0.35);
+    }
+
+    .mode-card#modeStudio {
+        background: linear-gradient(135deg, rgba(99,102,241,0.45) 0%, rgba(124,58,237,0.35) 100%);
+    }
+
+    .mode-card#modeVisio {
+        background: linear-gradient(135deg, rgba(0,112,243,0.35) 0%, rgba(6,182,212,0.25) 100%);
     }
 
     .mode-card.active {
-        border-color: rgba(0, 140, 255, 0.3)
+        border-color: rgba(255,255,255,0.25);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .mode-card#modeStudio.active {
+        background: linear-gradient(135deg, rgba(99,102,241,0.75) 0%, rgba(124,58,237,0.65) 100%);
+        border-color: rgba(139,92,246,0.6);
+        box-shadow: 0 4px 18px rgba(124,58,237,0.4);
+    }
+
+    .mode-card#modeVisio.active {
+        background: linear-gradient(135deg, rgba(0,112,243,0.65) 0%, rgba(6,182,212,0.5) 100%);
+        border-color: rgba(0,140,255,0.5);
+        box-shadow: 0 4px 18px rgba(0,112,243,0.4);
     }
 
     .mode-card-title {
-        font-size: 10px;
-        font-weight: 700;
-        margin-bottom: 2px
+        font-size: 11px;
+        font-weight: 800;
+        margin-bottom: 3px;
+        color: #fff;
     }
 
     .mode-desc {
-        font-size: 7px;
-        color: rgba(255, 255, 255, 0.45);
+        font-size: 8px;
+        color: rgba(255, 255, 255, 0.6);
         line-height: 1.4
     }
 
     .mode-dot {
-        width: 7px;
-        height: 7px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.25);
         display: inline-block;
-        margin-bottom: 3px
+        margin-bottom: 4px;
+        transition: background 0.2s;
     }
 
     .mode-card.active .mode-dot {
-        background: #0070f3
+        background: #fff;
+        box-shadow: 0 0 6px rgba(255,255,255,0.6);
     }
 
     .interv-row {
@@ -359,6 +392,47 @@
         border-color: rgba(0, 140, 255, 0.3)
     }
 
+    .interv-autocomplete {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #1e2030;
+        border: 1px solid rgba(99,102,241,0.4);
+        border-radius: 8px;
+        z-index: 9999;
+        max-height: 180px;
+        overflow-y: auto;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .interv-autocomplete-item {
+        padding: 7px 10px;
+        font-size: 11px;
+        color: rgba(255,255,255,0.85);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .interv-autocomplete-item:last-child { border-bottom: none; }
+    .interv-autocomplete-item:hover { background: rgba(99,102,241,0.25); }
+    .interv-autocomplete-item .iac-photo {
+        width: 24px; height: 24px; border-radius: 50%;
+        object-fit: cover; flex-shrink: 0;
+    }
+    .interv-autocomplete-item .iac-initials {
+        width: 24px; height: 24px; border-radius: 50%;
+        background: rgba(99,102,241,0.4);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 9px; font-weight: 700; color: #c4b5fd; flex-shrink: 0;
+    }
+    .interv-autocomplete-item .iac-info { display: flex; flex-direction: column; gap: 1px; }
+    .interv-autocomplete-item .iac-name { font-weight: 700; color: #fff; }
+    .interv-autocomplete-item .iac-sub { font-size: 9px; color: rgba(255,255,255,0.4); }
+    .interv-autocomplete-item.iac-create { color: #6ee7b7; font-style: italic; }
+    .interv-row { position: relative; }
+    .interv-autocomplete-wrap { position: absolute; top: 100%; left: 0; right: 0; z-index: 9999; }
     .interv-row input::placeholder {
         color: rgba(255, 255, 255, 0.7);
         font-weight: 600
@@ -1166,9 +1240,12 @@
     .livr-file .livr-icon{font-size:20px;display:block;margin-bottom:4px;}
     .livr-file.unavail{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.2);cursor:default;}
     .livr-file.unavail:hover{transform:none;box-shadow:none;}
-    .mode-card{flex:1;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;text-align:center;}
-    .mode-card:hover{background:rgba(255,255,255,.09);transform:translateY(-2px);}
-    .mode-card.active{background:linear-gradient(135deg,rgba(99,102,241,.35),rgba(124,58,237,.35));border-color:rgba(124,58,237,.5);box-shadow:0 4px 14px rgba(124,58,237,.2);}
+    .mode-card{flex:1;padding:12px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden;}
+    .mode-card:hover{transform:translateY(-2px);}
+    .mode-card#modeStudio{background:linear-gradient(135deg,rgba(99,102,241,.45),rgba(124,58,237,.35));}
+    .mode-card#modeVisio{background:linear-gradient(135deg,rgba(0,112,243,.35),rgba(6,182,212,.25));}
+    .mode-card#modeStudio.active{background:linear-gradient(135deg,rgba(99,102,241,.75),rgba(124,58,237,.65));border-color:rgba(139,92,246,.6);box-shadow:0 4px 18px rgba(124,58,237,.4);}
+    .mode-card#modeVisio.active{background:linear-gradient(135deg,rgba(0,112,243,.65),rgba(6,182,212,.5));border-color:rgba(0,140,255,.5);box-shadow:0 4px 18px rgba(0,112,243,.4);}
     .upload-slot{background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.12);border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;transition:all .2s;font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;}
     .upload-slot:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.7);transform:translateY(-2px);}
     .upload-slot.filled{background:rgba(67,233,123,.08);border:1px solid rgba(67,233,123,.25);color:#6ee7b7;}
@@ -2113,6 +2190,7 @@
         d.innerHTML = '<span class="interv-num">' + rowCount + '</span><input type="text" placeholder="Prénom"><input type="text" placeholder="Nom"><input type="text" placeholder="Fonction"><input type="text" placeholder="Entreprise">';
         d.querySelectorAll('input').forEach(function(inp){ inp.addEventListener('blur', capitalizeInput); });
         document.getElementById('intervenantsBody').appendChild(d);
+        attachAutocomplete(d);
     }
 
     function capitalizeInput(e) {
@@ -3189,10 +3267,114 @@
             }, 300);
 
         }, 600);
+        // Générer les boutons P1→P8 dans le panel joystick sidebar
+        setTimeout(function(){ ssInitToolbar(); }, 700);
+        // Autocomplete intervenants
+        setTimeout(function(){ attachAllAutocomplete(); }, 800);
     });
     // ══════════════════════════════════════════════════════════
 
     // ── Carnet d'adresses : sync depuis Setup Studio ──────────
+    // ── Autocomplétion intervenants depuis carnet_studio ──────
+    function attachAutocomplete(row) {
+        var inputs = row.querySelectorAll('input');
+        var prenomInput = inputs[0];
+        if (!prenomInput || prenomInput._acAttached) return;
+        prenomInput._acAttached = true;
+
+        var wrap = document.createElement('div');
+        wrap.className = 'interv-autocomplete-wrap';
+        row.appendChild(wrap);
+
+        function getCarnet() {
+            return JSON.parse(localStorage.getItem('carnet_studio') || '[]');
+        }
+
+        function showDropdown(matches, query) {
+            wrap.innerHTML = '';
+            if (!matches.length && query.length < 2) return;
+            var box = document.createElement('div');
+            box.className = 'interv-autocomplete';
+
+            matches.forEach(function(c) {
+                var item = document.createElement('div');
+                item.className = 'interv-autocomplete-item';
+                var avatar = '';
+                if (c.photo) {
+                    avatar = '<img class="iac-photo" src="' + c.photo + '" onerror="this.style.display=\'none\'">';
+                } else {
+                    var initials = ((c.prenom||'').charAt(0) + (c.nom||'').charAt(0)).toUpperCase();
+                    avatar = '<div class="iac-initials">' + initials + '</div>';
+                }
+                var sub = [c.fonction, c.entreprise].filter(Boolean).join(' · ');
+                item.innerHTML = avatar + '<div class="iac-info"><span class="iac-name">' + (c.prenom||'') + ' ' + (c.nom||'') + '</span><span class="iac-sub">' + sub + '</span></div>';
+                item.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    var rowInputs = row.querySelectorAll('input');
+                    if (rowInputs[0]) rowInputs[0].value = c.prenom || '';
+                    if (rowInputs[1]) rowInputs[1].value = c.nom || '';
+                    if (rowInputs[2]) rowInputs[2].value = c.fonction || '';
+                    if (rowInputs[3]) rowInputs[3].value = c.entreprise || '';
+                    wrap.innerHTML = '';
+                    if (typeof ssRefresh === 'function') ssRefresh();
+                    if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
+                });
+                box.appendChild(item);
+            });
+
+            // Option créer fiche si aucun résultat exact
+            if (query.length >= 2) {
+                var hasExact = matches.some(function(c) {
+                    return (c.prenom + ' ' + c.nom).toLowerCase().startsWith(query.toLowerCase());
+                });
+                if (!hasExact || !matches.length) {
+                    var createItem = document.createElement('div');
+                    createItem.className = 'interv-autocomplete-item iac-create';
+                    createItem.innerHTML = '<div class="iac-initials">+</div><div class="iac-info"><span class="iac-name">Créer une fiche pour "' + query + '"</span><span class="iac-sub">Ajouter au carnet d\'adresses</span></div>';
+                    createItem.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+                        wrap.innerHTML = '';
+                        var parts = query.trim().split(/\s+/);
+                        var prenom = parts[0] || query;
+                        var nom = parts.slice(1).join(' ') || '';
+                        var carnet = getCarnet();
+                        carnet.push({ prenom: prenom, nom: nom, fonction: '', entreprise: '', source: 'contact-studio', date: new Date().toISOString() });
+                        localStorage.setItem('carnet_studio', JSON.stringify(carnet));
+                        var rowInputs = row.querySelectorAll('input');
+                        if (rowInputs[0]) rowInputs[0].value = prenom;
+                        if (rowInputs[1]) rowInputs[1].value = nom;
+                        showToast('✅ Fiche créée pour ' + prenom + ' ' + nom);
+                        if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
+                    });
+                    box.appendChild(createItem);
+                }
+            }
+
+            wrap.appendChild(box);
+        }
+
+        prenomInput.addEventListener('input', function() {
+            var q = prenomInput.value.trim();
+            if (q.length < 1) { wrap.innerHTML = ''; return; }
+            var carnet = getCarnet();
+            var matches = carnet.filter(function(c) {
+                var full = ((c.prenom||'') + ' ' + (c.nom||'')).toLowerCase();
+                var prenom = (c.prenom||'').toLowerCase();
+                return prenom.startsWith(q.toLowerCase()) || full.startsWith(q.toLowerCase());
+            }).slice(0, 6);
+            showDropdown(matches, q);
+        });
+
+        prenomInput.addEventListener('blur', function() {
+            setTimeout(function(){ wrap.innerHTML = ''; }, 200);
+        });
+    }
+
+    function attachAllAutocomplete() {
+        document.querySelectorAll('.interv-row').forEach(attachAutocomplete);
+    }
+    // ──────────────────────────────────────────────────────────
+
     function syncCarnetFromSynthe() {
         var body = document.getElementById('intervenantsBody');
         if (!body) return;
@@ -3830,7 +4012,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v83 — 07/04/2026 16:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v84 — 07/04/2026 16:30</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -3868,6 +4050,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v83 — 07/04/2026 16:00</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v84 — 07/04/2026 16:30</div>
 </body>
 </html>
