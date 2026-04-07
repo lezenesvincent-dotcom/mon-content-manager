@@ -1265,22 +1265,22 @@
         display: flex; align-items: center; justify-content: center; font-size: 14px;
     }
     .ss-scene {
-        background: #1a1d2e;
+        background: radial-gradient(ellipse at 50% 80%, #2a2d3e 0%, #1a1d2e 70%);
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 12px;
-        padding: 24px 16px 16px;
+        padding: 16px 12px 12px;
         position: relative;
-        min-height: 260px;
-        overflow: hidden;
+        min-height: 320px;
+        overflow: visible;
     }
     .ss-table {
         position: absolute;
-        bottom: 40px; left: 50%; transform: translateX(-50%);
-        width: 70%; height: 28px;
-        background: linear-gradient(135deg, #2a2d3e, #1e2030);
-        border-radius: 4px;
-        border: 1px solid rgba(255,255,255,0.1);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        bottom: 8%; left: 50%; transform: translateX(-50%);
+        width: 58%; height: 42%;
+        background: linear-gradient(160deg, #f6b91a 0%, #e8a010 60%, #c87800 100%);
+        border-radius: 4px 4px 2px 2px;
+        clip-path: polygon(12% 0%, 88% 0%, 100% 100%, 0% 100%);
+        box-shadow: 0 8px 32px rgba(200,120,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
     }
     .ss-seat {
         position: absolute;
@@ -1290,23 +1290,23 @@
     }
     .ss-seat:hover { transform: scale(1.05); }
     .ss-seat img {
-        width: 48px; height: 48px;
-        object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+        width: 60px; height: 60px;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));
     }
     .ss-seat-controls {
         display: flex; flex-direction: column; gap: 3px; align-items: center;
     }
     .ss-name-select {
         background: rgba(255,255,255,0.92);
-        border: none; border-radius: 6px;
-        padding: 2px 6px; font-size: 9px; font-weight: 700;
-        color: #111; cursor: pointer; width: 100px;
-        text-align: center; appearance: none;
-        -webkit-appearance: none;
+        border: 2px solid #4a90e2;
+        border-radius: 6px;
+        padding: 3px 18px 3px 6px; font-size: 9px; font-weight: 700;
+        color: #111; cursor: pointer; width: 110px;
+        appearance: none; -webkit-appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24'%3E%3Cpath fill='%23333' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 4px center;
-        padding-right: 18px;
+        background-repeat: no-repeat; background-position: right 4px center;
+        background-color: rgba(255,255,255,0.92);
     }
     .ss-role-select {
         background: rgba(99,102,241,0.85);
@@ -2842,14 +2842,14 @@
 
     // Positions des chaises (layout en U autour de la table)
     var SS_POSITIONS = [
-        {id:0, x:8,  y:55, label:'P1'},  // gauche bas
-        {id:1, x:22, y:30, label:'P2'},  // gauche haut
-        {id:2, x:38, y:10, label:'P3'},  // centre-gauche haut
-        {id:3, x:55, y:10, label:'P4'},  // centre-droit haut
-        {id:4, x:70, y:30, label:'P5'},  // droite haut
-        {id:5, x:82, y:55, label:'P6'},  // droite bas milieu
-        {id:6, x:75, y:72, label:'P7'},  // droite bas
-        {id:7, x:15, y:72, label:'P8'},  // gauche bas
+        {id:0, x:5,  y:55, label:'P1'},   // gauche devant
+        {id:1, x:22, y:32, label:'P2'},   // gauche derrière
+        {id:2, x:38, y:12, label:'P3'},   // centre-gauche haut
+        {id:3, x:55, y:12, label:'P4'},   // centre-droit haut
+        {id:4, x:72, y:32, label:'P5'},   // droite derrière
+        {id:5, x:82, y:50, label:'P6'},   // droite milieu
+        {id:6, x:78, y:68, label:'P7'},   // droite bas
+        {id:7, x:88, y:82, label:'P8'},   // droite extrême bas
     ];
 
     var ssData = SS_POSITIONS.map(function(p){
@@ -2917,7 +2917,7 @@
                 return '<option value="' + s + '"' + (seat.slides === s ? ' selected' : '') + '>' + s + '</option>';
             }).join('');
 
-            el.innerHTML = '<img src="https://raw.githubusercontent.com/lezenesvincent-dotcom/mon-content-manager/main/regie-assets/chaise.png" alt="chaise" onerror="this.style.fontSize=\'28px\';this.outerHTML=\'<div style=\"width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:28px;\">🪑</div>\'">'
+            el.innerHTML = '<img src="https://lezenesvincent-dotcom.github.io/mon-content-manager/regie-assets/chaise.png" alt="chaise" onerror="this.style.fontSize=\'28px\';this.outerHTML=\'<div style=\"width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:28px;\">🪑</div>\'">'
                 + '<div class="ss-seat-controls">'
                 + '<select class="ss-name-select" onchange="ssSetName(' + i + ',this.value)">' + nameOpts + '</select>'
                 + '<select class="ss-role-select" onchange="ssSetRole(' + i + ',this.value)">' + roleOpts + '</select>'
@@ -3297,6 +3297,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v75 — 7/4/2026 09:10</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v76 — 7/4/2026 09:18</div>
 </body>
 </html>
