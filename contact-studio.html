@@ -1244,6 +1244,89 @@
     [onclick*="live"].sel { background: linear-gradient(135deg,#ff416c,#ff4b2b) !important; color: #fff !important; }
     .rp-note { color: rgba(255,255,255,0.45) !important; }
     .right-panel-title span { color: #fff !important; }
+
+    /* ── Setup Studio ── */
+    .setup-studio-panel {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px;
+        padding: 16px;
+        margin-top: 10px;
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+    }
+    .setup-studio-title {
+        font-size: 13px; font-weight: 800; color: #fff;
+        margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .setup-studio-title .ss-icon {
+        width: 28px; height: 28px; border-radius: 8px;
+        background: linear-gradient(135deg,#f093fb,#f5576c);
+        display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .ss-scene {
+        background: #1a1d2e;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 24px 16px 16px;
+        position: relative;
+        min-height: 260px;
+        overflow: hidden;
+    }
+    .ss-table {
+        position: absolute;
+        bottom: 40px; left: 50%; transform: translateX(-50%);
+        width: 70%; height: 28px;
+        background: linear-gradient(135deg, #2a2d3e, #1e2030);
+        border-radius: 4px;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .ss-seat {
+        position: absolute;
+        display: flex; flex-direction: column; align-items: center;
+        gap: 4px; cursor: pointer;
+        transition: transform 0.15s;
+    }
+    .ss-seat:hover { transform: scale(1.05); }
+    .ss-seat img {
+        width: 48px; height: 48px;
+        object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    }
+    .ss-seat-controls {
+        display: flex; flex-direction: column; gap: 3px; align-items: center;
+    }
+    .ss-name-select {
+        background: rgba(255,255,255,0.92);
+        border: none; border-radius: 6px;
+        padding: 2px 6px; font-size: 9px; font-weight: 700;
+        color: #111; cursor: pointer; width: 100px;
+        text-align: center; appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24'%3E%3Cpath fill='%23333' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 4px center;
+        padding-right: 18px;
+    }
+    .ss-role-select {
+        background: rgba(99,102,241,0.85);
+        border: none; border-radius: 5px;
+        padding: 2px 6px; font-size: 8px; font-weight: 700;
+        color: #fff; cursor: pointer; width: 80px;
+        text-align: center; appearance: none; -webkit-appearance: none;
+    }
+    .ss-slides-select {
+        background: rgba(0,112,243,0.8);
+        border: none; border-radius: 5px;
+        padding: 2px 6px; font-size: 8px; font-weight: 700;
+        color: #fff; cursor: pointer; width: 80px;
+        text-align: center; appearance: none; -webkit-appearance: none;
+    }
+    .ss-hint {
+        text-align: center; font-size: 9px; color: rgba(255,255,255,0.3);
+        margin-top: 8px; font-style: italic;
+    }
+
     </style>
 </head>
 <body>
@@ -1658,7 +1741,21 @@
             <div class="footer-info">
                 <strong>Contact studio : Vincent</strong>
                  — 61 rue Taitbout, 3e étage (Work Café D2) — Arrivée 30min avant le direct
+            
+            <!-- ══ SETUP STUDIO ══ -->
+            <div class="setup-studio-panel" id="setupStudioPanel">
+                <div class="setup-studio-title">
+                    <div class="ss-icon">🎬</div>
+                    Setup Studio
+                </div>
+                <div class="ss-scene" id="ssScene">
+                    <!-- Table -->
+                    <div class="ss-table"></div>
+                    <!-- Chaises positionnées dynamiquement par JS -->
+                </div>
+                <p class="ss-hint">Définissez les intervenants, positions, rôles, fonctions et contenus</p>
             </div>
+</div>
 
 
 </div>
@@ -1694,9 +1791,9 @@
                         <div class="rp-toggle on" id="tGen" onclick="rpTgl(this);calcTotal()"></div>
                         <span class="rp-label">Création générique</span>
                         <div style="width:100%;display:flex;flex-direction:column;gap:4px;padding-left:36px;">
-                            <div style="display:flex;align-items:center;justify-content:space-between;"><button class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique groupe + logo</button><span class="rp-price" style="min-width:60px;text-align:right;">500 HT</span></div>
-                            <div style="display:flex;align-items:center;justify-content:space-between;"><button class="rp-pill sel" onclick="selPill(this,'gen');calcTotal()">Générique groupe personnalisé</button><span class="rp-price on" style="min-width:60px;text-align:right;">870 HT</span></div>
-                            <div style="display:flex;align-items:center;justify-content:space-between;"><button class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique original</button><span class="rp-price" style="min-width:60px;text-align:right;">1500 HT</span></div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;"><button data-group="gen" data-price="500" class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique groupe + logo</button><span class="rp-price" style="min-width:60px;text-align:right;">500 HT</span></div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;"><button data-group="gen" data-price="870" class="rp-pill sel" onclick="selPill(this,'gen');calcTotal()">Générique groupe personnalisé</button><span class="rp-price on" style="min-width:60px;text-align:right;">870 HT</span></div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;"><button data-group="gen" data-price="1500" class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique original</button><span class="rp-price" style="min-width:60px;text-align:right;">1500 HT</span></div>
                         </div>
                     </div>
                     <div class="rp-row" style="flex-wrap:wrap;gap:6px;">
@@ -1704,11 +1801,11 @@
                         <span class="rp-label">Création de film</span>
                         <div style="width:100%;display:flex;gap:4px;flex-wrap:wrap;padding-left:36px;">
                             <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:3px 0;">
-                                <button class="rp-pill sel" onclick="selPill(this,'film');calcTotal()">Film long</button>
+                                <button data-group="film" data-price="6400" class="rp-pill sel" onclick="selPill(this,'film');calcTotal()">Film long</button>
                                 <span class="rp-price on" style="min-width:60px;text-align:right;">6400 HT</span>
                             </div>
                             <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:3px 0;">
-                                <button class="rp-pill" onclick="selPill(this,'film');calcTotal()">Vidéo courte</button>
+                                <button data-group="film" data-price="2000" class="rp-pill" onclick="selPill(this,'film');calcTotal()">Vidéo courte</button>
                                 <span class="rp-price" style="min-width:60px;text-align:right;">2000 HT</span>
                             </div>
                         </div>
@@ -2591,48 +2688,46 @@
     }
 
     function rpTgl(el){el.classList.toggle('on');var pid='p'+el.id.substring(1);var pe=document.getElementById(pid);if(pe)pe.classList.toggle('on',el.classList.contains('on'));}
-    function selPill(pill,group){var parent=pill.closest('.rp-pills');parent.querySelectorAll('.rp-pill').forEach(function(p){p.classList.remove('sel');});pill.classList.add('sel');}
+    function selPill(pill,group){var parent=pill.closest('.rp-pills');parent.querySelectorAll('.rp-pill').forEach(function(p){p.classList.remove('sel');});pill.classList.add('sel');calcTotal();}
     function calcTotal() {
         var t = 0;
         // Live
-        if (document.getElementById('tLive') && document.getElementById('tLive').classList.contains('on')) {
+        var tLive = document.getElementById('tLive');
+        if (tLive && tLive.classList.contains('on')) {
             var btnC = document.getElementById('btnComplex');
-            var isComplex = btnC && (btnC.style.background.includes('ff416') || btnC.style.background.includes('ff4b2b') || btnC.classList.contains('active-complex'));
-            var livePrice = isComplex ? 1900 : 1500;
-            t += livePrice;
-            var pLive = document.getElementById('pLive');
-            if (pLive) pLive.textContent = livePrice + ' HT';
+            t += (btnC && btnC.classList.contains('active-complex')) ? 1900 : 1500;
         }
-        if (document.getElementById('tDemi') && document.getElementById('tDemi').classList.contains('on')) t += 400;
-        if (document.getElementById('tMontage') && document.getElementById('tMontage').classList.contains('on')) t += 500;
-        if (document.getElementById('tST') && document.getElementById('tST').classList.contains('on')) t += 400;
+        // Demi heure
+        var tDemi = document.getElementById('tDemi');
+        if (tDemi && tDemi.classList.contains('on')) t += 400;
+        // Montage
+        var tMontage = document.getElementById('tMontage');
+        if (tMontage && tMontage.classList.contains('on')) t += 500;
+        // Sous-titres
+        var tST = document.getElementById('tST');
+        if (tST && tST.classList.contains('on')) t += 400;
         // Generique
-        if (document.getElementById('tGen') && document.getElementById('tGen').classList.contains('on')) {
-            var sg = document.querySelector('[onclick*=\'gen\'].sel');
-            if (sg) {
-                var sib = sg.parentElement && sg.parentElement.querySelector('.rp-price');
-                var m = (sib ? sib.textContent : '870').match(/\d+/);
-                t += m ? parseInt(m[0]) : 870;
-            } else { t += 870; }
+        var tGen = document.getElementById('tGen');
+        if (tGen && tGen.classList.contains('on')) {
+            var genPills = document.querySelectorAll('#factContent .rp-pill[data-group="gen"]');
+            var selGen = null;
+            genPills.forEach(function(p){ if(p.classList.contains('sel')) selGen = p; });
+            var genPrice = selGen ? parseInt(selGen.getAttribute('data-price')||'870') : 870;
+            t += genPrice;
         }
         // Film
-        if (document.getElementById('tFilm') && document.getElementById('tFilm').classList.contains('on')) {
-            var sf = document.querySelector('[onclick*=\'film\'].sel');
-            if (sf) {
-                var sib2 = sf.parentElement && sf.parentElement.querySelector('.rp-price');
-                var m2 = (sib2 ? sib2.textContent : '6400').match(/\d+/);
-                t += m2 ? parseInt(m2[0]) : 6400;
-            } else { t += 6400; }
+        var tFilm = document.getElementById('tFilm');
+        if (tFilm && tFilm.classList.contains('on')) {
+            var filmPills = document.querySelectorAll('#factContent .rp-pill[data-group="film"]');
+            var selFilm = null;
+            filmPills.forEach(function(p){ if(p.classList.contains('sel')) selFilm = p; });
+            var filmPrice = selFilm ? parseInt(selFilm.getAttribute('data-price')||'6400') : 6400;
+            t += filmPrice;
         }
         var el = document.getElementById('factTotal');
         if (el) el.textContent = t.toLocaleString('fr-FR') + ' EUR HT';
     }
-        if(document.getElementById('tDemi')&&document.getElementById('tDemi').classList.contains('on'))t+=400;
-        if(document.getElementById('tMontage')&&document.getElementById('tMontage').classList.contains('on'))t+=500;
-        if(document.getElementById('tST')&&document.getElementById('tST').classList.contains('on'))t+=400;
-        if(document.getElementById('tGen')&&document.getElementById('tGen').classList.contains('on')){var sg=document.querySelector('[onclick*="gen"].sel');var gp=sg?parseInt((sg.textContent.match(/\d+/)||[870])[0]):870;t+=gp;}
-        if(document.getElementById('tFilm')&&document.getElementById('tFilm').classList.contains('on')){var sf=document.querySelector('[onclick*="film"].sel');t+=(sf&&sf.textContent.includes('3200'))?3200:8400;}
-        var el=document.getElementById('factTotal');if(el)el.textContent=t.toLocaleString('fr-FR')+' EUR HT';
+
     var _ds = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d’un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
     var _dc = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l’événement)';
     function setDirect(type) {
@@ -2650,7 +2745,7 @@
             if(d) d.textContent=_dc;
             if(p) p.textContent='1900 HT';
         }
-        if(typeof calcTotal==='function') calcTotal();
+        calcTotal();
     }
     var _livrUnlocked=false;
     var _livrFiles={main:[null,null,null,null],collab:[null,null,null,null,null,null]};
@@ -2758,6 +2853,122 @@
         a.click();
         showToast('\u2B07\uFE0F Historique Q&R téléchargé');
     }
+    // ══ SETUP STUDIO ══════════════════════════════════════════
+    var SS_ROLES = ['Modérateur','Intervenant','Présentateur','Expert','Conférencier','Animateur','Invité'];
+    var SS_SLIDES = ['0 slide','2 slides','4 slides','6 slides','8 slides','10 slides','12 slides'];
+
+    // Positions des chaises (layout en U autour de la table)
+    var SS_POSITIONS = [
+        {id:0, x:8,  y:55, label:'P1'},  // gauche bas
+        {id:1, x:22, y:30, label:'P2'},  // gauche haut
+        {id:2, x:38, y:10, label:'P3'},  // centre-gauche haut
+        {id:3, x:55, y:10, label:'P4'},  // centre-droit haut
+        {id:4, x:70, y:30, label:'P5'},  // droite haut
+        {id:5, x:82, y:55, label:'P6'},  // droite bas milieu
+        {id:6, x:75, y:72, label:'P7'},  // droite bas
+        {id:7, x:15, y:72, label:'P8'},  // gauche bas
+    ];
+
+    var ssData = SS_POSITIONS.map(function(p){
+        return {pos: p, name: '', role: SS_ROLES[1], slides: '4 slides'};
+    });
+
+    function ssGetIntervenants() {
+        // Récupérer les intervenants depuis les synthés
+        var names = ['— vide —'];
+        var rows = document.querySelectorAll('.intervenant-row, .synthe-row, [data-intervenant]');
+        if (rows.length === 0) {
+            // Fallback : chercher les champs prénom/nom
+            var prenoms = document.querySelectorAll('[id^="prenom"], [id^="firstName"], input[placeholder*="rénom"], input[placeholder*="nom"]');
+            prenoms.forEach(function(el) {
+                var val = el.value.trim();
+                if (val && !names.includes(val)) names.push(val);
+            });
+        }
+        rows.forEach(function(row) {
+            var inputs = row.querySelectorAll('input');
+            var name = '';
+            inputs.forEach(function(inp) { if(inp.value.trim()) name += inp.value.trim() + ' '; });
+            if (name.trim()) names.push(name.trim());
+        });
+        // Chercher aussi dans le résumé des intervenants
+        var summaryNames = document.querySelectorAll('.summary-intervenant, .intervenant-name');
+        summaryNames.forEach(function(el) {
+            var n = el.textContent.trim();
+            if (n && n !== '—' && !names.includes(n)) names.push(n);
+        });
+        return names;
+    }
+
+    function ssRenderSeats() {
+        var scene = document.getElementById('ssScene');
+        if (!scene) return;
+        // Supprimer les anciennes chaises
+        scene.querySelectorAll('.ss-seat').forEach(function(s){ s.remove(); });
+
+        var names = ssGetIntervenants();
+        var sceneW = scene.offsetWidth || 400;
+        var sceneH = scene.offsetHeight || 260;
+
+        ssData.forEach(function(seat, i) {
+            var pos = seat.pos;
+            var el = document.createElement('div');
+            el.className = 'ss-seat';
+            el.style.left = pos.x + '%';
+            el.style.top = pos.y + '%';
+            el.style.transform = 'translate(-50%, -50%)';
+            el.style.position = 'absolute';
+
+            // Select nom
+            var nameOpts = names.map(function(n) {
+                return '<option value="' + n + '"' + (seat.name === n ? ' selected' : '') + '>' + n + '</option>';
+            }).join('');
+
+            // Select rôle
+            var roleOpts = SS_ROLES.map(function(r) {
+                return '<option value="' + r + '"' + (seat.role === r ? ' selected' : '') + '>' + r + '</option>';
+            }).join('');
+
+            // Select slides
+            var slidesOpts = SS_SLIDES.map(function(s) {
+                return '<option value="' + s + '"' + (seat.slides === s ? ' selected' : '') + '>' + s + '</option>';
+            }).join('');
+
+            el.innerHTML = '<img src="https://raw.githubusercontent.com/lezenesvincent-dotcom/mon-content-manager/main/regie-assets/chaise.png" alt="chaise" onerror="this.style.fontSize=\'28px\';this.outerHTML=\'<div style=\"width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:28px;\">🪑</div>\'">'
+                + '<div class="ss-seat-controls">'
+                + '<select class="ss-name-select" onchange="ssSetName(' + i + ',this.value)">' + nameOpts + '</select>'
+                + '<select class="ss-role-select" onchange="ssSetRole(' + i + ',this.value)">' + roleOpts + '</select>'
+                + '<select class="ss-slides-select" onchange="ssSetSlides(' + i + ',this.value)">' + slidesOpts + '</select>'
+                + '</div>';
+
+            scene.appendChild(el);
+        });
+    }
+
+    function ssSetName(i, val) { ssData[i].name = val; }
+    function ssSetRole(i, val) { ssData[i].role = val; }
+    function ssSetSlides(i, val) { ssData[i].slides = val; }
+
+    function ssRefresh() {
+        // Mettre à jour les selects nom avec les intervenants actuels
+        var names = ssGetIntervenants();
+        var selects = document.querySelectorAll('.ss-name-select');
+        selects.forEach(function(sel, i) {
+            var current = ssData[i] ? ssData[i].name : '';
+            sel.innerHTML = names.map(function(n) {
+                return '<option value="' + n + '"' + (current === n ? ' selected' : '') + '>' + n + '</option>';
+            }).join('');
+        });
+    }
+
+    // Init au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            ssRenderSeats();
+        }, 500);
+    });
+    // ══════════════════════════════════════════════════════════
+
     </script>
 
     <script>
@@ -3103,6 +3314,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v73 — 7/4/2026 07:31</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v74 — 7/4/2026 08:42</div>
 </body>
 </html>
