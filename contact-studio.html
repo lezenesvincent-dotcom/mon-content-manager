@@ -1958,22 +1958,22 @@
                     <div class="rp-row"><div class="rp-toggle" id="tDemi" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Demie heure supp.</span><span class="rp-price" id="pDemi" style="margin-left:auto;">400 HT</span></div>
                     <div class="rp-row"><div class="rp-toggle" id="tMontage" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Nouveau montage</span><span class="rp-price" id="pMontage" style="margin-left:auto;">500 HT</span></div>
                     <div class="rp-row"><div class="rp-toggle" id="tDecli" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Déclinaison film unitaire</span><span class="rp-price" id="pDecli" style="margin-left:auto;">—</span></div>
-                    <div class="rp-row"><div class="rp-toggle on" id="tST" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Sous-titres</span><span class="rp-price on" id="pST" style="margin-left:auto;">400 HT</span></div>
+                    <div class="rp-row"><div class="rp-toggle" id="tST" onclick="rpTgl(this);calcTotal()"></div><span class="rp-label">Sous-titres</span><span class="rp-price" id="pST" style="margin-left:auto;">400 HT</span></div>
                     <div class="rp-row" style="flex-wrap:wrap;gap:6px;">
-                        <div class="rp-toggle on" id="tGen" onclick="rpTgl(this);calcTotal()"></div>
+                        <div class="rp-toggle" id="tGen" onclick="rpTgl(this);calcTotal()"></div>
                         <span class="rp-label">Création générique</span>
                         <div style="width:100%;display:flex;flex-direction:column;gap:4px;padding-left:36px;">
                             <div style="display:flex;align-items:center;justify-content:space-between;"><button data-group="gen" data-price="500" class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique groupe + logo</button><span class="rp-price" style="min-width:60px;text-align:right;">500 HT</span></div>
-                            <div style="display:flex;align-items:center;justify-content:space-between;"><button data-group="gen" data-price="870" class="rp-pill sel" onclick="selPill(this,'gen');calcTotal()">Générique groupe personnalisé</button><span class="rp-price on" style="min-width:60px;text-align:right;">870 HT</span></div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;"><button data-group="gen" data-price="870" class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique groupe personnalisé</button><span class="rp-price on" style="min-width:60px;text-align:right;">870 HT</span></div>
                             <div style="display:flex;align-items:center;justify-content:space-between;"><button data-group="gen" data-price="1500" class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique original</button><span class="rp-price" style="min-width:60px;text-align:right;">1500 HT</span></div>
                         </div>
                     </div>
                     <div class="rp-row" style="flex-wrap:wrap;gap:6px;">
-                        <div class="rp-toggle on" id="tFilm" onclick="rpTgl(this);calcTotal()"></div>
+                        <div class="rp-toggle" id="tFilm" onclick="rpTgl(this);calcTotal()"></div>
                         <span class="rp-label">Création de film</span>
                         <div style="width:100%;display:flex;gap:4px;flex-wrap:wrap;padding-left:36px;">
                             <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:3px 0;">
-                                <button data-group="film" data-price="6400" class="rp-pill sel" onclick="selPill(this,'film');calcTotal()">Film long</button>
+                                <button data-group="film" data-price="6400" class="rp-pill" onclick="selPill(this,'film');calcTotal()">Film long</button>
                                 <span class="rp-price on" style="min-width:60px;text-align:right;">6400 HT</span>
                             </div>
                             <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:3px 0;">
@@ -1982,7 +1982,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="rp-total"><span class="rp-total-label">Total estim&#233;</span><span class="rp-total-price" id="factTotal">11 270 EUR HT</span></div>
+                    <div class="rp-total"><span class="rp-total-label">Total estim&#233;</span><span class="rp-total-price" id="factTotal">1 500 EUR HT</span></div>
                     <div class="rp-note">Tournage au studio &#x2013; Script pr&#233;alable &#x2013; Habillage vid&#233;o sonore et graphique</div>
                 </div>
             </div>
@@ -3865,6 +3865,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v82 — 7/4/2026 12:32</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v83 — 7/4/2026 12:34</div>
 </body>
 </html>
