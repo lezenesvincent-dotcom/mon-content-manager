@@ -1605,6 +1605,18 @@
                 <button class="add-interv" onclick="addRow()">+ Ajouter</button>
             </div>
 
+            <!-- ══ SETUP STUDIO ══ -->
+            <div class="setup-studio-panel" id="setupStudioPanel">
+                <div class="setup-studio-title">
+                    <div class="ss-icon">🎬</div>
+                    Setup Studio
+                </div>
+                <div class="ss-scene" id="ssScene">
+                    <div class="ss-table"></div>
+                </div>
+                <p class="ss-hint">Définissez les intervenants, positions, rôles et contenus</p>
+            </div>
+
             <div class="panel">
                 <div class="section-title">Commentaires</div>
                 <textarea id="commentaires" spellcheck="false" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#fff;font-size:11px;font-weight:400;font-family:inherit;outline:none;resize:none;height:60px;line-height:1.4"></textarea>
@@ -1742,19 +1754,6 @@
                 <strong>Contact studio : Vincent</strong>
                  — 61 rue Taitbout, 3e étage (Work Café D2) — Arrivée 30min avant le direct
             
-            <!-- ══ SETUP STUDIO ══ -->
-            <div class="setup-studio-panel" id="setupStudioPanel">
-                <div class="setup-studio-title">
-                    <div class="ss-icon">🎬</div>
-                    Setup Studio
-                </div>
-                <div class="ss-scene" id="ssScene">
-                    <!-- Table -->
-                    <div class="ss-table"></div>
-                    <!-- Chaises positionnées dynamiquement par JS -->
-                </div>
-                <p class="ss-hint">Définissez les intervenants, positions, rôles, fonctions et contenus</p>
-            </div>
 </div>
 
 
@@ -2688,48 +2687,32 @@
     }
 
     function rpTgl(el){el.classList.toggle('on');var pid='p'+el.id.substring(1);var pe=document.getElementById(pid);if(pe)pe.classList.toggle('on',el.classList.contains('on'));}
-    function selPill(pill,group){var parent=pill.closest('.rp-pills');parent.querySelectorAll('.rp-pill').forEach(function(p){p.classList.remove('sel');});pill.classList.add('sel');calcTotal();}
+    function selPill(pill,group){var parent=pill.closest('.rp-pills')||pill.parentElement;parent.querySelectorAll('.rp-pill').forEach(function(p){p.classList.remove('sel');});pill.classList.add('sel');if(typeof calcTotal==='function')calcTotal();}
+    
+
+    var _ds = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d’un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
+    var _dc = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l’événement)';
     function calcTotal() {
         var t = 0;
-        // Live
         var tLive = document.getElementById('tLive');
         if (tLive && tLive.classList.contains('on')) {
             var btnC = document.getElementById('btnComplex');
             t += (btnC && btnC.classList.contains('active-complex')) ? 1900 : 1500;
         }
-        // Demi heure
-        var tDemi = document.getElementById('tDemi');
-        if (tDemi && tDemi.classList.contains('on')) t += 400;
-        // Montage
-        var tMontage = document.getElementById('tMontage');
-        if (tMontage && tMontage.classList.contains('on')) t += 500;
-        // Sous-titres
-        var tST = document.getElementById('tST');
-        if (tST && tST.classList.contains('on')) t += 400;
-        // Generique
-        var tGen = document.getElementById('tGen');
-        if (tGen && tGen.classList.contains('on')) {
-            var genPills = document.querySelectorAll('#factContent .rp-pill[data-group="gen"]');
-            var selGen = null;
-            genPills.forEach(function(p){ if(p.classList.contains('sel')) selGen = p; });
-            var genPrice = selGen ? parseInt(selGen.getAttribute('data-price')||'870') : 870;
-            t += genPrice;
+        if (document.getElementById('tDemi') && document.getElementById('tDemi').classList.contains('on')) t += 400;
+        if (document.getElementById('tMontage') && document.getElementById('tMontage').classList.contains('on')) t += 500;
+        if (document.getElementById('tST') && document.getElementById('tST').classList.contains('on')) t += 400;
+        if (document.getElementById('tGen') && document.getElementById('tGen').classList.contains('on')) {
+            var genSel = document.querySelector('button.rp-pill.sel[data-group="gen"]');
+            t += genSel ? parseInt(genSel.getAttribute('data-price') || '870') : 870;
         }
-        // Film
-        var tFilm = document.getElementById('tFilm');
-        if (tFilm && tFilm.classList.contains('on')) {
-            var filmPills = document.querySelectorAll('#factContent .rp-pill[data-group="film"]');
-            var selFilm = null;
-            filmPills.forEach(function(p){ if(p.classList.contains('sel')) selFilm = p; });
-            var filmPrice = selFilm ? parseInt(selFilm.getAttribute('data-price')||'6400') : 6400;
-            t += filmPrice;
+        if (document.getElementById('tFilm') && document.getElementById('tFilm').classList.contains('on')) {
+            var filmSel = document.querySelector('button.rp-pill.sel[data-group="film"]');
+            t += filmSel ? parseInt(filmSel.getAttribute('data-price') || '6400') : 6400;
         }
         var el = document.getElementById('factTotal');
         if (el) el.textContent = t.toLocaleString('fr-FR') + ' EUR HT';
     }
-
-    var _ds = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d’un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
-    var _dc = 'Prestations du webinaire simple · Insertion des synthés des intervenants (au-delà de deux intervenants nous vous conseillons de designer une personne de votre équipe présente en régie pour le bon déroulé de l’événement)';
     function setDirect(type) {
         var btnS=document.getElementById('btnSimple'),btnC=document.getElementById('btnComplex'),d=document.getElementById('directDesc'),p=document.getElementById('pLive');
         var DS = typeof _ds !== 'undefined' ? _ds : '';
@@ -3314,6 +3297,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v74 — 7/4/2026 08:42</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v75 — 7/4/2026 09:10</div>
 </body>
 </html>
