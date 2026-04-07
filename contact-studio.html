@@ -1238,19 +1238,7 @@
     .rp-price.on { color: #a78bfa !important; }
     .rp-row { border-bottom-color: rgba(255,255,255,0.08) !important; }
     .rp-pill { color: rgba(255,255,255,0.65) !important; font-weight: 700 !important; }
-    .rp-pill.sel {
-        background: rgba(124,58,237,0.25); border-color: rgba(124,58,237,0.5);
-        color: #c4b5fd;
-    }
-    .rp-pill:disabled, .rp-pill.disabled {
-        opacity: 0.28; cursor: not-allowed; pointer-events: none;
-        background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.06);
-        color: rgba(255,255,255,0.2);
-    }
-    .rp-pill.disabled.sel {
-        background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08);
-        color: rgba(255,255,255,0.2);
-    }
+    .rp-pill.sel { color: #fff !important; background: linear-gradient(135deg,#667eea,#764ba2) !important; }
     [onclick*="gen"].sel { background: linear-gradient(135deg,#8b5cf6,#6366f1) !important; color: #fff !important; }
     [onclick*="film"].sel { background: linear-gradient(135deg,#f093fb,#f5576c) !important; color: #fff !important; }
     [onclick*="live"].sel { background: linear-gradient(135deg,#ff416c,#ff4b2b) !important; color: #fff !important; }
@@ -1350,6 +1338,99 @@
     .ss-hint {
         text-align: center; font-size: 9px; color: rgba(255,255,255,0.3);
         margin-top: 8px; font-style: italic;
+    }
+
+
+    /* ── Setup Studio Toolbar ── */
+    .ss-toolbar {
+        margin-top: 10px;
+        display: flex; flex-direction: column; gap: 8px;
+    }
+    .ss-toolbar-row {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .ss-seat-selector {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .ss-slot-btn {
+        width: 28px; height: 28px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 700;
+        cursor: pointer; transition: all 0.15s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .ss-slot-btn.active {
+        background: linear-gradient(135deg,#6366f1,#8b5cf6);
+        border-color: rgba(99,102,241,0.6);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(99,102,241,0.4);
+    }
+    .ss-joystick-wrap {
+        display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    .ss-joy-row {
+        display: flex; gap: 3px;
+    }
+    .ss-joy-btn {
+        width: 32px; height: 32px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.07);
+        color: rgba(255,255,255,0.8); font-size: 14px;
+        cursor: pointer; transition: all 0.12s;
+        display: flex; align-items: center; justify-content: center;
+        user-select: none;
+    }
+    .ss-joy-btn:hover { background: rgba(99,102,241,0.35); border-color: rgba(99,102,241,0.5); }
+    .ss-joy-btn:active { transform: scale(0.92); }
+    .ss-joy-center {
+        width: 32px; height: 32px; border-radius: 8px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    .ss-size-wrap {
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .ss-size-label {
+        font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.35);
+        text-transform: uppercase; letter-spacing: .5px;
+    }
+    .ss-size-btns {
+        display: flex; gap: 3px;
+    }
+    .ss-size-btn {
+        width: 32px; height: 32px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.07);
+        color: rgba(255,255,255,0.8); font-size: 16px; font-weight: 700;
+        cursor: pointer; transition: all 0.12s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .ss-size-btn:hover { background: rgba(0,112,243,0.35); }
+    .ss-save-btn {
+        padding: 8px 16px; border-radius: 10px;
+        background: linear-gradient(135deg,#43e97b,#38f9d7);
+        border: none; color: rgba(0,0,0,0.75); font-size: 11px; font-weight: 800;
+        cursor: pointer; display: flex; align-items: center; gap: 6px;
+        box-shadow: 0 2px 10px rgba(67,233,123,0.3);
+        transition: all 0.15s;
+    }
+    .ss-save-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(67,233,123,0.45); }
+    .ss-save-btn.saved {
+        background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4);
+        box-shadow: none; transform: none;
+    }
+    .ss-pos-display {
+        font-size: 9px; color: rgba(255,255,255,0.3);
+        font-family: monospace; min-width: 80px;
+    }
+    .ss-step-wrap {
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .ss-step-select {
+        background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 6px; color: rgba(255,255,255,0.6); font-size: 9px;
+        padding: 3px 6px; cursor: pointer;
     }
 
     </style>
@@ -1640,6 +1721,73 @@
                     <div class="ss-table"></div>
                 </div>
                 <p class="ss-hint">Définissez les intervenants, positions, rôles et contenus</p>
+
+                <!-- ── Toolbar Setup Studio ── -->
+                <div class="ss-toolbar" id="ssToolbar">
+
+                    <!-- Ligne 1 : sélection du slot -->
+                    <div class="ss-toolbar-row">
+                        <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.5px;min-width:36px;">Slot</span>
+                        <div class="ss-seat-selector" id="ssSlotSelector"></div>
+                    </div>
+
+                    <!-- Ligne 2 : joystick + taille + step + save -->
+                    <div class="ss-toolbar-row" style="align-items:flex-start;gap:12px;">
+
+                        <!-- Joystick -->
+                        <div class="ss-joystick-wrap">
+                            <span class="ss-size-label">Position</span>
+                            <div class="ss-joy-row">
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                                <div class="ss-joy-btn" onclick="ssMove(0,-1)" title="Haut">↑</div>
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                            </div>
+                            <div class="ss-joy-row">
+                                <div class="ss-joy-btn" onclick="ssMove(-1,0)" title="Gauche">←</div>
+                                <div class="ss-joy-btn ss-joy-center" style="font-size:9px;color:rgba(255,255,255,0.2);">✛</div>
+                                <div class="ss-joy-btn" onclick="ssMove(1,0)" title="Droite">→</div>
+                            </div>
+                            <div class="ss-joy-row">
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                                <div class="ss-joy-btn" onclick="ssMove(0,1)" title="Bas">↓</div>
+                                <div class="ss-joy-btn ss-joy-center"></div>
+                            </div>
+                        </div>
+
+                        <!-- Taille -->
+                        <div class="ss-size-wrap">
+                            <span class="ss-size-label">Taille</span>
+                            <div class="ss-size-btns">
+                                <div class="ss-size-btn" onclick="ssResize(-1)" title="Réduire">−</div>
+                                <div class="ss-size-btn" onclick="ssResize(1)" title="Agrandir">+</div>
+                            </div>
+                            <span class="ss-pos-display" id="ssSizeDisplay">72px</span>
+                        </div>
+
+                        <!-- Pas de déplacement -->
+                        <div class="ss-step-wrap">
+                            <span class="ss-size-label">Pas</span>
+                            <select class="ss-step-select" id="ssMoveStep">
+                                <option value="0.5">0.5%</option>
+                                <option value="1" selected>1%</option>
+                                <option value="2">2%</option>
+                                <option value="5">5%</option>
+                            </select>
+                            <span class="ss-pos-display" id="ssPosDisplay">x:- y:-</span>
+                        </div>
+
+                        <!-- Save -->
+                        <div style="display:flex;flex-direction:column;gap:6px;margin-left:auto;">
+                            <button class="ss-save-btn" id="ssSaveBtn" onclick="ssSavePositions()">
+                                💾 Sauvegarder positions
+                            </button>
+                            <button class="ss-save-btn" style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);box-shadow:none;" onclick="ssResetPositions()">
+                                ↺ Réinitialiser
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
             </div>
 
             <div class="panel">
@@ -1814,7 +1962,7 @@
                     <div class="rp-row" style="flex-wrap:wrap;gap:6px;">
                         <div class="rp-toggle on" id="tGen" onclick="rpTgl(this);calcTotal()"></div>
                         <span class="rp-label">Création générique</span>
-                        <div id="genPillsWrap" style="width:100%;display:flex;flex-direction:column;gap:4px;padding-left:36px;">
+                        <div style="width:100%;display:flex;flex-direction:column;gap:4px;padding-left:36px;">
                             <div style="display:flex;align-items:center;justify-content:space-between;"><button data-group="gen" data-price="500" class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique groupe + logo</button><span class="rp-price" style="min-width:60px;text-align:right;">500 HT</span></div>
                             <div style="display:flex;align-items:center;justify-content:space-between;"><button data-group="gen" data-price="870" class="rp-pill sel" onclick="selPill(this,'gen');calcTotal()">Générique groupe personnalisé</button><span class="rp-price on" style="min-width:60px;text-align:right;">870 HT</span></div>
                             <div style="display:flex;align-items:center;justify-content:space-between;"><button data-group="gen" data-price="1500" class="rp-pill" onclick="selPill(this,'gen');calcTotal()">Générique original</button><span class="rp-price" style="min-width:60px;text-align:right;">1500 HT</span></div>
@@ -2711,33 +2859,8 @@
         }
     }
 
-    function rpTgl(el) {
-        el.classList.toggle('on');
-        var pid = 'p' + el.id.substring(1);
-        var pe = document.getElementById(pid);
-        if (pe) pe.classList.toggle('on', el.classList.contains('on'));
-        // Gérer enable/disable des pills associées
-        var wrapId = (el.id === 'tGen') ? 'genPillsWrap' : (el.id === 'tFilm') ? 'filmPillsWrap' : null;
-        if (wrapId) {
-            var wrap = document.getElementById(wrapId);
-            if (wrap) {
-                var isOn = el.classList.contains('on');
-                wrap.querySelectorAll('.rp-pill').forEach(function(p) {
-                    if (isOn) {
-                        p.classList.remove('disabled');
-                        p.removeAttribute('disabled');
-                    } else {
-                        p.classList.add('disabled');
-                        p.setAttribute('disabled', 'disabled');
-                        // Décocher si on désactive
-                        p.classList.remove('sel');
-                    }
-                });
-            }
-        }
-        if (typeof calcTotal === 'function') calcTotal();
-    }
-    function selPill(pill,group){if(pill.classList.contains('disabled')||pill.disabled)return;var parent=pill.closest('[id$="PillsWrap"]')||pill.closest('.rp-pills')||pill.parentElement.parentElement;parent.querySelectorAll('.rp-pill').forEach(function(p){p.classList.remove('sel');});pill.classList.add('sel');if(typeof calcTotal==='function')calcTotal();}
+    function rpTgl(el){el.classList.toggle('on');var pid='p'+el.id.substring(1);var pe=document.getElementById(pid);if(pe)pe.classList.toggle('on',el.classList.contains('on'));}
+    function selPill(pill,group){var parent=pill.closest('.rp-pills')||pill.parentElement;parent.querySelectorAll('.rp-pill').forEach(function(p){p.classList.remove('sel');});pill.classList.add('sel');if(typeof calcTotal==='function')calcTotal();}
     
 
     var _ds = 'Sans montage · avec enregistrement · Accompagnement à partir de votre cahier des charges · Création d’un générique avec bande sonore · Durée 01h00 max · Temps de préparation : à définir avant le live · Visite du studio · Pas de synthé pendant le live · Générique standard sans texte inclus sans logo';
@@ -2764,20 +2887,26 @@
         if (el) el.textContent = t.toLocaleString('fr-FR') + ' EUR HT';
     }
     function setDirect(type) {
-        var btnS=document.getElementById('btnSimple'),btnC=document.getElementById('btnComplex'),d=document.getElementById('directDesc'),p=document.getElementById('pLive');
+        var btnS = document.getElementById('btnSimple');
+        var btnC = document.getElementById('btnComplex');
+        var d = document.getElementById('directDesc');
+        var p = document.getElementById('pLive');
         var DS = typeof _ds !== 'undefined' ? _ds : '';
         var DC = typeof _dc !== 'undefined' ? _dc : '';
-        if(type==='simple'){
-            if(btnS){btnS.style.background='linear-gradient(135deg,#f6d365,#fda085)';btnS.style.color='rgba(0,0,0,0.75)';}
-            if(btnC){btnC.style.background='transparent';btnC.style.color='rgba(255,255,255,0.4)';btnC.style.boxShadow='none';btnC.classList.remove('active-complex');}
-            if(d && DS) d.textContent=DS;
-            if(p) p.textContent='1500 HT';
+        if (type === 'simple') {
+            // ① Retirer active-complex EN PREMIER
+            if (btnC) { btnC.classList.remove('active-complex'); btnC.style.background='transparent'; btnC.style.color='rgba(255,255,255,0.4)'; btnC.style.boxShadow='none'; }
+            if (btnS) { btnS.style.background='linear-gradient(135deg,#f6d365,#fda085)'; btnS.style.color='rgba(0,0,0,0.75)'; }
+            if (d && DS) d.textContent = DS;
+            if (p) p.textContent = '1500 HT';
         } else {
-            if(btnC){btnC.style.background='linear-gradient(135deg,#ff416c,#ff4b2b)';btnC.style.color='#fff';btnC.style.boxShadow='0 2px 8px rgba(255,65,108,0.35)';}
-            if(btnS){btnS.style.background='transparent';btnS.style.color='rgba(255,255,255,0.4)';}
-            if(d) d.textContent=_dc;
-            if(p) p.textContent='1900 HT';
+            // ① Ajouter active-complex EN PREMIER
+            if (btnC) { btnC.classList.add('active-complex'); btnC.style.background='linear-gradient(135deg,#ff416c,#ff4b2b)'; btnC.style.color='#fff'; btnC.style.boxShadow='0 2px 8px rgba(255,65,108,0.35)'; }
+            if (btnS) { btnS.style.background='transparent'; btnS.style.color='rgba(255,255,255,0.4)'; }
+            if (d) d.textContent = DC;
+            if (p) p.textContent = '1900 HT';
         }
+        // ② calcTotal APRÈS que active-complex est posé
         calcTotal();
     }
     var _livrUnlocked=false;
@@ -3100,20 +3229,294 @@
     }
     // ──────────────────────────────────────────────────────────
 
-    function ssInitPills() {
-        // Synchroniser l'état disabled des pills avec l'état des toggles
-        ['tGen', 'tFilm'].forEach(function(id) {
-            var tog = document.getElementById(id);
-            var wrapId = (id === 'tGen') ? 'genPillsWrap' : 'filmPillsWrap';
-            var wrap = document.getElementById(wrapId);
-            if (tog && wrap) {
-                var isOn = tog.classList.contains('on');
-                wrap.querySelectorAll('.rp-pill').forEach(function(p) {
-                    if (!isOn) { p.classList.add('disabled'); p.setAttribute('disabled','disabled'); }
-                    else { p.classList.remove('disabled'); p.removeAttribute('disabled'); }
+    // ══ JOYSTICK SETUP STUDIO ══════════════════════════════════
+    var ss_selectedSlot = 0;
+    var ss_seatSizes = [72,72,72,72,72,72,72,72]; // taille px par slot
+
+    // Positions par défaut (backup)
+    var SS_DEFAULT_POSITIONS = null;
+
+    function ssInitToolbar() {
+        // Sauvegarder les positions par défaut
+        if (!SS_DEFAULT_POSITIONS) {
+            SS_DEFAULT_POSITIONS = SS_POSITIONS.map(function(p){ return {x:p.x, y:p.y}; });
+        }
+
+        // Charger positions sauvegardées depuis localStorage
+        var saved = localStorage.getItem('ss_positions');
+        if (saved) {
+            try {
+                var parsed = JSON.parse(saved);
+                parsed.forEach(function(p, i) {
+                    if (SS_POSITIONS[i]) { SS_POSITIONS[i].x = p.x; SS_POSITIONS[i].y = p.y; }
                 });
-            }
+                var savedSizes = localStorage.getItem('ss_sizes');
+                if (savedSizes) ss_seatSizes = JSON.parse(savedSizes);
+                console.log('✅ Positions Setup Studio chargées');
+            } catch(e) {}
+        }
+
+        // Générer les boutons slots
+        var sel = document.getElementById('ssSlotSelector');
+        if (!sel) return;
+        sel.innerHTML = '';
+        SS_POSITIONS.forEach(function(pos, i) {
+            var btn = document.createElement('div');
+            btn.className = 'ss-slot-btn' + (i === ss_selectedSlot ? ' active' : '');
+            btn.textContent = 'P' + (i+1);
+            btn.onclick = (function(idx){ return function(){ ssSelectSlot(idx); }; })(i);
+            btn.id = 'ssSlotBtn' + i;
+            sel.appendChild(btn);
         });
+        ssUpdateDisplays();
+    }
+
+    function ssSelectSlot(idx) {
+        ss_selectedSlot = idx;
+        document.querySelectorAll('.ss-slot-btn').forEach(function(b, i){
+            b.classList.toggle('active', i === idx);
+        });
+        ssUpdateDisplays();
+        // Highlight la chaise sélectionnée
+        document.querySelectorAll('.ss-seat').forEach(function(s, i){
+            s.style.outline = (i === idx) ? '2px solid #6366f1' : 'none';
+            s.style.outlineOffset = '4px';
+        });
+    }
+
+    function ssMove(dx, dy) {
+        var step = parseFloat(document.getElementById('ssMoveStep')?.value || 1);
+        var pos = SS_POSITIONS[ss_selectedSlot];
+        if (!pos) return;
+        pos.x = Math.max(0, Math.min(100, pos.x + dx * step));
+        pos.y = Math.max(0, Math.min(95, pos.y + dy * step));
+        // Mettre à jour la chaise dans la scène
+        var seats = document.querySelectorAll('.ss-seat');
+        if (seats[ss_selectedSlot]) {
+            seats[ss_selectedSlot].style.left = pos.x + '%';
+            seats[ss_selectedSlot].style.top = pos.y + '%';
+        }
+        ssUpdateDisplays();
+        ssClearSaved();
+    }
+
+    function ssResize(delta) {
+        var step = 8;
+        ss_seatSizes[ss_selectedSlot] = Math.max(32, Math.min(120, ss_seatSizes[ss_selectedSlot] + delta * step));
+        var seats = document.querySelectorAll('.ss-seat');
+        if (seats[ss_selectedSlot]) {
+            var img = seats[ss_selectedSlot].querySelector('img');
+            if (img) {
+                var sz = ss_seatSizes[ss_selectedSlot] + 'px';
+                img.style.width = sz; img.style.height = sz;
+            }
+        }
+        ssUpdateDisplays();
+        ssClearSaved();
+    }
+
+    function ssUpdateDisplays() {
+        var pos = SS_POSITIONS[ss_selectedSlot];
+        var posEl = document.getElementById('ssPosDisplay');
+        var sizeEl = document.getElementById('ssSizeDisplay');
+        if (posEl && pos) posEl.textContent = 'x:' + pos.x.toFixed(1) + ' y:' + pos.y.toFixed(1);
+        if (sizeEl) sizeEl.textContent = ss_seatSizes[ss_selectedSlot] + 'px';
+    }
+
+    function ssSavePositions() {
+        var positions = SS_POSITIONS.map(function(p){ return {x:p.x, y:p.y}; });
+        localStorage.setItem('ss_positions', JSON.stringify(positions));
+        localStorage.setItem('ss_sizes', JSON.stringify(ss_seatSizes));
+        var btn = document.getElementById('ssSaveBtn');
+        if (btn) {
+            btn.classList.add('saved');
+            btn.textContent = '✅ Sauvegardé !';
+            setTimeout(function(){
+                btn.classList.remove('saved');
+                btn.innerHTML = '💾 Sauvegarder positions';
+            }, 2000);
+        }
+        // Retirer les outlines
+        document.querySelectorAll('.ss-seat').forEach(function(s){ s.style.outline = 'none'; });
+    }
+
+    function ssResetPositions() {
+        if (!SS_DEFAULT_POSITIONS) return;
+        SS_DEFAULT_POSITIONS.forEach(function(p, i){
+            if (SS_POSITIONS[i]) { SS_POSITIONS[i].x = p.x; SS_POSITIONS[i].y = p.y; }
+        });
+        ss_seatSizes = [72,72,72,72,72,72,72,72];
+        localStorage.removeItem('ss_positions');
+        localStorage.removeItem('ss_sizes');
+        ssRenderSeats();
+        ssInitToolbar();
+    }
+
+    function ssClearSaved() {
+        var btn = document.getElementById('ssSaveBtn');
+        if (btn && btn.classList.contains('saved')) btn.classList.remove('saved');
+    }
+    // ══════════════════════════════════════════════════════════
+
+    function exportFactPDF() {
+        var titre = document.getElementById('titreEvent') ? document.getElementById('titreEvent').value : 'Événement';
+        var dateEv = document.getElementById('dateEvent') ? document.getElementById('dateEvent').value : '';
+        var now = new Date();
+        var mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+        var dateNow = now.getDate() + ' ' + mois[now.getMonth()] + ' ' + now.getFullYear();
+
+        // Collecter les lignes facturation
+        var lines = [];
+        var tLive = document.getElementById('tLive');
+        if (tLive && tLive.classList.contains('on')) {
+            var btnC = document.getElementById('btnComplex');
+            var isComplex = btnC && btnC.classList.contains('active-complex');
+            lines.push({label: 'Live — Direct ' + (isComplex ? 'complexe' : 'simple'), price: isComplex ? 1900 : 1500});
+        }
+        if (document.getElementById('tDemi') && document.getElementById('tDemi').classList.contains('on'))
+            lines.push({label: 'Demie heure supplémentaire', price: 400});
+        if (document.getElementById('tMontage') && document.getElementById('tMontage').classList.contains('on'))
+            lines.push({label: 'Nouveau montage', price: 500});
+        if (document.getElementById('tST') && document.getElementById('tST').classList.contains('on'))
+            lines.push({label: 'Sous-titres', price: 400});
+        if (document.getElementById('tGen') && document.getElementById('tGen').classList.contains('on')) {
+            var genSel = document.querySelector('button.rp-pill.sel[data-group="gen"]');
+            var genLabel = genSel ? genSel.textContent.trim() : 'Générique';
+            var genPrice = genSel ? parseInt(genSel.getAttribute('data-price')||'870') : 870;
+            lines.push({label: 'Création générique — ' + genLabel, price: genPrice});
+        }
+        if (document.getElementById('tFilm') && document.getElementById('tFilm').classList.contains('on')) {
+            var filmSel = document.querySelector('button.rp-pill.sel[data-group="film"]');
+            var filmLabel = filmSel ? filmSel.textContent.trim() : 'Film';
+            var filmPrice = filmSel ? parseInt(filmSel.getAttribute('data-price')||'6400') : 6400;
+            lines.push({label: 'Création de film — ' + filmLabel, price: filmPrice});
+        }
+        var total = lines.reduce(function(s,l){ return s + l.price; }, 0);
+
+        // Contact
+        var contact = document.getElementById('contactField') ? document.getElementById('contactField').value : '';
+        var email = document.getElementById('contactEmail') ? document.getElementById('contactEmail').value : '';
+
+        // Générer HTML
+        var rows = lines.map(function(l){
+            return '<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;color:#333;">' + l.label + '</td>'
+                 + '<td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;color:#333;text-align:right;font-weight:600;">' + l.price.toLocaleString('fr-FR') + ' € HT</td></tr>';
+        }).join('');
+
+        var html = '<!DOCTYPE html><html><head><meta charset="utf-8">'
+            + '<title>Facturation — ' + titre + '</title>'
+            + '<style>body{font-family:-apple-system,sans-serif;color:#111;padding:32px;max-width:700px;margin:0 auto;}'
+            + 'h1{font-size:22px;margin-bottom:4px;}h2{font-size:13px;color:#888;font-weight:400;margin:0 0 24px;}'
+            + '.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:16px;border-bottom:2px solid #111;}'
+            + 'table{width:100%;border-collapse:collapse;margin-top:16px;}'
+            + '.total-row td{padding:12px;font-size:15px;font-weight:800;color:#111;border-top:2px solid #111;}'
+            + '.meta{font-size:11px;color:#aaa;margin-top:32px;}'
+            + '</style></head><body>'
+            + '<div class="header"><div>'
+            + '<h1>' + titre + '</h1>'
+            + '<h2>' + (dateEv || '') + (contact ? ' · ' + contact : '') + (email ? ' · ' + email : '') + '</h2>'
+            + '</div><div style="text-align:right;font-size:11px;color:#888;">Studio CIC Paris<br>Devis créé le ' + dateNow + '</div></div>'
+            + '<table>' + rows
+            + '<tr class="total-row"><td>Total estimé HT</td><td style="text-align:right;">' + total.toLocaleString('fr-FR') + ' € HT</td></tr>'
+            + '</table>'
+            + '<p class="meta">Devis indicatif — TVA non applicable selon article 293 B du CGI</p>'
+            + '</body></html>';
+
+        var win = window.open('', '_blank');
+        win.document.write(html);
+        win.document.close();
+        setTimeout(function(){ win.print(); }, 400);
+    }
+
+    function exportResumeEvent() {
+        var titre = document.getElementById('titreEvent') ? document.getElementById('titreEvent').value : 'Événement';
+        var dateEv = document.getElementById('dateEvent') ? document.getElementById('dateEvent').value : '';
+        var heureDebut = document.getElementById('heureDebut') ? document.getElementById('heureDebut').value : '';
+        var heureFin = document.getElementById('heureFin') ? document.getElementById('heureFin').value : '';
+        var contact = document.getElementById('contactField') ? document.getElementById('contactField').value : '';
+        var email = document.getElementById('contactEmail') ? document.getElementById('contactEmail').value : '';
+        var phone = document.getElementById('contactPhone') ? document.getElementById('contactPhone').value : '';
+        var commentaires = document.getElementById('commentaires') ? document.getElementById('commentaires').value : '';
+        var now = new Date();
+        var mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+        var dateNow = now.getDate() + ' ' + mois[now.getMonth()] + ' ' + now.getFullYear();
+
+        // Intervenants
+        var intervs = [];
+        var rows = document.querySelectorAll('#intervenantsBody .interv-row');
+        rows.forEach(function(row){
+            var inputs = row.querySelectorAll('input');
+            var prenom = inputs[0] ? inputs[0].value.trim() : '';
+            var nom = inputs[1] ? inputs[1].value.trim() : '';
+            var fn = inputs[2] ? inputs[2].value.trim() : '';
+            var ent = inputs[3] ? inputs[3].value.trim() : '';
+            if (prenom || nom) intervs.push({prenom:prenom, nom:nom, fonction:fn, entreprise:ent});
+        });
+
+        // Toggles sidebar
+        var toggles = {};
+        document.querySelectorAll('[data-field]').forEach(function(el){
+            toggles[el.getAttribute('data-field')] = el.classList.contains('active');
+        });
+
+        // Facturation
+        var factLines = [];
+        var tLive = document.getElementById('tLive');
+        if (tLive && tLive.classList.contains('on')) {
+            var isComplex = document.getElementById('btnComplex') && document.getElementById('btnComplex').classList.contains('active-complex');
+            factLines.push('Live Direct ' + (isComplex ? 'complexe — 1 900 € HT' : 'simple — 1 500 € HT'));
+        }
+        if (document.getElementById('tDemi') && document.getElementById('tDemi').classList.contains('on')) factLines.push('Demie heure supp. — 400 € HT');
+        if (document.getElementById('tMontage') && document.getElementById('tMontage').classList.contains('on')) factLines.push('Nouveau montage — 500 € HT');
+        if (document.getElementById('tST') && document.getElementById('tST').classList.contains('on')) factLines.push('Sous-titres — 400 € HT');
+        if (document.getElementById('tGen') && document.getElementById('tGen').classList.contains('on')) {
+            var gs = document.querySelector('button.rp-pill.sel[data-group="gen"]');
+            factLines.push('Générique — ' + (gs ? gs.textContent.trim() + ' — ' + gs.getAttribute('data-price') + ' € HT' : '870 € HT'));
+        }
+        if (document.getElementById('tFilm') && document.getElementById('tFilm').classList.contains('on')) {
+            var fs = document.querySelector('button.rp-pill.sel[data-group="film"]');
+            factLines.push('Film — ' + (fs ? fs.textContent.trim() + ' — ' + fs.getAttribute('data-price') + ' € HT' : '6 400 € HT'));
+        }
+        var total = document.getElementById('factTotal') ? document.getElementById('factTotal').textContent : '—';
+
+        // HTML résumé
+        var intervsHtml = intervs.length ? intervs.map(function(iv){
+            return '<tr><td style="padding:6px 10px;border-bottom:1px solid #f0f0f0;">' + iv.prenom + ' ' + iv.nom + '</td>'
+                + '<td style="padding:6px 10px;border-bottom:1px solid #f0f0f0;color:#555;">' + iv.fonction + '</td>'
+                + '<td style="padding:6px 10px;border-bottom:1px solid #f0f0f0;color:#555;">' + iv.entreprise + '</td></tr>';
+        }).join('') : '<tr><td colspan="3" style="padding:8px 10px;color:#aaa;">—</td></tr>';
+
+        var factHtml = factLines.map(function(l){
+            return '<li style="padding:3px 0;color:#333;">' + l + '</li>';
+        }).join('');
+
+        var html = '<!DOCTYPE html><html><head><meta charset="utf-8">'
+            + '<title>Résumé — ' + titre + '</title>'
+            + '<style>body{font-family:-apple-system,sans-serif;color:#111;padding:32px;max-width:760px;margin:0 auto;}'
+            + 'h1{font-size:24px;margin-bottom:4px;}h2{font-size:13px;color:#888;font-weight:400;margin:0 0 24px;}'
+            + 'h3{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:24px 0 8px;}'
+            + 'table{width:100%;border-collapse:collapse;}td{font-size:13px;}'
+            + '.header{display:flex;justify-content:space-between;margin-bottom:28px;padding-bottom:16px;border-bottom:2px solid #111;}'
+            + '.total{font-size:16px;font-weight:800;margin-top:12px;}'
+            + '</style></head><body>'
+            + '<div class="header"><div>'
+            + '<h1>' + titre + '</h1>'
+            + '<h2>' + [dateEv, heureDebut&&heureFin ? heureDebut+' → '+heureFin : ''].filter(Boolean).join(' · ') + '</h2>'
+            + '</div><div style="text-align:right;font-size:11px;color:#999;">Studio CIC Paris<br>Export le ' + dateNow + '</div></div>'
+            + '<h3>Contact</h3>'
+            + '<p style="font-size:13px;">' + [contact, email, phone].filter(Boolean).join(' · ') + '</p>'
+            + '<h3>Intervenants synthés</h3>'
+            + '<table><tr style="background:#f8f8f8;"><th style="padding:6px 10px;text-align:left;font-size:11px;">Nom</th><th style="padding:6px 10px;text-align:left;font-size:11px;">Fonction</th><th style="padding:6px 10px;text-align:left;font-size:11px;">Entreprise</th></tr>' + intervsHtml + '</table>'
+            + '<h3>Facturation estimée</h3>'
+            + '<ul style="margin:0;padding-left:18px;">' + (factHtml || '<li style="color:#aaa;">—</li>') + '</ul>'
+            + '<p class="total">Total estimé : ' + total + '</p>'
+            + (commentaires ? '<h3>Commentaires</h3><p style="font-size:13px;color:#555;white-space:pre-wrap;">' + commentaires + '</p>' : '')
+            + '</body></html>';
+
+        var win = window.open('', '_blank');
+        win.document.write(html);
+        win.document.close();
+        setTimeout(function(){ win.print(); }, 400);
     }
 
     </script>
@@ -3457,10 +3860,11 @@
         <a href="studio-alert.html" class="dr"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span class="dk-tip">Alert</span></a>
         <a href="dev-dashboard.html" class="dd"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg><span class="dk-tip">Dev</span></a>
         <div class="dk-sep"></div>
-        <button class="dk-btn" id="pdfBtn" onclick="exportPDF()" style="background:linear-gradient(135deg,#667eea,#764ba2);font-size:14px;" title="Télécharger PDF"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg><span class="dk-tip">Exporter PDF</span></button>
+        <button class="dk-btn" id="pdfBtn" onclick="exportFactPDF()" style="background:linear-gradient(135deg,#667eea,#764ba2);" title="PDF Facturation"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg><span class="dk-tip">PDF Facturation</span></button>
+        <button class="dk-btn" onclick="exportResumeEvent()" style="background:linear-gradient(135deg,#f093fb,#f5576c);" title="Résumé événement"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span class="dk-tip">Résumé événement</span></button>
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v81 — 7/4/2026 12:28</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v82 — 7/4/2026 12:32</div>
 </body>
 </html>
