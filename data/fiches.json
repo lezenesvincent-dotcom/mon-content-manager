@@ -31,12 +31,6 @@
     "application": null,
     "intervenants": [
       {
-        "nom": "",
-        "prenom": "Lezenes",
-        "fonction": "Responsable Studio",
-        "entreprise": "Cic"
-      },
-      {
         "nom": "Marc",
         "prenom": "Gouget",
         "fonction": "Directeur",
@@ -68,6 +62,6 @@
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-07T14:26:12.724Z"
+    "updatedAt": "2026-04-07T14:26:15.493Z"
   }
 }
