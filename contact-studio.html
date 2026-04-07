@@ -323,11 +323,11 @@
     }
 
     .mode-card#modeStudio {
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        border-color: rgba(139,92,246,0.4);
+        background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+        border-color: rgba(249,115,22,0.4);
     }
     .mode-card#modeStudio:hover {
-        box-shadow: 0 8px 24px rgba(99,102,241,0.45);
+        box-shadow: 0 8px 24px rgba(249,115,22,0.45);
     }
 
     .mode-card#modeVisio {
@@ -460,6 +460,60 @@
     .interv-autocomplete-item.iac-create { color: #6ee7b7; font-style: italic; }
     .interv-row { position: relative; }
     .interv-autocomplete-wrap { position: absolute; top: 100%; left: 0; right: 0; z-index: 9999; }
+
+    /* Modale carnet d'adresses */
+    .carnet-modal-overlay {
+        position: fixed; inset: 0; z-index: 99999;
+        background: rgba(0,0,0,0.7);
+        display: flex; align-items: center; justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+    .carnet-modal {
+        background: #1a1c2e;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 20px;
+        padding: 24px;
+        width: 360px;
+        max-width: 90vw;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    }
+    .carnet-modal-title {
+        font-size: 15px; font-weight: 800; color: #fff;
+        margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .carnet-modal-field { margin-bottom: 10px; }
+    .carnet-modal-field label {
+        display: block; font-size: 10px; font-weight: 700;
+        color: rgba(255,255,255,0.45); text-transform: uppercase;
+        letter-spacing: .5px; margin-bottom: 4px;
+    }
+    .carnet-modal-field input {
+        width: 100%; background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px; padding: 8px 12px;
+        color: #fff; font-size: 12px; outline: none;
+    }
+    .carnet-modal-field input:focus {
+        border-color: rgba(99,102,241,0.5);
+        background: rgba(99,102,241,0.08);
+    }
+    .carnet-modal-actions {
+        display: flex; gap: 8px; margin-top: 16px;
+    }
+    .carnet-modal-btn {
+        flex: 1; padding: 10px; border-radius: 10px;
+        font-size: 12px; font-weight: 700; cursor: pointer; border: none;
+        transition: all 0.15s;
+    }
+    .carnet-modal-btn.confirm {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+    }
+    .carnet-modal-btn.confirm:hover { opacity: 0.9; }
+    .carnet-modal-btn.cancel {
+        background: rgba(255,255,255,0.07);
+        color: rgba(255,255,255,0.5);
+    }
     .interv-row input::placeholder {
         color: rgba(255, 255, 255, 0.7);
         font-weight: 600
@@ -1286,7 +1340,7 @@
 
     /* Colonnes : sidebar fixe, main flexible, right fixe */
     .layout { max-width: 1800px !important; margin-left: auto !important; margin-right: auto !important; gap: 0 !important; }
-    .sidebar { flex: 0 0 280px !important; width: 280px !important; overflow: hidden !important; }
+    .sidebar { flex: 0 0 280px !important; width: 280px !important; overflow-y: auto !important; overflow-x: hidden !important; }
     .main-area { flex: 1 1 0% !important; min-width: 340px !important; overflow: hidden !important; }
     .right-col { flex: 0 0 380px !important; min-width: 340px !important; overflow: hidden !important; }
 
@@ -1324,7 +1378,7 @@
     body { background: #111118; }
     #albumBg { display: none !important; }
     .layout { max-width: 1800px; margin: 0 auto; gap: 0; }
-    .sidebar { position: relative; overflow: hidden; }
+    .sidebar { position: relative; overflow-y: auto; overflow-x: hidden; }
     .sidebar::before { content:''; position:absolute; top:0; left:0; right:0; height:35%; background:linear-gradient(180deg,rgba(52,160,90,0.45) 0%,transparent 100%); pointer-events:none; z-index:0; }
     .sidebar::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:linear-gradient(180deg,rgba(52,160,90,0.25) 0%,transparent 50%); pointer-events:none; z-index:0; }
     .sidebar > * { position:relative; z-index:1; }
@@ -3242,6 +3296,30 @@
             ctrl.appendChild(selRole);
             ctrl.appendChild(selSlides);
             el.appendChild(img);
+
+            // Avatar photo depuis carnet si intervenant assigné
+            var avatarEl = document.createElement('div');
+            avatarEl.className = 'ss-seat-avatar';
+            avatarEl.style.cssText = 'position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 8px rgba(0,0,0,0.5);background:rgba(99,102,241,0.5);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;pointer-events:none;z-index:10;';
+            if (seat.name && seat.name !== '— vide —') {
+                var carnet = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
+                var nameParts = seat.name.trim().split(/\s+/);
+                var contact = carnet.find(function(c) {
+                    var full = ((c.prenom||'')+' '+(c.nom||'')).trim();
+                    return full.toLowerCase() === seat.name.toLowerCase();
+                });
+                if (contact && contact.photo) {
+                    var pImg = document.createElement('img');
+                    pImg.src = contact.photo;
+                    pImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+                    avatarEl.appendChild(pImg);
+                } else {
+                    var initials = nameParts.map(function(p){ return p.charAt(0).toUpperCase(); }).slice(0,2).join('');
+                    avatarEl.textContent = initials;
+                }
+                el.appendChild(avatarEl);
+            }
+
             el.appendChild(ctrl);
             scene.appendChild(el);
         });
@@ -3370,14 +3448,7 @@
                         var parts = query.trim().split(/\s+/);
                         var prenom = parts[0] || query;
                         var nom = parts.slice(1).join(' ') || '';
-                        var carnet = getCarnet();
-                        carnet.push({ prenom: prenom, nom: nom, fonction: '', entreprise: '', source: 'contact-studio', date: new Date().toISOString() });
-                        localStorage.setItem('carnet_studio', JSON.stringify(carnet));
-                        var rowInputs = row.querySelectorAll('input');
-                        if (rowInputs[0]) rowInputs[0].value = prenom;
-                        if (rowInputs[1]) rowInputs[1].value = nom;
-                        showToast('✅ Fiche créée pour ' + prenom + ' ' + nom);
-                        if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
+                        openCarnetModal(prenom, nom, row);
                     });
                     box.appendChild(createItem);
                 }
@@ -3402,6 +3473,54 @@
             setTimeout(function(){ wrap.innerHTML = ''; }, 200);
         });
     }
+
+    // ── Modale création fiche carnet ─────────────────────────
+    function openCarnetModal(prenom, nom, targetRow) {
+        var overlay = document.createElement('div');
+        overlay.className = 'carnet-modal-overlay';
+        overlay.innerHTML = '<div class="carnet-modal">' +
+            '<div class="carnet-modal-title">📇 Nouvelle fiche carnet</div>' +
+            '<div class="carnet-modal-field"><label>Prénom</label><input id="cm_prenom" value="' + (prenom||'') + '"></div>' +
+            '<div class="carnet-modal-field"><label>Nom</label><input id="cm_nom" value="' + (nom||'') + '"></div>' +
+            '<div class="carnet-modal-field"><label>Fonction</label><input id="cm_fonction" placeholder="ex: Directeur"></div>' +
+            '<div class="carnet-modal-field"><label>Entreprise</label><input id="cm_entreprise" placeholder="ex: CIC"></div>' +
+            '<div class="carnet-modal-field"><label>Téléphone</label><input id="cm_tel" placeholder="06 00 00 00 00"></div>' +
+            '<div class="carnet-modal-field"><label>Email</label><input id="cm_email" placeholder="email@exemple.com"></div>' +
+            '<div class="carnet-modal-actions">' +
+                '<button class="carnet-modal-btn cancel" id="cm_cancel">Annuler</button>' +
+                '<button class="carnet-modal-btn confirm" id="cm_confirm">✅ Créer la fiche</button>' +
+            '</div>' +
+        '</div>';
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('#cm_cancel').onclick = function() { document.body.removeChild(overlay); };
+        overlay.addEventListener('click', function(e){ if (e.target === overlay) document.body.removeChild(overlay); });
+
+        overlay.querySelector('#cm_confirm').onclick = function() {
+            var p = overlay.querySelector('#cm_prenom').value.trim();
+            var n = overlay.querySelector('#cm_nom').value.trim();
+            var f = overlay.querySelector('#cm_fonction').value.trim();
+            var ent = overlay.querySelector('#cm_entreprise').value.trim();
+            var tel = overlay.querySelector('#cm_tel').value.trim();
+            var email = overlay.querySelector('#cm_email').value.trim();
+            if (!p && !n) { showToast('⚠️ Prénom ou nom requis'); return; }
+            var carnet = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
+            carnet.push({ prenom: p, nom: n, fonction: f, entreprise: ent, tel: tel, email: email, source: 'contact-studio', date: new Date().toISOString() });
+            localStorage.setItem('carnet_studio', JSON.stringify(carnet));
+            if (targetRow) {
+                var rowInputs = targetRow.querySelectorAll('input');
+                if (rowInputs[0]) rowInputs[0].value = p;
+                if (rowInputs[1]) rowInputs[1].value = n;
+                if (rowInputs[2]) rowInputs[2].value = f;
+                if (rowInputs[3]) rowInputs[3].value = ent;
+            }
+            showToast('✅ Fiche créée pour ' + p + ' ' + n);
+            if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
+            if (typeof ssRefresh === 'function') ssRefresh();
+            document.body.removeChild(overlay);
+        };
+    }
+    // ──────────────────────────────────────────────────────────
 
     function attachAllAutocomplete() {
         document.querySelectorAll('.interv-row').forEach(attachAutocomplete);
@@ -4045,7 +4164,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v85 — 07/04/2026 16:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v86 — 07/04/2026 17:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4083,6 +4202,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v85 — 07/04/2026 16:45</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v86 — 07/04/2026 17:00</div>
 </body>
 </html>
