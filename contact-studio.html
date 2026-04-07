@@ -1265,62 +1265,75 @@
         display: flex; align-items: center; justify-content: center; font-size: 14px;
     }
     .ss-scene {
-        background: radial-gradient(ellipse at 50% 80%, #2a2d3e 0%, #1a1d2e 70%);
+        background: radial-gradient(ellipse at 50% 90%, #2a2d3e 0%, #1a1d2e 70%);
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 12px;
-        padding: 16px 12px 12px;
         position: relative;
-        min-height: 320px;
-        overflow: visible;
+        height: 360px;
+        overflow: hidden;
     }
     .ss-table {
         position: absolute;
-        bottom: 8%; left: 50%; transform: translateX(-50%);
-        width: 58%; height: 42%;
-        background: linear-gradient(160deg, #f6b91a 0%, #e8a010 60%, #c87800 100%);
-        border-radius: 4px 4px 2px 2px;
-        clip-path: polygon(12% 0%, 88% 0%, 100% 100%, 0% 100%);
-        box-shadow: 0 8px 32px rgba(200,120,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+        bottom: 0; left: 50%; transform: translateX(-50%);
+        width: 64%; height: 52%;
+        background: linear-gradient(160deg, #f6b91a 0%, #e8a010 55%, #c87800 100%);
+        clip-path: polygon(14% 0%, 86% 0%, 100% 100%, 0% 100%);
+        box-shadow: 0 8px 40px rgba(200,120,0,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+        z-index: 2;
     }
     .ss-seat {
         position: absolute;
         display: flex; flex-direction: column; align-items: center;
-        gap: 4px; cursor: pointer;
-        transition: transform 0.15s;
+        gap: 5px;
+        z-index: 1;
     }
-    .ss-seat:hover { transform: scale(1.05); }
+    .ss-seat.front {
+        z-index: 4;
+    }
     .ss-seat img {
-        width: 60px; height: 60px;
+        width: 72px; height: 72px;
         object-fit: contain;
-        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+        filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7));
     }
     .ss-seat-controls {
-        display: flex; flex-direction: column; gap: 3px; align-items: center;
+        display: flex; flex-direction: column; gap: 4px; align-items: center;
     }
     .ss-name-select {
-        background: rgba(255,255,255,0.92);
+        background: rgba(255,255,255,0.95);
         border: 2px solid #4a90e2;
-        border-radius: 6px;
-        padding: 3px 18px 3px 6px; font-size: 9px; font-weight: 700;
-        color: #111; cursor: pointer; width: 110px;
+        border-radius: 20px;
+        padding: 4px 22px 4px 10px;
+        font-size: 10px; font-weight: 700;
+        color: #111; cursor: pointer; width: 120px;
         appearance: none; -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24'%3E%3Cpath fill='%23333' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat; background-position: right 4px center;
-        background-color: rgba(255,255,255,0.92);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23333' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 6px center;
+        background-color: rgba(255,255,255,0.95);
+        box-shadow: 0 2px 8px rgba(74,144,226,0.25);
     }
     .ss-role-select {
-        background: rgba(99,102,241,0.85);
-        border: none; border-radius: 5px;
-        padding: 4px 8px; font-size: 10px; font-weight: 700;
-        color: #fff; cursor: pointer; width: 110px;
+        background: rgba(99,102,241,0.9);
+        border: 2px solid rgba(99,102,241,0.6);
+        border-radius: 20px;
+        padding: 4px 22px 4px 10px;
+        font-size: 10px; font-weight: 700;
+        color: #fff; cursor: pointer; width: 120px;
         appearance: none; -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 6px center;
+        box-shadow: 0 2px 8px rgba(99,102,241,0.3);
     }
     .ss-slides-select {
-        background: rgba(0,112,243,0.8);
-        border: none; border-radius: 5px;
-        padding: 4px 8px; font-size: 10px; font-weight: 700;
-        color: #fff; cursor: pointer; width: 110px;
+        background: rgba(0,112,243,0.9);
+        border: 2px solid rgba(0,112,243,0.6);
+        border-radius: 20px;
+        padding: 4px 22px 4px 10px;
+        font-size: 10px; font-weight: 700;
+        color: #fff; cursor: pointer; width: 120px;
         appearance: none; -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 6px center;
+        box-shadow: 0 2px 8px rgba(0,112,243,0.3);
     }
     .ss-hint {
         text-align: center; font-size: 9px; color: rgba(255,255,255,0.3);
@@ -2838,18 +2851,18 @@
     }
     // ══ SETUP STUDIO ══════════════════════════════════════════
     var SS_ROLES = ['Modérateur','Intervenant','Présentateur','Expert','Conférencier','Animateur','Invité'];
-    var SS_SLIDES = ['0 slide','2 slides','4 slides','6 slides','8 slides','10 slides','12 slides','+ de 12 slides'];
+    var SS_SLIDES = ['0 slide','2 slides','4 slides','6 slides','8 slides','10 slides','12 slides'];
 
     // Positions des chaises (layout en U autour de la table)
     var SS_POSITIONS = [
-        {id:0, x:5,  y:55, label:'P1'},   // gauche devant
-        {id:1, x:22, y:32, label:'P2'},   // gauche derrière
-        {id:2, x:38, y:12, label:'P3'},   // centre-gauche haut
-        {id:3, x:55, y:12, label:'P4'},   // centre-droit haut
-        {id:4, x:72, y:32, label:'P5'},   // droite derrière
-        {id:5, x:82, y:50, label:'P6'},   // droite milieu
-        {id:6, x:78, y:68, label:'P7'},   // droite bas
-        {id:7, x:88, y:82, label:'P8'},   // droite extrême bas
+        {id:0, x:18, y:14, label:'P1', front:false},  // haut gauche (derrière table)
+        {id:1, x:36, y:8,  label:'P2', front:false},  // haut centre-gauche
+        {id:2, x:56, y:8,  label:'P3', front:false},  // haut centre-droit
+        {id:3, x:74, y:14, label:'P4', front:false},  // haut droite
+        {id:4, x:6,  y:42, label:'P5', front:true},   // gauche devant
+        {id:5, x:24, y:58, label:'P6', front:true},   // bas gauche
+        {id:6, x:70, y:52, label:'P7', front:true},   // droite milieu
+        {id:7, x:86, y:38, label:'P8', front:true},   // droite haut
     ];
 
     var ssData = SS_POSITIONS.map(function(p){
@@ -2893,20 +2906,19 @@
         ssData.forEach(function(seat, i) {
             var pos = seat.pos;
             var el = document.createElement('div');
-            el.className = 'ss-seat';
-            el.style.cssText = 'position:absolute;left:' + pos.x + '%;top:' + pos.y + '%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;';
+            el.className = 'ss-seat' + (pos.front ? ' front' : '');
+            el.style.cssText = 'position:absolute;left:' + pos.x + '%;top:' + pos.y + '%;transform:translate(-50%,-50%);';
 
             // Image chaise
             var img = document.createElement('img');
             img.src = 'https://lezenesvincent-dotcom.github.io/mon-content-manager/regie-assets/chaise.png';
-            img.alt = 'chaise';
-            img.style.cssText = 'width:60px;height:60px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.6));';
+            img.alt = '';
             img.onerror = function() {
                 this.style.display = 'none';
                 var fb = document.createElement('div');
-                fb.style.cssText = 'width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:32px;';
+                fb.style.cssText = 'width:72px;height:72px;display:flex;align-items:center;justify-content:center;font-size:36px;';
                 fb.textContent = '🪑';
-                this.parentNode.insertBefore(fb, this);
+                el.insertBefore(fb, ctrl);
             };
 
             // Controls
@@ -2916,7 +2928,7 @@
             // Select nom
             var selName = document.createElement('select');
             selName.className = 'ss-name-select';
-            selName.onchange = (function(idx){ return function(){ ssData[idx].name = this.value; }; })(i);
+            selName.addEventListener('change', (function(idx){ return function(){ ssData[idx].name = this.value; }; })(i));
             names.forEach(function(n) {
                 var opt = document.createElement('option');
                 opt.value = n; opt.textContent = n;
@@ -2927,7 +2939,7 @@
             // Select rôle
             var selRole = document.createElement('select');
             selRole.className = 'ss-role-select';
-            selRole.onchange = (function(idx){ return function(){ ssData[idx].role = this.value; }; })(i);
+            selRole.addEventListener('change', (function(idx){ return function(){ ssData[idx].role = this.value; }; })(i));
             SS_ROLES.forEach(function(r) {
                 var opt = document.createElement('option');
                 opt.value = r; opt.textContent = r;
@@ -2938,7 +2950,7 @@
             // Select slides
             var selSlides = document.createElement('select');
             selSlides.className = 'ss-slides-select';
-            selSlides.onchange = (function(idx){ return function(){ ssData[idx].slides = this.value; }; })(i);
+            selSlides.addEventListener('change', (function(idx){ return function(){ ssData[idx].slides = this.value; }; })(i));
             SS_SLIDES.forEach(function(s) {
                 var opt = document.createElement('option');
                 opt.value = s; opt.textContent = s;
@@ -2974,7 +2986,7 @@
     // Init au chargement
     document.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
-            if (!window.ss_initialized) { window.ss_initialized = true; ssRenderSeats(); }
+            ssRenderSeats();
         }, 500);
     });
     // ══════════════════════════════════════════════════════════
@@ -3324,6 +3336,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v78 — 7/4/2026 09:36</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v79 — 7/4/2026 09:38</div>
 </body>
 </html>
