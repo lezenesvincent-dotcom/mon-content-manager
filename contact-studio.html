@@ -3213,28 +3213,14 @@
     });
 
     function ssGetIntervenants() {
-        // Récupérer les intervenants depuis les synthés
         var names = ['— vide —'];
-        var rows = document.querySelectorAll('.intervenant-row, .synthe-row, [data-intervenant]');
-        if (rows.length === 0) {
-            // Fallback : chercher les champs prénom/nom
-            var prenoms = document.querySelectorAll('[id^="prenom"], [id^="firstName"], input[placeholder*="rénom"], input[placeholder*="nom"]');
-            prenoms.forEach(function(el) {
-                var val = el.value.trim();
-                if (val && !names.includes(val)) names.push(val);
-            });
-        }
+        var rows = document.querySelectorAll('#intervenantsBody .interv-row');
         rows.forEach(function(row) {
             var inputs = row.querySelectorAll('input');
-            var name = '';
-            inputs.forEach(function(inp) { if(inp.value.trim()) name += inp.value.trim() + ' '; });
-            if (name.trim()) names.push(name.trim());
-        });
-        // Chercher aussi dans le résumé des intervenants
-        var summaryNames = document.querySelectorAll('.summary-intervenant, .intervenant-name');
-        summaryNames.forEach(function(el) {
-            var n = el.textContent.trim();
-            if (n && n !== '—' && !names.includes(n)) names.push(n);
+            var prenom = inputs[0] ? inputs[0].value.trim() : '';
+            var nom    = inputs[1] ? inputs[1].value.trim() : '';
+            var full = (prenom + ' ' + nom).trim();
+            if (full && !names.includes(full)) names.push(full);
         });
         return names;
     }
@@ -3312,10 +3298,11 @@
             avatarEl.style.cssText = 'position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 8px rgba(0,0,0,0.5);background:rgba(99,102,241,0.5);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;pointer-events:none;z-index:10;';
             if (seat.name && seat.name !== '— vide —') {
                 var carnet = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
-                var nameParts = seat.name.trim().split(/\s+/);
+                var seatNameLower = seat.name.trim().toLowerCase();
                 var contact = carnet.find(function(c) {
-                    var full = ((c.prenom||'')+' '+(c.nom||'')).trim();
-                    return full.toLowerCase() === seat.name.toLowerCase();
+                    var full = ((c.prenom||'') + ' ' + (c.nom||'')).trim().toLowerCase();
+                    var fullInv = ((c.nom||'') + ' ' + (c.prenom||'')).trim().toLowerCase();
+                    return full === seatNameLower || fullInv === seatNameLower;
                 });
                 if (contact && contact.photo) {
                     var pImg = document.createElement('img');
@@ -3471,9 +3458,11 @@
             if (q.length < 1) { wrap.innerHTML = ''; return; }
             var carnet = getCarnet();
             var matches = carnet.filter(function(c) {
-                var full = ((c.prenom||'') + ' ' + (c.nom||'')).toLowerCase();
+                var q = query.toLowerCase();
                 var prenom = (c.prenom||'').toLowerCase();
-                return prenom.startsWith(q.toLowerCase()) || full.startsWith(q.toLowerCase());
+                var nom = (c.nom||'').toLowerCase();
+                var full = (prenom + ' ' + nom).trim();
+                return prenom.startsWith(q) || nom.startsWith(q) || full.startsWith(q);
             }).slice(0, 6);
             showDropdown(matches, q);
         });
@@ -4173,7 +4162,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v87 — 07/04/2026 17:15</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v88 — 07/04/2026 17:30</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4211,6 +4200,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v87 — 07/04/2026 17:15</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v88 — 07/04/2026 17:30</div>
 </body>
 </html>
