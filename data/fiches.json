@@ -65,9 +65,15 @@
         "prenom": "re",
         "fonction": "Opérateur",
         "entreprise": "CIC"
+      },
+      {
+        "nom": "arna",
+        "prenom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-07T14:26:42.587Z"
+    "updatedAt": "2026-04-07T14:27:11.141Z"
   }
 }
