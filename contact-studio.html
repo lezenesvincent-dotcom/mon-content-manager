@@ -401,7 +401,26 @@
     .interv-row {
         display: flex;
         gap: 3px;
-        margin-bottom: 3px
+        margin-bottom: 3px;
+        align-items: center;
+    }
+    .interv-del-btn {
+        flex-shrink: 0;
+        width: 18px; height: 18px;
+        border-radius: 5px;
+        background: rgba(255,80,80,0.15);
+        border: 1px solid rgba(255,80,80,0.2);
+        color: rgba(255,100,100,0.7);
+        font-size: 11px; font-weight: 700;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.15s;
+        line-height: 1;
+    }
+    .interv-del-btn:hover {
+        background: rgba(255,80,80,0.35);
+        color: #fff;
+        border-color: rgba(255,80,80,0.5);
     }
 
     .interv-row input {
@@ -1935,21 +1954,21 @@
                 <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-bottom:4px">*en période de sous-effectif, ce service peut ne pas être disponible</div>
                 <div id="intervenantsBody" autocomplete="off">
                     <div class="interv-row">
-                        <span class="interv-num">1</span>
+                        <span class="interv-num">1</span><button class="interv-del-btn" onclick="deleteRow(this)" title="Supprimer">✕</button>
                         <input type="text" placeholder="Prénom" autocomplete="off">
                         <input type="text" placeholder="Nom" autocomplete="off">
                         <input type="text" placeholder="Fonction" autocomplete="off">
                         <input type="text" placeholder="Entreprise" autocomplete="off">
                     </div>
                     <div class="interv-row">
-                        <span class="interv-num">2</span>
+                        <span class="interv-num">2</span><button class="interv-del-btn" onclick="deleteRow(this)" title="Supprimer">✕</button>
                         <input type="text" placeholder="Prénom" autocomplete="off">
                         <input type="text" placeholder="Nom" autocomplete="off">
                         <input type="text" placeholder="Fonction" autocomplete="off">
                         <input type="text" placeholder="Entreprise" autocomplete="off">
                     </div>
                     <div class="interv-row">
-                        <span class="interv-num">3</span>
+                        <span class="interv-num">3</span><button class="interv-del-btn" onclick="deleteRow(this)" title="Supprimer">✕</button>
                         <input type="text" placeholder="Prénom" autocomplete="off">
                         <input type="text" placeholder="Nom" autocomplete="off">
                         <input type="text" placeholder="Fonction" autocomplete="off">
@@ -2295,13 +2314,28 @@
         rowCount++;
         var d = document.createElement('div');
         d.className = 'interv-row';
-        d.innerHTML = '<span class="interv-num">' + rowCount + '</span><input type="text" placeholder="Prénom" autocomplete="off"><input type="text" placeholder="Nom" autocomplete="off"><input type="text" placeholder="Fonction" autocomplete="off"><input type="text" placeholder="Entreprise" autocomplete="off">';
+        d.innerHTML = '<span class="interv-num">' + rowCount + '</span><button class="interv-del-btn" onclick="deleteRow(this)" title="Supprimer">✕</button><input type="text" placeholder="Prénom" autocomplete="off"><input type="text" placeholder="Nom" autocomplete="off"><input type="text" placeholder="Fonction" autocomplete="off"><input type="text" placeholder="Entreprise" autocomplete="off">';
         d.querySelectorAll('input').forEach(function(inp){ inp.addEventListener('blur', capitalizeInput); });
         document.getElementById('intervenantsBody').appendChild(d);
         attachAutocomplete(d);
     }
 
-    function capitalizeInput(e) {
+    function deleteRow(btn) {
+        var row = btn.closest('.interv-row');
+        var inputs = row.querySelectorAll('input');
+        var prenom = inputs[0] ? inputs[0].value.trim() : '';
+        var nom = inputs[1] ? inputs[1].value.trim() : '';
+        var name = (prenom + ' ' + nom).trim() || 'cette ligne';
+        if (!confirm('Supprimer ' + name + ' ?')) return;
+        row.remove();
+        // Renuméroter
+        document.querySelectorAll('#intervenantsBody .interv-row').forEach(function(r, i) {
+            var num = r.querySelector('.interv-num');
+            if (num) num.textContent = i + 1;
+        });
+        if (typeof ssRefresh === 'function') ssRefresh();
+        if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
+    }
         var v = e.target.value.trim();
         if (!v) return;
         e.target.value = v.split(/[\s-]+/).map(function(word, i, arr) {
@@ -4201,7 +4235,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v95 — 09/04/2026 10:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v96 — 09/04/2026 10:15</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4239,6 +4273,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v95 — 09/04/2026 10:00</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v96 — 09/04/2026 10:15</div>
 </body>
 </html>
