@@ -65,9 +65,15 @@
         "nom": "",
         "fonction": "",
         "entreprise": ""
+      },
+      {
+        "prenom": "nicolas",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-09T07:28:37.600Z"
+    "updatedAt": "2026-04-09T07:29:07.394Z"
   }
 }
