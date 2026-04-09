@@ -92,7 +92,7 @@
     "commentaires": "",
     "toggles": {
       "appIBM": false,
-      "appZoom": false,
+      "appZoom": true,
       "appWebex": false,
       "appTeams": false,
       "replay": true,
@@ -105,9 +105,9 @@
       "visite": true,
       "synthes": true
     },
-    "application": null,
+    "application": "ZOOM",
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-04-09T08:11:14.150Z"
+    "updatedAt": "2026-04-09T08:11:15.184Z"
   }
 }
