@@ -53,16 +53,10 @@
         "nom": "Thomas",
         "fonction": "Opérateur",
         "entreprise": "CIC"
-      },
-      {
-        "prenom": "Arnaud",
-        "nom": "",
-        "fonction": "",
-        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-09T09:45:22.499Z",
+    "updatedAt": "2026-04-09T09:45:28.338Z",
     "uploads": {}
   },
   "1771401928693": {
