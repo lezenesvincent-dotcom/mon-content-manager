@@ -14,7 +14,7 @@
     "titreSynthe": "",
     "commentaires": "",
     "toggles": {
-      "appIBM": false,
+      "appIBM": true,
       "appZoom": false,
       "appWebex": false,
       "appTeams": false,
@@ -28,7 +28,7 @@
       "visite": true,
       "synthes": true
     },
-    "application": null,
+    "application": "IBM",
     "intervenants": [
       {
         "prenom": "Lezenes",
@@ -68,6 +68,6 @@
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-09T07:26:40.532Z"
+    "updatedAt": "2026-04-09T07:27:04.137Z"
   }
 }
