@@ -2805,13 +2805,17 @@
 
     async function ghLoadFiches() {
         try {
+            var controller = new AbortController();
+            var timeout = setTimeout(function(){ controller.abort(); }, 3000);
             var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/data/fiches.json', {
                 headers: {
                     'Authorization': 'token ' + GH_TOKEN,
                     'Accept': 'application/vnd.github.v3+json'
                 },
-                cache: 'no-cache'
+                cache: 'no-cache',
+                signal: controller.signal
             });
+            clearTimeout(timeout);
             if (r.ok) {
                 var d = await r.json();
                 ghSha = d.sha;
@@ -4486,7 +4490,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v112 — 09/04/2026 15:15</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v113 — 09/04/2026 15:30</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4530,6 +4534,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v112 — 09/04/2026 15:15</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v113 — 09/04/2026 15:30</div>
 </body>
 </html>
