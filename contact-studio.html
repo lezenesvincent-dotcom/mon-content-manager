@@ -639,13 +639,12 @@
     .upload-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 6px
+        gap: 8px
     }
 
     .upload-slot {
-        border: 1.5px dashed rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        aspect-ratio: 4/3;
+        border-radius: 14px;
+        aspect-ratio: 3/2.8;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -653,17 +652,23 @@
         cursor: pointer;
         position: relative;
         overflow: hidden;
-        transition: border-color 0.2s
+        transition: all 0.2s;
+        background: linear-gradient(135deg, rgba(99,102,241,0.35) 0%, rgba(124,58,237,0.25) 100%);
+        border: 1px solid rgba(255,255,255,0.08);
+        gap: 6px;
     }
 
-    .upload-slot:hover {
-        border-color: rgba(0, 140, 255, 0.3)
-    }
+    /* Couleurs par type */
+    #up-gen  { background: linear-gradient(135deg, #f97316, #ef4444); border-color: rgba(249,115,22,0.3); }
+    #up-jingle { background: linear-gradient(135deg, #a855f7, #6366f1); border-color: rgba(168,85,247,0.3); }
+    #up-m1, #up-m2, #up-m3 { background: linear-gradient(135deg, #0ea5e9, #06b6d4); border-color: rgba(14,165,233,0.3); }
+    #up-ppt  { background: linear-gradient(135deg, #f59e0b, #f97316); border-color: rgba(245,158,11,0.3); }
+    #up-img  { background: linear-gradient(135deg, #10b981, #059669); border-color: rgba(16,185,129,0.3); }
+    #up-autre { background: linear-gradient(135deg, #6b7280, #4b5563); border-color: rgba(107,114,128,0.3); }
 
-    .upload-slot.has-file {
-        border-style: solid;
-        border-color: rgba(0, 140, 255, 0.4)
-    }
+    .upload-slot:not(.has-file) { filter: brightness(0.6) saturate(0.7); }
+    .upload-slot:hover { filter: brightness(0.85) saturate(0.9); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+    .upload-slot.has-file { filter: brightness(1); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
 
     .upload-slot input[type="file"] {
         position: absolute;
@@ -674,33 +679,30 @@
     }
 
     .upload-slot-icon {
-        width: 36px;
-        height: 36px;
-        background: rgba(255,255,255,0.15);
+        width: 38px;
+        height: 38px;
+        background: rgba(255,255,255,0.2);
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px)
     }
     .upload-slot-icon svg {
         width: 18px;
         height: 18px;
-        stroke: rgba(255,255,255,0.8);
+        stroke: #fff;
         fill: none;
-        stroke-width: 1.5;
+        stroke-width: 1.8;
         stroke-linecap: round;
         stroke-linejoin: round
     }
 
     .upload-slot-label {
-        font-size: 7px;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.85);
+        font-size: 8px;
+        font-weight: 800;
+        color: #fff;
         text-transform: uppercase;
-        letter-spacing: 0.3px;
-        margin-top: 3px
+        letter-spacing: 0.5px;
     }
 
     .upload-slot-thumb {
@@ -713,7 +715,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: 9px
+        border-radius: 13px
     }
 
     .upload-slot-name {
@@ -721,30 +723,32 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background: rgba(0, 0, 0, 0.7);
-        padding: 2px 5px;
+        background: rgba(0, 0, 0, 0.65);
+        padding: 3px 6px;
         font-size: 7px;
-        font-weight: 600;
+        font-weight: 700;
         color: #fff;
         z-index: 3;
         text-overflow: ellipsis;
         overflow: hidden;
-        white-space: nowrap
+        white-space: nowrap;
+        border-radius: 0 0 13px 13px;
     }
 
     .upload-slot-dl {
         position: absolute;
-        top: 3px;
-        right: 3px;
-        width: 18px;
-        height: 18px;
-        border-radius: 5px;
-        background: rgba(0, 140, 255, 0.8);
+        top: 5px;
+        right: 5px;
+        width: 22px;
+        height: 22px;
+        border-radius: 7px;
+        background: rgba(255,255,255,0.25);
         display: none;
         align-items: center;
         justify-content: center;
         z-index: 4;
-        cursor: pointer
+        cursor: pointer;
+        backdrop-filter: blur(4px);
     }
 
     .upload-slot.has-file .upload-slot-dl {
@@ -752,8 +756,8 @@
     }
 
     .upload-slot-dl svg {
-        width: 10px;
-        height: 10px;
+        width: 11px;
+        height: 11px;
         stroke: #fff;
         fill: none;
         stroke-width: 2
@@ -1807,12 +1811,13 @@
                 <div class="section-title" style="margin-bottom:8px;">🎮 Chaises — positionnement</div>
                 <div class="ss-toolbar">
                     <!-- Slot -->
-                    <div class="ss-toolbar-row" style="margin-bottom:4px;">
-                        <span class="ss-size-label" style="min-width:28px;">Slot</span>
-                        <div class="ss-seat-selector" id="ssSlotSelector"></div>
+                    <div class="ss-toolbar-row" style="margin-bottom:6px;flex-wrap:wrap;gap:4px;">
+                        <span class="ss-size-label" style="width:100%;">Slot</span>
+                        <div class="ss-seat-selector" id="ssSlotSelector" style="flex-wrap:wrap;gap:4px;"></div>
                     </div>
-                    <!-- Joystick + Taille + Pas -->
-                    <div class="ss-toolbar-row" style="align-items:flex-start;gap:10px;flex-wrap:wrap;">
+                    <!-- Joystick + Taille sur même ligne -->
+                    <div style="display:flex;gap:12px;align-items:flex-start;">
+                        <!-- Joystick -->
                         <div class="ss-joystick-wrap">
                             <span class="ss-size-label">Position</span>
                             <div class="ss-joy-row">
@@ -1831,7 +1836,8 @@
                                 <div class="ss-joy-btn ss-joy-center"></div>
                             </div>
                         </div>
-                        <div style="display:flex;flex-direction:column;gap:8px;">
+                        <!-- Taille + Pas -->
+                        <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
                             <div class="ss-size-wrap">
                                 <span class="ss-size-label">Taille</span>
                                 <div class="ss-size-btns">
@@ -1842,7 +1848,7 @@
                             </div>
                             <div class="ss-step-wrap">
                                 <span class="ss-size-label">Pas</span>
-                                <select class="ss-step-select" id="ssMoveStep">
+                                <select class="ss-step-select" id="ssMoveStep" style="width:100%;">
                                     <option value="0.5">0.5%</option>
                                     <option value="1" selected>1%</option>
                                     <option value="2">2%</option>
@@ -4183,7 +4189,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v90 — 09/04/2026 08:30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v91 — 09/04/2026 09:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4221,6 +4227,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v90 — 09/04/2026 08:30</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v91 — 09/04/2026 09:00</div>
 </body>
 </html>
