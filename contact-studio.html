@@ -1893,6 +1893,42 @@
                         <span class="ss-size-label" style="display:block;margin-bottom:6px;">Intervenants par position</span>
                         <div id="ssSidebarSelects"></div>
                     </div>
+
+                    <!-- Joystick cartouches -->
+                    <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:8px;">
+                        <span class="ss-size-label" style="display:block;margin-bottom:6px;">Position des cartouches</span>
+                        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;" id="ssCtrlSlotSelector"></div>
+                        <div style="display:flex;gap:10px;align-items:flex-start;">
+                            <div class="ss-joystick-wrap">
+                                <span class="ss-size-label">Déplacer</span>
+                                <div class="ss-joy-row">
+                                    <div class="ss-joy-btn ss-joy-center"></div>
+                                    <div class="ss-joy-btn" onclick="ssMoveCtrl(0,-5)" title="Haut" style="background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.3);">↑</div>
+                                    <div class="ss-joy-btn ss-joy-center"></div>
+                                </div>
+                                <div class="ss-joy-row">
+                                    <div class="ss-joy-btn" onclick="ssMoveCtrl(-5,0)" title="Gauche" style="background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.3);">←</div>
+                                    <div class="ss-joy-btn ss-joy-center" style="font-size:9px;color:rgba(167,139,250,0.4);">✛</div>
+                                    <div class="ss-joy-btn" onclick="ssMoveCtrl(5,0)" title="Droite" style="background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.3);">→</div>
+                                </div>
+                                <div class="ss-joy-row">
+                                    <div class="ss-joy-btn ss-joy-center"></div>
+                                    <div class="ss-joy-btn" onclick="ssMoveCtrl(0,5)" title="Bas" style="background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.3);">↓</div>
+                                    <div class="ss-joy-btn ss-joy-center"></div>
+                                </div>
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:4px;">
+                                <span class="ss-size-label">Pas</span>
+                                <select class="ss-step-select" id="ssCtrlMoveStep" style="width:100%;">
+                                    <option value="2">2px</option>
+                                    <option value="5" selected>5px</option>
+                                    <option value="10">10px</option>
+                                    <option value="20">20px</option>
+                                </select>
+                                <button class="ss-save-btn" onclick="ssResetCtrlOffsets()" style="margin-top:4px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);box-shadow:none;font-size:9px;padding:4px 8px;">↺ Reset</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -3402,6 +3438,59 @@
         // Mettre à jour les avatars dans la scène sans re-render complet
         ssRenderSeats();
     }
+
+    function ssSelectCtrl(idx) {
+        ss_selectedCtrl = idx;
+        document.querySelectorAll('#ssCtrlSlotSelector .ss-slot-btn').forEach(function(b, i) {
+            b.classList.toggle('active', i === idx);
+        });
+    }
+
+    function ssMoveCtrl(dx, dy) {
+        var step = parseFloat(document.getElementById('ssCtrlMoveStep')?.value || 5);
+        var off = SS_CTRL_OFFSETS[ss_selectedCtrl];
+        if (!off) return;
+        off.dx += dx * (step / 5);
+        off.dy += dy * (step / 5);
+        // Mettre à jour le ctrlWrap dans la scène
+        var cw = document.querySelector('[data-ctrl-idx="' + ss_selectedCtrl + '"]');
+        if (cw) {
+            var pos = SS_POSITIONS[ss_selectedCtrl];
+            var sz = ss_seatSizes[ss_selectedCtrl] || 72;
+            cw.style.left = 'calc(' + pos.x + '% + ' + off.dx + 'px)';
+            cw.style.top = 'calc(' + pos.y + '% + ' + sz + 'px + ' + off.dy + 'px)';
+        }
+        localStorage.setItem('ss_ctrl_offsets', JSON.stringify(SS_CTRL_OFFSETS));
+    }
+
+    function ssResetCtrlOffsets() {
+        SS_CTRL_OFFSETS = SS_CTRL_OFFSETS.map(function(){ return {dx:0, dy:0}; });
+        localStorage.removeItem('ss_ctrl_offsets');
+        ssRenderSeats();
+    }
+
+    function ssInitCtrlSlotSelector() {
+        var sel = document.getElementById('ssCtrlSlotSelector');
+        if (!sel) return;
+        sel.innerHTML = '';
+        SS_POSITIONS.forEach(function(pos, i) {
+            var btn = document.createElement('div');
+            btn.className = 'ss-slot-btn' + (i === ss_selectedCtrl ? ' active' : '');
+            btn.textContent = 'P' + (i+1);
+            btn.style.cssText = 'background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.3);';
+            btn.onclick = (function(idx){ return function(){ ssSelectCtrl(idx); }; })(i);
+            sel.appendChild(btn);
+        });
+    }
+
+    function ssSelectCtrl(idx) {
+        ss_selectedCtrl = idx;
+        document.querySelectorAll('#ssCtrlSlotSelector .ss-slot-btn').forEach(function(b, i) {
+            b.classList.toggle('active', i === idx);
+            b.style.cssText = i === idx
+                ? 'background:rgba(167,139,250,0.6);border-color:rgba(167,139,250,0.8);color:#fff;'
+                : 'background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.3);';
+        });
     }
 
     function ssSetName(i, val) { ssData[i].name = val; }
@@ -3458,7 +3547,7 @@
 
         }, 600);
         // Générer les boutons P1→P8 dans le panel joystick sidebar
-        setTimeout(function(){ ssInitToolbar(); }, 700);
+        setTimeout(function(){ ssInitToolbar(); ssInitCtrlSlotSelector(); }, 700);
         // Autocomplete intervenants
         setTimeout(function(){ attachAllAutocomplete(); }, 800);
     });
@@ -3655,6 +3744,11 @@
     // ══ JOYSTICK SETUP STUDIO ══════════════════════════════════
     var ss_selectedSlot = 0;
     var ss_seatSizes = [72,72,72,72,72,72,72,72]; // taille px par slot
+    var ss_selectedCtrl = 0; // slot sélectionné pour déplacement cartouches
+    var SS_CTRL_OFFSETS = [
+        {dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0},
+        {dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0}
+    ];
 
     // Positions par défaut (backup)
     var SS_DEFAULT_POSITIONS = null;
@@ -4268,7 +4362,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v99 — 09/04/2026 11:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v100 — 09/04/2026 11:30</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4312,6 +4406,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v99 — 09/04/2026 11:00</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v100 — 09/04/2026 11:30</div>
 </body>
 </html>
