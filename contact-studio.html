@@ -1888,6 +1888,11 @@
                             ↺ Réinit
                         </button>
                     </div>
+                    <!-- Selects P1→P8 -->
+                    <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:8px;">
+                        <span class="ss-size-label" style="display:block;margin-bottom:6px;">Intervenants par position</span>
+                        <div id="ssSidebarSelects"></div>
+                    </div>
                 </div>
             </div>
 
@@ -3297,52 +3302,13 @@
                 var fb = document.createElement('div');
                 fb.style.cssText = 'width:72px;height:72px;display:flex;align-items:center;justify-content:center;font-size:36px;';
                 fb.textContent = '🪑';
-                el.insertBefore(fb, ctrl);
+                el.appendChild(fb);
             };
 
-            // Controls
-            var ctrl = document.createElement('div');
-            ctrl.className = 'ss-seat-controls';
-
-            // Select nom
-            var selName = document.createElement('select');
-            selName.className = 'ss-name-select';
-            selName.addEventListener('change', (function(idx){ return function(){ ssData[idx].name = this.value; }; })(i));
-            names.forEach(function(n) {
-                var opt = document.createElement('option');
-                opt.value = n; opt.textContent = n;
-                if (seat.name === n) opt.selected = true;
-                selName.appendChild(opt);
-            });
-
-            // Select rôle
-            var selRole = document.createElement('select');
-            selRole.className = 'ss-role-select';
-            selRole.addEventListener('change', (function(idx){ return function(){ ssData[idx].role = this.value; }; })(i));
-            SS_ROLES.forEach(function(r) {
-                var opt = document.createElement('option');
-                opt.value = r; opt.textContent = r;
-                if (seat.role === r) opt.selected = true;
-                selRole.appendChild(opt);
-            });
-
-            // Select slides
-            var selSlides = document.createElement('select');
-            selSlides.className = 'ss-slides-select';
-            selSlides.addEventListener('change', (function(idx){ return function(){ ssData[idx].slides = this.value; }; })(i));
-            SS_SLIDES.forEach(function(s) {
-                var opt = document.createElement('option');
-                opt.value = s; opt.textContent = s;
-                if (seat.slides === s) opt.selected = true;
-                selSlides.appendChild(opt);
-            });
-
-            ctrl.appendChild(selName);
-            ctrl.appendChild(selRole);
-            ctrl.appendChild(selSlides);
-
-            // Élément image (z-index bas — derrière la table)
-            el.appendChild(img);
+            // Label P1→P8 sur la chaise
+            var lbl = document.createElement('div');
+            lbl.style.cssText = 'position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:800;color:#fff;background:rgba(99,102,241,0.7);border-radius:4px;padding:1px 5px;pointer-events:none;z-index:5;white-space:nowrap;';
+            lbl.textContent = 'P' + (i+1);
 
             // Avatar
             var avatarEl = document.createElement('div');
@@ -3362,24 +3328,80 @@
                     pImg.src = contact.photo;
                     pImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
                     avatarEl.appendChild(pImg);
-                } else if (seat.name && seat.name !== '— vide —') {
+                } else {
                     var nameParts2 = seat.name.trim().split(/\s+/);
                     avatarEl.textContent = nameParts2.map(function(p){ return p.charAt(0).toUpperCase(); }).slice(0,2).join('');
                 }
                 el.appendChild(avatarEl);
+            } else {
+                el.appendChild(lbl);
             }
 
+            el.appendChild(img);
             scene.appendChild(el);
-
-            // Élément contrôles séparé — même position, z-index 20 (toujours au-dessus de la table z:3)
-            var chairSize = ss_seatSizes[i] || 72;
-            var ctrlWrap = document.createElement('div');
-            ctrlWrap.style.cssText = 'position:absolute;left:' + pos.x + '%;top:calc(' + pos.y + '% + ' + (chairSize/2) + 'px);transform:translate(-50%,0);display:flex;flex-direction:column;align-items:center;gap:5px;z-index:20;pointer-events:auto;';
-            ctrlWrap.setAttribute('data-ctrl-idx', i);
-            ctrlWrap.setAttribute('data-chair-idx', i);
-            ctrlWrap.appendChild(ctrl);
-            scene.appendChild(ctrlWrap);
         });
+
+        // Rendre les selects dans la sidebar
+        ssRenderSidebarSelects(names);
+    }
+
+    function ssRenderSidebarSelects(names) {
+        var container = document.getElementById('ssSidebarSelects');
+        if (!container) return;
+        container.innerHTML = '';
+        ssData.forEach(function(seat, i) {
+            var row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);';
+
+            var label = document.createElement('span');
+            label.style.cssText = 'font-size:9px;font-weight:800;color:#a78bfa;min-width:20px;';
+            label.textContent = 'P'+(i+1);
+
+            var selName = document.createElement('select');
+            selName.className = 'ss-name-select';
+            selName.style.cssText = 'flex:1.5;font-size:9px;';
+            selName.addEventListener('change', (function(idx){ return function(){ ssData[idx].name = this.value; ssRefreshScene(); }; })(i));
+            names.forEach(function(n) {
+                var opt = document.createElement('option');
+                opt.value = n; opt.textContent = n;
+                if (seat.name === n) opt.selected = true;
+                selName.appendChild(opt);
+            });
+
+            var selRole = document.createElement('select');
+            selRole.className = 'ss-role-select';
+            selRole.style.cssText = 'flex:1;font-size:9px;';
+            selRole.addEventListener('change', (function(idx){ return function(){ ssData[idx].role = this.value; }; })(i));
+            SS_ROLES.forEach(function(r) {
+                var opt = document.createElement('option');
+                opt.value = r; opt.textContent = r;
+                if (seat.role === r) opt.selected = true;
+                selRole.appendChild(opt);
+            });
+
+            var selSlides = document.createElement('select');
+            selSlides.className = 'ss-slides-select';
+            selSlides.style.cssText = 'flex:1;font-size:9px;';
+            selSlides.addEventListener('change', (function(idx){ return function(){ ssData[idx].slides = this.value; }; })(i));
+            SS_SLIDES.forEach(function(s) {
+                var opt = document.createElement('option');
+                opt.value = s; opt.textContent = s;
+                if (seat.slides === s) opt.selected = true;
+                selSlides.appendChild(opt);
+            });
+
+            row.appendChild(label);
+            row.appendChild(selName);
+            row.appendChild(selRole);
+            row.appendChild(selSlides);
+            container.appendChild(row);
+        });
+    }
+
+    function ssRefreshScene() {
+        // Mettre à jour les avatars dans la scène sans re-render complet
+        ssRenderSeats();
+    }
     }
 
     function ssSetName(i, val) { ssData[i].name = val; }
@@ -3387,15 +3409,15 @@
     function ssSetSlides(i, val) { ssData[i].slides = val; }
 
     function ssRefresh() {
-        // Mettre à jour les selects nom avec les intervenants actuels
         var names = ssGetIntervenants();
-        var selects = document.querySelectorAll('.ss-name-select');
+        var selects = document.querySelectorAll('#ssSidebarSelects .ss-name-select');
         selects.forEach(function(sel, i) {
             var current = ssData[i] ? ssData[i].name : '';
             sel.innerHTML = names.map(function(n) {
                 return '<option value="' + n + '"' + (current === n ? ' selected' : '') + '>' + n + '</option>';
             }).join('');
         });
+        if (selects.length === 0) ssRenderSidebarSelects(names);
     }
 
     // Init au chargement
@@ -3840,37 +3862,52 @@
     }
 
     function exportResumeEvent() {
-        var titre = document.getElementById('titreEvent') ? document.getElementById('titreEvent').value : 'Événement';
-        var dateEv = document.getElementById('dateEvent') ? document.getElementById('dateEvent').value : '';
-        var heureDebut = document.getElementById('heureDebut') ? document.getElementById('heureDebut').value : '';
-        var heureFin = document.getElementById('heureFin') ? document.getElementById('heureFin').value : '';
-        var contact = document.getElementById('contactField') ? document.getElementById('contactField').value : '';
-        var email = document.getElementById('contactEmail') ? document.getElementById('contactEmail').value : '';
-        var phone = document.getElementById('contactPhone') ? document.getElementById('contactPhone').value : '';
-        var commentaires = document.getElementById('commentaires') ? document.getElementById('commentaires').value : '';
         var now = new Date();
         var mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-        var dateNow = now.getDate() + ' ' + mois[now.getMonth()] + ' ' + now.getFullYear();
+        var dateNow = now.getDate() + ' ' + mois[now.getMonth()] + ' ' + now.getFullYear() + ' à ' + now.getHours() + 'h' + String(now.getMinutes()).padStart(2,'0');
 
-        // Intervenants
+        var titre = (document.getElementById('titreEvent')||{}).value || 'Événement';
+        var dateEv = (document.getElementById('dateEvent')||{}).value || '—';
+        var heureDirect = (document.getElementById('heureDirect')||{}).textContent || '—';
+        var heurePrep = (document.getElementById('heurePrepDisplay')||{}).textContent || '—';
+        var entite = (document.getElementById('entiteGroupe')||{}).value || '—';
+        var contact = (document.getElementById('contactField')||{}).value || '—';
+        var email = (document.getElementById('contactEmail')||{}).value || '';
+        var phone = (document.getElementById('contactPhone')||{}).value || '';
+        var commentaires = (document.getElementById('commentaires')||{}).value || '';
+
+        var modeEl = document.querySelector('.mode-card.active .mode-card-title');
+        var mode = modeEl ? modeEl.textContent.trim() : '—';
+
+        function tog(field) { var el = document.querySelector('[data-field="'+field+'"]'); return el && el.classList.contains('active'); }
+        var diffusion = [];
+        if (tog('appIBM')) diffusion.push('IBM');
+        if (tog('appZoom')) diffusion.push('Zoom');
+        if (tog('appWebex')) diffusion.push('Webex');
+        if (tog('appTeams')) diffusion.push('Teams');
+        if (tog('replay')) diffusion.push('Replay');
+        if (tog('chat')) diffusion.push('Chat');
+        if (tog('qr')) diffusion.push('Q&R');
+        if (tog('portailInscription')) diffusion.push('Portail inscription');
+
+        var genOptions = [];
+        if (tog('diffGen')) genOptions.push('Diffusion générique');
+        if (tog('fournisGen')) genOptions.push('Je fournis le générique');
+        if (tog('studioGen')) genOptions.push('Le studio fournit');
+        if (tog('visite')) genOptions.push('Visite du studio');
+
         var intervs = [];
-        var rows = document.querySelectorAll('#intervenantsBody .interv-row');
-        rows.forEach(function(row){
-            var inputs = row.querySelectorAll('input');
-            var prenom = inputs[0] ? inputs[0].value.trim() : '';
-            var nom = inputs[1] ? inputs[1].value.trim() : '';
-            var fn = inputs[2] ? inputs[2].value.trim() : '';
-            var ent = inputs[3] ? inputs[3].value.trim() : '';
-            if (prenom || nom) intervs.push({prenom:prenom, nom:nom, fonction:fn, entreprise:ent});
+        document.querySelectorAll('#intervenantsBody .interv-row').forEach(function(row) {
+            var inp = row.querySelectorAll('input');
+            var p=(inp[0]||{}).value||'', n=(inp[1]||{}).value||'', f=(inp[2]||{}).value||'', e=(inp[3]||{}).value||'';
+            if (p||n) intervs.push([p+' '+n, f, e]);
         });
 
-        // Toggles sidebar
-        var toggles = {};
-        document.querySelectorAll('[data-field]').forEach(function(el){
-            toggles[el.getAttribute('data-field')] = el.classList.contains('active');
-        });
+        var seats = [];
+        if (typeof ssData !== 'undefined') {
+            ssData.forEach(function(s,i){ if (s.name && s.name !== '— vide —') seats.push('P'+(i+1)+' : '+s.name+(s.role?' — '+s.role:'')+(s.slides?' ('+s.slides+')':'')); });
+        }
 
-        // Facturation
         var factLines = [];
         var tLive = document.getElementById('tLive');
         if (tLive && tLive.classList.contains('on')) {
@@ -3879,6 +3916,7 @@
         }
         if (document.getElementById('tDemi') && document.getElementById('tDemi').classList.contains('on')) factLines.push('Demie heure supp. — 400 € HT');
         if (document.getElementById('tMontage') && document.getElementById('tMontage').classList.contains('on')) factLines.push('Nouveau montage — 500 € HT');
+        if (document.getElementById('tDecli') && document.getElementById('tDecli').classList.contains('on')) factLines.push('Déclinaison film unitaire');
         if (document.getElementById('tST') && document.getElementById('tST').classList.contains('on')) factLines.push('Sous-titres — 400 € HT');
         if (document.getElementById('tGen') && document.getElementById('tGen').classList.contains('on')) {
             var gs = document.querySelector('button.rp-pill.sel[data-group="gen"]');
@@ -3888,40 +3926,32 @@
             var fs = document.querySelector('button.rp-pill.sel[data-group="film"]');
             factLines.push('Film — ' + (fs ? fs.textContent.trim() + ' — ' + fs.getAttribute('data-price') + ' € HT' : '6 400 € HT'));
         }
-        var total = document.getElementById('factTotal') ? document.getElementById('factTotal').textContent : '—';
+        var total = (document.getElementById('factTotal')||{}).textContent || '—';
 
-        // HTML résumé
-        var intervsHtml = intervs.length ? intervs.map(function(iv){
-            return '<tr><td style="padding:6px 10px;border-bottom:1px solid #f0f0f0;">' + iv.prenom + ' ' + iv.nom + '</td>'
-                + '<td style="padding:6px 10px;border-bottom:1px solid #f0f0f0;color:#555;">' + iv.fonction + '</td>'
-                + '<td style="padding:6px 10px;border-bottom:1px solid #f0f0f0;color:#555;">' + iv.entreprise + '</td></tr>';
-        }).join('') : '<tr><td colspan="3" style="padding:8px 10px;color:#aaa;">—</td></tr>';
+        function sec(title, body) { return '<h3 style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:#888;margin:22px 0 8px;border-bottom:1px solid #eee;padding-bottom:4px;">'+title+'</h3>'+body; }
+        function r2(a,b){ return '<tr><td style="padding:4px 10px;font-size:11px;color:#888;width:160px;">'+a+'</td><td style="padding:4px 10px;font-size:13px;font-weight:600;">'+b+'</td></tr>'; }
 
-        var factHtml = factLines.map(function(l){
-            return '<li style="padding:3px 0;color:#333;">' + l + '</li>';
-        }).join('');
+        var intervsHtml = intervs.length
+            ? '<table style="width:100%;border-collapse:collapse;"><tr style="background:#f5f5f5;"><th style="padding:5px 10px;font-size:11px;text-align:left;">Nom</th><th style="padding:5px 10px;font-size:11px;text-align:left;">Fonction</th><th style="padding:5px 10px;font-size:11px;text-align:left;">Entreprise</th></tr>'
+              + intervs.map(function(iv){ return '<tr><td style="padding:4px 10px;border-bottom:1px solid #f0f0f0;font-size:12px;">'+iv[0]+'</td><td style="padding:4px 10px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#555;">'+iv[1]+'</td><td style="padding:4px 10px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#555;">'+iv[2]+'</td></tr>'; }).join('')
+              + '</table>'
+            : '<p style="color:#aaa;font-size:12px;">Aucun intervenant</p>';
 
-        var html = '<!DOCTYPE html><html><head><meta charset="utf-8">'
-            + '<title>Résumé — ' + titre + '</title>'
-            + '<style>body{font-family:-apple-system,sans-serif;color:#111;padding:32px;max-width:760px;margin:0 auto;}'
-            + 'h1{font-size:24px;margin-bottom:4px;}h2{font-size:13px;color:#888;font-weight:400;margin:0 0 24px;}'
-            + 'h3{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:24px 0 8px;}'
-            + 'table{width:100%;border-collapse:collapse;}td{font-size:13px;}'
-            + '.header{display:flex;justify-content:space-between;margin-bottom:28px;padding-bottom:16px;border-bottom:2px solid #111;}'
-            + '.total{font-size:16px;font-weight:800;margin-top:12px;}'
-            + '</style></head><body>'
-            + '<div class="header"><div>'
-            + '<h1>' + titre + '</h1>'
-            + '<h2>' + [dateEv, heureDebut&&heureFin ? heureDebut+' → '+heureFin : ''].filter(Boolean).join(' · ') + '</h2>'
-            + '</div><div style="text-align:right;font-size:11px;color:#999;">Studio CIC Paris<br>Export le ' + dateNow + '</div></div>'
-            + '<h3>Contact</h3>'
-            + '<p style="font-size:13px;">' + [contact, email, phone].filter(Boolean).join(' · ') + '</p>'
-            + '<h3>Intervenants synthés</h3>'
-            + '<table><tr style="background:#f8f8f8;"><th style="padding:6px 10px;text-align:left;font-size:11px;">Nom</th><th style="padding:6px 10px;text-align:left;font-size:11px;">Fonction</th><th style="padding:6px 10px;text-align:left;font-size:11px;">Entreprise</th></tr>' + intervsHtml + '</table>'
-            + '<h3>Facturation estimée</h3>'
-            + '<ul style="margin:0;padding-left:18px;">' + (factHtml || '<li style="color:#aaa;">—</li>') + '</ul>'
-            + '<p class="total">Total estimé : ' + total + '</p>'
-            + (commentaires ? '<h3>Commentaires</h3><p style="font-size:13px;color:#555;white-space:pre-wrap;">' + commentaires + '</p>' : '')
+        var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Résumé — '+titre+'</title>'
+            + '<style>*{box-sizing:border-box;}body{font-family:-apple-system,Helvetica,sans-serif;color:#111;padding:32px;max-width:780px;margin:0 auto;}'
+            + '.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:16px;border-bottom:3px solid #111;}'
+            + 'h1{font-size:26px;margin:0 0 4px;}h2{font-size:13px;color:#888;font-weight:400;margin:0;}'
+            + 'table{width:100%;border-collapse:collapse;}.total-box{background:#f5f5f5;border-radius:8px;padding:12px 16px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;}'
+            + '@media print{body{padding:16px;}}</style></head><body>'
+            + '<div class="header"><div><h1>'+titre+'</h1><h2>'+dateEv+' · Direct '+heureDirect+' · '+heurePrep+'</h2></div>'
+            + '<div style="text-align:right;font-size:11px;color:#999;">Studio CIC Paris<br>Export le '+dateNow+'</div></div>'
+            + sec('Événement', '<table>'+r2('Entité / Groupe',entite)+r2('Contact',contact+(email?' — '+email:'')+(phone?' — '+phone:''))+r2('Mode réalisation',mode)+'</table>')
+            + sec('Diffusion & options', '<p style="font-size:13px;margin:0 0 4px;">'+(diffusion.length?diffusion.join(', '):'—')+'</p>'+(genOptions.length?'<p style="font-size:12px;color:#555;margin:0;">'+genOptions.join(', ')+'</p>':''))
+            + sec('Intervenants synthés', intervsHtml)
+            + (seats.length ? sec('Setup Studio','<ul style="margin:0;padding-left:16px;">'+seats.map(function(s){ return '<li style="padding:2px 0;font-size:12px;">'+s+'</li>'; }).join('')+'</ul>') : '')
+            + sec('Facturation estimée','<ul style="margin:0;padding-left:16px;">'+(factLines.length?factLines.map(function(l){ return '<li style="padding:2px 0;">'+l+'</li>'; }).join(''):'<li style="color:#aaa;">—</li>')+'</ul>'
+                + '<div class="total-box"><span style="font-size:13px;color:#555;">Total estimé HT</span><span style="font-size:18px;font-weight:800;">'+total+'</span></div>')
+            + (commentaires ? sec('Commentaires','<p style="font-size:13px;color:#555;white-space:pre-wrap;background:#fffbe6;border-left:3px solid #f59e0b;padding:10px 14px;border-radius:4px;">'+commentaires+'</p>') : '')
             + '</body></html>';
 
         var win = window.open('', '_blank');
@@ -4238,7 +4268,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v98 — 09/04/2026 10:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v99 — 09/04/2026 11:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4282,6 +4312,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v98 — 09/04/2026 10:45</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v99 — 09/04/2026 11:00</div>
 </body>
 </html>
