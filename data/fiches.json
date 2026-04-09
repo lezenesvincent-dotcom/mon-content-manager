@@ -65,9 +65,15 @@
         "nom": "",
         "fonction": "",
         "entreprise": ""
+      },
+      {
+        "prenom": "arnaud",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-09T07:24:35.071Z"
+    "updatedAt": "2026-04-09T07:24:45.872Z"
   }
 }
