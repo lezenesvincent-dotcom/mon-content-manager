@@ -1453,16 +1453,16 @@
         object-fit: contain;
         filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7));
         position: relative;
-        z-index: 1; /* derrière la table pour chaises du fond */
+        z-index: 1;
     }
-    .ss-seat:not(.front) img {
-        z-index: 1; /* fond : chaise sous la table */
+    /* Toutes les chaises du fond : img derrière la table, contrôles devant */
+    .ss-seat:not(.front) {
+        z-index: 1;
     }
-    .ss-seat:not(.front) .ss-seat-controls {
-        position: relative;
-        z-index: 5; /* contrôles toujours au-dessus de la table */
-    }
+    /* Les cartouches (contrôles) sont TOUJOURS au-dessus de la table (z:3) */
     .ss-seat-controls {
+        position: relative;
+        z-index: 10;
         display: flex; flex-direction: column; gap: 4px; align-items: center;
     }
     .ss-name-select {
@@ -3235,6 +3235,7 @@
         var scene = document.getElementById('ssScene');
         if (!scene) return;
         scene.querySelectorAll('.ss-seat').forEach(function(s){ s.remove(); });
+        scene.querySelectorAll('[data-ctrl-idx]').forEach(function(s){ s.remove(); });
 
         var names = ssGetIntervenants();
 
@@ -3296,9 +3297,11 @@
             ctrl.appendChild(selName);
             ctrl.appendChild(selRole);
             ctrl.appendChild(selSlides);
+
+            // Élément image (z-index bas — derrière la table)
             el.appendChild(img);
 
-            // Avatar photo depuis carnet si intervenant assigné
+            // Avatar
             var avatarEl = document.createElement('div');
             avatarEl.className = 'ss-seat-avatar';
             avatarEl.style.cssText = 'position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 8px rgba(0,0,0,0.5);background:rgba(99,102,241,0.5);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;pointer-events:none;z-index:10;';
@@ -3315,15 +3318,21 @@
                     pImg.src = contact.photo;
                     pImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
                     avatarEl.appendChild(pImg);
-                } else {
-                    var initials = nameParts.map(function(p){ return p.charAt(0).toUpperCase(); }).slice(0,2).join('');
-                    avatarEl.textContent = initials;
+                } else if (seat.name && seat.name !== '— vide —') {
+                    var nameParts2 = seat.name.trim().split(/\s+/);
+                    avatarEl.textContent = nameParts2.map(function(p){ return p.charAt(0).toUpperCase(); }).slice(0,2).join('');
                 }
                 el.appendChild(avatarEl);
             }
 
-            el.appendChild(ctrl);
             scene.appendChild(el);
+
+            // Élément contrôles séparé — même position, z-index 20 (toujours au-dessus de la table z:3)
+            var ctrlWrap = document.createElement('div');
+            ctrlWrap.style.cssText = 'position:absolute;left:' + pos.x + '%;top:' + pos.y + '%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;z-index:20;pointer-events:auto;margin-top:' + (ss_seatSizes[i] || 72) + 'px;';
+            ctrlWrap.setAttribute('data-ctrl-idx', i);
+            ctrlWrap.appendChild(ctrl);
+            scene.appendChild(ctrlWrap);
         });
     }
 
@@ -3637,6 +3646,9 @@
             seats[ss_selectedSlot].style.left = pos.x + '%';
             seats[ss_selectedSlot].style.top = pos.y + '%';
         }
+        // Mettre à jour le ctrlWrap correspondant
+        var cw = document.querySelector('[data-ctrl-idx="' + ss_selectedSlot + '"]');
+        if (cw) { cw.style.left = pos.x + '%'; cw.style.top = pos.y + '%'; }
         ssUpdateDisplays();
         ssClearSaved();
     }
@@ -3652,6 +3664,9 @@
                 img.style.width = sz; img.style.height = sz;
             }
         }
+        // Mettre à jour le margin-top du ctrlWrap selon la taille
+        var cw = document.querySelector('[data-ctrl-idx="' + ss_selectedSlot + '"]');
+        if (cw) cw.style.marginTop = ss_seatSizes[ss_selectedSlot] + 'px';
         ssUpdateDisplays();
         ssClearSaved();
     }
@@ -4168,7 +4183,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v89 — 07/04/2026 17:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v90 — 09/04/2026 08:30</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4206,6 +4221,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v89 — 07/04/2026 17:45</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v90 — 09/04/2026 08:30</div>
 </body>
 </html>
