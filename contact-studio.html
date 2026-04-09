@@ -3675,11 +3675,9 @@
         var prenomInput = inputs[0];
         if (!prenomInput || prenomInput._acAttached) return;
         prenomInput._acAttached = true;
-        // Bloquer autocomplétion Safari : readonly au focus puis readwrite après 100ms
         row.querySelectorAll('input').forEach(function(inp) {
-            inp.setAttribute('type', 'text');
-            inp.setAttribute('autocomplete', 'new-password');
-            inp.setAttribute('name', 'studio_' + Math.random().toString(36).slice(2));
+            inp.setAttribute('autocomplete', 'off');
+            inp.setAttribute('name', 'studio_field_' + Math.random().toString(36).slice(2));
         });
 
         var wrap = document.createElement('div');
@@ -3751,11 +3749,11 @@
             if (q.length < 1) { wrap.innerHTML = ''; return; }
             var carnet = getCarnet();
             var matches = carnet.filter(function(c) {
-                var q = query.toLowerCase().trim();
+                var ql = q.toLowerCase().trim();
                 var prenom = (c.prenom||'').toLowerCase().trim();
                 var nom = (c.nom||'').toLowerCase().trim();
                 var full = (prenom + ' ' + nom).trim();
-                return prenom.startsWith(q) || nom.startsWith(q) || full.startsWith(q);
+                return prenom.startsWith(ql) || nom.startsWith(ql) || full.startsWith(ql);
             }).slice(0, 6);
             showDropdown(matches, q);
         });
@@ -4490,7 +4488,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v114 — 09/04/2026 15:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v115 — 09/04/2026 16:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4534,6 +4532,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v114 — 09/04/2026 15:45</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v115 — 09/04/2026 16:00</div>
 </body>
 </html>
