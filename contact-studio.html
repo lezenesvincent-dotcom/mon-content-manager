@@ -2721,6 +2721,12 @@
             }))
                 d.intervenants.push(p);
         });
+        // Sauvegarder les URLs des fichiers uploadés
+        d.uploads = {};
+        Object.keys(uploadedFiles).forEach(function(slotId) {
+            var f = uploadedFiles[slotId];
+            if (f && f.ghUrl) d.uploads[slotId] = { name: f.name, ghUrl: f.ghUrl };
+        });
         return d;
     }
 
@@ -2895,6 +2901,23 @@
                     if (inputs[j] && p[k])
                         inputs[j].value = p[k];
                 });
+            });
+        }
+        // Restaurer les fichiers uploadés
+        if (data.uploads) {
+            Object.keys(data.uploads).forEach(function(slotId) {
+                var f = data.uploads[slotId];
+                if (!f || !f.ghUrl) return;
+                uploadedFiles[slotId] = { name: f.name, ghUrl: f.ghUrl };
+                var slot = document.getElementById(slotId);
+                if (!slot) return;
+                slot.classList.add('has-file');
+                var ext = f.name.split('.').pop().toUpperCase();
+                var thumbDiv = slot.querySelector('.upload-slot-thumb');
+                if (thumbDiv) thumbDiv.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,140,255,0.1);border-radius:9px;font-size:11px;font-weight:700;color:#4da8ff">' + ext + '</div>';
+                var nameEl = slot.querySelector('.upload-slot-name');
+                if (!nameEl) { nameEl = document.createElement('div'); nameEl.className = 'upload-slot-name'; slot.appendChild(nameEl); }
+                nameEl.textContent = f.name;
             });
         }
         updatePrepDisplay();
@@ -4140,9 +4163,17 @@
             + '</body></html>';
 
         var win = window.open('', '_blank');
-        win.document.write(html);
-        win.document.close();
-        setTimeout(function(){ win.print(); }, 400);
+        if (!win || win.closed) {
+            var blob = new Blob([html], {type: 'text/html;charset=utf-8'});
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'Resume-' + titre + '.html';
+            a.click();
+        } else {
+            win.document.write(html);
+            win.document.close();
+            setTimeout(function(){ win.print(); }, 400);
+        }
     }
 
     </script>
@@ -4453,7 +4484,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v110 — 09/04/2026 14:30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v111 — 09/04/2026 15:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4497,6 +4528,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v110 — 09/04/2026 14:30</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v111 — 09/04/2026 15:00</div>
 </body>
 </html>
