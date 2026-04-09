@@ -65,10 +65,11 @@
         gap: 14px;
         max-width: 1800px;
         margin: 0 auto;
-        padding: 10px 14px;
+        padding: 10px 14px 100px;
         position: relative;
         z-index: 2;
-        height: 100vh
+        min-height: 100vh;
+        align-items: flex-start;
     }/* LEFT SIDEBAR */
 
     .sidebar {
@@ -77,8 +78,9 @@
         display: flex;
         flex-direction: column;
         gap: 6px;
-        overflow-y: auto;
+        overflow-y: visible;
         padding-right: 4px;
+        padding-bottom: 120px;
         scrollbar-width: thin;
         scrollbar-color: rgba(255, 255, 255, 0.1) transparent
     }
@@ -2336,7 +2338,8 @@
         if (typeof ssRefresh === 'function') ssRefresh();
         if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
     }
-        var v = e.target.value.trim();
+
+    function capitalizeInput(e) {
         if (!v) return;
         e.target.value = v.split(/[\s-]+/).map(function(word, i, arr) {
             if (!word) return '';
@@ -2627,7 +2630,7 @@
         document.querySelectorAll('.interv-row').forEach(function(row) {
             var inputs = row.querySelectorAll('input');
             var p = {};
-            ['nom', 'prenom', 'fonction', 'entreprise'].forEach(function(k, i) {
+            ['prenom', 'nom', 'fonction', 'entreprise'].forEach(function(k, i) {
                 p[k] = inputs[i] ? inputs[i].value : '';
             });
             if (Object.values(p).some(function(v) {
@@ -2802,7 +2805,7 @@
                     addRow();
                 var row = body.querySelectorAll('.interv-row')[i];
                 var inputs = row.querySelectorAll('input');
-                ['nom', 'prenom', 'fonction', 'entreprise'].forEach(function(k, j) {
+                ['prenom', 'nom', 'fonction', 'entreprise'].forEach(function(k, j) {
                     if (inputs[j] && p[k])
                         inputs[j].value = p[k];
                 });
@@ -4235,7 +4238,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v96 — 09/04/2026 10:15</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v98 — 09/04/2026 10:45</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4273,6 +4276,12 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v96 — 09/04/2026 10:15</div>
+
+    <!-- Bouton Refresh fixe bas droite -->
+    <button onclick="location.reload()" title="Actualiser la page" style="position:fixed;bottom:80px;right:20px;width:56px;height:56px;border-radius:16px;border:none;background:linear-gradient(135deg,#f6d365,#f97316);box-shadow:0 4px 20px rgba(249,115,22,0.45);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;z-index:9990;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(249,115,22,0.55)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(249,115,22,0.45)'">
+        <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
+    </button>
+    <div class="version-badge-cs" id="versionBadgeCS">v98 — 09/04/2026 10:45</div>
 </body>
 </html>
