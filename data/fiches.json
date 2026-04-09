@@ -31,43 +31,43 @@
     "application": null,
     "intervenants": [
       {
-        "nom": "Vincent",
         "prenom": "Lezenes",
+        "nom": "Vincent",
         "fonction": "Responsable Studio",
         "entreprise": "Cic"
       },
       {
-        "nom": "Marc",
         "prenom": "Gouget",
+        "nom": "Marc",
         "fonction": "Directeur",
         "entreprise": "CIC"
       },
       {
-        "nom": "David",
         "prenom": "Lang",
+        "nom": "David",
         "fonction": "Opérateur",
         "entreprise": "Cic"
       },
       {
-        "nom": "François",
         "prenom": "Duhen",
+        "nom": "François",
         "fonction": "Directeur",
         "entreprise": "CIC"
       },
       {
-        "nom": "Thomas",
         "prenom": "Tom",
+        "nom": "Thomas",
         "fonction": "Opérateur",
         "entreprise": "CIC"
       },
       {
-        "nom": "Franck",
         "prenom": "re",
+        "nom": "Franck",
         "fonction": "Opérateur",
         "entreprise": "CIC"
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-09T06:39:38.967Z"
+    "updatedAt": "2026-04-09T06:46:25.292Z"
   }
 }
