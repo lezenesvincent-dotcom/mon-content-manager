@@ -59,9 +59,15 @@
         "nom": "Thomas",
         "fonction": "Opérateur",
         "entreprise": "CIC"
+      },
+      {
+        "prenom": "arnau",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-09T07:25:20.338Z"
+    "updatedAt": "2026-04-09T07:25:26.372Z"
   }
 }
