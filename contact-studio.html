@@ -2922,6 +2922,8 @@
         }
         updatePrepDisplay();
         updateSummary();
+        // Re-rendre le Setup Studio avec les positions chargées
+        if (typeof ssRenderSeats === 'function') setTimeout(function(){ ssRenderSeats(); }, 100);
     }
 
     async function loadData() {
@@ -4484,7 +4486,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v111 — 09/04/2026 15:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v112 — 09/04/2026 15:15</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4528,6 +4530,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v111 — 09/04/2026 15:00</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v112 — 09/04/2026 15:15</div>
 </body>
 </html>
