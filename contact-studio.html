@@ -3375,6 +3375,52 @@
 
             el.appendChild(img);
             scene.appendChild(el);
+
+            // ctrlWrap dans la scène — selects au-dessus de la table z:20
+            var off = SS_CTRL_OFFSETS[i] || {dx:0, dy:0};
+            var sz = ss_seatSizes[i] || 72;
+            var ctrlWrap = document.createElement('div');
+            ctrlWrap.style.cssText = 'position:absolute;left:calc(' + pos.x + '% + ' + off.dx + 'px);top:calc(' + pos.y + '% + ' + sz/2 + 'px + ' + off.dy + 'px);transform:translate(-50%,0);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:20;pointer-events:auto;';
+            ctrlWrap.setAttribute('data-ctrl-idx', i);
+
+            var ctrl = document.createElement('div');
+            ctrl.className = 'ss-seat-controls';
+
+            var selName2 = document.createElement('select');
+            selName2.className = 'ss-name-select';
+            selName2.addEventListener('change', (function(idx){ return function(){ ssData[idx].name = this.value; ssRefreshScene(); }; })(i));
+            names.forEach(function(n) {
+                var opt = document.createElement('option');
+                opt.value = n; opt.textContent = n;
+                if (seat.name === n) opt.selected = true;
+                selName2.appendChild(opt);
+            });
+
+            var selRole2 = document.createElement('select');
+            selRole2.className = 'ss-role-select';
+            selRole2.addEventListener('change', (function(idx){ return function(){ ssData[idx].role = this.value; }; })(i));
+            SS_ROLES.forEach(function(r) {
+                var opt = document.createElement('option');
+                opt.value = r; opt.textContent = r;
+                if (seat.role === r) opt.selected = true;
+                selRole2.appendChild(opt);
+            });
+
+            var selSlides2 = document.createElement('select');
+            selSlides2.className = 'ss-slides-select';
+            selSlides2.addEventListener('change', (function(idx){ return function(){ ssData[idx].slides = this.value; }; })(i));
+            SS_SLIDES.forEach(function(s) {
+                var opt = document.createElement('option');
+                opt.value = s; opt.textContent = s;
+                if (seat.slides === s) opt.selected = true;
+                selSlides2.appendChild(opt);
+            });
+
+            ctrl.appendChild(selName2);
+            ctrl.appendChild(selRole2);
+            ctrl.appendChild(selSlides2);
+            ctrlWrap.appendChild(ctrl);
+            scene.appendChild(ctrlWrap);
         });
 
         // Rendre les selects dans la sidebar
@@ -3560,9 +3606,10 @@
         var prenomInput = inputs[0];
         if (!prenomInput || prenomInput._acAttached) return;
         prenomInput._acAttached = true;
-        // Désactiver l'autocomplétion native du navigateur sur tous les champs de la ligne
+        // Safari ignore autocomplete="off" — type="search" bloque son autocomplétion native
         row.querySelectorAll('input').forEach(function(inp) {
             inp.setAttribute('autocomplete', 'off');
+            inp.setAttribute('type', 'search');
             inp.setAttribute('name', 'studio_' + Math.random().toString(36).slice(2));
         });
 
@@ -4362,7 +4409,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v100 — 09/04/2026 11:30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v101 — 09/04/2026 11:45</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4406,6 +4453,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v100 — 09/04/2026 11:30</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v101 — 09/04/2026 11:45</div>
 </body>
 </html>
