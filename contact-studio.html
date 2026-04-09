@@ -1336,7 +1336,7 @@
     .main-area { flex: 0 0 460px !important; min-width: 0 !important; }
     .version-badge-cs{position:fixed;top:10px;right:12px;font-size:9px;font-weight:700;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:2px 8px;z-index:10000;pointer-events:none;}
 
-    .rp-pill{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;border:none;background:rgba(255,255,255,.07);color:rgba(255,255,255,.45);cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .rp-pill{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;border:none;background:rgba(255,255,255,.07);color:rgba(255,255,255,.82);cursor:pointer;transition:all .2s;white-space:nowrap;}
     .rp-pill:hover{background:rgba(255,255,255,.13);color:rgba(255,255,255,.8);transform:translateY(-1px);}
     .rp-pill.sel{background:linear-gradient(135deg,rgba(124,58,237,.85),rgba(99,102,241,.85));color:#fff;box-shadow:0 3px 12px rgba(124,58,237,.4);}
     .livr-cmd{margin-top:10px;width:100%;padding:11px 16px;background:linear-gradient(135deg,#0070f3,#0050c8);border:none;border-radius:12px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(0,112,243,.35);}
@@ -1344,7 +1344,7 @@
     .livr-file{background:rgba(0,112,243,.1);border:1px solid rgba(0,112,243,.2);border-radius:12px;padding:10px 8px;text-align:center;cursor:pointer;font-size:10px;font-weight:700;color:#60a5fa;transition:all .2s;}
     .livr-file:hover{background:rgba(0,112,243,.22);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,112,243,.25);}
     .livr-file .livr-icon{font-size:20px;display:block;margin-bottom:4px;}
-    .livr-file.unavail{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.2);cursor:default;}
+    .livr-file.unavail{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.7);cursor:default;}
     .livr-file.unavail:hover{transform:none;box-shadow:none;}
     .mode-card{flex:1;padding:12px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden;}
     .mode-card:hover{transform:translateY(-2px);}
@@ -1352,8 +1352,8 @@
     .mode-card#modeVisio{background:linear-gradient(135deg,rgba(0,112,243,.35),rgba(6,182,212,.25));}
     .mode-card#modeStudio.active{background:linear-gradient(135deg,rgba(99,102,241,.75),rgba(124,58,237,.65));border-color:rgba(139,92,246,.6);box-shadow:0 4px 18px rgba(124,58,237,.4);}
     .mode-card#modeVisio.active{background:linear-gradient(135deg,rgba(0,112,243,.65),rgba(6,182,212,.5));border-color:rgba(0,140,255,.5);box-shadow:0 4px 18px rgba(0,112,243,.4);}
-    .upload-slot{background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.12);border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;transition:all .2s;font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;}
-    .upload-slot:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.7);transform:translateY(-2px);}
+    .upload-slot{background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.12);border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;transition:all .2s;font-size:9px;font-weight:700;color:rgba(255,255,255,.82);text-transform:uppercase;}
+    .upload-slot:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.7);color:rgba(255,255,255,.7);transform:translateY(-2px);}
     .upload-slot.filled{background:rgba(67,233,123,.08);border:1px solid rgba(67,233,123,.25);color:#6ee7b7;}
 
     /* === v58 : fix vide + boutons + couleurs === */
@@ -1980,10 +1980,20 @@
                     </div>
                 </div>
                 <div class="ibm-preview" id="ibmPreviewWrap">
-                    <a id="ibmPreviewLink" href="https://video.ibm.com/channel/dhWaG6DN5VF" target="_blank">
-                        <img id="ibmPreviewImg" src="https://image.thum.io/get/width/900/crop/400/https://video.ibm.com/channel/dhWaG6DN5VF" alt="Aperçu">
-                    </a>
-                    <div class="ibm-preview-label" id="ibmPreviewLabel">Solutions de marchés CIC — cliquez pour ouvrir</div>
+                    <!-- Preview IBM -->
+                    <div id="appPreviewIBM">
+                        <a id="ibmPreviewLink" href="https://video.ibm.com/channel/dhWaG6DN5VF" target="_blank">
+                            <img id="ibmPreviewImg" src="https://image.thum.io/get/width/900/crop/400/https://video.ibm.com/channel/dhWaG6DN5VF" alt="Aperçu">
+                        </a>
+                        <div class="ibm-preview-label" id="ibmPreviewLabel">Solutions de marchés CIC — cliquez pour ouvrir</div>
+                    </div>
+                    <!-- Logo app alternative -->
+                    <div id="appPreviewLogo" style="display:none;padding:20px;text-align:center;">
+                        <img id="appLogoImg" src="" alt="" style="height:48px;object-fit:contain;opacity:0.8;">
+                        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.75);margin-top:8px;" id="appLogoLabel"></div>
+                    </div>
+                    <!-- Aucune app -->
+                    <div id="appPreviewNone" style="display:none;padding:20px;text-align:center;color:rgba(255,255,255,0.4);font-size:11px;">Aucune application sélectionnée</div>
                 </div>
             </div>
 
@@ -2317,14 +2327,46 @@
     }
     function selectAppToggle(el, appName) {
         var allApps = document.querySelectorAll('[data-field^="app"]');
-        allApps.forEach(function(sw) {
-            if (sw !== el) sw.classList.remove('active');
-        });
+        allApps.forEach(function(sw) { if (sw !== el) sw.classList.remove('active'); });
         el.classList.toggle('active');
+        var isActive = el.classList.contains('active');
         var ibmSection = document.getElementById('ibmSection');
-        ibmSection.style.display = (el.classList.contains('active') && appName === 'IBM') ? 'block' : 'none';
+        if (ibmSection) ibmSection.style.display = (isActive && appName === 'IBM') ? 'block' : 'none';
+        updateAppPreview(isActive ? appName : null);
         updateSummary();
         scheduleAutoSave();
+    }
+
+    var APP_LOGOS = {
+        'IBM':   {src: 'https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg', label: 'IBM Watson Media'},
+        'ZOOM':  {src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Zoom_Logo_2022.svg/1280px-Zoom_Logo_2022.svg.png', label: 'Zoom'},
+        'WEBEX': {src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cisco_Webex_logo.svg/1280px-Cisco_Webex_logo.svg.png', label: 'Cisco Webex'},
+        'TEAMS': {src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg/1200px-Microsoft_Office_Teams_%282018%E2%80%93present%29.svg.png', label: 'Microsoft Teams'},
+    };
+
+    function updateAppPreview(appName) {
+        var ibmDiv = document.getElementById('appPreviewIBM');
+        var logoDiv = document.getElementById('appPreviewLogo');
+        var noneDiv = document.getElementById('appPreviewNone');
+        if (!ibmDiv) return;
+        if (!appName) {
+            ibmDiv.style.display = 'none';
+            logoDiv.style.display = 'none';
+            noneDiv.style.display = 'block';
+        } else if (appName === 'IBM') {
+            ibmDiv.style.display = 'block';
+            logoDiv.style.display = 'none';
+            noneDiv.style.display = 'none';
+        } else {
+            ibmDiv.style.display = 'none';
+            noneDiv.style.display = 'none';
+            logoDiv.style.display = 'block';
+            var logo = APP_LOGOS[appName];
+            if (logo) {
+                document.getElementById('appLogoImg').src = logo.src;
+                document.getElementById('appLogoLabel').textContent = logo.label;
+            }
+        }
     }
     function selectMode(m) {
         document.getElementById('modeStudio').classList.toggle('active', m === 'studio');
@@ -2835,6 +2877,9 @@
                 if (sw) sw.classList.add('active');
             }
             document.getElementById('ibmSection').style.display = data.application === 'IBM' ? 'block' : 'none';
+            if (typeof updateAppPreview === 'function') updateAppPreview(data.application);
+        } else {
+            if (typeof updateAppPreview === 'function') updateAppPreview(null);
         }
         if (data.mode)
             selectMode(data.mode);
@@ -3555,6 +3600,11 @@
         setTimeout(function() {
             if (window.ss_initialized) return;
             window.ss_initialized = true;
+
+            // Charger positions/tailles AVANT le render
+            ssInitToolbar();
+            ssInitCtrlSlotSelector();
+            // Puis render avec les bonnes tailles
             ssRenderSeats();
 
             // Sync temps réel : écouter les frappes dans les champs intervenants
@@ -3564,7 +3614,6 @@
                 if (body._ssListenerAttached) return;
                 body._ssListenerAttached = true;
 
-                // Écouter les input events (frappe en temps réel)
                 body.addEventListener('input', function(e) {
                     if (e.target.tagName === 'INPUT') ssRefresh();
                 });
@@ -3572,13 +3621,11 @@
                     if (e.target.tagName === 'INPUT') syncCarnetFromSynthe();
                 }, true);
 
-                // Écouter les nouvelles lignes (+Ajouter)
                 new MutationObserver(function() { ssRefresh(); })
                     .observe(body, { childList: true, subtree: true });
             }
             attachSsListeners();
 
-            // Retry si intervenantsBody pas encore dans le DOM
             var retry = 0;
             var retryInterval = setInterval(function() {
                 attachSsListeners();
@@ -3587,8 +3634,6 @@
             }, 300);
 
         }, 600);
-        // Générer les boutons P1→P8 dans le panel joystick sidebar
-        setTimeout(function(){ ssInitToolbar(); ssInitCtrlSlotSelector(); }, 700);
         // Autocomplete intervenants
         setTimeout(function(){ attachAllAutocomplete(); }, 800);
     });
@@ -4408,7 +4453,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v109 — 09/04/2026 14:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v110 — 09/04/2026 14:30</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4452,6 +4497,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v109 — 09/04/2026 14:00</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v110 — 09/04/2026 14:30</div>
 </body>
 </html>
