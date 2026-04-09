@@ -1933,27 +1933,27 @@
                 </div>
                 <div class="section-title">Intervenants synthés</div>
                 <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-bottom:4px">*en période de sous-effectif, ce service peut ne pas être disponible</div>
-                <div id="intervenantsBody">
+                <div id="intervenantsBody" autocomplete="off">
                     <div class="interv-row">
                         <span class="interv-num">1</span>
-                        <input type="text" placeholder="Prénom">
-                        <input type="text" placeholder="Nom">
-                        <input type="text" placeholder="Fonction">
-                        <input type="text" placeholder="Entreprise">
+                        <input type="text" placeholder="Prénom" autocomplete="off">
+                        <input type="text" placeholder="Nom" autocomplete="off">
+                        <input type="text" placeholder="Fonction" autocomplete="off">
+                        <input type="text" placeholder="Entreprise" autocomplete="off">
                     </div>
                     <div class="interv-row">
                         <span class="interv-num">2</span>
-                        <input type="text" placeholder="Prénom">
-                        <input type="text" placeholder="Nom">
-                        <input type="text" placeholder="Fonction">
-                        <input type="text" placeholder="Entreprise">
+                        <input type="text" placeholder="Prénom" autocomplete="off">
+                        <input type="text" placeholder="Nom" autocomplete="off">
+                        <input type="text" placeholder="Fonction" autocomplete="off">
+                        <input type="text" placeholder="Entreprise" autocomplete="off">
                     </div>
                     <div class="interv-row">
                         <span class="interv-num">3</span>
-                        <input type="text" placeholder="Prénom">
-                        <input type="text" placeholder="Nom">
-                        <input type="text" placeholder="Fonction">
-                        <input type="text" placeholder="Entreprise">
+                        <input type="text" placeholder="Prénom" autocomplete="off">
+                        <input type="text" placeholder="Nom" autocomplete="off">
+                        <input type="text" placeholder="Fonction" autocomplete="off">
+                        <input type="text" placeholder="Entreprise" autocomplete="off">
                     </div>
                 </div>
                 <button class="add-interv" onclick="addRow()">+ Ajouter</button>
@@ -2295,7 +2295,7 @@
         rowCount++;
         var d = document.createElement('div');
         d.className = 'interv-row';
-        d.innerHTML = '<span class="interv-num">' + rowCount + '</span><input type="text" placeholder="Prénom"><input type="text" placeholder="Nom"><input type="text" placeholder="Fonction"><input type="text" placeholder="Entreprise">';
+        d.innerHTML = '<span class="interv-num">' + rowCount + '</span><input type="text" placeholder="Prénom" autocomplete="off"><input type="text" placeholder="Nom" autocomplete="off"><input type="text" placeholder="Fonction" autocomplete="off"><input type="text" placeholder="Entreprise" autocomplete="off">';
         d.querySelectorAll('input').forEach(function(inp){ inp.addEventListener('blur', capitalizeInput); });
         document.getElementById('intervenantsBody').appendChild(d);
         attachAutocomplete(d);
@@ -3412,6 +3412,11 @@
         var prenomInput = inputs[0];
         if (!prenomInput || prenomInput._acAttached) return;
         prenomInput._acAttached = true;
+        // Désactiver l'autocomplétion native du navigateur sur tous les champs de la ligne
+        row.querySelectorAll('input').forEach(function(inp) {
+            inp.setAttribute('autocomplete', 'off');
+            inp.setAttribute('name', 'studio_' + Math.random().toString(36).slice(2));
+        });
 
         var wrap = document.createElement('div');
         wrap.className = 'interv-autocomplete-wrap';
@@ -4196,7 +4201,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v94 — 09/04/2026 09:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v95 — 09/04/2026 10:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4234,6 +4239,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v94 — 09/04/2026 09:45</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v95 — 09/04/2026 10:00</div>
 </body>
 </html>
