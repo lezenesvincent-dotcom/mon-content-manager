@@ -75,5 +75,39 @@
     ],
     "mode": "studio",
     "updatedAt": "2026-04-09T07:39:38.029Z"
+  },
+  "1771401928693": {
+    "id": "1771401928693",
+    "titre": "",
+    "date": "",
+    "entite": "",
+    "contact": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "heureDirect": "13:00",
+    "heurePrep": "12:30",
+    "prepDuration": 30,
+    "ibmChaine": "https://video.ibm.com/channel/dhWaG6DN5VF",
+    "titreSynthe": "",
+    "commentaires": "",
+    "toggles": {
+      "appIBM": false,
+      "appZoom": true,
+      "appWebex": false,
+      "appTeams": false,
+      "replay": true,
+      "chat": true,
+      "qr": false,
+      "portailInscription": false,
+      "diffGen": true,
+      "fournisGen": true,
+      "studioGen": false,
+      "visite": true,
+      "synthes": true
+    },
+    "application": "ZOOM",
+    "intervenants": [],
+    "mode": "studio",
+    "updatedAt": "2026-04-09T08:11:13.010Z"
   }
 }
