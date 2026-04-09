@@ -3571,8 +3571,8 @@
                 if (!row._doublonAlerte) {
                     row._doublonAlerte = true;
                     showToast('⚠️ ' + full + ' existe déjà dans le Carnet');
-                    row.style.outline = '2px solid rgba(255,180,0,0.6)';
-                    setTimeout(function(){ row.style.outline = ''; row._doublonAlerte = false; }, 4000);
+                    row.style.borderLeft = '3px solid rgba(255,180,0,0.7)';
+                    setTimeout(function(){ row.style.borderLeft = ''; row._doublonAlerte = false; }, 4000);
                 }
             } else if (full.length > 1) {
                 // Ajouter au carnet
@@ -4196,7 +4196,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v93 — 09/04/2026 09:30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v94 — 09/04/2026 09:45</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4234,6 +4234,6 @@
         <button class="dk-btn dk-lock" id="lockBtn" onclick="toggleLock()">🔒<span class="dk-tip">Déverrouiller</span></button>
         <button class="dk-btn dk-send" id="transmettreBtn" onclick="transmettreParMail()" disabled>✉️<span class="dk-tip">Transmettre</span></button>
     </nav>
-    <div class="version-badge-cs" id="versionBadgeCS">v93 — 09/04/2026 09:30</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v94 — 09/04/2026 09:45</div>
 </body>
 </html>
