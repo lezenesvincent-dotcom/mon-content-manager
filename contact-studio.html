@@ -3816,6 +3816,8 @@
                 });
                 var savedSizes = localStorage.getItem('ss_sizes');
                 if (savedSizes) ss_seatSizes = JSON.parse(savedSizes);
+                var savedOffsets = localStorage.getItem('ss_ctrl_offsets');
+                if (savedOffsets) SS_CTRL_OFFSETS = JSON.parse(savedOffsets);
                 console.log('✅ Positions Setup Studio chargées');
             } catch(e) {}
         }
@@ -3901,16 +3903,16 @@
         var positions = SS_POSITIONS.map(function(p){ return {x:p.x, y:p.y}; });
         localStorage.setItem('ss_positions', JSON.stringify(positions));
         localStorage.setItem('ss_sizes', JSON.stringify(ss_seatSizes));
+        localStorage.setItem('ss_ctrl_offsets', JSON.stringify(SS_CTRL_OFFSETS));
         var btn = document.getElementById('ssSaveBtn');
         if (btn) {
             btn.classList.add('saved');
             btn.textContent = '✅ Sauvegardé !';
             setTimeout(function(){
                 btn.classList.remove('saved');
-                btn.innerHTML = '💾 Sauvegarder positions';
+                btn.innerHTML = '💾 Sauvegarder';
             }, 2000);
         }
-        // Retirer les outlines
         document.querySelectorAll('.ss-seat').forEach(function(s){ s.style.outline = 'none'; });
     }
 
@@ -3920,8 +3922,10 @@
             if (SS_POSITIONS[i]) { SS_POSITIONS[i].x = p.x; SS_POSITIONS[i].y = p.y; }
         });
         ss_seatSizes = [72,72,72,72,72,72,72,72];
+        SS_CTRL_OFFSETS = SS_CTRL_OFFSETS.map(function(){ return {dx:0, dy:0}; });
         localStorage.removeItem('ss_positions');
         localStorage.removeItem('ss_sizes');
+        localStorage.removeItem('ss_ctrl_offsets');
         ssRenderSeats();
         ssInitToolbar();
     }
@@ -4409,7 +4413,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v102 — 09/04/2026 12:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v103 — 09/04/2026 12:15</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4453,6 +4457,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v102 — 09/04/2026 12:00</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v103 — 09/04/2026 12:15</div>
 </body>
 </html>
