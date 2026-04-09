@@ -65,10 +65,16 @@
         "nom": "",
         "fonction": "",
         "entreprise": ""
+      },
+      {
+        "prenom": "françois",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-09T08:21:17.832Z"
+    "updatedAt": "2026-04-09T08:21:23.431Z"
   },
   "1771401928693": {
     "id": "1771401928693",
