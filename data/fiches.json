@@ -133,14 +133,14 @@
     "application": null,
     "intervenants": [
       {
-        "prenom": "vin",
+        "prenom": "vincent",
         "nom": "",
         "fonction": "",
         "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-10T15:29:45.938Z",
+    "updatedAt": "2026-04-10T15:29:48.030Z",
     "uploads": {}
   }
 }
