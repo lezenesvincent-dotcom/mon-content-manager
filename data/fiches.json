@@ -89,9 +89,16 @@
       "synthes": true
     },
     "application": "ZOOM",
-    "intervenants": [],
+    "intervenants": [
+      {
+        "prenom": "ARNAUD",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
+      }
+    ],
     "mode": "studio",
-    "updatedAt": "2026-04-10T14:32:30.220Z",
+    "updatedAt": "2026-04-10T14:32:37.117Z",
     "uploads": {}
   }
 }
