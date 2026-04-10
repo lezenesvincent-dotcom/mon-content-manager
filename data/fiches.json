@@ -47,16 +47,10 @@
         "nom": "Thomas",
         "fonction": "Opérateur",
         "entreprise": "CIC"
-      },
-      {
-        "prenom": "Vincent",
-        "nom": "Lezenes",
-        "fonction": "Responsable Studio",
-        "entreprise": "Cic"
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-10T15:22:47.745Z",
+    "updatedAt": "2026-04-10T15:23:18.638Z",
     "uploads": {}
   },
   "1771401928693": {
