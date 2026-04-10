@@ -436,6 +436,29 @@
         outline: none
     }
 
+    .interv-prenom-edit {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 5px;
+        padding: 4px 6px;
+        color: #fff;
+        font-size: 10px;
+        outline: none;
+        min-height: 22px;
+        white-space: nowrap;
+        overflow: hidden;
+        cursor: text;
+    }
+    .interv-prenom-edit:focus {
+        border-color: rgba(0, 140, 255, 0.3);
+    }
+    .interv-prenom-edit:empty::before {
+        content: 'Prénom';
+        color: rgba(255,255,255,0.3);
+        pointer-events: none;
+    }
+
     .interv-row input:focus {
         border-color: rgba(0, 140, 255, 0.3)
     }
@@ -1969,21 +1992,21 @@
                 <div id="intervenantsBody" autocomplete="off">
                     <div class="interv-row">
                         <span class="interv-num">1</span><button class="interv-del-btn" onclick="deleteRow(this)" title="Supprimer">✕</button>
-                        <input type="text" placeholder="Prénom" autocomplete="new-password">
+                        <div class="interv-prenom-edit" contenteditable="true" spellcheck="false" autocomplete="off"></div>
                         <input type="text" placeholder="Nom" autocomplete="new-password">
                         <input type="text" placeholder="Fonction" autocomplete="new-password">
                         <input type="text" placeholder="Entreprise" autocomplete="new-password">
                     </div>
                     <div class="interv-row">
                         <span class="interv-num">2</span><button class="interv-del-btn" onclick="deleteRow(this)" title="Supprimer">✕</button>
-                        <input type="text" placeholder="Prénom" autocomplete="new-password">
+                        <div class="interv-prenom-edit" contenteditable="true" spellcheck="false" autocomplete="off"></div>
                         <input type="text" placeholder="Nom" autocomplete="new-password">
                         <input type="text" placeholder="Fonction" autocomplete="new-password">
                         <input type="text" placeholder="Entreprise" autocomplete="new-password">
                     </div>
                     <div class="interv-row">
                         <span class="interv-num">3</span><button class="interv-del-btn" onclick="deleteRow(this)" title="Supprimer">✕</button>
-                        <input type="text" placeholder="Prénom" autocomplete="new-password">
+                        <div class="interv-prenom-edit" contenteditable="true" spellcheck="false" autocomplete="off"></div>
                         <input type="text" placeholder="Nom" autocomplete="new-password">
                         <input type="text" placeholder="Fonction" autocomplete="new-password">
                         <input type="text" placeholder="Entreprise" autocomplete="new-password">
@@ -2360,7 +2383,7 @@
         rowCount++;
         var d = document.createElement('div');
         d.className = 'interv-row';
-        d.innerHTML = '<span class="interv-num">' + rowCount + '</span><button class="interv-del-btn" onclick="deleteRow(this)" title="Supprimer">✕</button><input type="text" placeholder="Prénom" autocomplete="new-password"><input type="text" placeholder="Nom" autocomplete="new-password"><input type="text" placeholder="Fonction" autocomplete="new-password"><input type="text" placeholder="Entreprise" autocomplete="new-password">';
+        d.innerHTML = '<span class="interv-num">' + rowCount + '</span><button class="interv-del-btn" onclick="deleteRow(this)" title="Supprimer">✕</button><div class="interv-prenom-edit" contenteditable="true" spellcheck="false" autocomplete="off"></div><input type="text" placeholder="Nom" autocomplete="new-password"><input type="text" placeholder="Fonction" autocomplete="new-password"><input type="text" placeholder="Entreprise" autocomplete="new-password">';
         d.querySelectorAll('input').forEach(function(inp){ inp.addEventListener('blur', capitalizeInput); });
         document.getElementById('intervenantsBody').appendChild(d);
         attachAutocomplete(d);
@@ -2369,7 +2392,7 @@
     function deleteRow(btn) {
         var row = btn.closest('.interv-row');
         var inputs = row.querySelectorAll('input');
-        var prenom = inputs[0] ? inputs[0].value.trim() : '';
+        var prenomDiv = row.querySelector('.interv-prenom-edit'); var prenom = prenomDiv ? prenomDiv.textContent.trim() : (inputs[0] ? inputs[0].value.trim() : '');
         var nom = inputs[1] ? inputs[1].value.trim() : '';
         var name = (prenom + ' ' + nom).trim() || 'cette ligne';
         if (!confirm('Supprimer ' + name + ' ?')) return;
@@ -2673,13 +2696,14 @@
         }
         document.querySelectorAll('.interv-row').forEach(function(row) {
             var inputs = row.querySelectorAll('input');
-            var p = {};
-            ['prenom', 'nom', 'fonction', 'entreprise'].forEach(function(k, i) {
-                p[k] = inputs[i] ? inputs[i].value : '';
-            });
-            if (Object.values(p).some(function(v) {
-                return v.trim()
-            }))
+            var prenomDiv = row.querySelector('.interv-prenom-edit');
+            var p = {
+                prenom: prenomDiv ? prenomDiv.textContent.trim() : '',
+                nom: inputs[0] ? inputs[0].value : '',
+                fonction: inputs[1] ? inputs[1].value : '',
+                entreprise: inputs[2] ? inputs[2].value : ''
+            };
+            if (Object.values(p).some(function(v) { return v.trim(); }))
                 d.intervenants.push(p);
         });
         // Sauvegarder les URLs des fichiers uploadés
@@ -2862,10 +2886,11 @@
                     addRow();
                 var row = body.querySelectorAll('.interv-row')[i];
                 var inputs = row.querySelectorAll('input');
-                ['prenom', 'nom', 'fonction', 'entreprise'].forEach(function(k, j) {
-                    if (inputs[j] && p[k])
-                        inputs[j].value = p[k];
-                });
+                var prenomDiv = row.querySelector('.interv-prenom-edit');
+                if (prenomDiv && p.prenom) prenomDiv.textContent = p.prenom;
+                if (inputs[0] && p.nom) inputs[0].value = p.nom;
+                if (inputs[1] && p.fonction) inputs[1].value = p.fonction;
+                if (inputs[2] && p.entreprise) inputs[2].value = p.entreprise;
             });
         }
         // Restaurer les fichiers uploadés
@@ -3342,7 +3367,7 @@
         var rows = document.querySelectorAll('#intervenantsBody .interv-row');
         rows.forEach(function(row) {
             var inputs = row.querySelectorAll('input');
-            var prenom = inputs[0] ? inputs[0].value.trim() : '';
+            var prenomDiv = row.querySelector('.interv-prenom-edit'); var prenom = prenomDiv ? prenomDiv.textContent.trim() : (inputs[0] ? inputs[0].value.trim() : '');
             var nom    = inputs[1] ? inputs[1].value.trim() : '';
             var full = (prenom + ' ' + nom).trim();
             if (full && !names.includes(full)) names.push(full);
@@ -3633,12 +3658,15 @@
     // ── Autocomplétion intervenants depuis carnet_studio ──────
     function attachAutocomplete(row) {
         var inputs = row.querySelectorAll('input');
-        var prenomInput = inputs[0];
-        if (!prenomInput || prenomInput._acAttached) return;
-        prenomInput._acAttached = true;
+        // Le champ prénom est maintenant un div contenteditable
+        var prenomEl = row.querySelector('.interv-prenom-edit');
+        if (!prenomEl || prenomEl._acAttached) return;
+        prenomEl._acAttached = true;
+
+        // Autres inputs : désactiver autocomplete natif
         row.querySelectorAll('input').forEach(function(inp) {
             inp.setAttribute('autocomplete', 'off');
-            inp.setAttribute('name', 'studio_field_' + Math.random().toString(36).slice(2));
+            inp.setAttribute('name', 'studio_' + Math.random().toString(36).slice(2));
         });
 
         var wrap = document.createElement('div');
@@ -3674,11 +3702,12 @@
                 item.innerHTML = avatar + '<div class="iac-info"><span class="iac-name">' + (c.prenom||'') + ' ' + (c.nom||'') + '</span><span class="iac-sub">' + sub + '</span></div>';
                 item.addEventListener('mousedown', function(e) {
                     e.preventDefault();
+                    // Remplir le div contenteditable prénom
+                    if (prenomEl) prenomEl.textContent = c.prenom || '';
                     var rowInputs = row.querySelectorAll('input');
-                    if (rowInputs[0]) rowInputs[0].value = c.prenom || '';
-                    if (rowInputs[1]) rowInputs[1].value = c.nom || '';
-                    if (rowInputs[2]) rowInputs[2].value = c.fonction || '';
-                    if (rowInputs[3]) rowInputs[3].value = c.entreprise || '';
+                    if (rowInputs[0]) rowInputs[0].value = c.nom || '';
+                    if (rowInputs[1]) rowInputs[1].value = c.fonction || '';
+                    if (rowInputs[2]) rowInputs[2].value = c.entreprise || '';
                     wrap.innerHTML = '';
                     if (typeof ssRefresh === 'function') ssRefresh();
                     if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
@@ -3710,11 +3739,10 @@
             wrap.appendChild(box);
         }
 
-        prenomInput.addEventListener('input', function() {
-            var q = prenomInput.value.trim();
+        prenomEl.addEventListener('input', function() {
+            var q = (prenomEl.textContent || '').trim();
             if (q.length < 1) { wrap.innerHTML = ''; return; }
-            // Positionner le wrap sous l'input
-            var rect = prenomInput.getBoundingClientRect();
+            var rect = prenomEl.getBoundingClientRect();
             wrap.style.top = (rect.bottom + 2) + 'px';
             wrap.style.left = rect.left + 'px';
             wrap.style.width = Math.max(rect.width, 240) + 'px';
@@ -3729,8 +3757,13 @@
             showDropdown(matches, q);
         });
 
-        prenomInput.addEventListener('blur', function() {
+        prenomEl.addEventListener('blur', function() {
             setTimeout(function(){ wrap.innerHTML = ''; }, 200);
+        });
+
+        // Empêcher les retours à la ligne dans contenteditable
+        prenomEl.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); prenomEl.blur(); }
         });
     }
 
@@ -3793,7 +3826,7 @@
         var rows = body.querySelectorAll('.interv-row');
         rows.forEach(function(row) {
             var inputs = row.querySelectorAll('input');
-            var prenom = inputs[0] ? inputs[0].value.trim() : '';
+            var prenomDiv = row.querySelector('.interv-prenom-edit'); var prenom = prenomDiv ? prenomDiv.textContent.trim() : (inputs[0] ? inputs[0].value.trim() : '');
             var nom    = inputs[1] ? inputs[1].value.trim() : '';
             var fonc   = inputs[2] ? inputs[2].value.trim() : '';
             var ent    = inputs[3] ? inputs[3].value.trim() : '';
@@ -4494,7 +4527,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v116 — 10/04/2026 09:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v117 — 10/04/2026 17:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4538,6 +4571,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v116 — 10/04/2026 09:00</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v117 — 10/04/2026 17:00</div>
 </body>
 </html>
