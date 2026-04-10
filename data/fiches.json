@@ -47,10 +47,16 @@
         "nom": "Thomas",
         "fonction": "Opérateur",
         "entreprise": "CIC"
+      },
+      {
+        "prenom": "vin",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-10T15:30:15.759Z",
+    "updatedAt": "2026-04-10T15:30:19.905Z",
     "uploads": {}
   },
   "1771401928693": {
