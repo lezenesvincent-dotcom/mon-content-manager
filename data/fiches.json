@@ -89,16 +89,9 @@
       "synthes": true
     },
     "application": "ZOOM",
-    "intervenants": [
-      {
-        "prenom": "VINCENT",
-        "nom": "",
-        "fonction": "",
-        "entreprise": ""
-      }
-    ],
+    "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-04-10T14:32:26.692Z",
+    "updatedAt": "2026-04-10T14:32:30.220Z",
     "uploads": {}
   }
 }
