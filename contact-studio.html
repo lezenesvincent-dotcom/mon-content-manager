@@ -3550,12 +3550,10 @@
     }
 
     function ssMoveCtrl(dx, dy) {
-        var step = parseFloat(document.getElementById('ssCtrlMoveStep')?.value || 5);
         var off = SS_CTRL_OFFSETS[ss_selectedCtrl];
         if (!off) return;
-        off.dx += dx * (step / 5);
-        off.dy += dy * (step / 5);
-        // Mettre à jour le ctrlWrap dans la scène
+        off.dx += dx;
+        off.dy += dy;
         var cw = document.querySelector('[data-ctrl-idx="' + ss_selectedCtrl + '"]');
         if (cw) {
             var pos = SS_POSITIONS[ss_selectedCtrl];
@@ -3941,7 +3939,11 @@
     }
     function ssJoyMove(dx, dy) {
         if (ss_joyMode === 'chaise') { ssMove(dx, dy); }
-        else { ssMoveCtrl(dx * 5, dy * 5); }
+        else {
+            ss_selectedCtrl = ss_selectedSlot;
+            var step = parseFloat(document.getElementById('ssMoveStep')?.value || 1) * 10;
+            ssMoveCtrl(dx * step, dy * step);
+        }
     }
 
     function ssMove(dx, dy) {
@@ -4515,7 +4517,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v120 — 10/04/2026 17:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v121 — 10/04/2026 18:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4559,6 +4561,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v120 — 10/04/2026 17:45</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v121 — 10/04/2026 18:00</div>
 </body>
 </html>
