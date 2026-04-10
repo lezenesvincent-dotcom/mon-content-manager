@@ -91,14 +91,14 @@
     "application": "ZOOM",
     "intervenants": [
       {
-        "prenom": "A",
+        "prenom": "ARNAUD",
         "nom": "",
         "fonction": "",
         "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-10T14:40:09.329Z",
+    "updatedAt": "2026-04-10T14:40:13.115Z",
     "uploads": {}
   }
 }
