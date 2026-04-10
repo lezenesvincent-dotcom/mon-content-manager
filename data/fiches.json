@@ -91,14 +91,14 @@
     "application": "ZOOM",
     "intervenants": [
       {
-        "prenom": "V",
+        "prenom": "VINC",
         "nom": "",
         "fonction": "",
         "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-10T14:32:23.568Z",
+    "updatedAt": "2026-04-10T14:32:24.967Z",
     "uploads": {}
   }
 }
