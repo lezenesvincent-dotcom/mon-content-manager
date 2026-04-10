@@ -1829,41 +1829,44 @@
 
             <!-- ── Joystick chaises ── -->
             <div class="panel" id="ssJoystickPanel">
-                <div class="section-title" style="margin-bottom:8px;">🎮 Chaises — positionnement</div>
+                <div class="section-title" style="margin-bottom:8px;">🎮 Setup Studio</div>
                 <div class="ss-toolbar">
                     <!-- Slot -->
                     <div class="ss-toolbar-row" style="margin-bottom:6px;flex-wrap:wrap;gap:4px;">
                         <span class="ss-size-label" style="width:100%;">Slot</span>
                         <div class="ss-seat-selector" id="ssSlotSelector" style="flex-wrap:wrap;gap:4px;"></div>
                     </div>
-                    <!-- Joystick + Taille sur même ligne -->
+                    <!-- Mode joystick -->
+                    <div style="display:flex;gap:6px;margin-bottom:8px;">
+                        <button id="ssModeChaise" onclick="ssSetJoyMode('chaise')" style="flex:1;padding:5px;border-radius:8px;border:none;background:rgba(99,102,241,0.7);color:#fff;font-size:9px;font-weight:800;cursor:pointer;">🪑 Chaise</button>
+                        <button id="ssModeSel" onclick="ssSetJoyMode('sel')" style="flex:1;padding:5px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:9px;font-weight:800;cursor:pointer;">📋 Sélecteurs</button>
+                    </div>
+                    <!-- Joystick unique -->
                     <div style="display:flex;gap:12px;align-items:flex-start;">
-                        <!-- Joystick -->
                         <div class="ss-joystick-wrap">
-                            <span class="ss-size-label">Position</span>
+                            <span class="ss-size-label" id="ssJoyModeLabel">Position chaise</span>
                             <div class="ss-joy-row">
                                 <div class="ss-joy-btn ss-joy-center"></div>
-                                <div class="ss-joy-btn" onclick="ssMove(0,-1)" title="Haut">↑</div>
+                                <div class="ss-joy-btn" id="ssJoyUp" onclick="ssJoyMove(0,-1)">↑</div>
                                 <div class="ss-joy-btn ss-joy-center"></div>
                             </div>
                             <div class="ss-joy-row">
-                                <div class="ss-joy-btn" onclick="ssMove(-1,0)" title="Gauche">←</div>
-                                <div class="ss-joy-btn ss-joy-center" style="font-size:9px;color:rgba(255,255,255,0.7);">✛</div>
-                                <div class="ss-joy-btn" onclick="ssMove(1,0)" title="Droite">→</div>
+                                <div class="ss-joy-btn" id="ssJoyLeft" onclick="ssJoyMove(-1,0)">←</div>
+                                <div class="ss-joy-btn ss-joy-center" style="font-size:9px;" id="ssJoyCtr">✛</div>
+                                <div class="ss-joy-btn" id="ssJoyRight" onclick="ssJoyMove(1,0)">→</div>
                             </div>
                             <div class="ss-joy-row">
                                 <div class="ss-joy-btn ss-joy-center"></div>
-                                <div class="ss-joy-btn" onclick="ssMove(0,1)" title="Bas">↓</div>
+                                <div class="ss-joy-btn" id="ssJoyDown" onclick="ssJoyMove(0,1)">↓</div>
                                 <div class="ss-joy-btn ss-joy-center"></div>
                             </div>
                         </div>
-                        <!-- Taille + Pas -->
                         <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
-                            <div class="ss-size-wrap">
+                            <div class="ss-size-wrap" id="ssTailleWrap">
                                 <span class="ss-size-label">Taille</span>
                                 <div class="ss-size-btns">
-                                    <div class="ss-size-btn" onclick="ssResize(-1)" title="Réduire">−</div>
-                                    <div class="ss-size-btn" onclick="ssResize(1)" title="Agrandir">+</div>
+                                    <div class="ss-size-btn" onclick="ssResize(-1)">−</div>
+                                    <div class="ss-size-btn" onclick="ssResize(1)">+</div>
                                 </div>
                                 <span class="ss-pos-display" id="ssSizeDisplay">72px</span>
                             </div>
@@ -1881,58 +1884,16 @@
                     </div>
                     <!-- Save / Reset -->
                     <div style="display:flex;gap:6px;margin-top:8px;">
-                        <button class="ss-save-btn" id="ssSaveBtn" onclick="ssSavePositions()" style="flex:1;">
-                            💾 Sauvegarder
-                        </button>
-                        <button class="ss-save-btn" style="flex:1;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.88);box-shadow:none;" onclick="ssResetPositions()">
-                            ↺ Réinit
-                        </button>
+                        <button class="ss-save-btn" id="ssSaveBtn" onclick="ssSavePositions()" style="flex:1;">💾 Sauvegarder</button>
+                        <button class="ss-save-btn" style="flex:1;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.88);box-shadow:none;" onclick="ssResetPositions()">↺ Réinit</button>
                     </div>
                     <!-- Selects P1→P8 -->
                     <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:8px;">
                         <span class="ss-size-label" style="display:block;margin-bottom:6px;">Intervenants par position</span>
                         <div id="ssSidebarSelects"></div>
                     </div>
-
-                    <!-- Joystick cartouches -->
-                    <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:8px;">
-                        <span class="ss-size-label" style="display:block;margin-bottom:6px;">Position des cartouches</span>
-                        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;" id="ssCtrlSlotSelector"></div>
-                        <div style="display:flex;gap:10px;align-items:flex-start;">
-                            <div class="ss-joystick-wrap">
-                                <span class="ss-size-label">Déplacer</span>
-                                <div class="ss-joy-row">
-                                    <div class="ss-joy-btn ss-joy-center"></div>
-                                    <div class="ss-joy-btn" onclick="ssMoveCtrl(0,-5)" title="Haut" style="background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.3);">↑</div>
-                                    <div class="ss-joy-btn ss-joy-center"></div>
-                                </div>
-                                <div class="ss-joy-row">
-                                    <div class="ss-joy-btn" onclick="ssMoveCtrl(-5,0)" title="Gauche" style="background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.3);">←</div>
-                                    <div class="ss-joy-btn ss-joy-center" style="font-size:9px;color:rgba(167,139,250,0.4);">✛</div>
-                                    <div class="ss-joy-btn" onclick="ssMoveCtrl(5,0)" title="Droite" style="background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.3);">→</div>
-                                </div>
-                                <div class="ss-joy-row">
-                                    <div class="ss-joy-btn ss-joy-center"></div>
-                                    <div class="ss-joy-btn" onclick="ssMoveCtrl(0,5)" title="Bas" style="background:rgba(167,139,250,0.2);border-color:rgba(167,139,250,0.3);">↓</div>
-                                    <div class="ss-joy-btn ss-joy-center"></div>
-                                </div>
-                            </div>
-                            <div style="display:flex;flex-direction:column;gap:4px;">
-                                <span class="ss-size-label">Pas</span>
-                                <select class="ss-step-select" id="ssCtrlMoveStep" style="width:100%;">
-                                    <option value="2">2px</option>
-                                    <option value="5" selected>5px</option>
-                                    <option value="10">10px</option>
-                                    <option value="20">20px</option>
-                                </select>
-                                <button class="ss-save-btn" onclick="ssResetCtrlOffsets()" style="margin-top:4px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.88);box-shadow:none;font-size:9px;padding:4px 8px;">↺ Reset</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-
-        </div>
 
         <!-- RIGHT MAIN AREA -->
         <div class="main-area">
@@ -3927,6 +3888,41 @@
         });
     }
 
+    // ── Mode joystick unique (chaise / sélecteurs) ──────────
+    var ss_joyMode = 'chaise'; // 'chaise' ou 'sel'
+
+    function ssSetJoyMode(mode) {
+        ss_joyMode = mode;
+        var btnChaise = document.getElementById('ssModeChaise');
+        var btnSel = document.getElementById('ssModeSel');
+        var label = document.getElementById('ssJoyModeLabel');
+        var tailleWrap = document.getElementById('ssTailleWrap');
+        var btns = ['ssJoyUp','ssJoyDown','ssJoyLeft','ssJoyRight','ssJoyCtr'];
+        if (mode === 'chaise') {
+            if (btnChaise) { btnChaise.style.background = 'rgba(99,102,241,0.7)'; btnChaise.style.color = '#fff'; }
+            if (btnSel) { btnSel.style.background = 'rgba(255,255,255,0.08)'; btnSel.style.color = 'rgba(255,255,255,0.5)'; }
+            if (label) label.textContent = 'Position chaise';
+            if (tailleWrap) tailleWrap.style.display = 'flex';
+            btns.forEach(function(id){ var b = document.getElementById(id); if(b){ b.style.background=''; b.style.borderColor=''; } });
+        } else {
+            if (btnSel) { btnSel.style.background = 'rgba(16,185,129,0.6)'; btnSel.style.color = '#fff'; }
+            if (btnChaise) { btnChaise.style.background = 'rgba(255,255,255,0.08)'; btnChaise.style.color = 'rgba(255,255,255,0.5)'; }
+            if (label) label.textContent = 'Position sélecteurs';
+            if (tailleWrap) tailleWrap.style.display = 'none';
+            btns.forEach(function(id){ var b = document.getElementById(id); if(b){ b.style.background='rgba(16,185,129,0.2)'; b.style.borderColor='rgba(16,185,129,0.4)'; } });
+        }
+    }
+
+    function ssJoyMove(dx, dy) {
+        if (ss_joyMode === 'chaise') {
+            ssMove(dx, dy);
+        } else {
+            var step = parseFloat(document.getElementById('ssMoveStep')?.value || 1);
+            ssMoveCtrl(dx * step * 5, dy * step * 5);
+        }
+    }
+    // ──────────────────────────────────────────────────────────
+
     function ssMove(dx, dy) {
         var step = parseFloat(document.getElementById('ssMoveStep')?.value || 1);
         var pos = SS_POSITIONS[ss_selectedSlot];
@@ -4498,7 +4494,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v116 — 10/04/2026 16:50</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v116 — 10/04/2026 09:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4542,6 +4538,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v116 — 10/04/2026 16:50</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v116 — 10/04/2026 09:00</div>
 </body>
 </html>
