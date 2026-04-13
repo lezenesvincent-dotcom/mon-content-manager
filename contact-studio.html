@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-04-13 15:45:00 -->
+    <!-- deploy: 2026-04-13 16:00:00 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -3619,14 +3619,9 @@
 
     function ssRefresh() {
         var names = ssGetIntervenants();
-        var selects = document.querySelectorAll('#ssSidebarSelects .ss-name-select');
-        selects.forEach(function(sel, i) {
-            var current = ssData[i] ? ssData[i].name : '';
-            sel.innerHTML = names.map(function(n) {
-                return '<option value="' + n + '"' + (current === n ? ' selected' : '') + '>' + n + '</option>';
-            }).join('');
-        });
-        if (selects.length === 0) ssRenderSidebarSelects(names);
+        // Toujours re-rendre les sélecteurs sidebar pour refléter les nouveaux intervenants
+        ssRenderSidebarSelects(names);
+        ssRenderSeats();
     }
 
     // Init au chargement
@@ -4618,7 +4613,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v132 — 13/04/2026 15:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v133 — 13/04/2026 16:00</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4662,6 +4657,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v132 — 13/04/2026 15:45</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v133 — 13/04/2026 16:00</div>
 </body>
 </html>
