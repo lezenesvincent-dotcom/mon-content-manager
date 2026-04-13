@@ -548,5 +548,18 @@
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
     "photo": ""
+  },
+  {
+    "firstName": "Damien",
+    "lastName": "Grouselle",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "id": "c_1776084746747",
+    "photos": [
+      "contacts-photos/c_1776084746747-1.png"
+    ],
+    "photo": "contacts-photos/c_1776084746747-1.png"
   }
 ]
