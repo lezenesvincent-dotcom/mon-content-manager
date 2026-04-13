@@ -41,10 +41,16 @@
         "nom": "Palliez",
         "fonction": "Économiste",
         "entreprise": "CIC Corporate & Institutional Banking"
+      },
+      {
+        "prenom": "da",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T14:44:47.300Z",
+    "updatedAt": "2026-04-13T14:45:06.373Z",
     "uploads": {}
   },
   "1771401928693": {
