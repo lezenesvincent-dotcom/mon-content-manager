@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-04-13 15:15:00 -->
+    <!-- deploy: 2026-04-13 15:45:00 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -3837,6 +3837,7 @@
             '<div class="carnet-modal-field"><label>Entreprise</label><input id="cm_entreprise" placeholder="ex: CIC"></div>' +
             '<div class="carnet-modal-field"><label>Téléphone</label><input id="cm_tel" placeholder="06 00 00 00 00"></div>' +
             '<div class="carnet-modal-field"><label>Email</label><input id="cm_email" placeholder="email@exemple.com"></div>' +
+            '<div class="carnet-modal-field"><label>Photo URL</label><input id="cm_photo" placeholder="https://...nom-prenom.png"></div>' +
             '<div class="carnet-modal-actions">' +
                 '<button class="carnet-modal-btn cancel" id="cm_cancel">Annuler</button>' +
                 '<button class="carnet-modal-btn confirm" id="cm_confirm">✅ Créer la fiche</button>' +
@@ -3854,16 +3855,18 @@
             var ent = overlay.querySelector('#cm_entreprise').value.trim();
             var tel = overlay.querySelector('#cm_tel').value.trim();
             var email = overlay.querySelector('#cm_email').value.trim();
+            var photo = overlay.querySelector('#cm_photo').value.trim();
             if (!p && !n) { showToast('⚠️ Prénom ou nom requis'); return; }
             var carnet = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
-            carnet.push({ prenom: p, nom: n, fonction: f, entreprise: ent, tel: tel, email: email, source: 'contact-studio', date: new Date().toISOString() });
+            carnet.push({ prenom: p, nom: n, fonction: f, entreprise: ent, tel: tel, email: email, photo: photo, source: 'contact-studio', date: new Date().toISOString() });
             localStorage.setItem('carnet_studio', JSON.stringify(carnet));
             if (targetRow) {
+                var prenomDiv = targetRow.querySelector('.interv-prenom-edit');
                 var rowInputs = targetRow.querySelectorAll('input');
-                if (rowInputs[0]) rowInputs[0].value = p;
-                if (rowInputs[1]) rowInputs[1].value = n;
-                if (rowInputs[2]) rowInputs[2].value = f;
-                if (rowInputs[3]) rowInputs[3].value = ent;
+                if (prenomDiv) prenomDiv.textContent = p;
+                if (rowInputs[0]) rowInputs[0].value = n;
+                if (rowInputs[1]) rowInputs[1].value = f;
+                if (rowInputs[2]) rowInputs[2].value = ent;
             }
             showToast('✅ Fiche créée pour ' + p + ' ' + n);
             if (typeof scheduleAutoSave === 'function') scheduleAutoSave();
@@ -4615,7 +4618,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v130 — 13/04/2026 15:15</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v132 — 13/04/2026 15:45</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4659,6 +4662,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v130 — 13/04/2026 15:15</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v132 — 13/04/2026 15:45</div>
 </body>
 </html>
