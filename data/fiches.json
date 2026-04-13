@@ -167,10 +167,16 @@
         "nom": "",
         "fonction": "",
         "entreprise": ""
+      },
+      {
+        "prenom": "d",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T13:58:15.356Z",
+    "updatedAt": "2026-04-13T13:58:26.223Z",
     "uploads": {}
   },
   "1776069403448": {
