@@ -143,16 +143,10 @@
         "nom": "",
         "fonction": "",
         "entreprise": ""
-      },
-      {
-        "prenom": "ARNAUD",
-        "nom": "",
-        "fonction": "",
-        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:25:03.354Z",
+    "updatedAt": "2026-04-13T08:25:07.171Z",
     "uploads": {}
   }
 }
