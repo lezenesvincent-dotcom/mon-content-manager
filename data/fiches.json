@@ -137,10 +137,16 @@
         "nom": "",
         "fonction": "",
         "entreprise": ""
+      },
+      {
+        "prenom": "arnaud",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:15:52.456Z",
+    "updatedAt": "2026-04-13T08:15:59.314Z",
     "uploads": {}
   }
 }
