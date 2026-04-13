@@ -187,14 +187,14 @@
     "application": null,
     "intervenants": [
       {
-        "prenom": "ar",
-        "nom": "",
-        "fonction": "",
-        "entreprise": ""
+        "prenom": "Arnaud",
+        "nom": "Palliez",
+        "fonction": "Économiste",
+        "entreprise": "CIC Corporate & Institutional Banking"
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:37:18.671Z",
+    "updatedAt": "2026-04-13T08:37:20.637Z",
     "uploads": {}
   }
 }
