@@ -3420,7 +3420,8 @@
             avatarEl.className = 'ss-seat-avatar';
             avatarEl.style.cssText = 'position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 8px rgba(0,0,0,0.5);background:rgba(99,102,241,0.5);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;pointer-events:none;z-index:10;';
             if (seat.name && seat.name !== '— vide —') {
-                var carnet = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
+                var carnetStudio = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
+                var carnet = CARNET_CONTACTS.concat(carnetStudio);
                 var seatNameLower = seat.name.trim().toLowerCase();
                 var contact = carnet.find(function(c) {
                     var full = ((c.prenom||'').trim() + ' ' + (c.nom||'').trim()).trim().toLowerCase();
@@ -3678,7 +3679,7 @@
         document.body.appendChild(wrap);
 
         // Contacts du vrai carnet (carnet.html) avec photos
-        var CARNET_CONTACTS = [
+        CARNET_CONTACTS = [
             {prenom:'Christian',nom:'Devismes',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/christian-devismes.png'},
             {prenom:'Hervé',nom:'Drouet',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/herve-drouet.png'},
             {prenom:'Eric',nom:'Ravary',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/eric-ravary.png'},
@@ -3889,6 +3890,9 @@
     // ──────────────────────────────────────────────────────────
 
     // ══ JOYSTICK SETUP STUDIO ══════════════════════════════════
+    // Contacts globaux du carnet CIC (accessible depuis ssRenderSeats)
+    var CARNET_CONTACTS = [];
+
     var ss_selectedSlot = 0;
     var ss_seatSizes = [72,72,72,72,72,72,72,72]; // taille px par slot
     var ss_selectedCtrl = 0; // slot sélectionné pour déplacement cartouches
@@ -4552,7 +4556,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v125 — 13/04/2026 10:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v126 — 13/04/2026 11:15</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4596,6 +4600,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v125 — 13/04/2026 10:45</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v126 — 13/04/2026 11:15</div>
 </body>
 </html>
