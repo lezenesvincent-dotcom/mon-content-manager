@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-13T12:44:57Z",
+  "updatedAt": "2026-04-13T12:49:34.556Z",
   "pending": [
     {
       "action": "delete",
@@ -55,6 +55,14 @@
       "createdAt": "2026-03-27T15:06:53.859Z",
       "status": "done",
       "processedAt": "2026-03-27T15:09:58Z"
+    },
+    {
+      "action": "delete",
+      "originalSubject": "GROUSELLE Damien TR : EIFFAGE - Réunion banque pivot",
+      "originalStart": "2026-04-17T08:30:00Z",
+      "originalEnd": "2026-04-17T10:00:00Z",
+      "createdAt": "2026-04-13T12:49:34.556Z",
+      "status": "pending"
     }
   ]
 }
