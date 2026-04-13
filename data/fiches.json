@@ -32,13 +32,19 @@
     "intervenants": [
       {
         "prenom": "Arnaud",
-        "nom": "Palliez",
-        "fonction": "Économiste",
-        "entreprise": "CIC Corporate & Institutional Banking"
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
+      },
+      {
+        "prenom": "da",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T12:58:53.870Z",
+    "updatedAt": "2026-04-13T12:59:12.368Z",
     "uploads": {}
   },
   "1771401928693": {
