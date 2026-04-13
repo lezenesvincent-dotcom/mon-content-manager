@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-04-13 11:30:00 -->
+    <!-- deploy: 2026-04-13 15:15:00 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -3427,9 +3427,9 @@
             // Avatar
             var avatarEl = document.createElement('div');
             avatarEl.className = 'ss-seat-avatar';
-            var photoOff = SS_PHOTO_OFFSETS[i] || {dx:0, dy:0, size:52};
-            var photoSize = photoOff.size || 52;
-            avatarEl.style.cssText = 'position:absolute;top:' + (-photoSize/2 + photoOff.dy) + 'px;left:calc(50% + ' + photoOff.dx + 'px);transform:translateX(-50%);width:' + photoSize + 'px;height:' + photoSize + 'px;border-radius:50%;overflow:hidden;border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,0.6);background:rgba(99,102,241,0.8);display:flex;align-items:center;justify-content:center;font-size:' + Math.round(photoSize*0.3) + 'px;font-weight:700;color:#fff;pointer-events:none;z-index:10;';
+            var photoOff = SS_PHOTO_OFFSETS[i] || {dx:0, dy:0, size:1};
+            var AVATAR_SIZE = 80; // taille fixe du rond
+            avatarEl.style.cssText = 'position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:' + AVATAR_SIZE + 'px;height:' + AVATAR_SIZE + 'px;border-radius:50%;overflow:hidden;border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,0.6);background:rgba(99,102,241,0.8);display:flex;align-items:center;justify-content:center;font-size:' + Math.round(AVATAR_SIZE*0.3) + 'px;font-weight:700;color:#fff;pointer-events:none;z-index:10;';
             if (seat.name && seat.name !== '— vide —') {
                 var carnetStudio = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
                 var carnet = CARNET_CONTACTS.concat(carnetStudio);
@@ -3443,7 +3443,10 @@
                 if (contact && contact.photo) {
                     var pImg = document.createElement('img');
                     pImg.src = contact.photo;
-                    pImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+                    var photoScale = (SS_PHOTO_OFFSETS[i] && SS_PHOTO_OFFSETS[i].size) ? SS_PHOTO_OFFSETS[i].size : 1;
+                    var photoDx = (SS_PHOTO_OFFSETS[i] && SS_PHOTO_OFFSETS[i].dx) ? SS_PHOTO_OFFSETS[i].dx : 0;
+                    var photoDy = (SS_PHOTO_OFFSETS[i] && SS_PHOTO_OFFSETS[i].dy) ? SS_PHOTO_OFFSETS[i].dy : 0;
+                    pImg.style.cssText = 'width:100%;height:100%;object-fit:cover;transform:scale(' + photoScale + ') translate(' + photoDx + 'px,' + photoDy + 'px);transform-origin:center center;';
                     avatarEl.appendChild(pImg);
                 } else {
                     var nameParts2 = seat.name.trim().split(/\s+/);
@@ -3912,8 +3915,8 @@
         {dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0}
     ];
     var SS_PHOTO_OFFSETS = [
-        {dx:0,dy:0,size:52},{dx:0,dy:0,size:52},{dx:0,dy:0,size:52},{dx:0,dy:0,size:52},
-        {dx:0,dy:0,size:52},{dx:0,dy:0,size:52},{dx:0,dy:0,size:52},{dx:0,dy:0,size:52}
+        {dx:0,dy:0,size:1},{dx:0,dy:0,size:1},{dx:0,dy:0,size:1},{dx:0,dy:0,size:1},
+        {dx:0,dy:0,size:1},{dx:0,dy:0,size:1},{dx:0,dy:0,size:1},{dx:0,dy:0,size:1}
     ];
 
 
@@ -3940,6 +3943,8 @@
                 if (savedOffsets) SS_CTRL_OFFSETS = JSON.parse(savedOffsets);
                 var savedPhotoOffsets = localStorage.getItem('ss_photo_offsets');
                 if (savedPhotoOffsets) SS_PHOTO_OFFSETS = JSON.parse(savedPhotoOffsets);
+                var savedData = localStorage.getItem('ss_data');
+                if (savedData) { var sd = JSON.parse(savedData); sd.forEach(function(d,i){ if(ssData[i]){ ssData[i].name=d.name||''; ssData[i].role=d.role||ssData[i].role; ssData[i].slides=d.slides||ssData[i].slides; } }); }
                 console.log('✅ Positions Setup Studio chargées');
             } catch(e) {}
         }
@@ -4013,25 +4018,28 @@
         }
     }
     function ssMovePhoto(dx, dy) {
-        var step = parseFloat(document.getElementById('ssMoveStep')?.value || 1) * 5;
         var off = SS_PHOTO_OFFSETS[ss_selectedSlot];
         if (!off) return;
-        off.dx += dx * step;
-        off.dy += dy * step;
+        if (!off.dx) off.dx = 0;
+        if (!off.dy) off.dy = 0;
+        off.dx += dx * 3;
+        off.dy += dy * 3;
         ssRenderSeats();
         localStorage.setItem('ss_photo_offsets', JSON.stringify(SS_PHOTO_OFFSETS));
     }
     function ssResizePhoto(delta) {
         var off = SS_PHOTO_OFFSETS[ss_selectedSlot];
         if (!off) return;
-        off.size = Math.max(20, Math.min(120, (off.size || 52) + delta * 8));
+        if (!off.size) off.size = 1;
+        off.size = Math.max(0.5, Math.min(4, off.size + delta * 0.2));
         ssRenderSeats();
         ssUpdatePhotoDisplay();
         localStorage.setItem('ss_photo_offsets', JSON.stringify(SS_PHOTO_OFFSETS));
     }
     function ssUpdatePhotoDisplay() {
         var el = document.getElementById('ssPhotoSizeDisplay');
-        if (el) el.textContent = (SS_PHOTO_OFFSETS[ss_selectedSlot]?.size || 52) + 'px';
+        var off = SS_PHOTO_OFFSETS[ss_selectedSlot];
+        if (el) el.textContent = 'zoom x' + ((off && off.size) ? off.size.toFixed(1) : '1.0');
     }
 
     function ssMove(dx, dy) {
@@ -4089,6 +4097,7 @@
         localStorage.setItem('ss_sizes', JSON.stringify(ss_seatSizes));
         localStorage.setItem('ss_ctrl_offsets', JSON.stringify(SS_CTRL_OFFSETS));
         localStorage.setItem('ss_photo_offsets', JSON.stringify(SS_PHOTO_OFFSETS));
+        localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name, role:d.role, slides:d.slides}; })));
         var btn = document.getElementById('ssSaveBtn');
         if (btn) {
             btn.classList.add('saved');
@@ -4606,7 +4615,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v127 — 13/04/2026 11:30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v130 — 13/04/2026 15:15</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4650,6 +4659,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v127 — 13/04/2026 11:30</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v130 — 13/04/2026 15:15</div>
 </body>
 </html>
