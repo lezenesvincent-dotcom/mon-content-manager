@@ -31,32 +31,14 @@
     "application": null,
     "intervenants": [
       {
-        "prenom": "Arnaud",
-        "nom": "",
-        "fonction": "",
-        "entreprise": ""
-      },
-      {
-        "prenom": "da",
-        "nom": "",
-        "fonction": "",
-        "entreprise": ""
-      },
-      {
         "prenom": "David",
         "nom": "Da Maia",
         "fonction": "",
         "entreprise": "CIC Corporate & Institutional Banking"
-      },
-      {
-        "prenom": "da",
-        "nom": "",
-        "fonction": "",
-        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T14:44:30.948Z",
+    "updatedAt": "2026-04-13T14:44:39.272Z",
     "uploads": {}
   },
   "1771401928693": {
