@@ -41,22 +41,10 @@
         "nom": "Marc",
         "fonction": "Directeur",
         "entreprise": "CIC"
-      },
-      {
-        "prenom": "Tom",
-        "nom": "Thomas",
-        "fonction": "Opérateur",
-        "entreprise": "CIC"
-      },
-      {
-        "prenom": "VIN",
-        "nom": "",
-        "fonction": "",
-        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:38:23.357Z",
+    "updatedAt": "2026-04-13T08:38:33.401Z",
     "uploads": {}
   },
   "1771401928693": {
