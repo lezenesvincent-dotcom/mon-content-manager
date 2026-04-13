@@ -53,10 +53,16 @@
         "nom": "",
         "fonction": "",
         "entreprise": ""
+      },
+      {
+        "prenom": "da",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T13:57:24.234Z",
+    "updatedAt": "2026-04-13T13:57:29.832Z",
     "uploads": {}
   },
   "1771401928693": {
