@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-04-13 16:00:00 -->
+    <!-- deploy: 2026-04-13 16:15:00 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -3721,6 +3721,7 @@
             {prenom:'Nicolas',nom:'Haese',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/nicolas-haese.png'},
             {prenom:'Stéphane',nom:'Leandri',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/stephane-leandri.png'},
             {prenom:'William',nom:'Honvo',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/william-honvo.png'},
+            {prenom:'Damien',nom:'Grouselle',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/c_1776084746747-1.png'},
         ];
 
         function getCarnet() {
@@ -3904,6 +3905,23 @@
     // ══ JOYSTICK SETUP STUDIO ══════════════════════════════════
     // Contacts globaux du carnet CIC (accessible depuis ssRenderSeats)
     var CARNET_CONTACTS = [];
+    // Charger contacts.json depuis GitHub pour avoir tous les contacts avec photos
+    (function loadCarnetContacts() {
+        fetch('https://raw.githubusercontent.com/lezenesvincent-dotcom/mon-content-manager/main/contacts.json', {cache:'no-cache'})
+            .then(function(r){ return r.json(); })
+            .then(function(data) {
+                CARNET_CONTACTS = data.map(function(c) {
+                    return {
+                        prenom: c.firstName || '',
+                        nom: c.lastName || '',
+                        fonction: c.function || '',
+                        entreprise: c.company || '',
+                        photo: c.photo ? 'https://lezenesvincent-dotcom.github.io/mon-content-manager/' + c.photo : ''
+                    };
+                });
+            })
+            .catch(function(){ /* fallback sur CARNET_CONTACTS hardcodés */ });
+    })();
 
     var ss_selectedSlot = 0;
     var ss_seatSizes = [72,72,72,72,72,72,72,72];
@@ -4613,7 +4631,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v133 — 13/04/2026 16:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v134 — 13/04/2026 16:15</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4657,6 +4675,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v133 — 13/04/2026 16:00</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v134 — 13/04/2026 16:15</div>
 </body>
 </html>
