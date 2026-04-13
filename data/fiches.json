@@ -29,9 +29,16 @@
       "synthes": true
     },
     "application": null,
-    "intervenants": [],
+    "intervenants": [
+      {
+        "prenom": "ar",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
+      }
+    ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:59:41.281Z",
+    "updatedAt": "2026-04-13T08:59:50.700Z",
     "uploads": {}
   },
   "1771401928693": {
