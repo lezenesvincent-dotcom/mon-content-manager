@@ -53,10 +53,16 @@
         "nom": "Royère",
         "fonction": "",
         "entreprise": "CIC Corporate & Institutional Banking"
+      },
+      {
+        "prenom": "VIN",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T15:11:00.568Z",
+    "updatedAt": "2026-04-13T15:11:04.976Z",
     "uploads": {}
   },
   "1771401928693": {
