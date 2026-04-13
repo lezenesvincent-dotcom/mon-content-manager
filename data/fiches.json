@@ -53,10 +53,16 @@
         "nom": "",
         "fonction": "",
         "entreprise": ""
+      },
+      {
+        "prenom": "ar",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:41:03.757Z",
+    "updatedAt": "2026-04-13T08:41:06.228Z",
     "uploads": {}
   },
   "1771401928693": {
