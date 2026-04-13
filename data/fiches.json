@@ -35,10 +35,16 @@
         "nom": "Da Maia",
         "fonction": "",
         "entreprise": "CIC Corporate & Institutional Banking"
+      },
+      {
+        "prenom": "ar",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T14:44:39.272Z",
+    "updatedAt": "2026-04-13T14:44:42.559Z",
     "uploads": {}
   },
   "1771401928693": {
