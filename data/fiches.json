@@ -29,16 +29,9 @@
       "synthes": true
     },
     "application": null,
-    "intervenants": [
-      {
-        "prenom": "arnaud",
-        "nom": "Franck",
-        "fonction": "Opérateur",
-        "entreprise": "CIC"
-      }
-    ],
+    "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:55:47.016Z",
+    "updatedAt": "2026-04-13T08:55:49.986Z",
     "uploads": {}
   },
   "1771401928693": {
