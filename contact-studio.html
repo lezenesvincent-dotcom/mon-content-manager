@@ -1862,6 +1862,7 @@
                     <div style="display:flex;gap:6px;margin-bottom:8px;">
                         <button id="ssModeChaise" onclick="ssSetJoyMode('chaise')" style="flex:1;padding:5px;border-radius:8px;border:none;background:rgba(99,102,241,0.7);color:#fff;font-size:9px;font-weight:800;cursor:pointer;">🪑 Chaise</button>
                         <button id="ssModeSel" onclick="ssSetJoyMode('sel')" style="flex:1;padding:5px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:9px;font-weight:800;cursor:pointer;">📋 Sélecteurs</button>
+                        <button id="ssModePhoto" onclick="ssSetJoyMode('photo')" style="flex:1;padding:5px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:9px;font-weight:800;cursor:pointer;">📸 Photo</button>
                     </div>
                     <!-- Joystick unique -->
                     <div style="display:flex;gap:12px;align-items:flex-start;">
@@ -1891,6 +1892,14 @@
                                     <div class="ss-size-btn" onclick="ssResize(1)">+</div>
                                 </div>
                                 <span class="ss-pos-display" id="ssSizeDisplay">72px</span>
+                            </div>
+                            <div class="ss-size-wrap" id="ssPhotoTailleWrap" style="display:none;">
+                                <span class="ss-size-label">Taille photo</span>
+                                <div class="ss-size-btns">
+                                    <div class="ss-size-btn" onclick="ssResizePhoto(-1)">−</div>
+                                    <div class="ss-size-btn" onclick="ssResizePhoto(1)">+</div>
+                                </div>
+                                <span class="ss-pos-display" id="ssPhotoSizeDisplay">52px</span>
                             </div>
                             <div class="ss-step-wrap">
                                 <span class="ss-size-label">Pas</span>
@@ -3418,7 +3427,9 @@
             // Avatar
             var avatarEl = document.createElement('div');
             avatarEl.className = 'ss-seat-avatar';
-            avatarEl.style.cssText = 'position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 8px rgba(0,0,0,0.5);background:rgba(99,102,241,0.5);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;pointer-events:none;z-index:10;';
+            var photoOff = SS_PHOTO_OFFSETS[i] || {dx:0, dy:0, size:52};
+            var photoSize = photoOff.size || 52;
+            avatarEl.style.cssText = 'position:absolute;top:' + (-photoSize/2 + photoOff.dy) + 'px;left:calc(50% + ' + photoOff.dx + 'px);transform:translateX(-50%);width:' + photoSize + 'px;height:' + photoSize + 'px;border-radius:50%;overflow:hidden;border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,0.6);background:rgba(99,102,241,0.8);display:flex;align-items:center;justify-content:center;font-size:' + Math.round(photoSize*0.3) + 'px;font-weight:700;color:#fff;pointer-events:none;z-index:10;';
             if (seat.name && seat.name !== '— vide —') {
                 var carnetStudio = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
                 var carnet = CARNET_CONTACTS.concat(carnetStudio);
@@ -3894,12 +3905,17 @@
     var CARNET_CONTACTS = [];
 
     var ss_selectedSlot = 0;
-    var ss_seatSizes = [72,72,72,72,72,72,72,72]; // taille px par slot
-    var ss_selectedCtrl = 0; // slot sélectionné pour déplacement cartouches
+    var ss_seatSizes = [72,72,72,72,72,72,72,72];
+    var ss_selectedCtrl = 0;
     var SS_CTRL_OFFSETS = [
         {dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0},
         {dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0}
     ];
+    var SS_PHOTO_OFFSETS = [
+        {dx:0,dy:0,size:52},{dx:0,dy:0,size:52},{dx:0,dy:0,size:52},{dx:0,dy:0,size:52},
+        {dx:0,dy:0,size:52},{dx:0,dy:0,size:52},{dx:0,dy:0,size:52},{dx:0,dy:0,size:52}
+    ];
+
 
     // Positions par défaut (backup)
     var SS_DEFAULT_POSITIONS = null;
@@ -3922,6 +3938,8 @@
                 if (savedSizes) ss_seatSizes = JSON.parse(savedSizes);
                 var savedOffsets = localStorage.getItem('ss_ctrl_offsets');
                 if (savedOffsets) SS_CTRL_OFFSETS = JSON.parse(savedOffsets);
+                var savedPhotoOffsets = localStorage.getItem('ss_photo_offsets');
+                if (savedPhotoOffsets) SS_PHOTO_OFFSETS = JSON.parse(savedPhotoOffsets);
                 console.log('✅ Positions Setup Studio chargées');
             } catch(e) {}
         }
@@ -3959,30 +3977,61 @@
         ss_joyMode = mode;
         var bc = document.getElementById('ssModeChaise');
         var bs = document.getElementById('ssModeSel');
+        var bp = document.getElementById('ssModePhoto');
         var lbl = document.getElementById('ssJoyModeLabel');
         var tw = document.getElementById('ssTailleWrap');
+        var ptw = document.getElementById('ssPhotoTailleWrap');
         var ids = ['ssJoyUp','ssJoyDown','ssJoyLeft','ssJoyRight','ssJoyCtr'];
+        [bc,bs,bp].forEach(function(b){ if(b){ b.style.background='rgba(255,255,255,0.08)'; b.style.color='rgba(255,255,255,0.5)'; } });
+        ids.forEach(function(id){ var b=document.getElementById(id); if(b){b.style.background='';b.style.borderColor='';} });
+        if (tw) tw.style.display = 'none';
+        if (ptw) ptw.style.display = 'none';
         if (mode === 'chaise') {
             if (bc) { bc.style.background='rgba(99,102,241,0.7)'; bc.style.color='#fff'; }
-            if (bs) { bs.style.background='rgba(255,255,255,0.08)'; bs.style.color='rgba(255,255,255,0.5)'; }
             if (lbl) lbl.textContent = 'Position chaise';
             if (tw) tw.style.display = 'flex';
-            ids.forEach(function(id){ var b=document.getElementById(id); if(b){b.style.background='';b.style.borderColor='';} });
-        } else {
+        } else if (mode === 'sel') {
             if (bs) { bs.style.background='rgba(16,185,129,0.6)'; bs.style.color='#fff'; }
-            if (bc) { bc.style.background='rgba(255,255,255,0.08)'; bc.style.color='rgba(255,255,255,0.5)'; }
             if (lbl) lbl.textContent = 'Position sélecteurs';
-            if (tw) tw.style.display = 'none';
             ids.forEach(function(id){ var b=document.getElementById(id); if(b){b.style.background='rgba(16,185,129,0.2)';b.style.borderColor='rgba(16,185,129,0.4)';} });
+        } else if (mode === 'photo') {
+            if (bp) { bp.style.background='rgba(236,72,153,0.6)'; bp.style.color='#fff'; }
+            if (lbl) lbl.textContent = 'Position photo';
+            if (ptw) ptw.style.display = 'flex';
+            ids.forEach(function(id){ var b=document.getElementById(id); if(b){b.style.background='rgba(236,72,153,0.2)';b.style.borderColor='rgba(236,72,153,0.4)';} });
+            ssUpdatePhotoDisplay();
         }
     }
     function ssJoyMove(dx, dy) {
         if (ss_joyMode === 'chaise') { ssMove(dx, dy); }
-        else {
+        else if (ss_joyMode === 'sel') {
             ss_selectedCtrl = ss_selectedSlot;
             var step = parseFloat(document.getElementById('ssMoveStep')?.value || 1) * 10;
             ssMoveCtrl(dx * step, dy * step);
+        } else if (ss_joyMode === 'photo') {
+            ssMovePhoto(dx, dy);
         }
+    }
+    function ssMovePhoto(dx, dy) {
+        var step = parseFloat(document.getElementById('ssMoveStep')?.value || 1) * 5;
+        var off = SS_PHOTO_OFFSETS[ss_selectedSlot];
+        if (!off) return;
+        off.dx += dx * step;
+        off.dy += dy * step;
+        ssRenderSeats();
+        localStorage.setItem('ss_photo_offsets', JSON.stringify(SS_PHOTO_OFFSETS));
+    }
+    function ssResizePhoto(delta) {
+        var off = SS_PHOTO_OFFSETS[ss_selectedSlot];
+        if (!off) return;
+        off.size = Math.max(20, Math.min(120, (off.size || 52) + delta * 8));
+        ssRenderSeats();
+        ssUpdatePhotoDisplay();
+        localStorage.setItem('ss_photo_offsets', JSON.stringify(SS_PHOTO_OFFSETS));
+    }
+    function ssUpdatePhotoDisplay() {
+        var el = document.getElementById('ssPhotoSizeDisplay');
+        if (el) el.textContent = (SS_PHOTO_OFFSETS[ss_selectedSlot]?.size || 52) + 'px';
     }
 
     function ssMove(dx, dy) {
@@ -4039,6 +4088,7 @@
         localStorage.setItem('ss_positions', JSON.stringify(positions));
         localStorage.setItem('ss_sizes', JSON.stringify(ss_seatSizes));
         localStorage.setItem('ss_ctrl_offsets', JSON.stringify(SS_CTRL_OFFSETS));
+        localStorage.setItem('ss_photo_offsets', JSON.stringify(SS_PHOTO_OFFSETS));
         var btn = document.getElementById('ssSaveBtn');
         if (btn) {
             btn.classList.add('saved');
@@ -4556,7 +4606,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v126 — 13/04/2026 11:15</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v127 — 13/04/2026 11:30</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4600,6 +4650,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v126 — 13/04/2026 11:15</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v127 — 13/04/2026 11:30</div>
 </body>
 </html>
