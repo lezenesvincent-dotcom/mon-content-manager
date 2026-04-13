@@ -65,10 +65,16 @@
         "nom": "",
         "fonction": "",
         "entreprise": ""
+      },
+      {
+        "prenom": "arna",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:42:43.750Z",
+    "updatedAt": "2026-04-13T08:42:48.027Z",
     "uploads": {}
   },
   "1771401928693": {
