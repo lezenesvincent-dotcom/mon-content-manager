@@ -31,7 +31,7 @@
     "application": null,
     "intervenants": [
       {
-        "prenom": "A",
+        "prenom": "ARN",
         "nom": "Vincent",
         "fonction": "Responsable Studio",
         "entreprise": "Cic"
@@ -56,7 +56,7 @@
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:07:18.425Z",
+    "updatedAt": "2026-04-13T08:07:20.185Z",
     "uploads": {}
   },
   "1771401928693": {
