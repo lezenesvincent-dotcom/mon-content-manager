@@ -41,10 +41,16 @@
         "nom": "Marc",
         "fonction": "Directeur",
         "entreprise": "CIC"
+      },
+      {
+        "prenom": "arna",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:38:33.401Z",
+    "updatedAt": "2026-04-13T08:38:37.467Z",
     "uploads": {}
   },
   "1771401928693": {
