@@ -145,14 +145,14 @@
         "entreprise": ""
       },
       {
-        "prenom": "ar",
-        "nom": "",
-        "fonction": "",
-        "entreprise": ""
+        "prenom": "Arnaud",
+        "nom": "Palliez",
+        "fonction": "Économiste",
+        "entreprise": "CIC Corporate & Institutional Banking"
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-13T08:25:11.164Z",
+    "updatedAt": "2026-04-13T08:25:13.501Z",
     "uploads": {}
   }
 }
