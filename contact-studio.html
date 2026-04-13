@@ -2386,8 +2386,12 @@
         d.className = 'interv-row';
         d.innerHTML = '<span class="interv-num">' + rowCount + '</span><button class="interv-del-btn" onclick="deleteRow(this)" title="Supprimer">✕</button><div class="interv-prenom-edit" contenteditable="true" spellcheck="false"></div><input type="text" placeholder="Nom" autocomplete="new-password"><input type="text" placeholder="Fonction" autocomplete="new-password"><input type="text" placeholder="Entreprise" autocomplete="new-password">';
         d.querySelectorAll('input').forEach(function(inp){ inp.addEventListener('blur', capitalizeInput); });
+        // Écouter le contenteditable pour ssRefresh
+        var pe = d.querySelector('.interv-prenom-edit');
+        if (pe) pe.addEventListener('input', function(){ if (typeof ssRefresh === 'function') ssRefresh(); });
         document.getElementById('intervenantsBody').appendChild(d);
         attachAutocomplete(d);
+        if (typeof ssRefresh === 'function') setTimeout(ssRefresh, 50);
     }
 
     function deleteRow(btn) {
@@ -3630,7 +3634,7 @@
                 body._ssListenerAttached = true;
 
                 body.addEventListener('input', function(e) {
-                    if (e.target.tagName === 'INPUT') ssRefresh();
+                    if (e.target.tagName === 'INPUT' || e.target.classList.contains('interv-prenom-edit')) ssRefresh();
                 });
                 body.addEventListener('blur', function(e) {
                     if (e.target.tagName === 'INPUT') syncCarnetFromSynthe();
@@ -3660,7 +3664,8 @@
         var inputs = row.querySelectorAll('input');
         var prenomEl = row.querySelector('.interv-prenom-edit');
         if (!prenomEl) return;
-        if (prenomEl._acAttached) return;
+        // Vérifier que le wrap existe vraiment (pas juste le flag)
+        if (prenomEl._acAttached && prenomEl._acWrap && document.body.contains(prenomEl._acWrap)) return;
         prenomEl._acAttached = true;
         row.querySelectorAll('input').forEach(function(inp) {
             inp.setAttribute('autocomplete', 'off');
@@ -3669,6 +3674,7 @@
 
         var wrap = document.createElement('div');
         wrap.className = 'interv-autocomplete-wrap';
+        prenomEl._acWrap = wrap;
         document.body.appendChild(wrap);
 
         // Contacts du vrai carnet (carnet.html) avec photos
@@ -4546,7 +4552,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v124 — 13/04/2026 10:30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v125 — 13/04/2026 10:45</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4590,6 +4596,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v124 — 13/04/2026 10:30</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v125 — 13/04/2026 10:45</div>
 </body>
 </html>
