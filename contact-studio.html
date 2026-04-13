@@ -3671,8 +3671,53 @@
         wrap.className = 'interv-autocomplete-wrap';
         document.body.appendChild(wrap);
 
+        // Contacts du vrai carnet (carnet.html) avec photos
+        var CARNET_CONTACTS = [
+            {prenom:'Christian',nom:'Devismes',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/christian-devismes.png'},
+            {prenom:'Hervé',nom:'Drouet',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/herve-drouet.png'},
+            {prenom:'Eric',nom:'Ravary',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/eric-ravary.png'},
+            {prenom:'Emmanuel',nom:'Chevalier',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/emmanuel-chevalier.png'},
+            {prenom:'Ebrahim',nom:'Homani',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/ebrahim-homani.png'},
+            {prenom:'Éric',nom:'Lemarié',fonction:'Analyste Biens d\'équipement',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/eric-lemarie.png'},
+            {prenom:'Arnaud',nom:'Palliez',fonction:'Économiste',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/arnaud-palliez.png'},
+            {prenom:'Jean-Luc',nom:'Romain',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/jean-luc-romain.png'},
+            {prenom:'Alexandre',nom:'Plaud',fonction:'Analyste Technique',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/alexandre-plaud.png'},
+            {prenom:'Virginie',nom:'Royère',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/virginie-royere.png'},
+            {prenom:'Arnaud',nom:'Cadart',fonction:'Analyste ESG',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/arnaud-cadart.png'},
+            {prenom:'David',nom:'Da Maia',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/david-da-maia.png'},
+            {prenom:'Pierre',nom:'Chédeville',fonction:'Analyste Construction & Matériaux',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/pierre-chedeville.png'},
+            {prenom:'Dominique',nom:'Descours',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/dominique-descours.png'},
+            {prenom:'Alexandre',nom:'Gérard',fonction:'Analyste Technique',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/alexandre-gerard.png'},
+            {prenom:'Adrien',nom:'Régnier-Laurent',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/adrien-regnier-laurent.png'},
+            {prenom:'Anne-Lise',nom:'Cornen',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/anne-lise-cornen.png'},
+            {prenom:'Benoît',nom:'Rodriguez',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/benoit-rodriguez.png'},
+            {prenom:'Emmanuelle',nom:'Thollon-Pommerol',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/emmanuelle-thollon-pommerol.png'},
+            {prenom:'Eric',nom:'Baron',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/eric-baron.png'},
+            {prenom:'Eva',nom:'Bellin',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/eva-bellin.png'},
+            {prenom:'Eva',nom:'Zarbo',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/eva-zarbo.png'},
+            {prenom:'Fabrissa',nom:'Tassin',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/fabrissa-tassin.png'},
+            {prenom:'François',nom:'Duhen',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/francois-duhen.png'},
+            {prenom:'Françoise',nom:'Étienne',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/francoise-etienne.png'},
+            {prenom:'Gabriel',nom:'Corbassière',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/gabriel-corbassiere.png'},
+            {prenom:'Marc',nom:'Gontran',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/marc-gontran.png'},
+            {prenom:'Martin',nom:'Gicquiau',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/martin-gicquiau.png'},
+            {prenom:'Nicolas',nom:'Bouthors',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/nicolas-bouthors.png'},
+            {prenom:'Nicolas',nom:'Haese',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/nicolas-haese.png'},
+            {prenom:'Stéphane',nom:'Leandri',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/stephane-leandri.png'},
+            {prenom:'William',nom:'Honvo',fonction:'',entreprise:'CIC Corporate & Institutional Banking',photo:'https://lezenesvincent-dotcom.github.io/mon-content-manager/contacts-photos/william-honvo.png'},
+        ];
+
         function getCarnet() {
-            return JSON.parse(localStorage.getItem('carnet_studio') || '[]');
+            var studio = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
+            // Fusionner avec les contacts du vrai carnet (sans doublons)
+            var merged = CARNET_CONTACTS.slice();
+            studio.forEach(function(c) {
+                var exists = merged.some(function(m) {
+                    return m.prenom.toLowerCase() === (c.prenom||'').toLowerCase() && m.nom.toLowerCase() === (c.nom||'').toLowerCase();
+                });
+                if (!exists) merged.push(c);
+            });
+            return merged;
         }
 
         function showDropdown(matches, query) {
@@ -3813,40 +3858,25 @@
     // ──────────────────────────────────────────────────────────
 
     function syncCarnetFromSynthe() {
+        // Ne plus créer automatiquement de fiches — uniquement signaler les doublons
         var body = document.getElementById('intervenantsBody');
         if (!body) return;
         var rows = body.querySelectorAll('.interv-row');
         rows.forEach(function(row) {
             var inputs = row.querySelectorAll('input');
             var prenomDiv2 = row.querySelector('.interv-prenom-edit');
-            var prenom = prenomDiv2 ? prenomDiv2.textContent.trim() : (inputs[0] ? inputs[0].value.trim() : '');
-            var nom    = inputs[0] ? inputs[0].value.trim() : '';
-            var fonc   = inputs[2] ? inputs[2].value.trim() : '';
-            var ent    = inputs[3] ? inputs[3].value.trim() : '';
-            if (!prenom && !nom) return;
+            var prenom = prenomDiv2 ? prenomDiv2.textContent.trim() : '';
+            var nom = inputs[0] ? inputs[0].value.trim() : '';
+            if (!prenom || !nom) return; // Les deux requis
             var full = (prenom + ' ' + nom).trim();
-            // Vérifier dans localStorage carnet
             var carnet = JSON.parse(localStorage.getItem('carnet_studio') || '[]');
             var exists = carnet.find(function(c) {
                 return (c.prenom + ' ' + c.nom).trim().toLowerCase() === full.toLowerCase();
             });
-            if (exists) {
-                // Doublon — afficher alerte discrète une seule fois
-                if (!row._doublonAlerte) {
-                    row._doublonAlerte = true;
-                    showToast('⚠️ ' + full + ' existe déjà dans le Carnet');
-                    row.style.borderLeft = '3px solid rgba(255,180,0,0.7)';
-                    setTimeout(function(){ row.style.borderLeft = ''; row._doublonAlerte = false; }, 4000);
-                }
-            } else if (full.length > 1) {
-                // Ajouter au carnet
-                carnet.push({
-                    prenom: prenom, nom: nom,
-                    fonction: fonc, entreprise: ent,
-                    source: 'contact-studio',
-                    date: new Date().toISOString()
-                });
-                localStorage.setItem('carnet_studio', JSON.stringify(carnet));
+            if (exists && !row._doublonAlerte) {
+                row._doublonAlerte = true;
+                row.style.borderLeft = '3px solid rgba(99,241,99,0.7)';
+                setTimeout(function(){ row.style.borderLeft = ''; row._doublonAlerte = false; }, 2000);
             }
         });
     }
@@ -4516,7 +4546,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v122 — 10/04/2026 18:15</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v124 — 13/04/2026 10:30</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4560,6 +4590,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v122 — 10/04/2026 18:15</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v124 — 13/04/2026 10:30</div>
 </body>
 </html>
