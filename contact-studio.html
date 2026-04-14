@@ -3421,7 +3421,6 @@
             // Avatar
             var avatarEl = document.createElement('div');
             avatarEl.className = 'ss-seat-avatar';
-            var photoOff = SS_PHOTO_OFFSETS[i] || {dx:0, dy:0, size:1};
             var AVATAR_SIZE = 80; // taille fixe du rond
             avatarEl.style.cssText = 'position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:' + AVATAR_SIZE + 'px;height:' + AVATAR_SIZE + 'px;border-radius:50%;overflow:hidden;border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,0.6);background:rgba(99,102,241,0.8);display:flex;align-items:center;justify-content:center;font-size:' + Math.round(AVATAR_SIZE*0.3) + 'px;font-weight:700;color:#fff;pointer-events:none;z-index:10;';
             if (seat.name && seat.name !== '— vide —') {
@@ -3437,7 +3436,9 @@
                 if (contact && contact.photo) {
                     var pImg = document.createElement('img');
                     pImg.src = contact.photo;
-                    var photoOff2 = SS_PHOTO_OFFSETS[i] || {dx:0, dy:0, size:1};
+                    // Lire le preset par nom de contact (pas par slot)
+                    var presetKey = seat.name.trim();
+                    var photoOff2 = SS_PHOTO_PRESETS[presetKey] || {dx:0, dy:0, size:1};
                     var photoScale = photoOff2.size || 1;
                     var photoDx = photoOff2.dx || 0;
                     var photoDy = photoOff2.dy || 0;
@@ -3915,6 +3916,8 @@
         {dx:0,dy:0,size:1},{dx:0,dy:0,size:1},{dx:0,dy:0,size:1},{dx:0,dy:0,size:1},
         {dx:0,dy:0,size:1},{dx:0,dy:0,size:1},{dx:0,dy:0,size:1},{dx:0,dy:0,size:1}
     ];
+    // Presets photo par nom de contact (persist entre slots)
+    var SS_PHOTO_PRESETS = {};
 
 
     // Positions par défaut (backup)
@@ -3941,11 +3944,12 @@
                 var savedPhotoOffsets = localStorage.getItem('ss_photo_offsets');
                 if (savedPhotoOffsets) {
                     var loaded = JSON.parse(savedPhotoOffsets);
-                    // Corriger les anciennes valeurs (size > 4 = ancienne version en px)
                     SS_PHOTO_OFFSETS = loaded.map(function(o) {
                         return { dx: o.dx||0, dy: o.dy||0, size: (o.size && o.size <= 4) ? o.size : 1 };
                     });
                 }
+                var savedPhotoPresets = localStorage.getItem('ss_photo_presets');
+                if (savedPhotoPresets) SS_PHOTO_PRESETS = JSON.parse(savedPhotoPresets);
                 var savedData = localStorage.getItem('ss_data');
                 if (savedData) { var sd = JSON.parse(savedData); sd.forEach(function(d,i){ if(ssData[i]){ ssData[i].name=d.name||''; ssData[i].role=d.role||ssData[i].role; ssData[i].slides=d.slides||ssData[i].slides; } }); }
                 console.log('✅ Positions Setup Studio chargées');
@@ -4023,27 +4027,29 @@
         }
     }
     function ssMovePhoto(dx, dy) {
-        var off = SS_PHOTO_OFFSETS[ss_selectedSlot];
-        if (!off) return;
-        if (!off.dx) off.dx = 0;
-        if (!off.dy) off.dy = 0;
+        var name = ssData[ss_selectedSlot] && ssData[ss_selectedSlot].name;
+        if (!name || name === '— vide —') return;
+        if (!SS_PHOTO_PRESETS[name]) SS_PHOTO_PRESETS[name] = {dx:0, dy:0, size:1};
+        var off = SS_PHOTO_PRESETS[name];
         off.dx += dx * 3;
         off.dy += dy * 3;
         ssRenderSeats();
-        localStorage.setItem('ss_photo_offsets', JSON.stringify(SS_PHOTO_OFFSETS));
+        localStorage.setItem('ss_photo_presets', JSON.stringify(SS_PHOTO_PRESETS));
     }
     function ssResizePhoto(delta) {
-        var off = SS_PHOTO_OFFSETS[ss_selectedSlot];
-        if (!off) return;
-        if (!off.size) off.size = 1;
-        off.size = Math.max(0.5, Math.min(4, off.size + delta * 0.2));
+        var name = ssData[ss_selectedSlot] && ssData[ss_selectedSlot].name;
+        if (!name || name === '— vide —') return;
+        if (!SS_PHOTO_PRESETS[name]) SS_PHOTO_PRESETS[name] = {dx:0, dy:0, size:1};
+        var off = SS_PHOTO_PRESETS[name];
+        off.size = Math.max(0.5, Math.min(4, (off.size || 1) + delta * 0.2));
         ssRenderSeats();
         ssUpdatePhotoDisplay();
-        localStorage.setItem('ss_photo_offsets', JSON.stringify(SS_PHOTO_OFFSETS));
+        localStorage.setItem('ss_photo_presets', JSON.stringify(SS_PHOTO_PRESETS));
     }
     function ssUpdatePhotoDisplay() {
         var el = document.getElementById('ssSizeDisplay');
-        var off = SS_PHOTO_OFFSETS[ss_selectedSlot];
+        var name = ssData[ss_selectedSlot] && ssData[ss_selectedSlot].name;
+        var off = name && name !== '— vide —' && SS_PHOTO_PRESETS[name];
         if (el) el.textContent = 'x' + ((off && off.size) ? off.size.toFixed(1) : '1.0');
     }
 
@@ -4112,6 +4118,7 @@
         localStorage.setItem('ss_sizes', JSON.stringify(ss_seatSizes));
         localStorage.setItem('ss_ctrl_offsets', JSON.stringify(SS_CTRL_OFFSETS));
         localStorage.setItem('ss_photo_offsets', JSON.stringify(SS_PHOTO_OFFSETS));
+        localStorage.setItem('ss_photo_presets', JSON.stringify(SS_PHOTO_PRESETS));
         localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name, role:d.role, slides:d.slides}; })));
         var btn = document.getElementById('ssSaveBtn');
         if (btn) {
@@ -4630,7 +4637,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v143 — 14/04/2026 09:30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v144 — 14/04/2026 09:45</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4674,6 +4681,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v143 — 14/04/2026 09:30</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v144 — 14/04/2026 09:45</div>
 </body>
 </html>
