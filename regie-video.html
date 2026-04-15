@@ -3686,7 +3686,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v90 — 2026-04-09 11:00:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v91 — 2026-04-15 10:00:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -3776,9 +3776,15 @@
       </div>
     </div>
 
-    <!-- Section Titre / Sous-titre -->
+    <!-- Section Titre / Sous-titre / Texte -->
     <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.07);margin-bottom:10px;">
       <div style="font-size:11px;font-weight:700;color:#f5a623;margin-bottom:10px;">📝 TITRE / SOUS-TITRE</div>
+      <!-- Sélecteur TITRE / SOUS-TITRE / TEXTE -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:12px;">
+        <button id="tBtn-titre" onclick="selectTextTarget('titre')" style="padding:7px 0;border:none;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;background:rgba(245,166,35,0.8);color:#fff;">TITRE</button>
+        <button id="tBtn-sous" onclick="selectTextTarget('sous')" style="padding:7px 0;border:none;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);">SOUS-TITRE</button>
+        <button id="tBtn-texte" onclick="selectTextTarget('texte')" style="padding:7px 0;border:none;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);">TEXTE</button>
+      </div>
       <div style="margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;font-size:9px;color:#888;margin-bottom:3px;"><span>Position X</span><span id="hx-val" style="color:#4da8ff;">50</span></div>
         <input id="hx-range" type="range" min="0" max="500" step="5" value="50" style="width:100%;accent-color:#f5a623;" oninput="updateHeaderPos()">
@@ -3786,6 +3792,10 @@
       <div style="margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;font-size:9px;color:#888;margin-bottom:3px;"><span>Position Y</span><span id="hy-val" style="color:#4da8ff;">80</span></div>
         <input id="hy-range" type="range" min="0" max="300" step="5" value="80" style="width:100%;accent-color:#f5a623;" oninput="updateHeaderPos()">
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:#888;margin-bottom:3px;"><span>Scale</span><span id="hs-val" style="color:#4da8ff;">1.0</span></div>
+        <input id="hs-range" type="range" min="0.3" max="3.0" step="0.05" value="1.0" style="width:100%;accent-color:#f5a623;" oninput="updateHeaderPos()">
       </div>
     </div>
 
@@ -3811,6 +3821,38 @@
   var activeSlot = 1;
   var slotColors = ['#f5a623','#4da8ff','#f6a035','#a78bfa'];
   var slotLabels = ['⭐ Slot 1 (Prime)','🔷 Slot 2','🔶 Slot 3','🟣 Slot 4'];
+  var activeTextTarget = 'titre'; // 'titre' | 'sous' | 'texte'
+
+  // État par cible textuelle
+  var textTargetState = {
+    titre: { x: 50, y: 80, s: 1.0 },
+    sous:  { x: 50, y: 80, s: 1.0 },
+    texte: { x: 50, y: 80, s: 1.0 }
+  };
+
+  function selectTextTarget(target) {
+    activeTextTarget = target;
+    var btns = { titre: 'tBtn-titre', sous: 'tBtn-sous', texte: 'tBtn-texte' };
+    for (var k in btns) {
+      var btn = document.getElementById(btns[k]);
+      if (k === target) {
+        btn.style.background = 'rgba(245,166,35,0.8)';
+        btn.style.color = '#fff';
+      } else {
+        btn.style.background = 'rgba(255,255,255,0.08)';
+        btn.style.color = 'rgba(255,255,255,0.5)';
+      }
+    }
+    // Charger les valeurs de la cible sélectionnée dans les sliders
+    var st = textTargetState[target];
+    document.getElementById('hx-range').value = st.x;
+    document.getElementById('hy-range').value = st.y;
+    document.getElementById('hs-range').value = st.s;
+    document.getElementById('hx-val').textContent = st.x;
+    document.getElementById('hy-val').textContent = st.y;
+    document.getElementById('hs-val').textContent = parseFloat(st.s).toFixed(2);
+  }
+
   var slotState = {
     slots: [
       { x: -40, y: 20,  scale: 1.00 },
@@ -3917,17 +3959,32 @@
   function updateHeaderPos() {
     var hx = parseInt(document.getElementById('hx-range').value);
     var hy = parseInt(document.getElementById('hy-range').value);
+    var hs = parseFloat(document.getElementById('hs-range').value);
     var cx = parseInt(document.getElementById('cx-range').value);
     var cy = parseInt(document.getElementById('cy-range').value);
     document.getElementById('hx-val').textContent = hx;
     document.getElementById('hy-val').textContent = hy;
+    document.getElementById('hs-val').textContent = hs.toFixed(2);
     document.getElementById('cx-val').textContent = cx;
     document.getElementById('cy-val').textContent = cy;
-    // Mettre à jour slotState pour inclure les nouvelles valeurs
+    // Sauvegarder dans la cible active
+    textTargetState[activeTextTarget].x = hx;
+    textTargetState[activeTextTarget].y = hy;
+    textTargetState[activeTextTarget].s = hs;
+    // Mettre à jour slotState
     slotState.headerX = hx;
     slotState.headerY = hy;
     slotState.centerX = cx;
     slotState.centerY = cy;
+    slotState.titreX = textTargetState.titre.x;
+    slotState.titreY = textTargetState.titre.y;
+    slotState.titreScale = textTargetState.titre.s;
+    slotState.sousTitreX = textTargetState.sous.x;
+    slotState.sousTitreY = textTargetState.sous.y;
+    slotState.sousTitreScale = textTargetState.sous.s;
+    slotState.texteX = textTargetState.texte.x;
+    slotState.texteY = textTargetState.texte.y;
+    slotState.texteScale = textTargetState.texte.s;
     sendSlotCmd();
   }
 
