@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-15T14:32:38.231Z",
+  "updatedAt": "2026-04-15T14:34:58Z",
   "pending": [
     {
       "action": "delete",
@@ -88,7 +88,8 @@
       "newStart": "07:00",
       "newEnd": "18:00",
       "createdAt": "2026-04-15T14:32:38.231Z",
-      "status": "pending"
+      "status": "error",
+      "processedAt": "2026-04-15T14:34:58Z"
     }
   ]
 }
