@@ -561,5 +561,15 @@
       "contacts-photos/c_1776084746747-1.png"
     ],
     "photo": "contacts-photos/c_1776084746747-1.png"
+  },
+  {
+    "id": "c_1776256146966",
+    "firstName": "Thomas",
+    "lastName": "BARBEAU",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "speciality": "actions",
+    "photo": ""
   }
 ]
