@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-15T14:29:57Z",
+  "updatedAt": "2026-04-15T14:32:38.231Z",
   "pending": [
     {
       "action": "delete",
@@ -77,6 +77,18 @@
       "createdAt": "2026-04-15T09:31:24.258Z",
       "status": "done",
       "processedAt": "2026-04-15T09:34:58Z"
+    },
+    {
+      "action": "edit",
+      "originalSubject": "TOM REPOS",
+      "originalStart": "2026-04-17T05:00:00Z",
+      "originalEnd": "2026-04-17T16:00:00Z",
+      "newSubject": "TOM REPOS",
+      "newDate": "2026-04-17",
+      "newStart": "07:00",
+      "newEnd": "18:00",
+      "createdAt": "2026-04-15T14:32:38.231Z",
+      "status": "pending"
     }
   ]
 }
