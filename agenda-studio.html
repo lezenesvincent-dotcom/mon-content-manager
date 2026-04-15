@@ -265,22 +265,22 @@
         }
         .event-attendee-row {
             display: flex; flex-direction: column; align-items: center; gap: 3px;
-            width: 54px; flex-shrink: 0;
+            width: 80px; flex-shrink: 0;
         }
         .event-attendee-pic {
-            width: 52px; height: 52px; border-radius: 50%;
+            width: 78px; height: 78px; border-radius: 50%;
             overflow: hidden; border: 2px solid rgba(255,255,255,0.85);
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
             background: rgba(99,102,241,0.75);
             display: flex; align-items: center; justify-content: center;
-            font-size: 13px; font-weight: 800; color: #fff;
-            flex-shrink: 0; min-width: 52px; min-height: 52px;
+            font-size: 17px; font-weight: 800; color: #fff;
+            flex-shrink: 0; min-width: 78px; min-height: 78px;
         }
         .event-attendee-pic img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
         .event-attendee-name {
             font-size: 8px; font-weight: 700; color: #fff;
             text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-            text-align: center; line-height: 1.2; width: 54px;
+            text-align: center; line-height: 1.2; width: 80px;
             overflow: hidden; display: block;
         }
 
@@ -1051,25 +1051,30 @@
                 if (heightPx > 42) html += '<div class="event-badge">'+durStr+'</div>';
                 html += '<div class="event-handle bottom"><img src="'+IMG_BASE+'poignee.png" alt=""></div>';
 
-                // Pictos intervenants (si événement assez grand et attendees disponibles)
+                // Pictos intervenants (si événement assez grand)
                 var allAttendees = (ev.reqAttendees || []).concat(ev.optAttendees || []);
-                if (heightPx > 80 && allAttendees.length > 0) {
+                if (heightPx > 80) {
                     // Filtrer la salle (pas un intervenant réel)
                     var realAttendees = allAttendees.filter(function(n) {
                         return !n.toLowerCase().includes('salle') && !n.toLowerCase().includes('victorien') && !n.toLowerCase().includes('studio market');
                     });
+                    // Ajouter intervenants manuels
+                    var evKey2 = (ev.subject||'') + '|' + (ev.start||'');
+                    var manualData2 = JSON.parse(localStorage.getItem('ev_attendees') || '{}');
+                    var manual2 = manualData2[evKey2] || { clients: [], internes: [] };
+                    (manual2.clients || []).forEach(function(n) { if (!realAttendees.includes(n)) realAttendees.push(n); });
+                    (manual2.internes || []).forEach(function(n) { if (!realAttendees.includes(n)) realAttendees.push(n); });
+
+                    html += '<div class="event-attendees">';
                     if (realAttendees.length > 0) {
-                        html += '<div class="event-attendees">';
-                        // En horizontal : nb de pictos selon largeur disponible (environ 52px par picto)
-                        var colWidth = totalCols > 1 ? (widthPct / 100) * 200 : 200; // estimation largeur px
-                        var maxPics = Math.min(realAttendees.length, Math.max(1, Math.floor(colWidth / 50)));
-                        maxPics = Math.min(maxPics, 5); // max 5 pictos
+                        var colWidth = totalCols > 1 ? (widthPct / 100) * 300 : 300;
+                        var maxPics = Math.min(realAttendees.length, Math.max(1, Math.floor(colWidth / 82)));
+                        maxPics = Math.min(maxPics, 5);
                         for (var ai = 0; ai < maxPics; ai++) {
                             var aName = realAttendees[ai];
                             var aContact = findContactByName(aName);
                             var aPhoto = getContactPhoto(aContact);
                             var aInitials = aName.trim().split(/\s+/).map(function(w){return w.charAt(0).toUpperCase();}).slice(0,2).join('');
-                            // Formater le nom : "BARBEAU Thomas" → "Thomas\nBarbeau"
                             var nameParts = aName.trim().split(/\s+/);
                             var dL1 = '', dL2 = '';
                             if (nameParts.length >= 2 && nameParts[0] === nameParts[0].toUpperCase() && nameParts[0].length > 1) {
@@ -1090,10 +1095,12 @@
                             html += '</div>';
                         }
                         if (realAttendees.length > maxPics) {
-                            html += '<div class="event-attendee-row"><div class="event-attendee-pic" style="background:rgba(255,255,255,0.15);font-size:13px;width:52px;height:52px;min-width:52px;min-height:52px">+' + (realAttendees.length - maxPics) + '</div></div>';
+                            html += '<div class="event-attendee-row"><div class="event-attendee-pic" style="background:rgba(255,255,255,0.15);font-size:17px;width:78px;height:78px;min-width:78px;min-height:78px">+' + (realAttendees.length - maxPics) + '</div></div>';
                         }
-                        html += '</div>';
                     }
+                    // Toujours afficher bouton + pour ajouter manuellement (double-clic = modale)
+                    html += '<div class="event-attendee-row" title="Double-cliquez pour ajouter des intervenants"><div class="event-attendee-pic" style="background:rgba(99,102,241,0.25);border:2px dashed rgba(99,102,241,0.5);font-size:22px;color:rgba(150,150,255,0.7);">+</div></div>';
+                    html += '</div>';
                 }
                 el.innerHTML = html;
 
