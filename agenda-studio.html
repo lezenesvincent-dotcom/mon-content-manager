@@ -1,4 +1,4 @@
-<!-- deploy: 2026-04-15 12:00:00 -->
+<!-- deploy: 2026-04-15 14:45:00 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -276,22 +276,43 @@
         .detail-add-result-item { display: flex; align-items: center; gap: 6px; padding: 6px 10px; cursor: pointer; }
         .detail-add-result-item:hover { background: rgba(99,102,241,0.2); }
 
-        /* Popup création contact */
-        .create-contact-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000;
-            display: flex; align-items: center; justify-content: center;
+        /* Popup création contact — même style que carnet.html */
+        .cc-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 2000; backdrop-filter: blur(8px);
+            align-items: center; justify-content: center;
         }
-        .create-contact-popup {
-            background: #1a1d2e; border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 24px 28px; width: 360px; max-width: 90vw;
+        .cc-overlay.visible { display: flex; }
+        .cc-modal {
+            background: rgba(18,20,38,0.95); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px; padding: 28px 32px; width: 420px; max-width: 90vw;
+            backdrop-filter: blur(40px); box-shadow: 0 24px 64px rgba(0,0,0,0.7);
         }
-        .create-contact-popup h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
-        .create-contact-popup label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); display: block; margin-bottom: 4px; margin-top: 12px; }
-        .create-contact-popup input, .create-contact-popup select {
-            width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 10px; padding: 9px 12px; color: #fff; font-size: 13px; outline: none; font-family: inherit;
+        .cc-modal h3 { font-size: 20px; font-weight: 800; margin-bottom: 20px; }
+        .cc-modal .field { margin-bottom: 12px; }
+        .cc-modal .field label { display: block; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .cc-modal .field input, .cc-modal .field select {
+            width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 10px 14px; color: #fff; font-family: inherit;
+            font-size: 14px; outline: none; font-weight: 500;
         }
-        .create-contact-popup .btn-row { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+        .cc-modal .field input:focus { border-color: rgba(0,140,255,0.5); }
+        .cc-modal .field input::placeholder { color: rgba(255,255,255,0.2); }
+        .cc-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .cc-btns button { flex: 1; padding: 11px 16px; border-radius: 12px; border: none; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .cc-btn-cancel { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+        .cc-btn-save { background: linear-gradient(135deg, #0070f3, #0050c8); color: #fff; }
+        .cc-photo-upload { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .cc-photo-preview {
+            width: 72px; height: 72px; border-radius: 10px; background: rgba(255,255,255,0.06);
+            border: 2px dashed rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center;
+            overflow: hidden; cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+        }
+        .cc-photo-preview:hover { border-color: rgba(0,140,255,0.4); }
+        .cc-photo-preview img { width: 100%; height: 100%; object-fit: contain; }
+        .cc-photo-btn { font-size: 11px; color: rgba(0,140,255,0.8); cursor: pointer; padding: 4px 10px; background: rgba(0,140,255,0.08); border: 1px solid rgba(0,140,255,0.15); border-radius: 6px; }
+        .cc-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: cc-spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+        @keyframes cc-spin { to { transform: rotate(360deg); } }
 
         .event-handle {
             position: absolute; left: 50%; transform: translateX(-50%);
@@ -394,7 +415,7 @@
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:6px;left:8px;z-index:9999;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">agenda v6 — 15/04/2026 12:00</div>
+<div style="position:fixed;bottom:6px;left:8px;z-index:9999;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">agenda v7 — 15/04/2026 14:45</div>
 <!-- DOCK START -->
 <nav class="dock-nav"><a href="studio-manager.html" class="dk-home"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Accueil</span></a><div class="dk-sep"></div><a href="regie-video.html" class="dr"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span class="dk-tip">R&eacute;gie</span></a><a href="agenda-studio.html" class="dp dk-act"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="dk-tip">Agenda</span></a><a href="vignettes.html" class="dc"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="2"/><path d="M21 15l-5-5L5 21"/></svg><span class="dk-tip">Vignettes</span></a><a href="creation.html" class="dv"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="dk-tip">Cr&eacute;ation</span></a><a href="manage-ei.html" class="dk"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Manage</span></a><div class="dk-sep"></div><a href="contact-studio.html" class="dg dk-inv"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="dk-tip">Contact</span></a><a href="prestation.html" class="do dk-inv"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="dk-tip">Prestations</span></a><a href="carnet.html" class="dt"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="dk-tip">Carnet</span></a><div class="dk-sep"></div><a href="studio-2027.html" class="dd"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="dk-tip">2027</span></a><a href="studio-alert.html" class="dr"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dk-tip">Alert</span></a><a href="dev-dashboard.html" class="dd"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span class="dk-tip">Dev</span></a></nav>
 <!-- DOCK END -->
@@ -1192,48 +1213,70 @@
         renderDetailAttendees(ev);
     }
 
+    var ccPhotoBase64 = null;
+
+    function ccHandlePhoto(input) {
+        var file = input.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            ccPhotoBase64 = e.target.result;
+            var preview = document.getElementById('ccPhotoPreview');
+            preview.innerHTML = '<img src="'+ccPhotoBase64+'">';
+            document.getElementById('ccPhotoRemove').style.display = '';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function ccRemovePhoto() {
+        ccPhotoBase64 = null;
+        document.getElementById('ccPhotoPreview').innerHTML = '<span style="font-size:20px;opacity:0.3">📷</span>';
+        document.getElementById('ccPhotoRemove').style.display = 'none';
+        document.getElementById('ccPhotoInput').value = '';
+    }
+
     function openCreateContactPopup(fullName) {
-        // Parser "NOM Prénom" ou "Prénom NOM"
         var parts = fullName.trim().split(/\s+/);
         var prenom = '', nom = '';
         if (parts.length >= 2) {
-            // Si tout en majuscules → format EWS "NOM Prénom"
-            if (parts[0] === parts[0].toUpperCase()) {
-                nom = parts[0];
-                prenom = parts.slice(1).join(' ');
+            if (parts[0] === parts[0].toUpperCase() && parts[0].length > 1) {
+                nom = parts[0]; prenom = parts.slice(1).join(' ');
             } else {
-                prenom = parts[0];
-                nom = parts.slice(1).join(' ');
+                prenom = parts[0]; nom = parts.slice(1).join(' ');
             }
-        } else {
-            prenom = fullName;
-        }
+        } else { prenom = fullName; }
         document.getElementById('ccPrenom').value = prenom;
         document.getElementById('ccNom').value = nom;
         document.getElementById('ccFonction').value = '';
         document.getElementById('ccEmail').value = '';
-        document.getElementById('createContactOverlay').style.display = 'flex';
+        document.getElementById('ccEntreprise').value = 'CIC Corporate & Institutional Banking';
+        ccRemovePhoto();
+        document.getElementById('ccSaveBtn').innerHTML = 'Enregistrer';
+        document.getElementById('ccSaveBtn').disabled = false;
+        document.getElementById('createContactOverlay').classList.add('visible');
     }
 
     function closeCreateContactPopup() {
-        document.getElementById('createContactOverlay').style.display = 'none';
+        document.getElementById('createContactOverlay').classList.remove('visible');
     }
 
     async function saveNewContact() {
         var prenom = document.getElementById('ccPrenom').value.trim();
         var nom = document.getElementById('ccNom').value.trim();
         if (!prenom && !nom) return;
+        var btn = document.getElementById('ccSaveBtn');
+        btn.innerHTML = '<span class="cc-spinner"></span>Enregistrement...';
+        btn.disabled = true;
         var newContact = {
             id: 'c_' + Date.now(),
             firstName: prenom,
             lastName: nom,
+            speciality: document.getElementById('ccSpecialite').value,
             function: document.getElementById('ccFonction').value.trim(),
             company: document.getElementById('ccEntreprise').value.trim(),
             email: document.getElementById('ccEmail').value.trim(),
-            speciality: 'actions',
-            photo: ''
+            photo: ccPhotoBase64 || ''
         };
-        // Charger contacts.json, ajouter, sauvegarder
         try {
             var hdrs = { 'Authorization': 'token '+GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' };
             var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/contacts.json', { headers: hdrs });
@@ -1243,16 +1286,15 @@
             var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(contacts, null, 2))));
             await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/contacts.json', {
                 method: 'PUT', headers: hdrs,
-                body: JSON.stringify({ message: 'add contact '+prenom+' '+nom, content: b64, sha: data.sha, branch: 'main' })
+                body: JSON.stringify({ message: 'add '+prenom+' '+nom, content: b64, sha: data.sha, branch: 'main' })
             });
-            // Mettre à jour contactsData local
             contactsData.push(newContact);
             closeCreateContactPopup();
-            // Re-render la modale si ouverte
             if (detailEventData) renderDetailAttendees(detailEventData.ev);
-            alert('✅ Fiche créée pour ' + prenom + ' ' + nom);
         } catch(e) {
-            alert('Erreur lors de la création : ' + e.message);
+            btn.innerHTML = 'Enregistrer';
+            btn.disabled = false;
+            alert('Erreur : ' + e.message);
         }
     }
     // ────────────────────────────────────────────────────────────
@@ -1714,22 +1756,37 @@
 
 <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v39</div>
 <!-- Popup création contact depuis agenda -->
-<div id="createContactOverlay" class="create-contact-overlay" style="display:none" onclick="if(event.target===this)closeCreateContactPopup()">
-    <div class="create-contact-popup">
-        <h3>📇 Nouvelle fiche carnet</h3>
-        <label>Prénom</label>
-        <input id="ccPrenom" type="text" placeholder="Prénom">
-        <label>Nom</label>
-        <input id="ccNom" type="text" placeholder="Nom">
-        <label>Fonction</label>
-        <input id="ccFonction" type="text" placeholder="ex: Analyste">
-        <label>Entreprise</label>
-        <input id="ccEntreprise" type="text" placeholder="ex: CIC" value="CIC Corporate & Institutional Banking">
-        <label>Email</label>
-        <input id="ccEmail" type="text" placeholder="email@cic.fr">
-        <div class="btn-row">
-            <button class="btn-cancel" onclick="closeCreateContactPopup()">Annuler</button>
-            <button class="btn-confirm" onclick="saveNewContact()">✅ Créer</button>
+<div id="createContactOverlay" class="cc-overlay" onclick="if(event.target===this)closeCreateContactPopup()">
+    <div class="cc-modal">
+        <h3>📇 Nouvelle fiche</h3>
+        <div class="cc-photo-upload">
+            <div class="cc-photo-preview" id="ccPhotoPreview" onclick="document.getElementById('ccPhotoInput').click()">
+                <span style="font-size:20px;opacity:0.3">📷</span>
+            </div>
+            <div>
+                <div class="cc-photo-btn" onclick="document.getElementById('ccPhotoInput').click()">+ Ajouter une photo</div>
+                <input type="file" id="ccPhotoInput" accept="image/*" style="display:none" onchange="ccHandlePhoto(this)">
+                <div id="ccPhotoRemove" style="display:none;font-size:10px;color:rgba(255,100,100,0.6);cursor:pointer;margin-top:4px" onclick="ccRemovePhoto()">✕ Supprimer</div>
+            </div>
+        </div>
+        <div class="field"><label>Prénom</label><input id="ccPrenom" type="text" placeholder="Prénom"></div>
+        <div class="field"><label>Nom</label><input id="ccNom" type="text" placeholder="Nom"></div>
+        <div class="field"><label>Spécialité</label>
+            <select id="ccSpecialite">
+                <option value="actions">Recherche Actions</option>
+                <option value="eco">Économie</option>
+                <option value="esg">ESG</option>
+                <option value="technique">Analyse Technique</option>
+                <option value="credit">Crédit</option>
+                <option value="autre">Autre</option>
+            </select>
+        </div>
+        <div class="field"><label>Fonction</label><input id="ccFonction" type="text" placeholder="ex: Analyste"></div>
+        <div class="field"><label>Société</label><input id="ccEntreprise" type="text" placeholder="ex: CIC" value="CIC Corporate & Institutional Banking"></div>
+        <div class="field"><label>Email</label><input id="ccEmail" type="text" placeholder="email@cic.fr"></div>
+        <div class="cc-btns">
+            <button class="cc-btn-cancel" onclick="closeCreateContactPopup()">Annuler</button>
+            <button class="cc-btn-save" id="ccSaveBtn" onclick="saveNewContact()">Enregistrer</button>
         </div>
     </div>
 </div>
