@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-15T09:29:57Z",
+  "updatedAt": "2026-04-15T09:31:24.258Z",
   "pending": [
     {
       "action": "delete",
@@ -64,6 +64,18 @@
       "createdAt": "2026-04-13T12:49:34.556Z",
       "status": "done",
       "processedAt": "2026-04-13T12:49:59Z"
+    },
+    {
+      "action": "edit",
+      "originalSubject": "Enregistrement Crédit Mutuel Leasing",
+      "originalStart": "2026-04-14T12:00:00Z",
+      "originalEnd": "2026-04-14T15:30:00Z",
+      "newSubject": "Enregistrement Crédit Mutuel Leasing",
+      "newDate": "2026-04-14",
+      "newStart": "14:00",
+      "newEnd": "17:30",
+      "createdAt": "2026-04-15T09:31:24.258Z",
+      "status": "pending"
     }
   ]
 }
