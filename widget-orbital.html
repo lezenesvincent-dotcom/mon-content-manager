@@ -392,10 +392,10 @@ développement
             if (!data) return;
             
             // Titre et sous-titre
-            if (data.titre) {
+            if (data.titre !== undefined) {
                 document.getElementById('titre').textContent = data.titre;
             }
-            if (data.soustitre) {
+            if (data.soustitre !== undefined) {
                 document.getElementById('soustitre').textContent = data.soustitre;
             }
             
