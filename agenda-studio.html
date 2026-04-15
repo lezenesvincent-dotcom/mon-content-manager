@@ -1,4 +1,4 @@
-<!-- deploy: 2026-04-15 16:45:00 -->
+<!-- deploy: 2026-04-15 17:15:00 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -444,7 +444,7 @@
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:6px;left:8px;z-index:9999;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">agenda v13 — 15/04/2026 16:45</div>
+<div style="position:fixed;bottom:6px;left:8px;z-index:9999;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">agenda v15 — 15/04/2026 17:15</div>
 <!-- DOCK START -->
 <nav class="dock-nav"><a href="studio-manager.html" class="dk-home"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Accueil</span></a><div class="dk-sep"></div><a href="regie-video.html" class="dr"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span class="dk-tip">R&eacute;gie</span></a><a href="agenda-studio.html" class="dp dk-act"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="dk-tip">Agenda</span></a><a href="vignettes.html" class="dc"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="2"/><path d="M21 15l-5-5L5 21"/></svg><span class="dk-tip">Vignettes</span></a><a href="creation.html" class="dv"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="dk-tip">Cr&eacute;ation</span></a><a href="manage-ei.html" class="dk"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Manage</span></a><div class="dk-sep"></div><a href="contact-studio.html" class="dg dk-inv"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="dk-tip">Contact</span></a><a href="prestation.html" class="do dk-inv"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="dk-tip">Prestations</span></a><a href="carnet.html" class="dt"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="dk-tip">Carnet</span></a><div class="dk-sep"></div><a href="studio-2027.html" class="dd"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="dk-tip">2027</span></a><a href="studio-alert.html" class="dr"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dk-tip">Alert</span></a><a href="dev-dashboard.html" class="dd"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span class="dk-tip">Dev</span></a></nav>
 <!-- DOCK END -->
@@ -746,12 +746,16 @@
 
         // Index du calendrier perso par subject+start pour récupérer les attendees
         var persoIndex = {};
+        var persoList = []; // liste pour matching souple
         if (calendarData.perso) {
             calendarData.perso.forEach(function(ev) {
-                if (ev.subject && ev.start) {
-                    var subj = ev.subject.trim().toLowerCase();
+                if (ev.subject && ev.start && ev.reqAttendees && ev.reqAttendees.length > 0) {
+                    var subj = cleanSubject(ev.subject)
+                        .replace(/^annul[eé]\s*:\s*/i, '')
+                        .replace(/^re\s*:\s*/i, '').trim();
                     var key = subj + '|' + ev.start.substring(0,16);
                     persoIndex[key] = ev;
+                    persoList.push({ subj: subj, start: ev.start, ev: ev });
                 }
             });
         }
@@ -773,24 +777,41 @@
             // Enrichir avec les attendees du calendrier perso si disponibles
             if (!ev.reqAttendees || !ev.reqAttendees.length) {
                 var startKey = ev.start.substring(0,16);
-                // Essai 1 : subject exact
-                var key1 = ev.subject.trim().toLowerCase() + '|' + startKey;
+                var startDate = ev.start.substring(0,10); // YYYY-MM-DD
+                var subjClean = cleanSubject(ev.subject).replace(/^prépa\w*\s*[-:]\s*/i,'').trim();
+
+                // Essai 1 : subject exact + même heure
+                var key1 = subjClean + '|' + startKey;
                 // Essai 2 : subject nettoyé (sans préfixe TR)
                 var key2 = cleanSubject(ev.subject) + '|' + startKey;
                 var persoEv = persoIndex[key1] || persoIndex[key2];
-                // Essai 3 : chercher dans perso un event dont le subject est contenu dans celui de la salle
+
+                // Essai 3 : matching souple — même sujet (partiel) même jour
                 if (!persoEv) {
-                    var subjLower = ev.subject.trim().toLowerCase();
-                    for (var pk in persoIndex) {
-                        if (pk.endsWith('|' + startKey)) {
-                            var persoSubj = pk.replace('|'+startKey,'');
-                            if (subjLower.includes(persoSubj) || persoSubj.includes(subjLower)) {
-                                persoEv = persoIndex[pk];
-                                break;
-                            }
+                    persoList.forEach(function(p) {
+                        if (persoEv) return;
+                        var pDate = p.start.substring(0,10);
+                        if (pDate !== startDate) return;
+                        if (p.subj.includes(subjClean) || subjClean.includes(p.subj) ||
+                            p.subj.length > 4 && subjClean.includes(p.subj.substring(0,8))) {
+                            persoEv = p.ev;
                         }
-                    }
+                    });
                 }
+
+                // Essai 4 : matching souple même sujet même semaine (±3 jours)
+                if (!persoEv && subjClean.length > 5) {
+                    var startMs = new Date(ev.start).getTime();
+                    persoList.forEach(function(p) {
+                        if (persoEv) return;
+                        var diff = Math.abs(new Date(p.start).getTime() - startMs);
+                        if (diff > 3 * 86400000) return; // max 3 jours d'écart
+                        if (p.subj.includes(subjClean.substring(0,10)) || subjClean.includes(p.subj.substring(0,10))) {
+                            persoEv = p.ev;
+                        }
+                    });
+                }
+
                 if (persoEv && persoEv.reqAttendees) {
                     ev.reqAttendees = persoEv.reqAttendees;
                     ev.optAttendees = persoEv.optAttendees || [];
@@ -1396,21 +1417,40 @@
         var btn = document.getElementById('ccSaveBtn');
         btn.innerHTML = '<span class="cc-spinner"></span>Enregistrement...';
         btn.disabled = true;
-        var newContact = {
-            id: 'c_' + Date.now(),
-            firstName: prenom,
-            lastName: nom,
-            speciality: document.getElementById('ccSpecialite').value,
-            function: document.getElementById('ccFonction').value.trim(),
-            company: document.getElementById('ccEntreprise').value.trim(),
-            email: document.getElementById('ccEmail').value.trim(),
-            photo: ccPhotoBase64 || ''
-        };
+
         try {
             var hdrs = { 'Authorization': 'token '+GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' };
+            var photoUrl = '';
+
+            // 1. Upload photo comme fichier séparé si présente
+            if (ccPhotoBase64) {
+                var ext = ccPhotoBase64.startsWith('data:image/png') ? 'png' : 'jpg';
+                var photoFilename = 'contacts-photos/' + prenom.toLowerCase().replace(/\s+/g,'-') + '-' + nom.toLowerCase().replace(/[^a-z0-9]/g,'-') + '-' + Date.now() + '.' + ext;
+                // Extraire base64 pur
+                var b64photo = ccPhotoBase64.split(',')[1];
+                try {
+                    await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+photoFilename, {
+                        method: 'PUT', headers: hdrs,
+                        body: JSON.stringify({ message: 'photo '+prenom+' '+nom, content: b64photo, branch: 'main' })
+                    });
+                    photoUrl = photoFilename;
+                } catch(e) { console.warn('Photo upload failed:', e); }
+            }
+
+            // 2. Charger contacts.json, ajouter, sauvegarder
             var resp = await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/contacts.json', { headers: hdrs });
             var data = await resp.json();
             var contacts = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))));
+            var newContact = {
+                id: 'c_' + Date.now(),
+                firstName: prenom,
+                lastName: nom,
+                speciality: document.getElementById('ccSpecialite').value,
+                function: document.getElementById('ccFonction').value.trim(),
+                company: document.getElementById('ccEntreprise').value.trim(),
+                email: document.getElementById('ccEmail').value.trim(),
+                photo: photoUrl  // URL relative, pas base64
+            };
             contacts.push(newContact);
             var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(contacts, null, 2))));
             await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/contacts.json', {
