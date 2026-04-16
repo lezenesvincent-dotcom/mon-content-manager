@@ -3686,7 +3686,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v93 — 2026-04-15 16:00:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v94 — 2026-04-15 17:00:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -3795,7 +3795,7 @@
       </div>
       <div style="margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;font-size:9px;color:#888;margin-bottom:3px;"><span>Scale</span><span id="hs-val" style="color:#4da8ff;">1.0</span></div>
-        <input id="hs-range" type="range" min="0.3" max="3.0" step="0.05" value="1.0" style="width:100%;accent-color:#f5a623;" oninput="updateHeaderPos()">
+        <input id="hs-range" type="range" min="0.3" max="5.0" step="0.05" value="3.5" style="width:100%;accent-color:#f5a623;" oninput="updateHeaderPos()">
       </div>
     </div>
 
@@ -3825,9 +3825,9 @@
 
   // État par cible textuelle
   var textTargetState = {
-    titre: { x: 50, y: 80, s: 1.0 },
-    sous:  { x: 50, y: 80, s: 1.0 },
-    texte: { x: 50, y: 80, s: 1.0 }
+    titre: { x: 50, y: 80, s: 3.5 },
+    sous:  { x: 50, y: 80, s: 1.2 },
+    texte: { x: 50, y: 80, s: 1.1 }
   };
 
   function selectTextTarget(target) {
