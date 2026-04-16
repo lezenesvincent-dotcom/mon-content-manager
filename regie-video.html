@@ -3855,7 +3855,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v102 — 2026-04-16 15:00:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v103 — 2026-04-16 15:30:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -3956,11 +3956,11 @@
       </div>
       <div style="margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;font-size:9px;color:#888;margin-bottom:3px;"><span>Position X</span><span id="hx-val" style="color:#4da8ff;">50</span></div>
-        <input id="hx-range" type="range" min="0" max="500" step="5" value="50" style="width:100%;accent-color:#f5a623;" oninput="updateHeaderPos()">
+        <input id="hx-range" type="range" min="0" max="100" step="0.1" value="1.3" style="width:100%;accent-color:#f5a623;" oninput="updateHeaderPos()">
       </div>
       <div style="margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;font-size:9px;color:#888;margin-bottom:3px;"><span>Position Y</span><span id="hy-val" style="color:#4da8ff;">80</span></div>
-        <input id="hy-range" type="range" min="0" max="300" step="5" value="80" style="width:100%;accent-color:#f5a623;" oninput="updateHeaderPos()">
+        <input id="hy-range" type="range" min="0" max="100" step="0.1" value="7.4" style="width:100%;accent-color:#f5a623;" oninput="updateHeaderPos()">
       </div>
       <div style="margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;font-size:9px;color:#888;margin-bottom:3px;"><span>Scale</span><span id="hs-val" style="color:#4da8ff;">1.0</span></div>
@@ -3994,9 +3994,9 @@
 
   // État par cible textuelle
   var textTargetState = {
-    titre: { x: 50, y: 80, s: 3.5 },
-    sous:  { x: 50, y: 80, s: 1.2 },
-    texte: { x: 50, y: 80, s: 1.1 }
+    titre: { x: 1.3, y: 7.4, s: 3.5 },
+    sous:  { x: 1.3, y: 7.4, s: 1.2 },
+    texte: { x: 1.3, y: 7.4, s: 1.1 }
   };
 
   function selectTextTarget(target) {
@@ -4201,7 +4201,7 @@
     var payload = {
       type: 'control', command: 'UPDATE_STATE',
       state: {
-        headerX: st.headerX || 50, headerY: st.headerY || 80,
+        headerX: st.headerX || 1.3, headerY: st.headerY || 7.4,
         centerX: st.centerX || 50, centerY: st.centerY || 50,
         speedIN: 3.5, speedNEXT: 2.2, speedLev: 25, slots: st.slots,
         titleFontSize: slotState.titleFontSize || 3.5,
