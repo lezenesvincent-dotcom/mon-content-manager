@@ -31,14 +31,14 @@
     "application": null,
     "intervenants": [
       {
-        "prenom": "VIN",
-        "nom": "",
+        "prenom": "Vincent",
+        "nom": "Lézénès",
         "fonction": "",
-        "entreprise": ""
+        "entreprise": "CIC Corporate & Institutional Banking"
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-16T07:51:25.483Z",
+    "updatedAt": "2026-04-16T07:51:27.321Z",
     "uploads": {}
   },
   "1771401928693": {
