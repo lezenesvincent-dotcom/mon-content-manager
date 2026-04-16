@@ -1593,114 +1593,70 @@
     }
     .morning-ppt-card {
         flex-shrink: 0;
-        background: rgba(20,22,35,0.85);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 12px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
         padding: 0;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
-        min-width: 160px;
-        max-width: 200px;
+        transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1);
+        min-width: 180px;
+        max-width: 220px;
         overflow: hidden;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-        position: relative;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
     .morning-ppt-card:hover {
-        transform: translateY(-4px) scale(1.03);
-        box-shadow: 0 12px 32px rgba(0,0,0,0.6);
-        border-color: rgba(255,255,255,0.18);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.45);
     }
-    .morning-ppt-card.loading {
-        opacity: 0.5;
-        pointer-events: none;
-    }
-    /* Bandeau couleur épais en haut */
-    .morning-ppt-card .ppt-color-band {
-        height: 72px;
-        width: 100%;
-        border-radius: 12px 12px 0 0;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    /* Spécialités — couleurs accueil */
-    .morning-ppt-card.spec-actions  .ppt-color-band { background: linear-gradient(135deg, #f7971e, #ffd200); box-shadow: inset 0 -20px 30px rgba(0,0,0,0.2); }
-    .morning-ppt-card.spec-eco      .ppt-color-band { background: linear-gradient(135deg, #1a91ff, #0052cc); box-shadow: inset 0 -20px 30px rgba(0,0,0,0.2); }
-    .morning-ppt-card.spec-credit   .ppt-color-band { background: linear-gradient(135deg, #11998e, #38ef7d); box-shadow: inset 0 -20px 30px rgba(0,0,0,0.2); }
-    .morning-ppt-card.spec-esg      .ppt-color-band { background: linear-gradient(135deg, #134e5e, #71b280); box-shadow: inset 0 -20px 30px rgba(0,0,0,0.2); }
-    .morning-ppt-card.spec-technique .ppt-color-band { background: linear-gradient(135deg, #7f00ff, #e100ff); box-shadow: inset 0 -20px 30px rgba(0,0,0,0.2); }
-    .morning-ppt-card.spec-autre    .ppt-color-band { background: linear-gradient(135deg, #f953c6, #b91d73); box-shadow: inset 0 -20px 30px rgba(0,0,0,0.2); }
-    .morning-ppt-card.spec-eclaireur .ppt-color-band { background: linear-gradient(135deg, #4776e6, #8e54e9); box-shadow: inset 0 -20px 30px rgba(0,0,0,0.2); }
-    .morning-ppt-card.spec-scenario  .ppt-color-band { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); box-shadow: inset 0 -20px 30px rgba(0,0,0,0.2); }
-    /* Ombres colorées sous la carte selon spec */
-    .morning-ppt-card.spec-actions  { box-shadow: 0 4px 20px rgba(247,151,30,0.35); }
-    .morning-ppt-card.spec-actions:hover  { box-shadow: 0 12px 36px rgba(247,151,30,0.55); }
-    .morning-ppt-card.spec-eco      { box-shadow: 0 4px 20px rgba(26,145,255,0.35); }
-    .morning-ppt-card.spec-eco:hover      { box-shadow: 0 12px 36px rgba(26,145,255,0.55); }
-    .morning-ppt-card.spec-credit   { box-shadow: 0 4px 20px rgba(56,239,125,0.3); }
-    .morning-ppt-card.spec-credit:hover   { box-shadow: 0 12px 36px rgba(56,239,125,0.5); }
-    .morning-ppt-card.spec-esg      { box-shadow: 0 4px 20px rgba(113,178,128,0.3); }
-    .morning-ppt-card.spec-esg:hover      { box-shadow: 0 12px 36px rgba(113,178,128,0.5); }
-    .morning-ppt-card.spec-technique { box-shadow: 0 4px 20px rgba(225,0,255,0.3); }
-    .morning-ppt-card.spec-technique:hover { box-shadow: 0 12px 36px rgba(225,0,255,0.5); }
-    .morning-ppt-card.spec-autre    { box-shadow: 0 4px 20px rgba(249,83,198,0.3); }
-    .morning-ppt-card.spec-autre:hover    { box-shadow: 0 12px 36px rgba(249,83,198,0.5); }
-    .morning-ppt-card.spec-eclaireur { box-shadow: 0 4px 20px rgba(142,84,233,0.35); }
-    .morning-ppt-card.spec-eclaireur:hover { box-shadow: 0 12px 36px rgba(142,84,233,0.55); }
-    .morning-ppt-card.spec-scenario  { box-shadow: 0 4px 20px rgba(44,83,100,0.4); }
-    .morning-ppt-card.spec-scenario:hover  { box-shadow: 0 12px 36px rgba(44,83,100,0.6); }
-    /* Icône grande au centre du bandeau */
+    .morning-ppt-card.loading { opacity: 0.5; pointer-events: none; }
+    .morning-ppt-card .ppt-color-band { height: 4px; width: 100%; border-radius: 10px 10px 0 0; }
+    .morning-ppt-card.spec-actions  .ppt-color-band { background: linear-gradient(90deg,#f6d365,#fda085); }
+    .morning-ppt-card.spec-eco      .ppt-color-band { background: linear-gradient(90deg,#00d2ff,#3a7bd5); }
+    .morning-ppt-card.spec-credit   .ppt-color-band { background: linear-gradient(90deg,#43e97b,#38f9d7); }
+    .morning-ppt-card.spec-esg      .ppt-color-band { background: linear-gradient(90deg,#0d9488,#06b6d4); }
+    .morning-ppt-card.spec-technique .ppt-color-band { background: linear-gradient(90deg,#8b5cf6,#6366f1); }
+    .morning-ppt-card.spec-autre    .ppt-color-band { background: linear-gradient(90deg,#f093fb,#f5576c); }
+    .morning-ppt-card.spec-eclaireur .ppt-color-band { background: linear-gradient(90deg,#667eea,#764ba2); }
+    .morning-ppt-card.spec-scenario  .ppt-color-band { background: linear-gradient(90deg,#f6d365,#667eea,#43e97b); }
     .morning-ppt-card .ppt-icon {
-        font-size: 26px;
-        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
-        user-select: none;
+        position: absolute; top: 14px; right: 10px;
+        width: 26px; height: 26px; border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
-    .morning-ppt-card .ppt-body { padding: 8px 10px 10px; }
+    .morning-ppt-card.spec-actions  .ppt-icon { background: linear-gradient(135deg,#f6d365,#fda085); }
+    .morning-ppt-card.spec-eco      .ppt-icon { background: linear-gradient(135deg,#00d2ff,#3a7bd5); }
+    .morning-ppt-card.spec-credit   .ppt-icon { background: linear-gradient(135deg,#43e97b,#38f9d7); }
+    .morning-ppt-card.spec-esg      .ppt-icon { background: linear-gradient(135deg,#0d9488,#06b6d4); }
+    .morning-ppt-card.spec-technique .ppt-icon { background: linear-gradient(135deg,#8b5cf6,#6366f1); }
+    .morning-ppt-card.spec-autre    .ppt-icon { background: linear-gradient(135deg,#f093fb,#f5576c); }
+    .morning-ppt-card.spec-eclaireur .ppt-icon { background: linear-gradient(135deg,#667eea,#764ba2); }
+    .morning-ppt-card.spec-scenario  .ppt-icon { background: linear-gradient(135deg,#f6d365,#43e97b); }
+    .morning-ppt-card .ppt-body { padding: 8px 10px 10px; position: relative; }
+    .ppt-upload-btn {
+        margin-left: auto; font-size: 9px; font-weight: 700;
+        color: rgba(255,200,60,0.9); background: rgba(255,200,60,0.1);
+        border: 1px solid rgba(255,200,60,0.25); border-radius: 5px;
+        padding: 2px 7px; cursor: pointer; letter-spacing: 0.3px; transition: background 0.15s;
+    }
+    .ppt-upload-btn:hover { background: rgba(255,200,60,0.22); }
     .morning-ppt-name {
-        font-size: 8px;
-        font-weight: 700;
-        color: rgba(255,255,255,0.45);
-        margin-bottom: 4px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
+        font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.45);
+        margin-bottom: 4px; white-space: nowrap; overflow: hidden;
+        text-overflow: ellipsis; text-transform: uppercase; letter-spacing: 0.4px;
     }
     .morning-ppt-titre {
-        font-size: 12px;
-        font-weight: 700;
-        color: #fff;
-        margin-bottom: 4px;
-        margin-right: 28px;
-        line-height: 1.3;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        font-size: 12px; font-weight: 700; color: #fff;
+        margin-bottom: 4px; margin-right: 28px; line-height: 1.3;
+        display: -webkit-box; -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical; overflow: hidden;
     }
-    .morning-ppt-sub {
-        font-size: 8px;
-        color: rgba(255,255,255,0.35);
-        margin-bottom: 4px;
-    }
-    .morning-ppt-cartes {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2px;
-        margin-top: 6px;
-    }
+    .morning-ppt-sub { font-size: 8px; color: rgba(255,255,255,0.35); margin-bottom: 4px; }
+    .morning-ppt-cartes { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 6px; }
     .morning-ppt-carte-tag {
-        font-size: 7px;
-        background: rgba(255,255,255,0.07);
-        color: rgba(255,255,255,0.45);
-        padding: 1px 5px;
-        border-radius: 3px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 80px;
+        font-size: 7px; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.45);
+        padding: 1px 5px; border-radius: 3px; white-space: nowrap;
+        overflow: hidden; text-overflow: ellipsis; max-width: 80px;
     }
     .morning-ppt-empty {
         font-size: 10px;
@@ -1712,22 +1668,6 @@
     .morning-ppt-list::-webkit-scrollbar { height: 5px; }
     .morning-ppt-list::-webkit-scrollbar-track { background: transparent; }
     .morning-ppt-list::-webkit-scrollbar-thumb { background: rgba(255,200,60,0.3); border-radius: 2px; }
-    .ppt-upload-btn {
-        margin-left: auto;
-        font-size: 9px;
-        font-weight: 700;
-        color: rgba(255,200,60,0.9);
-        background: rgba(255,200,60,0.1);
-        border: 1px solid rgba(255,200,60,0.25);
-        border-radius: 5px;
-        padding: 2px 7px;
-        cursor: pointer;
-        letter-spacing: 0.3px;
-        transition: background 0.15s;
-    }
-    .ppt-upload-btn:hover { background: rgba(255,200,60,0.22); }
-    .morning-ppt-card.local { border-color: rgba(100,200,255,0.4); }
-    .morning-ppt-card.local .morning-ppt-name::before { content: '📁 '; }
 
     /* ===== POPUP EDITION P1-P4 ===== */
     #editCardOverlay {
@@ -1997,7 +1937,7 @@
                     📊 PPT
                     <span class="ppt-count" id="morningPptCount">0</span>
                     <span class="ppt-status" id="morningPptStatus">Chargement...</span>
-                    <span class="ppt-upload-btn" onclick="event.stopPropagation();document.getElementById('pptFileInput').click()" title="Ajouter un fichier PPT ou PDF">＋ Fichier</span>
+                    <span class="ppt-upload-btn" onclick="event.stopPropagation();document.getElementById('pptFileInput').click()" title="Ajouter un fichier PPT ou JSON">＋ Fichier</span>
                     <input type="file" id="pptFileInput" accept=".pptx,.pdf,.json" style="display:none" multiple onchange="handlePptFileUpload(this)">
                 </div>
                 <div class="morning-ppt-list" id="morningPptList" style="display:flex;">
@@ -3922,7 +3862,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v105 — 16/04/2026 17:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v103 — 2026-04-16 15:30:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4488,77 +4428,54 @@
             return;
         }
         list.innerHTML = ppts.map(function(ppt, idx) {
-            var isLocal = ppt._local;
-            var isParsing = ppt._status === 'parsing';
-            var isError = ppt._status === 'error';
-
-            // Détecter spécialité / type pour la couleur
-            var specClass = 'spec-autre';
-            var specIcon = '📄';
-            var fichier = (ppt.fichier || '').toLowerCase();
-            var type = (ppt.type || '').toLowerCase();
-            var titre = (ppt.titre || '').toLowerCase();
-            if (type === 'eclaireur' || fichier.includes('eclaireur') || titre.includes('éclaireur') || titre.includes('eclaireur')) {
-                specClass = 'spec-eclaireur'; specIcon = '🔦';
-            } else if (type === 'scenario' || fichier.includes('scenario') || titre.includes('scénario') || titre.includes('scenario')) {
-                specClass = 'spec-scenario'; specIcon = '📊';
-            } else if (type === 'actions' || fichier.includes('actions') || titre.includes('action')) {
-                specClass = 'spec-actions'; specIcon = '📈';
-            } else if (type === 'eco' || fichier.includes('eco') || titre.includes('économie') || titre.includes('macro')) {
-                specClass = 'spec-eco'; specIcon = '🌍';
-            } else if (type === 'credit' || fichier.includes('credit') || titre.includes('crédit')) {
-                specClass = 'spec-credit'; specIcon = '💳';
-            } else if (type === 'esg' || fichier.includes('esg') || titre.includes('esg')) {
-                specClass = 'spec-esg'; specIcon = '🌱';
-            } else if (type === 'technique' || fichier.includes('technique') || titre.includes('technique')) {
-                specClass = 'spec-technique'; specIcon = '📐';
-            }
-
+            var specClass = 'spec-autre', specIcon = '📄';
+            var fichier = (ppt.fichier||'').toLowerCase(), type = (ppt.type||'').toLowerCase(), titre = (ppt.titre||'').toLowerCase();
+            if (type==='eclaireur'||fichier.includes('eclaireur')||titre.includes('éclaireur')||titre.includes('eclaireur')) { specClass='spec-eclaireur'; specIcon='🔦'; }
+            else if (type==='scenario'||fichier.includes('scenario')||titre.includes('scénario')||titre.includes('scenario')) { specClass='spec-scenario'; specIcon='📊'; }
+            else if (type==='actions'||fichier.includes('actions')||(ppt.sousTitre||'').toUpperCase().includes('RECHERCHE ACTIONS')) { specClass='spec-actions'; specIcon='📈'; }
+            else if (type==='eco'||fichier.includes('eco')||titre.includes('économie')||titre.includes('macro')) { specClass='spec-eco'; specIcon='🌍'; }
+            else if (type==='credit'||fichier.includes('credit')||titre.includes('crédit')) { specClass='spec-credit'; specIcon='💳'; }
+            else if (type==='esg'||fichier.includes('esg')||titre.includes('esg')) { specClass='spec-esg'; specIcon='🌱'; }
+            else if (type==='technique'||fichier.includes('technique')||titre.includes('technique')) { specClass='spec-technique'; specIcon='📐'; }
+            var isParsing = ppt._status === 'parsing', isError = ppt._status === 'error';
+            var iconLabel = isParsing ? '⏳' : isError ? '⚠️' : specIcon;
             var cartesTags = isParsing
-                ? '<span class="morning-ppt-carte-tag" style="color:rgba(255,200,60,0.5)">⏳ Analyse en cours...</span>'
+                ? '<span class="morning-ppt-carte-tag" style="color:rgba(255,200,60,0.5)">⏳ Analyse...</span>'
                 : (ppt.cartes || []).slice(0, 4).map(function(c) {
                     return '<span class="morning-ppt-carte-tag">' + (c.sujet || '').substring(0, 16) + '</span>';
                 }).join('');
-
-            var iconLabel = isParsing ? '⏳' : isError ? '⚠️' : specIcon;
-            var cls = 'morning-ppt-card ' + specClass + (isLocal ? ' local' : '');
-            var nomFichier = (ppt.fichier || '').replace(/\.(pptx|pdf|json)$/i,'').replace(/_/g,' ').substring(0, 22);
-
+            var cls = 'morning-ppt-card ' + specClass;
+            var nom = (ppt.fichier||'').replace(/\.(pptx|pdf|json)$/i,'').replace(/_/g,' ').substring(0,25);
             return '<div class="' + cls + '" id="mppt-' + idx + '" onclick="loadPptIntoRegie(' + idx + ')">' +
-                '<div class="ppt-color-band"><div class="ppt-icon">' + iconLabel + '</div></div>' +
+                '<div class="ppt-color-band"></div>' +
                 '<div class="ppt-body">' +
-                '<div class="morning-ppt-name">' + nomFichier + '</div>' +
+                '<div class="ppt-icon">' + iconLabel + '</div>' +
+                '<div class="morning-ppt-name">' + nom + '</div>' +
                 '<div class="morning-ppt-titre">' + (ppt.titre || '—') + '</div>' +
                 (ppt.sousTitre ? '<div class="morning-ppt-sub">' + ppt.sousTitre + '</div>' : '') +
                 '<div class="morning-ppt-cartes">' + cartesTags + '</div>' +
-                '</div>' +
-                '</div>';
+                '</div></div>';
         }).join('');
     }
 
     function loadPptIntoRegie(idx) {
-        var ppt = morningPptData[idx];
+        // Résoudre la source : fichiers locaux uploadés ou données remote
+        var allPpts = (window._allPptData && window._allPptData.length) ? window._allPptData : morningPptData;
+        var ppt = allPpts[idx];
         if (!ppt) return;
+        if (ppt._status === 'parsing') return; // encore en cours d'analyse
+
         var cartes = ppt.cartes || [];
 
-        // Splitter le contenu en bullets (lignes non vides)
         function makeBullets(c) {
             if (!c || !c.contenu) return [];
-            var raw = c.contenu;
-            // Splitter sur \n (JSON escape) ou retour chariot réel
-            var lines = raw.split(/\n|\r\n|\r/).filter(function(l){ return l.trim().length > 0; });
-            return lines.map(function(l){ return l.trim(); });
+            return c.contenu.split(/\n|\r\n|\r/).map(function(l){ return l.trim(); }).filter(Boolean);
         }
 
-        // Sujet = titre de la carte (1ère ligne si pas de sujet dédié)
         function getSujet(c) {
             if (!c) return '';
             if (c.sujet && c.sujet.trim()) return c.sujet.trim();
-            // Fallback : prendre la 1ère ligne du contenu
-            if (c.contenu) {
-                var first = c.contenu.split(/\n|\r/)[0];
-                return first ? first.trim().substring(0, 60) : '';
-            }
+            if (c.contenu) { var f = c.contenu.split(/\n|\r/)[0]; return f ? f.trim().substring(0, 60) : ''; }
             return '';
         }
 
@@ -4575,154 +4492,98 @@
             p4: { sujet: getSujet(cartes[3]), contenu: makeBullets(cartes[3]) }
         };
 
-        // Sélectionner le contenu PPT (met à jour selectedContentId et les vignettes P1-P4)
+        // 1. Charger dans P1-P4 + envoyer au WS server
         if (typeof selectContent === 'function') { selectContent(item); }
-        // Envoyer vers l'overlay via postMessage
-        var frame = document.getElementById('pgmDecorFrame');
-        if (frame && frame.contentWindow) {
-            frame.contentWindow.postMessage({
-                type: 'update',
-                data: {
-                    titre: item.titre || '',
-                    soustitre: item.soustitre || '',
-                    p1: item.p1 || { sujet: '', contenu: [] },
-                    p2: item.p2 || { sujet: '', contenu: [] },
-                    p3: item.p3 || { sujet: '', contenu: [] },
-                    p4: item.p4 || { sujet: '', contenu: [] }
-                }
-            }, '*');
-        }
 
-        // Feedback visuel
+        // 2. Déclencher ▶ IN directement (= lancer l'habillage, comme un clic conducteur)
+        var inBtn = document.querySelector('#overlayBtns .cam-pill');
+        if (inBtn && typeof activateBtn === 'function') { activateBtn(inBtn); }
+        if (typeof sendOverlayCmd === 'function') { sendOverlayCmd('ANIMATE_IN'); }
+
+        // 3. Feedback visuel sur les cartes PPT
         document.querySelectorAll('.morning-ppt-card').forEach(function(c, i) {
-            c.style.background = i === idx ? 'rgba(255,200,60,0.25)' : 'rgba(255,200,60,0.07)';
-            c.style.borderColor = i === idx ? 'rgba(255,200,60,0.8)' : 'rgba(255,200,60,0.2)';
+            c.style.outline = (i === idx) ? '2px solid rgba(255,255,255,0.6)' : '';
+            c.style.opacity = (i === idx) ? '1' : '0.65';
         });
     }
 
-    // ===================================================================
-    // UPLOAD FICHIER LOCAL (PPTX / PDF / JSON)
-    // ===================================================================
-    var localPptData = []; // PPTs uploadés manuellement
+    // ── Upload fichier local (PPTX / JSON) ──────────────────────────────
+    var localPptData = [];
 
     function handlePptFileUpload(input) {
         if (!input.files || input.files.length === 0) return;
         Array.from(input.files).forEach(function(file) {
             var ext = file.name.split('.').pop().toLowerCase();
             if (ext === 'json') {
-                // JSON morning-ppt : merger avec les existants
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     try {
                         var data = JSON.parse(e.target.result);
                         var ppts = data.ppts || [];
-                        ppts.forEach(function(p) { p._local = true; });
+                        ppts.forEach(function(p){ p._local = true; });
                         localPptData = localPptData.concat(ppts);
-                        rebuildMorningPptList();
+                        rebuildPptList();
                     } catch(err) { console.warn('JSON parse error:', err); }
                 };
                 reader.readAsText(file);
-            } else if (ext === 'pptx' || ext === 'pdf') {
-                // Fichier PPTX/PDF : créer une entrée avec Claude API pour parser
+            } else {
                 var ppt = {
                     fichier: file.name,
-                    titre: file.name.replace(/\.(pptx|pdf)$/i, '').replace(/_/g, ' '),
+                    titre: file.name.replace(/\.(pptx|pdf)$/i,'').replace(/_/g,' '),
                     sousTitre: 'Importé le ' + new Date().toLocaleDateString('fr-FR'),
-                    _local: true,
-                    _file: file,
-                    _status: 'parsing',
-                    cartes: []
+                    _local: true, _file: file, _status: 'parsing', cartes: []
                 };
                 localPptData.push(ppt);
-                var idx = morningPptData.length + localPptData.length - 1;
-                rebuildMorningPptList();
-                parsePptxWithClaude(file, ppt, idx);
+                rebuildPptList();
+                parsePptxWithClaude(file, ppt);
             }
         });
         input.value = '';
     }
 
-    function rebuildMorningPptList() {
-        // Fusionne les PPTs remote + locaux et re-rend
-        var all = morningPptData.concat(localPptData);
-        var fakeData = { ppts: all, generatedAt: new Date().toISOString(), date: true };
-        renderMorningPpt(fakeData);
-        // Ré-indexer loadPptIntoRegie pour pointer sur all
-        window._allPptData = all;
+    function rebuildPptList() {
+        window._allPptData = morningPptData.concat(localPptData);
+        renderMorningPpt({ ppts: window._allPptData, generatedAt: new Date().toISOString(), date: true });
     }
 
-    async function parsePptxWithClaude(file, pptObj, listIdx) {
-        // Lire le fichier en base64
-        var base64 = await new Promise(function(resolve, reject) {
+    async function parsePptxWithClaude(file, pptObj) {
+        var base64 = await new Promise(function(res, rej) {
             var r = new FileReader();
-            r.onload = function(e) { resolve(e.target.result.split(',')[1]); };
-            r.onerror = reject;
+            r.onload = function(e){ res(e.target.result.split(',')[1]); };
+            r.onerror = rej;
             r.readAsDataURL(file);
         });
         var ext = file.name.split('.').pop().toLowerCase();
         var mediaType = ext === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-
-        // Appel Claude API pour extraire la structure
-        var prompt = "Ce fichier est une présentation CIC (Éclaireur ou Scénario). Extrais chaque slide de contenu (ignore la couverture) sous forme JSON strict.\n\nPour chaque slide retourne:\n- theme: le titre principal en MAJUSCULES\n- analyse: le sous-titre d'analyse\n- graphique: le titre du graphique/tableau\n- source: la source\n- chiffres: tableau des chiffres clés visibles (max 4)\n\nRéponds UNIQUEMENT avec ce JSON (tableau de slides, pas d'objet wrapper, pas de markdown) :\n[{\"theme\":\"...\",\"analyse\":\"...\",\"graphique\":\"...\",\"source\":\"...\",\"chiffres\":[...]}]";
-
+        var prompt = 'Extrais chaque slide de contenu (ignore la couverture) sous forme JSON strict. Pour chaque slide: {"theme":"...","analyse":"...","graphique":"...","source":"...","chiffres":["..."]}. Réponds UNIQUEMENT avec le tableau JSON, sans markdown.';
         try {
             var resp = await fetch('https://api.anthropic.com/v1/messages', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: 'claude-sonnet-4-20250514',
-                    max_tokens: 2000,
-                    messages: [{
-                        role: 'user',
-                        content: [
-                            { type: 'document', source: { type: 'base64', media_type: mediaType, data: base64 } },
-                            { type: 'text', text: prompt }
-                        ]
-                    }]
+                    model: 'claude-sonnet-4-20250514', max_tokens: 2000,
+                    messages: [{ role: 'user', content: [
+                        { type: 'document', source: { type: 'base64', media_type: mediaType, data: base64 } },
+                        { type: 'text', text: prompt }
+                    ]}]
                 })
             });
             var data = await resp.json();
-            var text = (data.content || []).map(function(b){ return b.text||''; }).join('');
-            text = text.replace(/```json|```/g, '').trim();
+            var text = (data.content||[]).map(function(b){ return b.text||''; }).join('').replace(/```json|```/g,'').trim();
             var slides = JSON.parse(text);
-
-            // Construire les cartes à partir des slides parsées
             pptObj.cartes = slides.map(function(s) {
                 var contenu = s.analyse || '';
                 if (s.chiffres && s.chiffres.length) contenu += '\n' + s.chiffres.join('\n');
                 if (s.source) contenu += '\n' + s.source;
-                return { sujet: s.theme || '', contenu: contenu, graphique: s.graphique || '', chiffres: s.chiffres || [] };
+                return { sujet: s.theme || '', contenu: contenu };
             });
             pptObj._status = 'ready';
-            pptObj._slides = slides;
-
-            // Si pas de titre extrait, prendre le theme de la 1ère slide
             if (!pptObj.titre && slides[0]) pptObj.titre = slides[0].theme;
-
         } catch(err) {
-            console.warn('Claude parse error:', err);
             pptObj._status = 'error';
             pptObj.cartes = [{ sujet: 'Erreur parsing', contenu: err.message }];
         }
-        rebuildMorningPptList();
-    }
-
-    // Override loadPptIntoRegie pour supporter _allPptData
-    var _origLoadPptIntoRegie = loadPptIntoRegie;
-    function loadPptIntoRegie(idx) {
-        var src = (window._allPptData && window._allPptData[idx]) ? window._allPptData[idx] : morningPptData[idx];
-        if (!src) return;
-        if (src._status === 'parsing') {
-            // Feedback visuel "en cours"
-            var cards = document.querySelectorAll('.morning-ppt-card');
-            if (cards[idx]) { cards[idx].style.background = 'rgba(255,200,60,0.08)'; }
-            return;
-        }
-        // Patch morningPptData temporairement pour que l'original fonctionne
-        var orig = morningPptData[idx];
-        morningPptData[idx] = src;
-        _origLoadPptIntoRegie(idx);
-        morningPptData[idx] = orig;
+        rebuildPptList();
     }
 
     // Charger au démarrage et toutes les 2 minutes
