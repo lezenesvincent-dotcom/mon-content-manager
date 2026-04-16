@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-04-13 17:30:00 -->
+    <!-- deploy: 2026-04-16 10:30:00 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -2833,6 +2833,52 @@
         }
     }
 
+    // ── Sync Studio State (positions chaises, presets photos, sélecteurs) ──
+    var ghStateSha = null;
+    var ghStateSaveTimer = null;
+
+    async function ghLoadStudioState() {
+        try {
+            var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/data/studio-state.json', {
+                headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' },
+                cache: 'no-store'
+            });
+            if (!r.ok) return null;
+            var d = await r.json();
+            ghStateSha = d.sha;
+            var state = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+            // Appliquer dans localStorage
+            var keys = ['ss_positions','ss_sizes','ss_ctrl_offsets','ss_photo_presets','ss_data','ev_attendees'];
+            keys.forEach(function(k) { if (state[k] !== undefined) localStorage.setItem(k, typeof state[k] === 'string' ? state[k] : JSON.stringify(state[k])); });
+            console.log('✅ Studio state chargé depuis GitHub');
+            return state;
+        } catch(e) { console.warn('ghLoadStudioState:', e); return null; }
+    }
+
+    async function ghSaveStudioState() {
+        try {
+            var state = {};
+            ['ss_positions','ss_sizes','ss_ctrl_offsets','ss_photo_presets','ss_data','ev_attendees'].forEach(function(k) {
+                var v = localStorage.getItem(k);
+                if (v) state[k] = v;
+            });
+            var c = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
+            var b = { message: 'studio-state ' + new Date().toISOString(), content: c, branch: 'main' };
+            if (ghStateSha) b.sha = ghStateSha;
+            var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/data/studio-state.json', {
+                method: 'PUT',
+                headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+                body: JSON.stringify(b)
+            });
+            if (r.ok) { var d = await r.json(); ghStateSha = d.content.sha; console.log('✅ Studio state sauvegardé'); }
+        } catch(e) { console.warn('ghSaveStudioState:', e); }
+    }
+
+    function ghSaveStudioStateDebounced() {
+        if (ghStateSaveTimer) clearTimeout(ghStateSaveTimer);
+        ghStateSaveTimer = setTimeout(function() { ghSaveStudioState(); }, 2000);
+    }
+
     function applyData(data) {
         if (!data)
             return;
@@ -3467,7 +3513,7 @@
 
             var selName2 = document.createElement('select');
             selName2.className = 'ss-name-select';
-            selName2.addEventListener('change', (function(idx){ return function(){ ssData[idx].name = this.value; ssRefreshScene(); localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); }; })(i));
+            selName2.addEventListener('change', (function(idx){ return function(){ ssData[idx].name = this.value; ssRefreshScene(); localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); ghSaveStudioStateDebounced(); }; })(i));
             names.forEach(function(n) {
                 var opt = document.createElement('option');
                 opt.value = n; opt.textContent = n;
@@ -3477,7 +3523,7 @@
 
             var selRole2 = document.createElement('select');
             selRole2.className = 'ss-role-select';
-            selRole2.addEventListener('change', (function(idx){ return function(){ ssData[idx].role = this.value; localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); }; })(i));
+            selRole2.addEventListener('change', (function(idx){ return function(){ ssData[idx].role = this.value; localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); ghSaveStudioStateDebounced(); }; })(i));
             SS_ROLES.forEach(function(r) {
                 var opt = document.createElement('option');
                 opt.value = r; opt.textContent = r;
@@ -3487,7 +3533,7 @@
 
             var selSlides2 = document.createElement('select');
             selSlides2.className = 'ss-slides-select';
-            selSlides2.addEventListener('change', (function(idx){ return function(){ ssData[idx].slides = this.value; localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); }; })(i));
+            selSlides2.addEventListener('change', (function(idx){ return function(){ ssData[idx].slides = this.value; localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); ghSaveStudioStateDebounced(); }; })(i));
             SS_SLIDES.forEach(function(s) {
                 var opt = document.createElement('option');
                 opt.value = s; opt.textContent = s;
@@ -3521,7 +3567,7 @@
             var selName = document.createElement('select');
             selName.className = 'ss-name-select';
             selName.style.cssText = 'flex:1.5;font-size:9px;';
-            selName.addEventListener('change', (function(idx){ return function(){ ssData[idx].name = this.value; ssRefreshScene(); localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); }; })(i));
+            selName.addEventListener('change', (function(idx){ return function(){ ssData[idx].name = this.value; ssRefreshScene(); localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); ghSaveStudioStateDebounced(); }; })(i));
             names.forEach(function(n) {
                 var opt = document.createElement('option');
                 opt.value = n; opt.textContent = n;
@@ -3532,7 +3578,7 @@
             var selRole = document.createElement('select');
             selRole.className = 'ss-role-select';
             selRole.style.cssText = 'flex:1;font-size:9px;';
-            selRole.addEventListener('change', (function(idx){ return function(){ ssData[idx].role = this.value; localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); }; })(i));
+            selRole.addEventListener('change', (function(idx){ return function(){ ssData[idx].role = this.value; localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); ghSaveStudioStateDebounced(); }; })(i));
             SS_ROLES.forEach(function(r) {
                 var opt = document.createElement('option');
                 opt.value = r; opt.textContent = r;
@@ -3543,7 +3589,7 @@
             var selSlides = document.createElement('select');
             selSlides.className = 'ss-slides-select';
             selSlides.style.cssText = 'flex:1;font-size:9px;';
-            selSlides.addEventListener('change', (function(idx){ return function(){ ssData[idx].slides = this.value; localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); }; })(i));
+            selSlides.addEventListener('change', (function(idx){ return function(){ ssData[idx].slides = this.value; localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name,role:d.role,slides:d.slides}; }))); ghSaveStudioStateDebounced(); }; })(i));
             SS_SLIDES.forEach(function(s) {
                 var opt = document.createElement('option');
                 opt.value = s; opt.textContent = s;
@@ -3956,6 +4002,25 @@
             } catch(e) {}
         }
 
+        // Charger depuis GitHub si pas de données locales (autre machine)
+        ghLoadStudioState().then(function(state) {
+            if (state) {
+                // Réappliquer les données chargées
+                var sp = localStorage.getItem('ss_positions');
+                if (sp) { try { var p2=JSON.parse(sp); p2.forEach(function(p,i){ if(SS_POSITIONS[i]){SS_POSITIONS[i].x=p.x;SS_POSITIONS[i].y=p.y;} }); } catch(e){} }
+                var sz = localStorage.getItem('ss_sizes');
+                if (sz) { try { ss_seatSizes = JSON.parse(sz); } catch(e){} }
+                var sc = localStorage.getItem('ss_ctrl_offsets');
+                if (sc) { try { SS_CTRL_OFFSETS = JSON.parse(sc); } catch(e){} }
+                var sp2 = localStorage.getItem('ss_photo_presets');
+                if (sp2) { try { SS_PHOTO_PRESETS = JSON.parse(sp2); } catch(e){} }
+                var sd2 = localStorage.getItem('ss_data');
+                if (sd2) { try { var s2=JSON.parse(sd2); s2.forEach(function(d,i){ if(ssData[i]){ssData[i].name=d.name||'';ssData[i].role=d.role||ssData[i].role;ssData[i].slides=d.slides||ssData[i].slides;} }); } catch(e){} }
+                ssRenderSeats();
+                ssRefresh();
+            }
+        });
+
         // Générer les boutons slots
         var sel = document.getElementById('ssSlotSelector');
         if (!sel) return;
@@ -4035,6 +4100,7 @@
         off.dy += dy * 3;
         ssRenderSeats();
         localStorage.setItem('ss_photo_presets', JSON.stringify(SS_PHOTO_PRESETS));
+        ghSaveStudioStateDebounced();
     }
     function ssResizePhoto(delta) {
         var name = ssData[ss_selectedSlot] && ssData[ss_selectedSlot].name;
@@ -4045,6 +4111,7 @@
         ssRenderSeats();
         ssUpdatePhotoDisplay();
         localStorage.setItem('ss_photo_presets', JSON.stringify(SS_PHOTO_PRESETS));
+        ghSaveStudioStateDebounced();
     }
     function ssUpdatePhotoDisplay() {
         var el = document.getElementById('ssSizeDisplay');
@@ -4120,6 +4187,7 @@
         localStorage.setItem('ss_photo_offsets', JSON.stringify(SS_PHOTO_OFFSETS));
         localStorage.setItem('ss_photo_presets', JSON.stringify(SS_PHOTO_PRESETS));
         localStorage.setItem('ss_data', JSON.stringify(ssData.map(function(d){ return {name:d.name, role:d.role, slides:d.slides}; })));
+        ghSaveStudioStateDebounced(); // ← sync GitHub
         var btn = document.getElementById('ssSaveBtn');
         if (btn) {
             btn.classList.add('saved');
@@ -4637,7 +4705,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v144 — 14/04/2026 09:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v145 — 16/04/2026 10:30</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4681,6 +4749,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v144 — 14/04/2026 09:45</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v145 — 16/04/2026 10:30</div>
 </body>
 </html>
