@@ -3688,7 +3688,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v95 — 2026-04-16 10:00:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v96 — 2026-04-16 10:30:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4173,13 +4173,22 @@
   function updateOrbitalScale() {
     var screen = document.getElementById('pgmScreen');
     var frame = document.getElementById('pgmOrbitalFrame');
-    if (!screen || !frame) return;
-    var w = screen.offsetWidth;
-    var scale = w / 3840;
-    frame.style.transform = 'scale(' + scale + ')';
-    frame.style.height = (1080 * scale) + 'px'; // pas nécessaire mais propre
     var wrapper = document.getElementById('pgmOrbitalWrapper');
-    if (wrapper) wrapper.style.height = (1080 * scale) + 'px';
+    if (!screen || !frame || !wrapper) return;
+    var w = screen.offsetWidth;
+    var h = screen.offsetHeight;
+    var scaleW = w / 3840;
+    var scaleH = h / 1080;
+    var scale = Math.min(scaleW, scaleH);
+    var scaledW = 3840 * scale;
+    var scaledH = 1080 * scale;
+    var offsetX = (w - scaledW) / 2;
+    var offsetY = (h - scaledH) / 2;
+    frame.style.transform = 'scale(' + scale + ')';
+    frame.style.transformOrigin = 'top left';
+    frame.style.left = offsetX + 'px';
+    frame.style.top = offsetY + 'px';
+    wrapper.style.height = h + 'px';
   }
   window.addEventListener('resize', updateOrbitalScale);
   window.addEventListener('load', updateOrbitalScale);
