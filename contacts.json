@@ -353,8 +353,11 @@
     "function": "",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/vincent-lezenes.jpg",
-    "id": "c_1771407239897"
+    "id": "c_1771407239897",
+    "photos": [
+      "contacts-photos/vincent-lezenes.jpg"
+    ],
+    "photo": "contacts-photos/vincent-lezenes.jpg"
   },
   {
     "firstName": "Manon",
