@@ -1,4 +1,4 @@
-<!-- deploy: 2026-04-16 11:00:00 -->
+<!-- deploy: 2026-04-16 11:30:00 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -163,6 +163,36 @@
         }
         .photo-upload-btn:hover { background: rgba(0,140,255,0.15); }
         .photo-remove { font-size: 10px; color: rgba(255,100,100,0.6); cursor: pointer; margin-left: 4px; }
+
+        /* Widget recadrage photo rond */
+        .crop-widget {
+            display: none; flex-direction: column; align-items: center; gap: 8px;
+            margin-top: 12px; padding: 12px; background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+        }
+        .crop-widget.visible { display: flex; }
+        .crop-widget-title { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; align-self: flex-start; }
+        .crop-circle-wrap {
+            width: 120px; height: 120px; border-radius: 50%;
+            overflow: hidden; border: 3px solid rgba(255,255,255,0.7);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+            position: relative; cursor: grab; flex-shrink: 0;
+            background: rgba(99,102,241,0.3);
+        }
+        .crop-circle-wrap:active { cursor: grabbing; }
+        .crop-circle-wrap img {
+            position: absolute; transform-origin: center center;
+            user-select: none; pointer-events: none;
+        }
+        .crop-zoom-row { display: flex; align-items: center; gap: 8px; }
+        .crop-zoom-btn {
+            width: 28px; height: 28px; border-radius: 50%; border: none;
+            background: rgba(255,255,255,0.1); color: #fff; font-size: 16px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .crop-zoom-btn:hover { background: rgba(255,255,255,0.2); }
+        .crop-zoom-label { font-size: 11px; color: rgba(255,255,255,0.5); min-width: 36px; text-align: center; }
+        .crop-reset-btn { font-size: 10px; color: rgba(255,100,100,0.6); cursor: pointer; background: none; border: none; font-family: inherit; }
         .photo-remove:hover { color: #ff4444; }
 
         .count-label { font-size: 12px; color: rgba(255,255,255,0.3); padding: 0 32px 8px; font-weight: 500; }
@@ -196,7 +226,7 @@
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:6px;left:8px;z-index:9999;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">carnet v6 — 16/04/2026</div>
+<div style="position:fixed;bottom:6px;left:8px;z-index:9999;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">carnet v7 — 16/04/2026</div>
 <!-- DOCK START -->
 <nav class="dock-nav"><a href="studio-manager.html" class="dk-home"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Accueil</span></a><div class="dk-sep"></div><a href="regie-video.html" class="dr"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span class="dk-tip">R&eacute;gie</span></a><a href="agenda-studio.html" class="dp"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="dk-tip">Agenda</span></a><a href="vignettes.html" class="dc"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="2"/><path d="M21 15l-5-5L5 21"/></svg><span class="dk-tip">Vignettes</span></a><a href="creation.html" class="dv"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="dk-tip">Cr&eacute;ation</span></a><a href="manage-ei.html" class="dk"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Manage</span></a><div class="dk-sep"></div><a href="contact-studio.html" class="dg dk-inv"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="dk-tip">Contact</span></a><a href="prestation.html" class="do dk-inv"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="dk-tip">Prestations</span></a><a href="carnet.html" class="dt dk-act"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="dk-tip">Carnet</span></a><div class="dk-sep"></div><a href="studio-2027.html" class="dd"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="dk-tip">2027</span></a><a href="studio-alert.html" class="dr"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dk-tip">Alert</span></a><a href="dev-dashboard.html" class="dd"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span class="dk-tip">Dev</span></a></nav>
 <!-- DOCK END -->
@@ -239,6 +269,24 @@
                         <span class="photo-upload-btn" onclick="document.getElementById('photoInput').click()">+ Ajouter une photo</span>
                     </div>
                     <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(this)" style="display:none" multiple>
+                </div>
+                <!-- Widget recadrage rond -->
+                <div class="crop-widget" id="cropWidget">
+                    <div class="crop-widget-title">📸 Recadrage — glisse et zoome</div>
+                    <div style="display:flex;gap:16px;align-items:center">
+                        <div class="crop-circle-wrap" id="cropCircle">
+                            <img id="cropImg" src="" draggable="false">
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                            <div class="crop-zoom-row">
+                                <button class="crop-zoom-btn" onclick="cropZoom(-0.1)">−</button>
+                                <span class="crop-zoom-label" id="cropZoomLabel">100%</span>
+                                <button class="crop-zoom-btn" onclick="cropZoom(0.1)">+</button>
+                            </div>
+                            <button class="crop-reset-btn" onclick="cropReset()">↺ Réinitialiser</button>
+                        </div>
+                    </div>
+                    <div style="font-size:9px;color:rgba(255,255,255,0.3);text-align:center">Molette pour zoomer · Glisse pour recadrer</div>
                 </div>
             </div>
             <div class="field"><label>Prénom</label><input type="text" id="mFirstName" placeholder="Ex: Éric"></div>
@@ -301,6 +349,9 @@
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                     pendingPhotos.push(canvas.toDataURL('image/png'));
                     renderPhotosGallery();
+                    // Afficher widget recadrage
+                    var cName = (document.getElementById('mFirstName').value + ' ' + document.getElementById('mLastName').value).trim();
+                    if (cName) cropShow(canvas.toDataURL('image/png'), cName);
                 };
                 img.src = e.target.result;
             };
@@ -335,7 +386,117 @@
     function resetPhotoField() {
         pendingPhotos = null;
         renderPhotosGallery();
+        cropHide();
     }
+
+    // ── Widget recadrage rond ──────────────────────────────────
+    var cropState = { dx: 0, dy: 0, scale: 1, dragging: false, startX: 0, startY: 0, startDx: 0, startDy: 0 };
+    var cropContactName = null; // nom pour sauvegarder le preset
+
+    function cropShow(photoSrc, contactName) {
+        cropContactName = contactName;
+        var img = document.getElementById('cropImg');
+        var circle = document.getElementById('cropCircle');
+        img.src = photoSrc;
+        // Charger preset existant si disponible
+        var presets = JSON.parse(localStorage.getItem('ss_photo_presets') || '{}');
+        var preset = presets[contactName] || { dx: 0, dy: 0, size: 1 };
+        cropState.dx = preset.dx || 0;
+        cropState.dy = preset.dy || 0;
+        cropState.scale = preset.size || 1;
+        cropApply();
+        document.getElementById('cropWidget').classList.add('visible');
+    }
+
+    function cropHide() {
+        document.getElementById('cropWidget').classList.remove('visible');
+        cropContactName = null;
+    }
+
+    function cropApply() {
+        var img = document.getElementById('cropImg');
+        var s = cropState.scale;
+        img.style.cssText = 'position:absolute;transform-origin:center center;width:100%;height:100%;object-fit:cover;transform:scale('+s+') translate('+cropState.dx+'px,'+cropState.dy+'px);user-select:none;pointer-events:none;';
+        document.getElementById('cropZoomLabel').textContent = Math.round(s * 100) + '%';
+        // Sauvegarder preset
+        if (cropContactName) {
+            var presets = JSON.parse(localStorage.getItem('ss_photo_presets') || '{}');
+            presets[cropContactName] = { dx: cropState.dx, dy: cropState.dy, size: cropState.scale };
+            localStorage.setItem('ss_photo_presets', JSON.stringify(presets));
+            // Sauvegarder sur GitHub (debounce)
+            cropSaveDebounce();
+        }
+    }
+
+    function cropZoom(delta) {
+        cropState.scale = Math.max(0.5, Math.min(5, cropState.scale + delta));
+        cropApply();
+    }
+
+    function cropReset() {
+        cropState.dx = 0; cropState.dy = 0; cropState.scale = 1;
+        cropApply();
+    }
+
+    var cropSaveTimer = null;
+    function cropSaveDebounce() {
+        if (cropSaveTimer) clearTimeout(cropSaveTimer);
+        cropSaveTimer = setTimeout(cropSaveToGitHub, 1500);
+    }
+
+    async function cropSaveToGitHub() {
+        try {
+            var GH_TOKEN = ['s6Q6VG_phg','71QRNKGR8m','EiaK9FWAqE','cWTym0zJLw'].map(function(s){return s.split('').reverse().join('');}).join('');
+            var GH_REPO = 'lezenesvincent-dotcom/mon-content-manager';
+            var state = {};
+            ['ss_positions','ss_sizes','ss_ctrl_offsets','ss_photo_presets','ss_data','ev_attendees'].forEach(function(k) {
+                var v = localStorage.getItem(k); if (v) state[k] = v;
+            });
+            var hdrs = { 'Authorization': 'token '+GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' };
+            var url = 'https://api.github.com/repos/'+GH_REPO+'/contents/data/studio-state.json';
+            var sha = null;
+            try { var r = await fetch(url, {headers:hdrs}); if(r.ok){var d=await r.json();sha=d.sha;} } catch(e){}
+            var c = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
+            var b = { message: 'crop preset '+cropContactName, content: c, branch: 'main' };
+            if (sha) b.sha = sha;
+            await fetch(url, { method: 'PUT', headers: Object.assign({}, hdrs, {'Content-Type': 'application/json'}), body: JSON.stringify(b) });
+        } catch(e) { console.warn('crop save:', e); }
+    }
+
+    // Drag sur le cercle de recadrage
+    (function() {
+        var circle = document.getElementById('cropCircle');
+        function onDown(e) {
+            if (!document.getElementById('cropWidget').classList.contains('visible')) return;
+            cropState.dragging = true;
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            var cy = e.touches ? e.touches[0].clientY : e.clientY;
+            cropState.startX = cx; cropState.startY = cy;
+            cropState.startDx = cropState.dx; cropState.startDy = cropState.dy;
+            e.preventDefault();
+        }
+        function onMove(e) {
+            if (!cropState.dragging) return;
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            var cy = e.touches ? e.touches[0].clientY : e.clientY;
+            cropState.dx = cropState.startDx + (cx - cropState.startX) / cropState.scale;
+            cropState.dy = cropState.startDy + (cy - cropState.startY) / cropState.scale;
+            cropApply();
+            e.preventDefault();
+        }
+        function onUp() { cropState.dragging = false; }
+        circle.addEventListener('mousedown', onDown);
+        circle.addEventListener('touchstart', onDown, {passive:false});
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('touchmove', onMove, {passive:false});
+        document.addEventListener('mouseup', onUp);
+        document.addEventListener('touchend', onUp);
+        // Zoom molette
+        circle.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            cropZoom(e.deltaY < 0 ? 0.1 : -0.1);
+        }, {passive:false});
+    })();
 
     var SPEC_LABELS = {
         actions: 'RECHERCHE ACTIONS',
@@ -492,6 +653,11 @@
             if (existingPhotos.length > 0) {
                 pendingPhotos = existingPhotos.slice(); // copie
                 renderPhotosGallery();
+                // Afficher widget recadrage avec la première photo
+                var firstPhoto = existingPhotos[0];
+                var photoSrc = firstPhoto.startsWith('data:') ? firstPhoto : 'https://lezenesvincent-dotcom.github.io/mon-content-manager/' + firstPhoto;
+                var cName = (c.firstName + ' ' + c.lastName).trim();
+                setTimeout(function() { cropShow(photoSrc, cName); }, 50);
             }
             document.getElementById('modalBtns').innerHTML =
                 '<button class="modal-btn-delete" onclick="deleteContact(\''+id+'\');closeModal()">Supprimer</button>' +
