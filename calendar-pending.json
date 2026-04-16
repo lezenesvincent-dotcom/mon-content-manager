@@ -102,7 +102,19 @@
       "createdAt": "2026-04-16T12:33:49.174Z",
       "status": "done",
       "processedAt": "2026-04-16T12:34:58Z"
+    },
+    {
+      "action": "edit",
+      "originalSubject": "[WEBEX] Banque Pivot Eiffage ",
+      "originalStart": "2026-04-17T08:30:00Z",
+      "originalEnd": "2026-04-17T09:30:00Z",
+      "newSubject": "[WEBEX] Banque Pivot Eiffage",
+      "newDate": "2026-04-17",
+      "newStart": "10:30",
+      "newEnd": "11:30",
+      "createdAt": "2026-04-16T12:47:37.144Z",
+      "status": "pending"
     }
   ],
-  "updatedAt": "2026-04-16T12:44:56Z"
+  "updatedAt": "2026-04-16T12:47:37.144Z"
 }
