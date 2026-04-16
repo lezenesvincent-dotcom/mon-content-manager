@@ -29,9 +29,16 @@
       "synthes": true
     },
     "application": null,
-    "intervenants": [],
+    "intervenants": [
+      {
+        "prenom": "VIN",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
+      }
+    ],
     "mode": "studio",
-    "updatedAt": "2026-04-16T07:51:13.741Z",
+    "updatedAt": "2026-04-16T07:51:25.483Z",
     "uploads": {}
   },
   "1771401928693": {
