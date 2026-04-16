@@ -100,8 +100,9 @@
       "newStart": "14:00",
       "newEnd": "17:30",
       "createdAt": "2026-04-16T12:33:49.174Z",
-      "status": "pending"
+      "status": "done",
+      "processedAt": "2026-04-16T12:34:58Z"
     }
   ],
-  "updatedAt": "2026-04-16T12:33:49.174Z"
+  "updatedAt": "2026-04-16T12:34:58Z"
 }
