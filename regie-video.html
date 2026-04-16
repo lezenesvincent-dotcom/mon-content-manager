@@ -2723,6 +2723,8 @@
 
     function selectContent(item) {
         selectedContentId = item.id;
+        // Sauvegarder dans localStorage pour persistance au refresh
+        try { localStorage.setItem('lastSelectedContent', JSON.stringify(item)); } catch(e) {}
         updatePgmCards(item);
         fetch(WS_SERVER + '/api/content', {
             method: 'POST',
@@ -2824,6 +2826,20 @@
 
     loadContents();
     setInterval(loadContents, 30000);
+    // Restaurer le dernier contenu sélectionné
+    setTimeout(function() {
+        try {
+            var saved = localStorage.getItem('lastSelectedContent');
+            if (saved) {
+                var item = JSON.parse(saved);
+                if (item && item.id) {
+                    selectedContentId = item.id;
+                    updatePgmCards(item);
+                    selectContent(item);
+                }
+            }
+        } catch(e) {}
+    }, 1500);
     loadPrsnetDrafts();
     setInterval(loadPrsnetDrafts, 60000);
 
@@ -3839,7 +3855,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v100 — 2026-04-16 13:00:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v101 — 2026-04-16 14:00:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4193,9 +4209,13 @@
         fontContenu: slotState.fontContenu || 1.1
       }
     };
+    // Toujours envoyer à l'iframe preview (synchronise preview et live)
+    var pgmFrame = document.getElementById('pgmOrbitalFrame');
+    if (pgmFrame && pgmFrame.contentWindow) {
+      pgmFrame.contentWindow.postMessage(payload, '*');
+    }
     if (previewMode) {
       // Mode preview : stockage local uniquement, rien envoyé au live
-      // (previewSlotState est déjà mis à jour par slotMove/slotScaleChange)
     } else {
       // Mode live : envoie au WS
       if (slotWS && slotWS.readyState === WebSocket.OPEN) {
