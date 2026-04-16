@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Studio</title>
-    <!-- deploy: 2026-04-16 10:45:00 -->
+    <!-- deploy: 2026-04-16 11:45:00 -->
     <style>
     *, * ::before, * ::after {
         margin: 0;
@@ -2760,6 +2760,13 @@
     function scheduleAutoSave() {
         var data = collectData();
         var fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+        // Protection : ne pas écraser les intervenants existants avec un tableau vide
+        var existing = fiches[FICHE_ID];
+        if (existing && existing.intervenants && existing.intervenants.length > 0) {
+            if (!data.intervenants || data.intervenants.length === 0) {
+                data.intervenants = existing.intervenants;
+            }
+        }
         fiches[FICHE_ID] = data;
         localStorage.setItem('fiches_studio', JSON.stringify(fiches));
         clearTimeout(ghSaveTimer);
@@ -2773,6 +2780,14 @@
     }
     async function forceSaveGitHub() {
         var data = collectData();
+        // Protection : ne pas écraser les intervenants existants avec un tableau vide
+        var fiches = JSON.parse(localStorage.getItem('fiches_studio') || '{}');
+        var existing = fiches[FICHE_ID];
+        if (existing && existing.intervenants && existing.intervenants.length > 0) {
+            if (!data.intervenants || data.intervenants.length === 0) {
+                data.intervenants = existing.intervenants;
+            }
+        }
         var json = JSON.stringify(data);
         if (json === lastSavedJson) return;
         try {
@@ -4716,7 +4731,7 @@
     })();
     </script>
 
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v147 — 16/04/2026 10:45</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.82);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v148 — 16/04/2026 11:45</div>
     <!-- Modal mot de passe Transmettre -->
     <div class="lock-overlay" id="lockOverlay">
         <div class="lock-box">
@@ -4760,6 +4775,6 @@
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         <span style="font-size:8px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;">Refresh</span>
     </button>
-    <div class="version-badge-cs" id="versionBadgeCS">v147 — 16/04/2026 10:45</div>
+    <div class="version-badge-cs" id="versionBadgeCS">v148 — 16/04/2026 11:45</div>
 </body>
 </html>
