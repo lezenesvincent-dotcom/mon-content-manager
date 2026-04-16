@@ -329,7 +329,31 @@
         .cc-btns button { flex: 1; padding: 11px 16px; border-radius: 12px; border: none; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
         .cc-btn-cancel { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
         .cc-btn-save { background: linear-gradient(135deg, #0070f3, #0050c8); color: #fff; }
-        .cc-photo-upload { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        /* Photos multiples */
+        .cc-photos-gallery { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+        /* Widget recadrage */
+        .crop-widget {
+            display: none; flex-direction: column; align-items: center; gap: 8px;
+            margin-top: 10px; padding: 12px; background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+        }
+        .crop-widget.visible { display: flex; }
+        .crop-widget-title { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; align-self: flex-start; }
+        .crop-circle-wrap {
+            width: 120px; height: 120px; border-radius: 50%;
+            overflow: hidden; border: 3px solid rgba(255,255,255,0.7);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+            position: relative; cursor: grab; flex-shrink: 0;
+            background: rgba(99,102,241,0.3);
+        }
+        .crop-circle-wrap:active { cursor: grabbing; }
+        .crop-circle-wrap img { position: absolute; transform-origin: center center; user-select: none; pointer-events: none; }
+        .crop-zoom-row { display: flex; align-items: center; gap: 8px; }
+        .crop-zoom-btn { width: 28px; height: 28px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .crop-zoom-btn:hover { background: rgba(255,255,255,0.2); }
+        .crop-zoom-label { font-size: 11px; color: rgba(255,255,255,0.5); min-width: 36px; text-align: center; }
+        .crop-reset-btn { font-size: 10px; color: rgba(255,100,100,0.6); cursor: pointer; background: none; border: none; font-family: inherit; }
+        .cc-photo-upload { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
         .cc-photo-preview {
             width: 72px; height: 72px; border-radius: 10px; background: rgba(255,255,255,0.06);
             border: 2px dashed rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center;
@@ -421,7 +445,7 @@
 .dock-nav a,.dock-nav .dock-btn{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);position:relative;text-decoration:none;border:none;outline:none;}
 .dock-nav a:hover,.dock-nav .dock-btn:hover{transform:scale(1.3) translateY(-3px);z-index:10;}
 .dock-nav a:hover .dk-tip,.dock-nav .dock-btn:hover .dk-tip{opacity:1;transform:translateX(-50%) translateY(0);}
-.dock-nav svg{width:18px;height:18px;fill:none;stroke:rgba(255,255,255,0.9);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.dock-nav svg{width:14px;height:14px;fill:none;stroke:rgba(255,255,255,0.9);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .dock-nav .dk-inv svg{stroke:rgba(0,0,0,0.6);}
 .dk-tip{position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%) translateY(-3px);background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);color:#fff;font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:all 0.15s ease;letter-spacing:0.2px;font-family:-apple-system,sans-serif;}
 .dk-act::after{content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.7);}
@@ -443,7 +467,7 @@
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:6px;left:8px;z-index:9999;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">agenda v23 — 16/04/2026 14:30</div>
+<div style="position:fixed;bottom:6px;left:8px;z-index:9999;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">agenda v24 — 16/04/2026 14:55</div>
 <!-- DOCK START -->
 <nav class="dock-nav"><a href="studio-manager.html" class="dk-home"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Accueil</span></a><div class="dk-sep"></div><a href="regie-video.html" class="dr"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span class="dk-tip">R&eacute;gie</span></a><a href="agenda-studio.html" class="dp dk-act"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="dk-tip">Agenda</span></a><a href="vignettes.html" class="dc"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="2"/><path d="M21 15l-5-5L5 21"/></svg><span class="dk-tip">Vignettes</span></a><a href="creation.html" class="dv"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="dk-tip">Cr&eacute;ation</span></a><a href="manage-ei.html" class="dk"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Manage</span></a><div class="dk-sep"></div><a href="contact-studio.html" class="dg dk-inv"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="dk-tip">Contact</span></a><a href="prestation.html" class="do dk-inv"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="dk-tip">Prestations</span></a><a href="carnet.html" class="dt"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="dk-tip">Carnet</span></a><div class="dk-sep"></div><a href="studio-2027.html" class="dd"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="dk-tip">2027</span></a><a href="studio-alert.html" class="dr"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dk-tip">Alert</span></a><a href="dev-dashboard.html" class="dd"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span class="dk-tip">Dev</span></a></nav>
 <!-- DOCK END -->
@@ -1452,27 +1476,133 @@
         renderDetailAttendees(ev);
     }
 
-    var ccPhotoBase64 = null;
+    // ── Photos multiples + widget recadrage (identique au carnet) ──
+    var ccPendingPhotos = null;
 
     function ccHandlePhoto(input) {
-        var file = input.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            ccPhotoBase64 = e.target.result;
-            var preview = document.getElementById('ccPhotoPreview');
-            preview.innerHTML = '<img src="'+ccPhotoBase64+'">';
-            document.getElementById('ccPhotoRemove').style.display = '';
-        };
-        reader.readAsDataURL(file);
+        if (!input.files || input.files.length === 0) return;
+        if (ccPendingPhotos === null) ccPendingPhotos = [];
+        Array.from(input.files).forEach(function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                ccPendingPhotos.push(e.target.result);
+                ccRenderPhotosGallery();
+                var cName = (document.getElementById('ccPrenom').value + ' ' + document.getElementById('ccNom').value).trim();
+                if (cName) cropShow(e.target.result, cName);
+            };
+            reader.readAsDataURL(file);
+        });
+        input.value = '';
+    }
+
+    function ccRemovePhotoAt(idx) {
+        if (!ccPendingPhotos) return;
+        ccPendingPhotos.splice(idx, 1);
+        ccRenderPhotosGallery();
+    }
+
+    function ccRenderPhotosGallery() {
+        var g = document.getElementById('ccPhotosGallery'); if (!g) return;
+        g.innerHTML = '';
+        var photos = ccPendingPhotos || [];
+        photos.forEach(function(src, i) {
+            var displaySrc = src.startsWith('data:') ? src : 'https://lezenesvincent-dotcom.github.io/mon-content-manager/' + src;
+            var d = document.createElement('div');
+            d.style.cssText = 'position:relative;width:60px;height:60px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);flex-shrink:0';
+            d.innerHTML = '<img src="' + displaySrc + '" style="width:100%;height:100%;object-fit:cover">' +
+                '<div onclick="ccRemovePhotoAt(' + i + ')" style="position:absolute;top:2px;right:2px;width:14px;height:14px;background:rgba(0,0,0,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:8px;color:#fff">✕</div>' +
+                '<div style="position:absolute;bottom:2px;left:2px;font-size:7px;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.5);padding:0 3px;border-radius:3px">#' + (i + 1) + '</div>';
+            g.appendChild(d);
+        });
+        if (photos.length === 0) {
+            g.innerHTML = '<div style="width:60px;height:60px;border-radius:8px;border:1px dashed rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;color:rgba(255,255,255,0.2);cursor:pointer" onclick="document.getElementById('ccPhotoInput').click()">📷</div>';
+        }
     }
 
     function ccRemovePhoto() {
-        ccPhotoBase64 = null;
-        document.getElementById('ccPhotoPreview').innerHTML = '<span style="font-size:20px;opacity:0.3">📷</span>';
-        document.getElementById('ccPhotoRemove').style.display = 'none';
-        document.getElementById('ccPhotoInput').value = '';
+        ccPendingPhotos = null;
+        ccRenderPhotosGallery();
+        cropHide();
     }
+
+    // ── Widget recadrage rond ──
+    var cropState = { dx: 0, dy: 0, scale: 1, dragging: false, startX: 0, startY: 0, startDx: 0, startDy: 0 };
+    var cropContactName = null;
+
+    function cropShow(photoSrc, contactName) {
+        cropContactName = contactName;
+        var img = document.getElementById('cropImg');
+        img.src = photoSrc;
+        var presets = JSON.parse(localStorage.getItem('ss_photo_presets') || '{}');
+        var preset = presets[contactName] || { dx: 0, dy: 0, size: 1 };
+        cropState.dx = preset.dx || 0;
+        cropState.dy = preset.dy || 0;
+        cropState.scale = preset.size || 1;
+        cropApply();
+        document.getElementById('cropWidget').classList.add('visible');
+    }
+
+    function cropHide() {
+        var w = document.getElementById('cropWidget');
+        if (w) w.classList.remove('visible');
+        cropContactName = null;
+    }
+
+    function cropApply() {
+        var img = document.getElementById('cropImg');
+        var s = cropState.scale;
+        img.style.cssText = 'position:absolute;transform-origin:center center;width:100%;height:100%;object-fit:cover;transform:scale('+s+') translate('+cropState.dx+'px,'+cropState.dy+'px);user-select:none;pointer-events:none;';
+        document.getElementById('cropZoomLabel').textContent = Math.round(s * 100) + '%';
+        if (cropContactName) {
+            var presets = JSON.parse(localStorage.getItem('ss_photo_presets') || '{}');
+            presets[cropContactName] = { dx: cropState.dx, dy: cropState.dy, size: cropState.scale };
+            localStorage.setItem('ss_photo_presets', JSON.stringify(presets));
+        }
+    }
+
+    function cropZoom(delta) {
+        cropState.scale = Math.max(0.5, Math.min(5, cropState.scale + delta));
+        cropApply();
+    }
+
+    function cropReset() {
+        cropState.dx = 0; cropState.dy = 0; cropState.scale = 1;
+        cropApply();
+    }
+
+    // Drag sur le cercle de recadrage
+    (function() {
+        var circle = document.getElementById('cropCircle');
+        if (!circle) return;
+        function onDown(e) {
+            if (!document.getElementById('cropWidget').classList.contains('visible')) return;
+            cropState.dragging = true;
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            var cy = e.touches ? e.touches[0].clientY : e.clientY;
+            cropState.startX = cx; cropState.startY = cy;
+            cropState.startDx = cropState.dx; cropState.startDy = cropState.dy;
+            e.preventDefault();
+        }
+        function onMove(e) {
+            if (!cropState.dragging) return;
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            var cy = e.touches ? e.touches[0].clientY : e.clientY;
+            cropState.dx = cropState.startDx + (cx - cropState.startX) / cropState.scale;
+            cropState.dy = cropState.startDy + (cy - cropState.startY) / cropState.scale;
+            cropApply();
+            e.preventDefault();
+        }
+        function onUp() { cropState.dragging = false; }
+        circle.addEventListener('mousedown', onDown);
+        circle.addEventListener('touchstart', onDown, {passive:false});
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('touchmove', onMove, {passive:false});
+        document.addEventListener('mouseup', onUp);
+        circle.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            cropZoom(e.deltaY < 0 ? 0.05 : -0.05);
+        }, {passive:false});
+    })();
 
     function openCreateContactPopup(fullName) {
         var existing = findContactByName(fullName);
@@ -1497,11 +1627,20 @@
         document.querySelector('#createContactOverlay .cc-modal h3').textContent = existing ? '\uD83D\uDCC7 Modifier la fiche' : '\uD83D\uDCC7 Nouvelle fiche';
         document.getElementById('ccSaveBtn').dataset.existingId = existing ? (existing.id || '') : '';
         document.getElementById('ccSaveBtn').textContent = existing ? 'Mettre \u00e0 jour' : 'Enregistrer';
-        ccRemovePhoto();
-        if (existing && existing.photo) {
-            var pUrl = existing.photo.startsWith('data:') ? existing.photo : 'https://lezenesvincent-dotcom.github.io/mon-content-manager/' + existing.photo;
-            document.getElementById('ccPhotoPreview').innerHTML = '<img src="'+pUrl+'">';
-            document.getElementById('ccPhotoRemove').style.display = '';
+        // Réinitialiser et charger les photos existantes
+        ccPendingPhotos = null;
+        ccRenderPhotosGallery();
+        cropHide();
+        if (existing) {
+            var existingPhotos = existing.photos || (existing.photo && existing.photo.length > 10 ? [existing.photo] : []);
+            if (existingPhotos.length > 0) {
+                ccPendingPhotos = existingPhotos.slice();
+                ccRenderPhotosGallery();
+                var firstPhoto = existingPhotos[0];
+                var photoSrc = firstPhoto.startsWith('data:') ? firstPhoto : 'https://lezenesvincent-dotcom.github.io/mon-content-manager/' + firstPhoto;
+                var cName = (prenom + ' ' + nom).trim();
+                setTimeout(function() { cropShow(photoSrc, cName); }, 50);
+            }
         }
         document.getElementById('ccSaveBtn').disabled = false;
         document.getElementById('createContactOverlay').classList.add('visible');
@@ -1521,21 +1660,33 @@
 
         try {
             var hdrs = { 'Authorization': 'token '+GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' };
-            var photoUrl = '';
 
-            // 1. Upload photo comme fichier séparé si présente
-            if (ccPhotoBase64) {
-                var ext = ccPhotoBase64.startsWith('data:image/png') ? 'png' : 'jpg';
-                var photoFilename = 'contacts-photos/' + prenom.toLowerCase().replace(/\s+/g,'-') + '-' + nom.toLowerCase().replace(/[^a-z0-9]/g,'-') + '-' + Date.now() + '.' + ext;
-                // Extraire base64 pur
-                var b64photo = ccPhotoBase64.split(',')[1];
-                try {
-                    await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+photoFilename, {
-                        method: 'PUT', headers: hdrs,
-                        body: JSON.stringify({ message: 'photo '+prenom+' '+nom, content: b64photo, branch: 'main' })
-                    });
-                    photoUrl = photoFilename;
-                } catch(e) { console.warn('Photo upload failed:', e); }
+            // 1. Upload photos multiples sur GitHub
+            var photosToSave = ccPendingPhotos;
+            var existingIdForPhotos = document.getElementById('ccSaveBtn').dataset.existingId;
+            if (ccPendingPhotos === null && existingIdForPhotos) {
+                var existingForPhotos = contactsData.find(function(c){ return c.id === existingIdForPhotos; });
+                photosToSave = existingForPhotos ? (existingForPhotos.photos || (existingForPhotos.photo ? [existingForPhotos.photo] : [])) : [];
+            }
+            if (!photosToSave) photosToSave = [];
+
+            var photoPaths = [];
+            for (var pi = 0; pi < photosToSave.length; pi++) {
+                var src = photosToSave[pi];
+                if (src.indexOf('data:') === 0) {
+                    var ext = src.startsWith('data:image/png') ? 'png' : 'jpg';
+                    var photoFilename = 'contacts-photos/' + prenom.toLowerCase().replace(/\s+/g,'-') + '-' + nom.toLowerCase().replace(/[^a-z0-9]/g,'-') + (photosToSave.length > 1 ? '-' + (pi+1) : '') + '-' + Date.now() + '.' + ext;
+                    var b64photo = src.split(',')[1];
+                    try {
+                        await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+photoFilename, {
+                            method: 'PUT', headers: hdrs,
+                            body: JSON.stringify({ message: 'photo '+prenom+' '+nom, content: b64photo, branch: 'main' })
+                        });
+                        photoPaths.push(photoFilename);
+                    } catch(e) { console.warn('Photo upload failed:', e); photoPaths.push(src); }
+                } else {
+                    photoPaths.push(src);
+                }
             }
 
             // 2. Charger contacts.json, ajouter ou mettre à jour
@@ -1552,7 +1703,8 @@
                 'function': document.getElementById('ccFonction').value.trim(),
                 company: document.getElementById('ccEntreprise').value.trim(),
                 email: document.getElementById('ccEmail').value.trim(),
-                photo: photoUrl || (existingIdx >= 0 ? (contacts[existingIdx].photo || '') : '')
+                photos: photoPaths,
+                photo: photoPaths[0] || (existingIdx >= 0 ? (contacts[existingIdx].photo || '') : '')
             };
             if (existingIdx >= 0) {
                 contacts[existingIdx] = contactObj; // mise à jour
@@ -2040,14 +2192,31 @@
 <div id="createContactOverlay" class="cc-overlay" onclick="if(event.target===this)closeCreateContactPopup()">
     <div class="cc-modal">
         <h3>📇 Nouvelle fiche</h3>
-        <div class="cc-photo-upload">
-            <div class="cc-photo-preview" id="ccPhotoPreview" onclick="document.getElementById('ccPhotoInput').click()">
-                <span style="font-size:20px;opacity:0.3">📷</span>
+        <div class="field" style="margin-bottom:8px"><label>Photos</label>
+            <div class="cc-photo-upload">
+                <div id="ccPhotosGallery" class="cc-photos-gallery"></div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                    <span class="cc-photo-btn" onclick="document.getElementById('ccPhotoInput').click()">+ Ajouter une photo</span>
+                </div>
+                <input type="file" id="ccPhotoInput" accept="image/*" onchange="ccHandlePhoto(this)" style="display:none" multiple>
             </div>
-            <div>
-                <div class="cc-photo-btn" onclick="document.getElementById('ccPhotoInput').click()">+ Ajouter une photo</div>
-                <input type="file" id="ccPhotoInput" accept="image/*" style="display:none" onchange="ccHandlePhoto(this)">
-                <div id="ccPhotoRemove" style="display:none;font-size:10px;color:rgba(255,100,100,0.6);cursor:pointer;margin-top:4px" onclick="ccRemovePhoto()">✕ Supprimer</div>
+            <!-- Widget recadrage rond -->
+            <div class="crop-widget" id="cropWidget">
+                <div class="crop-widget-title">📸 Recadrage — glisse et zoome</div>
+                <div style="display:flex;gap:16px;align-items:center">
+                    <div class="crop-circle-wrap" id="cropCircle">
+                        <img id="cropImg" src="" draggable="false">
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                        <div class="crop-zoom-row">
+                            <button class="crop-zoom-btn" onclick="cropZoom(-0.1)">−</button>
+                            <span class="crop-zoom-label" id="cropZoomLabel">100%</span>
+                            <button class="crop-zoom-btn" onclick="cropZoom(0.1)">+</button>
+                        </div>
+                        <button class="crop-reset-btn" onclick="cropReset()">↺ Réinitialiser</button>
+                    </div>
+                </div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.3);text-align:center">Molette pour zoomer · Glisse pour recadrer</div>
             </div>
         </div>
         <div class="field"><label>Prénom</label><input id="ccPrenom" type="text" placeholder="Prénom"></div>
@@ -2055,14 +2224,14 @@
         <div class="field"><label>Spécialité</label>
             <select id="ccSpecialite">
                 <option value="actions">Recherche Actions</option>
-                <option value="eco">Économie</option>
-                <option value="esg">ESG</option>
+                <option value="eco">Économie &amp; Marchés Financiers</option>
+                <option value="esg">Recherche Développement Durable</option>
                 <option value="technique">Analyse Technique</option>
                 <option value="credit">Crédit</option>
                 <option value="autre">Autre</option>
             </select>
         </div>
-        <div class="field"><label>Fonction</label><input id="ccFonction" type="text" placeholder="ex: Analyste"></div>
+        <div class="field"><label>Fonction</label><input id="ccFonction" type="text" placeholder="ex: Analyste Biens d'équipement"></div>
         <div class="field"><label>Société</label><input id="ccEntreprise" type="text" placeholder="ex: CIC" value="CIC Corporate & Institutional Banking"></div>
         <div class="field"><label>Email</label><input id="ccEmail" type="text" placeholder="email@cic.fr"></div>
         <div class="cc-btns">
