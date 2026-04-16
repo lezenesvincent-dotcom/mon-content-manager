@@ -70,7 +70,7 @@
             transition: all 1.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .main-title {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 3.5rem;
             font-weight: 700;
             color: white;
@@ -79,7 +79,7 @@
             text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
         }
         .subtitle-inline {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 1.5rem;
             font-weight: 300;
             color: rgba(255, 255, 255, 0.7);
@@ -108,7 +108,7 @@
             will-change: transform, opacity;
         }
         .subject-title {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: var(--font-sujet, 1.2rem);
             font-weight: 700;
             margin-bottom: 12px;
@@ -124,7 +124,7 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
         }
         .subject-content {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: var(--font-contenu, 1.1rem);
             font-weight: 600;
             color: white;
@@ -478,10 +478,6 @@ développement
                                 }
                                 
                                 // Mettre à jour les tailles de police
-                                if (message.state.titleFontSize !== undefined) {
-                                    state.titleFontSize = message.state.titleFontSize;
-                                    document.getElementById('titre').style.fontSize = state.titleFontSize + 'rem';
-                                }
                                 if (message.state.fontSujet !== undefined) {
                                     state.fontSujet = message.state.fontSujet;
                                     document.documentElement.style.setProperty('--font-sujet', state.fontSujet + 'rem');
