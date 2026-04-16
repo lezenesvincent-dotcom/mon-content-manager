@@ -31,14 +31,44 @@
     "application": null,
     "intervenants": [
       {
-        "prenom": "Vincent",
+        "prenom": "vincent",
         "nom": "Lézénès",
+        "fonction": "",
+        "entreprise": "CIC Corporate & Institutional Banking"
+      },
+      {
+        "prenom": "arnaud",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
+      },
+      {
+        "prenom": "Arnaud",
+        "nom": "Palliez",
+        "fonction": "Économiste",
+        "entreprise": "CIC Corporate & Institutional Banking"
+      },
+      {
+        "prenom": "Hervé",
+        "nom": "Drouet",
+        "fonction": "",
+        "entreprise": "CIC Corporate & Institutional Banking"
+      },
+      {
+        "prenom": "dam",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
+      },
+      {
+        "prenom": "Damien",
+        "nom": "Grouselle",
         "fonction": "",
         "entreprise": "CIC Corporate & Institutional Banking"
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-16T09:36:59.131Z",
+    "updatedAt": "2026-04-16T09:39:58.353Z",
     "uploads": {}
   },
   "1771401928693": {
