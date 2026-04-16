@@ -1663,7 +1663,98 @@
     .morning-ppt-list::-webkit-scrollbar { height: 5px; }
     .morning-ppt-list::-webkit-scrollbar-track { background: transparent; }
     .morning-ppt-list::-webkit-scrollbar-thumb { background: rgba(255,200,60,0.3); border-radius: 2px; }
-    </style>
+
+    /* ===== POPUP EDITION P1-P4 ===== */
+    #editCardOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9995;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px);
+    }
+    #editCardPanel {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 480px;
+        max-width: 95vw;
+        background: rgba(20,22,35,0.98);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+    #editCardPanel h3 {
+        font-size: 12px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.9);
+        margin: 0 0 14px 0;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    .edit-field-label {
+        font-size: 9px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+    .edit-field-input {
+        width: 100%;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 12px;
+        padding: 8px 10px;
+        margin-bottom: 12px;
+        resize: vertical;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+    .edit-field-input:focus {
+        outline: none;
+        border-color: rgba(77,168,255,0.5);
+        background: rgba(255,255,255,0.1);
+    }
+    .edit-original-box {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 14px;
+        font-size: 10px;
+        color: rgba(255,255,255,0.35);
+        line-height: 1.5;
+    }
+    .edit-original-box strong {
+        color: rgba(255,255,255,0.5);
+        display: block;
+        margin-bottom: 4px;
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .edit-btn-row {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    .edit-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .edit-btn-cancel { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+    .edit-btn-restore { background: rgba(245,166,35,0.2); color: rgba(245,166,35,0.9); }
+    .edit-btn-apply { background: rgba(77,168,255,0.8); color: #fff; }
+        </style>
 </head>
 <body>
     <!-- DOCK START -->
@@ -2608,6 +2699,24 @@
                     selectContent(itemForPage);
                 };
             })(pKey, idx));
+            card.addEventListener('dblclick', (function(pKey, idx) {
+                return function(e) {
+                    e.stopPropagation();
+                    var page = selected[pKey] || {};
+                    var itemForPage = {
+                        id: selected.id,
+                        titre: selected.titre || selected.title || '',
+                        soustitre: page.sujet || selected.soustitre || selected.subtitle || '',
+                        p1: selected.p1 || {}, p2: selected.p2 || {},
+                        p3: selected.p3 || {}, p4: selected.p4 || {}
+                    };
+                    // Reconstruire l'item complet avec toutes les pages
+                    ['p1','p2','p3','p4'].forEach(function(pk) {
+                        if (selected[pk]) itemForPage[pk] = selected[pk];
+                    });
+                    openEditCard(pKey, idx, page, itemForPage);
+                };
+            })(pKey, idx));
             scroll.appendChild(card);
         });
     }
@@ -2669,6 +2778,48 @@
             }, '*');
         }
 
+    }
+
+
+    // ===== POPUP EDITION P1-P4 =====
+    var editCardState = { pKey: '', idx: 0, original: {}, current: {} };
+
+    function openEditCard(pKey, idx, page, selectedItem) {
+        editCardState.pKey = pKey;
+        editCardState.idx = idx;
+        editCardState.original = { sujet: page.sujet || '', contenu: (page.contenu || []).join('\n') };
+        editCardState.selectedItem = selectedItem;
+        document.getElementById('editCardTitle').textContent = '✏️ Modifier P' + (idx + 1);
+        document.getElementById('editSujet').value = page.sujet || '';
+        document.getElementById('editContenu').value = (page.contenu || []).join('\n');
+        var origText = (page.sujet ? '**' + page.sujet + '**\n' : '') + (page.contenu || []).join('\n');
+        document.getElementById('editOriginalText').textContent = origText || '(vide)';
+        document.getElementById('editCardOverlay').style.display = 'block';
+    }
+
+    function closeEditCard() {
+        document.getElementById('editCardOverlay').style.display = 'none';
+    }
+
+    function restoreEditCard() {
+        document.getElementById('editSujet').value = editCardState.original.sujet;
+        document.getElementById('editContenu').value = editCardState.original.contenu;
+    }
+
+    function applyEditCard() {
+        var sujet = document.getElementById('editSujet').value.trim();
+        var contenuRaw = document.getElementById('editContenu').value;
+        var contenu = contenuRaw.split('\n').map(function(l){ return l.trim(); }).filter(function(l){ return l.length > 0; });
+        var item = editCardState.selectedItem;
+        if (!item) { closeEditCard(); return; }
+        // Mettre à jour la page dans l'item
+        var pKey = editCardState.pKey;
+        item[pKey] = { sujet: sujet, contenu: contenu };
+        // Envoyer à l'overlay
+        selectContent(item);
+        // Rafraîchir les cartes
+        updateContentCards([item]);
+        closeEditCard();
     }
 
     loadContents();
@@ -3688,7 +3839,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v98 — 2026-04-16 11:30:00</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v99 — 2026-04-16 12:00:00</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4224,20 +4375,16 @@
         var status = document.getElementById('morningPptStatus');
 
         var url = MORNING_PPT_URL + '?t=' + Date.now();
-        fetch(url, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } })
+        fetch(url)
             .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
             .then(function(data) {
                 morningPptData = data.ppts || [];
                 renderMorningPpt(data);
-                // Forcer l'affichage de la liste
-                var list = document.getElementById('morningPptList');
-                if (list) list.style.display = 'flex';
-                morningPptVisible = true;
             })
             .catch(function(e) {
                 console.warn('Morning PPT load error:', e);
                 var s = document.getElementById('morningPptStatus');
-                if (s) s.textContent = 'Erreur: ' + e.message;
+                if (s) s.textContent = 'Non disponible';
             });
     }
 
@@ -4335,5 +4482,25 @@
     setInterval(loadMorningPpt, 120000);
     </script>
 
+
+    <!-- POPUP EDITION CARTE -->
+    <div id="editCardOverlay" onclick="if(event.target===this)closeEditCard()">
+        <div id="editCardPanel">
+            <h3 id="editCardTitle">✏️ Modifier P1</h3>
+            <div class="edit-field-label">Titre (sujet)</div>
+            <input type="text" id="editSujet" class="edit-field-input" placeholder="Titre de la carte...">
+            <div class="edit-field-label">Contenu</div>
+            <textarea id="editContenu" class="edit-field-input" rows="5" placeholder="Contenu de la carte..."></textarea>
+            <div class="edit-original-box" id="editOriginalBox">
+                <strong>Version originale</strong>
+                <span id="editOriginalText"></span>
+            </div>
+            <div class="edit-btn-row">
+                <button class="edit-btn edit-btn-cancel" onclick="closeEditCard()">Annuler</button>
+                <button class="edit-btn edit-btn-restore" onclick="restoreEditCard()">↺ Restaurer</button>
+                <button class="edit-btn edit-btn-apply" onclick="applyEditCard()">✓ Appliquer</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
