@@ -361,7 +361,8 @@
         photos.forEach(function(src, i) {
             var d = document.createElement('div');
             d.style.cssText = 'position:relative;width:60px;height:60px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);flex-shrink:0';
-            d.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover">' +
+            var displaySrc = src.startsWith('data:') ? src : 'https://lezenesvincent-dotcom.github.io/mon-content-manager/' + src;
+            d.innerHTML = '<img src="' + displaySrc + '" style="width:100%;height:100%;object-fit:cover">' +
                 '<div onclick="removePhotoAt(' + i + ')" style="position:absolute;top:2px;right:2px;width:14px;height:14px;background:rgba(0,0,0,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:8px;color:#fff">✕</div>' +
                 '<div style="position:absolute;bottom:2px;left:2px;font-size:7px;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.5);padding:0 3px;border-radius:3px">#' + (i + 1) + '</div>';
             g.appendChild(d);
