@@ -1,4 +1,4 @@
-<!-- deploy: 2026-04-15 17:30:00 -->
+<!-- deploy: 2026-04-16 10:30:00 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -405,6 +405,7 @@
             border-radius: 12px; padding: 14px 18px; font-size: 13px; color: #fff;
             z-index: 100; max-width: 280px;
             box-shadow: 0 12px 32px rgba(0,0,0,0.6); backdrop-filter: blur(20px);
+            pointer-events: none;
         }
         .event-tooltip.visible { display: block; }
         .event-tooltip .tt-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
@@ -444,7 +445,7 @@
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:6px;left:8px;z-index:9999;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">agenda v16 — 15/04/2026 17:30</div>
+<div style="position:fixed;bottom:6px;left:8px;z-index:9999;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.6);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">agenda v18 — 16/04/2026 10:30</div>
 <!-- DOCK START -->
 <nav class="dock-nav"><a href="studio-manager.html" class="dk-home"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Accueil</span></a><div class="dk-sep"></div><a href="regie-video.html" class="dr"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span class="dk-tip">R&eacute;gie</span></a><a href="agenda-studio.html" class="dp dk-act"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="dk-tip">Agenda</span></a><a href="vignettes.html" class="dc"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="2"/><path d="M21 15l-5-5L5 21"/></svg><span class="dk-tip">Vignettes</span></a><a href="creation.html" class="dv"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="dk-tip">Cr&eacute;ation</span></a><a href="manage-ei.html" class="dk"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="dk-tip">Manage</span></a><div class="dk-sep"></div><a href="contact-studio.html" class="dg dk-inv"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="dk-tip">Contact</span></a><a href="prestation.html" class="do dk-inv"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="dk-tip">Prestations</span></a><a href="carnet.html" class="dt"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="dk-tip">Carnet</span></a><div class="dk-sep"></div><a href="studio-2027.html" class="dd"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="dk-tip">2027</span></a><a href="studio-alert.html" class="dr"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dk-tip">Alert</span></a><a href="dev-dashboard.html" class="dd"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span class="dk-tip">Dev</span></a></nav>
 <!-- DOCK END -->
@@ -812,6 +813,21 @@
                     });
                 }
 
+                // Essai 5 : matching par mots-clés communs (≥2 mots de 4+ lettres en commun)
+                if (!persoEv && subjClean.length > 5) {
+                    var startMs2 = new Date(ev.start).getTime();
+                    var salleWords = subjClean.split(/\s+/).filter(function(w){ return w.length >= 4; });
+                    persoList.forEach(function(p) {
+                        if (persoEv) return;
+                        var diff = Math.abs(new Date(p.start).getTime() - startMs2);
+                        if (diff > 7 * 86400000) return; // max 7 jours
+                        var common = salleWords.filter(function(w){ return p.subj.includes(w); });
+                        if (common.length >= 2) persoEv = p.ev;
+                        // Ou 1 mot très long (8+ chars) suffit
+                        else if (common.length === 1 && common[0].length >= 6) persoEv = p.ev;
+                    });
+                }
+
                 if (persoEv && persoEv.reqAttendees) {
                     ev.reqAttendees = persoEv.reqAttendees;
                     ev.optAttendees = persoEv.optAttendees || [];
@@ -1053,7 +1069,7 @@
 
                 // Pictos intervenants (si événement assez grand)
                 var allAttendees = (ev.reqAttendees || []).concat(ev.optAttendees || []);
-                if (heightPx > 80) {
+                if (heightPx > 50) {
                     // Filtrer la salle (pas un intervenant réel)
                     var realAttendees = allAttendees.filter(function(n) {
                         return !n.toLowerCase().includes('salle') && !n.toLowerCase().includes('victorien') && !n.toLowerCase().includes('studio market');
@@ -1066,6 +1082,10 @@
                     (manual2.internes || []).forEach(function(n) { if (!realAttendees.includes(n)) realAttendees.push(n); });
 
                     html += '<div class="event-attendees">';
+                    // Taille des pictos selon hauteur disponible
+                    var picSize = heightPx > 180 ? 78 : heightPx > 120 ? 52 : heightPx > 80 ? 38 : 28;
+                    var picStyle = 'width:'+picSize+'px;height:'+picSize+'px;min-width:'+picSize+'px;min-height:'+picSize+'px;font-size:'+Math.round(picSize*0.3)+'px;';
+                    var rowStyle = 'width:'+(picSize+6)+'px;';
                     if (realAttendees.length > 0) {
                         var colWidth = totalCols > 1 ? (widthPct / 100) * 300 : 300;
                         var maxPics = Math.min(realAttendees.length, Math.max(1, Math.floor(colWidth / 82)));
@@ -1084,22 +1104,22 @@
                                 dL1 = nameParts[0];
                                 dL2 = nameParts.slice(1).join(' ');
                             }
-                            html += '<div class="event-attendee-row">';
-                            html += '<div class="event-attendee-pic">';
+                            html += '<div class="event-attendee-row" style="'+rowStyle+'">';
+                            html += '<div class="event-attendee-pic" style="'+picStyle+'">';
                             if (aPhoto) html += '<img src="'+aPhoto+'" style="'+getPhotoStyle(aName)+'" onerror="this.style.display=\'none\'">';
                             else html += aInitials;
                             html += '</div>';
                             var safeDL1 = dL1.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
                             var safeDL2 = dL2.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                            html += '<span class="event-attendee-name">'+safeDL1+'<br>'+safeDL2+'</span>';
+                            if (picSize >= 38) html += '<span class="event-attendee-name">'+safeDL1+'<br>'+safeDL2+'</span>';
                             html += '</div>';
                         }
                         if (realAttendees.length > maxPics) {
-                            html += '<div class="event-attendee-row"><div class="event-attendee-pic" style="background:rgba(255,255,255,0.15);font-size:17px;width:78px;height:78px;min-width:78px;min-height:78px">+' + (realAttendees.length - maxPics) + '</div></div>';
+                            html += '<div class="event-attendee-row" style="'+rowStyle+'"><div class="event-attendee-pic" style="'+picStyle+'background:rgba(255,255,255,0.15);">+' + (realAttendees.length - maxPics) + '</div></div>';
                         }
                     }
                     // Toujours afficher bouton + pour ajouter manuellement (double-clic = modale)
-                    html += '<div class="event-attendee-row" title="Double-cliquez pour ajouter des intervenants"><div class="event-attendee-pic" style="background:rgba(99,102,241,0.25);border:2px dashed rgba(99,102,241,0.5);font-size:22px;color:rgba(150,150,255,0.7);">+</div></div>';
+                    html += '<div class="event-attendee-row" style="'+rowStyle+'" title="Double-cliquez pour ajouter"><div class="event-attendee-pic" style="'+picStyle+'background:rgba(99,102,241,0.25);border:2px dashed rgba(99,102,241,0.5);color:rgba(150,150,255,0.7);">+</div></div>';
                     html += '</div>';
                 }
                 el.innerHTML = html;
@@ -1123,6 +1143,7 @@
                 el.addEventListener('mouseleave', function() { document.getElementById('tooltip').classList.remove('visible'); });
 
                 el._evData = { subject: ev.subject, startMin: item.startMin, endMin: item.endMin, ev: ev };
+                ev._domEl = el; // référence pour refreshEventPictos
                 var clickTimer = null;
                 el.addEventListener('mousedown', function(e) {
                     if (e.target.closest('.event-handle')) return;
@@ -1359,6 +1380,48 @@
         localStorage.setItem('ev_attendees', JSON.stringify(manualData));
         ev._manualAttendees = manualData[key];
         renderDetailAttendees(ev);
+        // Re-render les pictos sur l'événement dans le calendrier
+        refreshEventPictos(ev);
+    }
+
+    function refreshEventPictos(ev) {
+        if (!ev._domEl) return;
+        var el = ev._domEl;
+        // Supprimer les anciens pictos
+        var oldAttendees = el.querySelector('.event-attendees');
+        if (oldAttendees) oldAttendees.remove();
+        // Reconstruire les attendees
+        var allAttendees = (ev.reqAttendees || []).concat(ev.optAttendees || []);
+        var realAttendees = allAttendees.filter(function(n) {
+            return !n.toLowerCase().includes('salle') && !n.toLowerCase().includes('victorien') && !n.toLowerCase().includes('studio market');
+        });
+        var evKey = (ev.subject||'') + '|' + (ev.start||'');
+        var manualData = JSON.parse(localStorage.getItem('ev_attendees') || '{}');
+        var manual = manualData[evKey] || { clients: [], internes: [] };
+        (manual.clients || []).forEach(function(n) { if (!realAttendees.includes(n)) realAttendees.push(n); });
+        (manual.internes || []).forEach(function(n) { if (!realAttendees.includes(n)) realAttendees.push(n); });
+
+        var html = '<div class="event-attendees">';
+        var maxPics = Math.min(realAttendees.length, 5);
+        for (var ai = 0; ai < maxPics; ai++) {
+            var aName = realAttendees[ai];
+            var aContact = findContactByName(aName);
+            var aPhoto = getContactPhoto(aContact);
+            var aInitials = aName.trim().split(/\s+/).map(function(w){return w.charAt(0).toUpperCase();}).slice(0,2).join('');
+            var nameParts = aName.trim().split(/\s+/);
+            var dL1 = nameParts.length >= 2 && nameParts[0] === nameParts[0].toUpperCase() && nameParts[0].length > 1 ? nameParts.slice(1).join(' ') : nameParts[0];
+            var dL2 = nameParts.length >= 2 && nameParts[0] === nameParts[0].toUpperCase() && nameParts[0].length > 1 ? nameParts[0].charAt(0) + nameParts[0].slice(1).toLowerCase() : nameParts.slice(1).join(' ');
+            html += '<div class="event-attendee-row"><div class="event-attendee-pic">';
+            if (aPhoto) html += '<img src="'+aPhoto+'" style="'+getPhotoStyle(aName)+'" onerror="this.style.display=\'none\'">';
+            else html += aInitials;
+            html += '</div><span class="event-attendee-name">'+dL1.replace(/&/g,'&amp;')+'<br>'+dL2.replace(/&/g,'&amp;')+'</span></div>';
+        }
+        if (realAttendees.length > maxPics) html += '<div class="event-attendee-row" style="'+rowStyle+'"><div class="event-attendee-pic" style="'+picStyle+'background:rgba(255,255,255,0.15);">+' + (realAttendees.length - maxPics) + '</div></div>';
+        html += '<div class="event-attendee-row" title="Double-cliquez pour ajouter"><div class="event-attendee-pic" style="background:rgba(99,102,241,0.25);border:2px dashed rgba(99,102,241,0.5);font-size:22px;color:rgba(150,150,255,0.7);">+</div></div>';
+        html += '</div>';
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        el.appendChild(div.firstChild);
     }
 
     function removeManualAttendee(name, type) {
