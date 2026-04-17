@@ -1194,24 +1194,32 @@ développement
             // Graphiques
             var row = document.getElementById('pptGraphsRow');
             row.innerHTML = '';
-            (data.graphiques || []).forEach(function(g) {
-                var cell = document.createElement('div');
-                cell.className = 'ppt-graph-cell';
-                if (g.base64) {
+            var graphs = (data.graphiques || []).filter(function(g){ return g && g.base64; });
+            
+            if (graphs.length > 0) {
+                graphs.forEach(function(g) {
+                    var cell = document.createElement('div');
+                    cell.className = 'ppt-graph-cell';
                     var img = document.createElement('img');
                     img.className = 'ppt-graph-img';
                     img.src = g.base64;
                     img.alt = g.label || '';
                     cell.appendChild(img);
-                }
-                if (g.label) {
-                    var lbl = document.createElement('div');
-                    lbl.className = 'ppt-graph-label';
-                    lbl.textContent = g.label;
-                    cell.appendChild(lbl);
-                }
-                row.appendChild(cell);
-            });
+                    if (g.label) {
+                        var lbl = document.createElement('div');
+                        lbl.className = 'ppt-graph-label';
+                        lbl.textContent = g.label;
+                        cell.appendChild(lbl);
+                    }
+                    row.appendChild(cell);
+                });
+            } else if (data.graphique) {
+                // Mode texte : afficher description du graphique
+                var desc = document.createElement('div');
+                desc.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:1rem;text-align:center;border:1px dashed rgba(255,255,255,0.15);border-radius:8px;padding:20px;';
+                desc.textContent = '📊 ' + data.graphique;
+                row.appendChild(desc);
+            }
 
             // Chiffres clés
             var chRow = document.getElementById('pptChiffresRow');
