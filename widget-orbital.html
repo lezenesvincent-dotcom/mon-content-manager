@@ -16,6 +16,98 @@
             overflow: hidden;
         }
         
+        /* ── Overlay PPT Éclaireur / Scénario ── */
+        #pptContainer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            z-index: 110;
+            background: rgba(6,8,20,0.92);
+            display: flex;
+            flex-direction: column;
+            padding: 3vh 4vw;
+            box-sizing: border-box;
+            gap: 2vh;
+        }
+        #pptContainer.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .ppt-slide-titre {
+            font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            font-size: clamp(1.4rem, 3.2vw, 2.8rem);
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+        .ppt-slide-analyse {
+            font-size: clamp(0.85rem, 1.5vw, 1.2rem);
+            color: rgba(255,255,255,0.75);
+            font-style: italic;
+            line-height: 1.4;
+            max-width: 80%;
+        }
+        .ppt-graphs-row {
+            display: flex;
+            flex: 1;
+            gap: 3vw;
+            align-items: center;
+            min-height: 0;
+        }
+        .ppt-graph-cell {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 0;
+        }
+        .ppt-graph-img {
+            max-width: 100%;
+            max-height: 55vh;
+            object-fit: contain;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.04);
+        }
+        .ppt-graph-label {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.45);
+            margin-top: 6px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .ppt-chiffres-row {
+            display: flex;
+            gap: 3vw;
+            flex-wrap: wrap;
+        }
+        .ppt-chiffre-chip {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 6px;
+            padding: 5px 14px;
+            font-size: clamp(0.8rem, 1.3vw, 1rem);
+            font-weight: 700;
+            color: #fff;
+        }
+        .ppt-source {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.3);
+            align-self: flex-end;
+        }
+        /* couleur accent par type */
+        #pptContainer.type-eclaireur .ppt-slide-titre { color: #a78bfa; }
+        #pptContainer.type-actions   .ppt-slide-titre { color: #fda085; }
+        #pptContainer.type-eco       .ppt-slide-titre { color: #ff8888; }
+        #pptContainer.type-credit    .ppt-slide-titre { color: #38f9d7; }
+        #pptContainer.type-scenario  .ppt-slide-titre { color: #f6d365; }
+
         /* Graphique 3D (iframe) */
         #graphContainer {
             position: absolute;
@@ -222,6 +314,15 @@
     </style>
 </head>
 <body>
+    <!-- ── Overlay PPT Éclaireur / Scénario ── -->
+    <div id="pptContainer">
+        <div class="ppt-slide-titre" id="pptTitre"></div>
+        <div class="ppt-slide-analyse" id="pptAnalyse"></div>
+        <div class="ppt-graphs-row" id="pptGraphsRow"></div>
+        <div class="ppt-chiffres-row" id="pptChiffresRow"></div>
+        <div class="ppt-source" id="pptSource"></div>
+    </div>
+
     <!-- Conteneur du graphique 3D (iframe vers graph-embed.html) -->
     <div id="graphContainer">
         <iframe id="graphFrame" src="graph-embed.html" frameborder="0" allowtransparency="true"></iframe>
@@ -1074,6 +1175,78 @@ développement
         window.addEventListener('message', (event) => {
             if (event.data.type === 'GRAPH_READY') {
                 console.log('✅ Graphique prêt');
+            }
+        });
+
+        // ── Overlay PPT ─────────────────────────────────────────────────────
+        var pptVisible = false;
+
+        function showPptSlide(data) {
+            var container = document.getElementById('pptContainer');
+
+            // Type pour couleur accent
+            container.className = 'visible type-' + (data.slideType || 'eclaireur');
+
+            // Titre + analyse
+            document.getElementById('pptTitre').textContent = data.titre || '';
+            document.getElementById('pptAnalyse').textContent = data.analyse || '';
+
+            // Graphiques
+            var row = document.getElementById('pptGraphsRow');
+            row.innerHTML = '';
+            (data.graphiques || []).forEach(function(g) {
+                var cell = document.createElement('div');
+                cell.className = 'ppt-graph-cell';
+                if (g.base64) {
+                    var img = document.createElement('img');
+                    img.className = 'ppt-graph-img';
+                    img.src = g.base64;
+                    img.alt = g.label || '';
+                    cell.appendChild(img);
+                }
+                if (g.label) {
+                    var lbl = document.createElement('div');
+                    lbl.className = 'ppt-graph-label';
+                    lbl.textContent = g.label;
+                    cell.appendChild(lbl);
+                }
+                row.appendChild(cell);
+            });
+
+            // Chiffres clés
+            var chRow = document.getElementById('pptChiffresRow');
+            chRow.innerHTML = '';
+            (data.chiffres || []).forEach(function(c) {
+                var chip = document.createElement('div');
+                chip.className = 'ppt-chiffre-chip';
+                chip.textContent = c;
+                chRow.appendChild(chip);
+            });
+
+            // Source
+            document.getElementById('pptSource').textContent = data.source ? 'Sources : ' + data.source : '';
+
+            pptVisible = true;
+        }
+
+        function hidePptSlide() {
+            var container = document.getElementById('pptContainer');
+            container.classList.remove('visible');
+            pptVisible = false;
+        }
+
+        // Listener postMessage pour ppt_slide
+        window.addEventListener('message', function(event) {
+            var d = event.data;
+            if (!d || typeof d !== 'object') return;
+            if (d.type === 'ppt_slide') {
+                showPptSlide(d);
+            } else if (d.type === 'ppt_hide') {
+                hidePptSlide();
+            } else if (d.type === 'update') {
+                // Si un update normal arrive, cacher le PPT overlay
+                hidePptSlide();
+                updateContent(d.data);
             }
         });
     </script>
