@@ -1594,54 +1594,67 @@
         min-height: 160px;
         align-items: stretch;
     }
-    /* ── Cartes PPT Morning : fond dégradé complet ── */
     .morning-ppt-card {
         flex-shrink: 0;
-        background: linear-gradient(135deg,#2a2d3e,#1e2030);
-        border: none;
-        border-radius: 10px;
+        background: rgba(255,200,60,0.07);
+        border: 1px solid rgba(255,200,60,0.2);
+        border-radius: 8px;
         padding: 10px 12px;
         cursor: pointer;
-        transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1);
-        min-width: 175px;
-        max-width: 215px;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.4);
-        position: relative;
-        overflow: hidden;
+        transition: all 0.15s;
+        min-width: 180px;
+        max-width: 220px;
     }
-    .morning-ppt-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-    .morning-ppt-card.loading { opacity: 0.5; pointer-events: none; }
-    /* Fond dégradé par spécialité — couvre toute la carte */
-    .spec-actions   { background: linear-gradient(135deg,#f6a035,#f6d365,#fda085) !important; }
-    .spec-eco       { background: linear-gradient(135deg,#ff416c,#ff4b2b) !important; }
-    .spec-credit    { background: linear-gradient(135deg,#0d9488,#06b6d4) !important; }
-    .spec-esg       { background: linear-gradient(135deg,#43e97b,#38f9d7) !important; }
-    .spec-technique { background: linear-gradient(135deg,#8b5cf6,#6366f1) !important; }
-    .spec-eclaireur { background: linear-gradient(135deg,#667eea,#764ba2) !important; }
-    .spec-scenario  { background: linear-gradient(135deg,#f6d365,#667eea,#43e97b) !important; }
-    .spec-autre     { background: linear-gradient(135deg,#f093fb,#f5576c) !important; }
-    /* Textes sur dégradé */
+    .morning-ppt-card:hover {
+        background: rgba(255,200,60,0.15);
+        border-color: rgba(255,200,60,0.5);
+        transform: translateY(-1px);
+    }
+    .morning-ppt-card.loading {
+        opacity: 0.5;
+        pointer-events: none;
+    }
     .morning-ppt-name {
-        font-size: 8px; font-weight: 700;
-        color: rgba(255,255,255,0.65);
-        margin-bottom: 3px; white-space: nowrap;
-        overflow: hidden; text-overflow: ellipsis;
-        text-transform: uppercase; letter-spacing: 0.4px;
+        font-size: 9px;
+        font-weight: 700;
+        color: rgba(255,200,60,0.9);
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .morning-ppt-titre {
-        font-size: 12px; font-weight: 800; color: #fff;
-        margin-bottom: 3px; line-height: 1.3;
-        display: -webkit-box; -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical; overflow: hidden;
-        text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
-    .morning-ppt-sub { font-size: 8px; color: rgba(255,255,255,0.7); margin-bottom: 3px; }
-    .morning-ppt-cartes { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 5px; }
+    .morning-ppt-sub {
+        font-size: 8px;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 4px;
+    }
+    .morning-ppt-cartes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        margin-top: 4px;
+    }
     .morning-ppt-carte-tag {
-        font-size: 7px; background: rgba(0,0,0,0.2);
-        color: rgba(255,255,255,0.85); padding: 1px 5px;
-        border-radius: 3px; white-space: nowrap;
-        overflow: hidden; text-overflow: ellipsis; max-width: 80px;
+        font-size: 7px;
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.4);
+        padding: 1px 5px;
+        border-radius: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80px;
     }
     .morning-ppt-empty {
         font-size: 10px;
@@ -3845,7 +3858,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v109 — 17/04/2026 09:30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v110 — 17/04/2026 10:30</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4411,29 +4424,11 @@
             return;
         }
         list.innerHTML = ppts.map(function(ppt, idx) {
-            var specClass = 'spec-autre';
-            var f=(ppt.fichier||'').toLowerCase(), t=(ppt.type||'').toLowerCase(), ti=(ppt.titre||'').toLowerCase();
-            var sub=(ppt.sousTitre||'').toUpperCase();
-            if (t==='eclaireur'||f.includes('eclaireur')||ti.includes('eclaireur')||ti.includes('éclaireur'))
-                specClass='spec-eclaireur';
-            else if (t==='scenario'||f.includes('scenario')||ti.includes('scenario')||ti.includes('scénario'))
-                specClass='spec-scenario';
-            else if (sub.includes('RECHERCHE ACTIONS')||t==='actions')
-                specClass='spec-actions';
-            else if (sub.includes('ÉCONOMIE')||sub.includes('ECONOMIE')||sub.includes('ECO')||t==='eco')
-                specClass='spec-eco';
-            else if (sub.includes('CRÉDIT')||sub.includes('CREDIT')||t==='credit')
-                specClass='spec-credit';
-            else if (sub.includes('ESG')||t==='esg')
-                specClass='spec-esg';
-            else if (sub.includes('TECHNIQUE')||t==='technique')
-                specClass='spec-technique';
             var cartesTags = (ppt.cartes || []).slice(0, 4).map(function(c) {
                 return '<span class="morning-ppt-carte-tag">' + (c.sujet || '').substring(0, 16) + '</span>';
             }).join('');
-            var nom = (ppt.fichier||'').replace(/\.(pptx|pdf|json)$/i,'').replace(/_/g,' ').substring(0,25);
-            return '<div class="morning-ppt-card ' + specClass + '" id="mppt-' + idx + '" onclick="loadPptIntoRegie(' + idx + ')">' +
-                '<div class="morning-ppt-name">' + nom + '</div>' +
+            return '<div class="morning-ppt-card" id="mppt-' + idx + '" onclick="loadPptIntoRegie(' + idx + ')">' +
+                '<div class="morning-ppt-name">📄 ' + (ppt.fichier || '').replace('.pptx','').replace('.PPTX','').substring(0, 25) + '</div>' +
                 '<div class="morning-ppt-titre">' + (ppt.titre || '—') + '</div>' +
                 (ppt.sousTitre ? '<div class="morning-ppt-sub">' + ppt.sousTitre + '</div>' : '') +
                 '<div class="morning-ppt-cartes">' + cartesTags + '</div>' +
@@ -4442,67 +4437,160 @@
     }
 
     function loadPptIntoRegie(idx) {
-        var ppt = morningPptData[idx];
+        var allPpts = (window._allPptData && window._allPptData.length) ? window._allPptData : morningPptData;
+        var ppt = allPpts[idx];
         if (!ppt) return;
+        if (ppt._status === 'parsing') return;
+
         var cartes = ppt.cartes || [];
 
-        // Splitter le contenu en bullets (lignes non vides)
         function makeBullets(c) {
             if (!c || !c.contenu) return [];
-            var raw = c.contenu;
-            // Splitter sur \n (JSON escape) ou retour chariot réel
-            var lines = raw.split(/\n|\r\n|\r/).filter(function(l){ return l.trim().length > 0; });
-            return lines.map(function(l){ return l.trim(); });
+            return c.contenu.split(/\n|\r\n|\r/).map(function(l){ return l.trim(); }).filter(Boolean);
         }
-
-        // Sujet = titre de la carte (1ère ligne si pas de sujet dédié)
         function getSujet(c) {
             if (!c) return '';
             if (c.sujet && c.sujet.trim()) return c.sujet.trim();
-            // Fallback : prendre la 1ère ligne du contenu
-            if (c.contenu) {
-                var first = c.contenu.split(/\n|\r/)[0];
-                return first ? first.trim().substring(0, 60) : '';
-            }
+            if (c.contenu) { var f = c.contenu.split(/\n|\r/)[0]; return f ? f.trim().substring(0, 60) : ''; }
             return '';
         }
 
-        var item = {
-            id: 'ppt-' + idx,
-            titre: ppt.titre || '',
-            soustitre: ppt.sousTitre || '',
-            title: ppt.titre || '',
-            subtitle: ppt.sousTitre || '',
-            source: 'morning-ppt',
-            p1: { sujet: getSujet(cartes[0]), contenu: makeBullets(cartes[0]) },
-            p2: { sujet: getSujet(cartes[1]), contenu: makeBullets(cartes[1]) },
-            p3: { sujet: getSujet(cartes[2]), contenu: makeBullets(cartes[2]) },
-            p4: { sujet: getSujet(cartes[3]), contenu: makeBullets(cartes[3]) }
-        };
+        // Détecter si PPT type slide avec graphiques
+        var f = (ppt.fichier||'').toLowerCase(), t = (ppt.type||'').toLowerCase(), ti = (ppt.titre||'').toLowerCase();
+        var isPptSlide = (t === 'eclaireur' || t === 'scenario' ||
+            f.includes('eclaireur') || f.includes('scenario') ||
+            ti.includes('eclaireur') || ti.includes('éclaireur') ||
+            ti.includes('scenario') || ti.includes('scénario'));
 
-        // Sélectionner le contenu PPT (met à jour selectedContentId et les vignettes P1-P4)
-        if (typeof selectContent === 'function') { selectContent(item); }
-        // Envoyer vers l'overlay via postMessage
-        var frame = document.getElementById('pgmDecorFrame');
-        if (frame && frame.contentWindow) {
-            frame.contentWindow.postMessage({
-                type: 'update',
-                data: {
-                    titre: item.titre || '',
-                    soustitre: item.soustitre || '',
-                    p1: item.p1 || { sujet: '', contenu: [] },
-                    p2: item.p2 || { sujet: '', contenu: [] },
-                    p3: item.p3 || { sujet: '', contenu: [] },
-                    p4: item.p4 || { sujet: '', contenu: [] }
-                }
-            }, '*');
-        }
+        // Mémoriser la carte active pour navigation ← →
+        window._activePptIdx = idx;
 
-        // Feedback visuel — sans écraser les dégradés
+        // Feedback visuel
         document.querySelectorAll('.morning-ppt-card').forEach(function(c, i) {
-            c.style.outline = (i === idx) ? '2px solid rgba(255,255,255,0.7)' : '';
-            c.style.opacity = (i === idx) ? '1' : '0.6';
+            c.style.outline = (i === idx) ? '2px solid rgba(255,255,255,0.6)' : '';
+            c.style.opacity = (i === idx) ? '1' : '0.65';
         });
+
+        if (isPptSlide && ppt._slideImages && ppt._slideImages.length > 0) {
+            // ── Mode overlay PPT : envoyer ppt_slide à l'iframe orbital ──
+            var frame = document.getElementById('pgmOrbitalFrame');
+            if (frame && frame.contentWindow) {
+                var slideIdx = window._pptCurrentSlide || 0;
+                var carte = cartes[slideIdx] || cartes[0] || {};
+                var images = ppt._slideImages[slideIdx] || ppt._slideImages[0] || [];
+                var lines = (carte.contenu || '').split(/\n|\r/);
+                var analyse = lines.filter(function(l){ return l.trim() && !l.toLowerCase().includes('source'); }).slice(0,2).join(' — ');
+                var sourceRaw = lines.filter(function(l){ return l.toLowerCase().includes('source'); }).join(' ');
+                var source = sourceRaw.replace(/sources?\s*:\s*/gi, '').trim();
+                frame.contentWindow.postMessage({
+                    type: 'ppt_slide',
+                    slideType: t || 'eclaireur',
+                    titre: carte.sujet || ppt.titre || '',
+                    analyse: analyse,
+                    graphiques: images,
+                    chiffres: (ppt._chiffres && ppt._chiffres[slideIdx]) || [],
+                    source: source
+                }, '*');
+            }
+            var inBtn = document.querySelector('#overlayBtns .cam-pill');
+            if (inBtn && typeof activateBtn === 'function') { activateBtn(inBtn); }
+            if (typeof sendOverlayCmd === 'function') { sendOverlayCmd('ANIMATE_IN'); }
+        } else {
+            // ── Mode normal : cartes P1-P4 ──
+            var item = {
+                id: 'ppt-' + idx,
+                titre: ppt.titre || '',
+                soustitre: ppt.sousTitre || '',
+                title: ppt.titre || '',
+                subtitle: ppt.sousTitre || '',
+                source: 'morning-ppt',
+                p1: { sujet: getSujet(cartes[0]), contenu: makeBullets(cartes[0]) },
+                p2: { sujet: getSujet(cartes[1]), contenu: makeBullets(cartes[1]) },
+                p3: { sujet: getSujet(cartes[2]), contenu: makeBullets(cartes[2]) },
+                p4: { sujet: getSujet(cartes[3]), contenu: makeBullets(cartes[3]) }
+            };
+            if (typeof selectContent === 'function') { selectContent(item); }
+            var frame2 = document.getElementById('pgmDecorFrame');
+            if (frame2 && frame2.contentWindow) {
+                frame2.contentWindow.postMessage({ type: 'update', data: { titre: item.titre, soustitre: item.soustitre, p1: item.p1, p2: item.p2, p3: item.p3, p4: item.p4 } }, '*');
+            }
+            var inBtn2 = document.querySelector('#overlayBtns .cam-pill');
+            if (inBtn2 && typeof activateBtn === 'function') { activateBtn(inBtn2); }
+            if (typeof sendOverlayCmd === 'function') { sendOverlayCmd('ANIMATE_IN'); }
+        }
+    }
+
+    // Navigation entre slides ← →
+    window._pptCurrentSlide = 0;
+    document.addEventListener('keydown', function(e) {
+        if (window._activePptIdx === undefined) return;
+        var allPpts = (window._allPptData && window._allPptData.length) ? window._allPptData : morningPptData;
+        var ppt = allPpts[window._activePptIdx];
+        if (!ppt || !ppt._slideImages) return;
+        var maxSlide = Math.max((ppt.cartes||[]).length, ppt._slideImages.length) - 1;
+        if (e.key === 'ArrowRight' && window._pptCurrentSlide < maxSlide) {
+            window._pptCurrentSlide++;
+            loadPptIntoRegie(window._activePptIdx);
+        } else if (e.key === 'ArrowLeft' && window._pptCurrentSlide > 0) {
+            window._pptCurrentSlide--;
+            loadPptIntoRegie(window._activePptIdx);
+        }
+    });
+
+    // ── Extraction images PPTX ─────────────────────────────────────────────
+    async function extractPptxImages(file, pptObj) {
+        if (!file) return;
+        try {
+            var arrayBuffer = await file.arrayBuffer();
+            var JSZip = window.JSZip;
+            if (!JSZip) {
+                // Charger JSZip dynamiquement
+                await new Promise(function(res, rej) {
+                    var s = document.createElement('script');
+                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                    s.onload = res; s.onerror = rej;
+                    document.head.appendChild(s);
+                });
+                JSZip = window.JSZip;
+            }
+            var zip = await JSZip.loadAsync(arrayBuffer);
+            var slideCount = 0;
+            Object.keys(zip.files).forEach(function(k) {
+                if (/ppt\/slides\/slide\d+\.xml$/.test(k)) slideCount++;
+            });
+
+            var slideImages = [];
+            for (var i = 1; i <= slideCount; i++) {
+                var relsPath = 'ppt/slides/_rels/slide' + i + '.xml.rels';
+                var relsFile = zip.file(relsPath);
+                if (!relsFile) { slideImages.push([]); continue; }
+                var relsXml = await relsFile.async('string');
+                var mediaRefs = [];
+                var re = /Target="\.\.\/media\/([^"]+)"/g, m;
+                while ((m = re.exec(relsXml)) !== null) {
+                    var fname = m[1];
+                    // Garder EMF + images (pas PNG drapeaux petits)
+                    var mediaFile = zip.file('ppt/media/' + fname);
+                    if (!mediaFile) continue;
+                    var bytes = await mediaFile.async('uint8array');
+                    // EMF → on les convertit en blob URL
+                    var ext = fname.split('.').pop().toLowerCase();
+                    var mime = ext === 'emf' ? 'image/x-emf' : (ext === 'png' ? 'image/png' : 'image/jpeg');
+                    var blob = new Blob([bytes], { type: mime });
+                    var url = URL.createObjectURL(blob);
+                    mediaRefs.push({ label: fname.replace(/\.\w+$/, ''), base64: url });
+                }
+                // Limiter à 2 graphiques par slide (les EMF en priorité)
+                var emfs = mediaRefs.filter(function(r){ return r.label.match(/emf/i) || r.label.match(/image[5-9]|image1[0-9]/); });
+                var selected = (emfs.length >= 2) ? emfs.slice(0, 2) : mediaRefs.slice(0, 2);
+                slideImages.push(selected);
+            }
+            pptObj._slideImages = slideImages;
+            rebuildPptList();
+        } catch(err) {
+            console.warn('extractPptxImages error:', err);
+            pptObj._slideImages = [];
+        }
     }
 
     // Charger au démarrage et toutes les 2 minutes
