@@ -71,10 +71,16 @@
         "nom": "Lang",
         "fonction": "",
         "entreprise": "CIC Corporate & Institutional Banking"
+      },
+      {
+        "prenom": "th",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-29T07:08:45.146Z",
+    "updatedAt": "2026-04-29T07:08:52.177Z",
     "uploads": {}
   },
   "1771401928693": {
