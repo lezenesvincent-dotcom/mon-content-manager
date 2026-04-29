@@ -48,7 +48,7 @@
 
     .main {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         width: 100%;
         height: 100vh;
         gap: 8px;
@@ -57,6 +57,15 @@
         position: relative;
         z-index: 2;
         box-sizing: border-box;
+    }
+    .main-left-col {
+        flex: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
     }
     .main-row {
         display: flex;
@@ -95,7 +104,7 @@
     .pgm-screen {
         width: 100%;
         aspect-ratio: 32 / 9;
-        max-height: 22vh;
+        max-height: 30vh;
         background: #0a0c14;
         border-radius: 20px 20px 0 0;
         display: flex;
@@ -1243,7 +1252,7 @@
     }/* ===== RIGHT COLUMN: Calendar Timeline ===== */
 
     .calendar-col {
-        width: 90px;
+        width: 160px;
         flex-shrink: 0;
         display: flex;
         flex-direction: column;
@@ -1881,7 +1890,7 @@
 
     <div class="album-bg" id="albumBg"></div>
     <div class="main">
-
+        <div class="main-left-col">
         <!-- PGM FULL WIDTH -->
         <div class="pgm-block" style="flex-shrink:0;overflow:hidden;">
                 <div class="pgm-screen" id="pgmScreen">
@@ -2125,14 +2134,16 @@
             </div>
         </div>
 
-            <!-- Planning intégré dans la colonne droite -->
-            <div class="calendar-col" style="width:100%;flex:1;min-height:0;">
-                <div class="cal-header" id="calHeader"></div>
-                <div class="cal-timeline" id="calTimeline">
-                    <div class="cal-timeline-inner" id="calTimelineInner"></div>
-                </div>
-            </div>
         </div><!-- /main-row -->
+        </div><!-- /main-left-col -->
+
+        <!-- Planning pleine hauteur à droite -->
+        <div class="calendar-col">
+            <div class="cal-header" id="calHeader"></div>
+            <div class="cal-timeline" id="calTimeline">
+                <div class="cal-timeline-inner" id="calTimelineInner"></div>
+            </div>
+        </div>
 
     </div>
 
@@ -3874,7 +3885,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v118 — 2026-04-29</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v119 — 2026-04-29</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
