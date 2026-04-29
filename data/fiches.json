@@ -77,10 +77,16 @@
         "nom": "Jumentier",
         "fonction": "Equipier Studio",
         "entreprise": "CIC Corporate & Institutional Banking"
+      },
+      {
+        "prenom": "Fran",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-29T07:09:43.829Z",
+    "updatedAt": "2026-04-29T07:11:32.948Z",
     "uploads": {}
   },
   "1771401928693": {
