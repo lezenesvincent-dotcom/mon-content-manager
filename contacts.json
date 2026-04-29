@@ -598,5 +598,18 @@
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
     "photo": "contacts-photos/laurence-carde.jpg"
+  },
+  {
+    "id": "c_1777451185078",
+    "firstName": "Paul",
+    "lastName": "BALANANT",
+    "speciality": "actions",
+    "function": "",
+    "company": "CIC Corporate & Institutional Banking",
+    "email": "",
+    "photos": [
+      "contacts-photos/paul-balanant-1777451182873.png"
+    ],
+    "photo": "contacts-photos/paul-balanant-1777451182873.png"
   }
 ]
