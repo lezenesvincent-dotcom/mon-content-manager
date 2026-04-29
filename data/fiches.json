@@ -67,12 +67,6 @@
         "entreprise": "CIC Corporate & Institutional Banking"
       },
       {
-        "prenom": "David",
-        "nom": "Lang",
-        "fonction": "",
-        "entreprise": "CIC Corporate & Institutional Banking"
-      },
-      {
         "prenom": "Thomas",
         "nom": "Jumentier",
         "fonction": "Equipier Studio",
@@ -80,7 +74,7 @@
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-29T07:11:49.602Z",
+    "updatedAt": "2026-04-29T07:11:57.252Z",
     "uploads": {}
   },
   "1771401928693": {
