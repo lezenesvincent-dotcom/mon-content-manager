@@ -65,10 +65,16 @@
         "nom": "Grouselle",
         "fonction": "",
         "entreprise": "CIC Corporate & Institutional Banking"
+      },
+      {
+        "prenom": "da",
+        "nom": "",
+        "fonction": "",
+        "entreprise": ""
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-29T07:06:36.547Z",
+    "updatedAt": "2026-04-29T07:07:19.897Z",
     "uploads": {}
   },
   "1771401928693": {
