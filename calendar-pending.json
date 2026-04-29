@@ -115,7 +115,19 @@
       "createdAt": "2026-04-16T12:47:37.144Z",
       "status": "error",
       "processedAt": "2026-04-16T12:49:57Z"
+    },
+    {
+      "action": "edit",
+      "originalSubject": "Confirmé / Web Conférence Ligne Métier Communication ",
+      "originalStart": "2026-04-28T12:30:00Z",
+      "originalEnd": "2026-04-28T14:00:00Z",
+      "newSubject": "Confirmé / Web Conférence Ligne Métier Communication",
+      "newDate": "2026-04-28",
+      "newStart": "14:30",
+      "newEnd": "16:00",
+      "createdAt": "2026-04-29T08:26:30.004Z",
+      "status": "pending"
     }
   ],
-  "updatedAt": "2026-04-29T08:24:57Z"
+  "updatedAt": "2026-04-29T08:26:30.004Z"
 }
