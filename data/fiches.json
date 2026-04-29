@@ -14,7 +14,7 @@
     "titreSynthe": "",
     "commentaires": "",
     "toggles": {
-      "appIBM": false,
+      "appIBM": true,
       "appZoom": false,
       "appWebex": false,
       "appTeams": false,
@@ -28,7 +28,7 @@
       "visite": true,
       "synthes": true
     },
-    "application": null,
+    "application": "IBM",
     "intervenants": [
       {
         "prenom": "vincent",
@@ -68,7 +68,7 @@
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-04-29T07:04:39.187Z",
+    "updatedAt": "2026-04-29T07:05:54.721Z",
     "uploads": {}
   },
   "1771401928693": {
