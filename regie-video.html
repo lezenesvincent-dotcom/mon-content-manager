@@ -48,15 +48,24 @@
 
     .main {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         width: 100%;
         height: 100vh;
         gap: 8px;
-        padding: 8px;
+        padding: 8px 8px 70px 8px;
         overflow: hidden;
         position: relative;
         z-index: 2;
         box-sizing: border-box;
+    }
+    .main-left-col {
+        flex: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
     }
     .main-row {
         display: flex;
@@ -95,6 +104,7 @@
     .pgm-screen {
         width: 100%;
         aspect-ratio: 32 / 9;
+        max-height: 30vh;
         background: #0a0c14;
         border-radius: 20px 20px 0 0;
         display: flex;
@@ -249,7 +259,7 @@
     .conducteur {
         background: rgba(255, 255, 255, 0.04);
         border-radius: 16px;
-        padding: 10px 12px 12px;
+        padding: 6px 10px 8px;
         flex-shrink: 0;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
@@ -743,7 +753,7 @@
     }/* ===== CENTER COLUMN: Preview + Cam Grid + PTZ + Media ===== */
 
     .center {
-        flex: 1;
+        flex: 2;
         display: flex;
         flex-direction: column;
         gap: 8px;
@@ -760,11 +770,13 @@
     .preview-panel {
         background: rgba(255, 255, 255, 0.04);
         border-radius: 20px;
-        padding: 10px;
+        padding: 8px;
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        flex-shrink: 0;
+        gap: 4px;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
@@ -772,12 +784,12 @@
         background: #000;
         border-radius: 20px;
         width: 100%;
-        aspect-ratio: 16/9;
+        flex: 1;
+        min-height: 0;
         position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
     }
 
     .preview-screen span {
@@ -848,15 +860,16 @@
     .framing-bar {
         display: flex;
         gap: 4px;
-        padding: 5px 6px;
+        padding: 4px 6px;
         background: url('regie-assets/bar-gris.png') center/100% 100% no-repeat;
-        height: 62px;
+        height: 50px;
         align-items: center;
+        flex-shrink: 0;
     }
 
     .frame-slot {
         flex: 1;
-        height: 48px;
+        height: 38px;
         border-radius: 12px;
         cursor: pointer;
         display: flex;
@@ -947,14 +960,14 @@
     }
 
     .cam-g {
-        height: 44px;
+        height: 36px;
         background: rgba(255, 255, 255, 0.06);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
         color: rgba(255, 255, 255, 0.5);
         cursor: pointer;
@@ -979,16 +992,16 @@
     }/* D-pad */
 
     .dpad {
-        width: 100px;
+        width: 88px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        gap: 2px;
+        gap: 1px;
         background: rgba(255, 255, 255, 0.03);
-        border-radius: 16px;
-        padding: 8px;
+        border-radius: 14px;
+        padding: 6px;
         border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
@@ -1014,8 +1027,8 @@
     }
 
     .dpad-center-btn {
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
         background: linear-gradient(135deg, #667eea, #764ba2);
         border-radius: 50%;
         border: none;
@@ -1242,7 +1255,7 @@
     }/* ===== RIGHT COLUMN: Calendar Timeline ===== */
 
     .calendar-col {
-        width: 180px;
+        width: 160px;
         flex-shrink: 0;
         display: flex;
         flex-direction: column;
@@ -1405,7 +1418,8 @@
     .dock-nav {
         position: fixed;
         bottom: 10px;
-        right: 12px;
+        left: 50%;
+        transform: translateX(-50%);
         z-index: 9999;
         display: flex;
         align-items: center;
@@ -1414,13 +1428,13 @@
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 13px;
-        padding: 4px 7px;
+        border-radius: 18px;
+        padding: 6px 10px;
     }
 
     .dock-nav a, .dock-nav .dock-btn {
-        width: 30px;
-        height: 30px;
+        width: 42px;
+        height: 42px;
         border-radius: 8px;
         display: flex;
         align-items: center;
@@ -1587,11 +1601,11 @@
         display: flex;
         flex-direction: row;
         gap: 8px;
-        padding: 10px;
+        padding: 8px;
         overflow-x: auto;
         overflow-y: hidden;
         scrollbar-width: thin;
-        min-height: 160px;
+        min-height: 100px;
         align-items: stretch;
     }
     .morning-ppt-card {
@@ -1599,11 +1613,11 @@
         background: linear-gradient(135deg,#2a2d3e,#1e2030);
         border: none;
         border-radius: 10px;
-        padding: 10px 12px;
+        padding: 7px 10px;
         cursor: pointer;
         transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1);
-        min-width: 175px;
-        max-width: 215px;
+        min-width: 150px;
+        max-width: 190px;
         box-shadow: 0 3px 12px rgba(0,0,0,0.4);
     }
     .morning-ppt-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
@@ -1623,11 +1637,22 @@
     .morning-ppt-name {
         font-size: 9px;
         font-weight: 700;
-        color: rgba(0,0,0,0.7);
+        color: rgba(255,200,60,0.9);
         margin-bottom: 4px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+    .morning-ppt-titre {
+        font-size: 13px;
+        font-weight: 900;
+        color: #000;
+        margin-bottom: 3px;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
     .morning-ppt-analyste {
         font-size: 9px;
@@ -1637,17 +1662,6 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-    .morning-ppt-titre {
-        font-size: 13px;
-        font-weight: 900;
-        color: #000;
-        margin-bottom: 4px;
-        line-height: 1.3;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
     }
     .morning-ppt-sub {
         font-size: 8px;
@@ -1889,7 +1903,7 @@
 
     <div class="album-bg" id="albumBg"></div>
     <div class="main">
-
+        <div class="main-left-col">
         <!-- PGM FULL WIDTH -->
         <div class="pgm-block" style="flex-shrink:0;overflow:hidden;">
                 <div class="pgm-screen" id="pgmScreen">
@@ -2106,41 +2120,19 @@
                 </div>
             </div>
 
-            <div class="media-zone">
-                <div class="media-left">
-                    <div class="media-thumbs-row" id="genThumbs"></div>
-                    <div class="bottom-ctrls">
-                        <button class="bc bc-demo">Démo</button>
-                        <button class="bc bc-icon">
-                            <svg width="20" height="22" viewBox="0 0 22 24" fill="none">
-                                <path d="M4 2L19 12L4 22V2Z" stroke="#ccc" stroke-width="1.5" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-                        <button class="bc bc-icon">
-                            <svg width="22" height="20" viewBox="0 0 24 22" fill="none">
-                                <path d="M2 1h20v13H8L2 20V1Z" stroke="#ccc" stroke-width="1.5" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-                        <button class="bc bc-icon">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 3v13M12 16l-5-5M12 16l5-5" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <rect x="3" y="18" width="18" height="3" rx="1.5" stroke="#ccc" stroke-width="1.5"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
+            
         </div>
 
-            <!-- Planning intégré dans la colonne droite -->
-            <div class="calendar-col" style="width:100%;flex:1;min-height:0;">
-                <div class="cal-header" id="calHeader"></div>
-                <div class="cal-timeline" id="calTimeline">
-                    <div class="cal-timeline-inner" id="calTimelineInner"></div>
-                </div>
-            </div>
         </div><!-- /main-row -->
+        </div><!-- /main-left-col -->
+
+        <!-- Planning pleine hauteur à droite -->
+        <div class="calendar-col">
+            <div class="cal-header" id="calHeader"></div>
+            <div class="cal-timeline" id="calTimeline">
+                <div class="cal-timeline-inner" id="calTimelineInner"></div>
+            </div>
+        </div>
 
     </div>
 
@@ -3267,6 +3259,7 @@
 
     function buildGenThumbs() {
         var container = document.getElementById('genThumbs');
+        if (!container) return;
         container.innerHTML = '';
         generiques.forEach(function(gen, i) {
             var wrap = document.createElement('div');
@@ -3882,7 +3875,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v125 — 2026-04-30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v126 — 2026-04-30</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4461,14 +4454,13 @@
             var cartesTags = (ppt.cartes || []).slice(0, 4).map(function(c) {
                 return '<span class="morning-ppt-carte-tag">' + (c.sujet || '').substring(0, 16) + '</span>';
             }).join('');
-            // Titre principal : type spécial ou nom de société
             var titreVignette;
             if (t==='eclaireur'||f.includes('eclaireur')||ti.includes('eclaireur')||ti.includes('éclaireur')) titreVignette = 'ÉCLAIREUR';
             else if (t==='scenario'||f.includes('scenario')||ti.includes('scenario')) titreVignette = 'SCÉNARIO';
             else if (f.includes('petrole')||f.includes('pétrole')||ti.includes('petrole')||ti.includes('pétrole')) titreVignette = 'POINT PÉTROLE';
             else if (sub.includes('CRÉDIT')||sub.includes('CREDIT')||t==='credit') titreVignette = 'POINT CRÉDIT';
             else titreVignette = (ppt.titre || ppt.fichier || '—').replace(/\.(pptx|pdf|json)$/i,'').replace(/_/g,' ').toUpperCase();
-            var analysteTest = ppt.analyste || 'Eric Ravary'; // test
+            var analysteTest = ppt.analyste || 'Eric Ravary';
             return '<div class="morning-ppt-card ' + specClass + '" id="mppt-' + idx + '" onclick="loadPptIntoRegie(' + idx + ')">' +
                 '<div class="morning-ppt-analyste">✍️ ' + analysteTest + '</div>' +
                 '<div class="morning-ppt-titre">' + titreVignette + '</div>' +
