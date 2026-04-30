@@ -1664,15 +1664,10 @@
         text-overflow: ellipsis;
     }
     .morning-ppt-sub {
-        font-size: 8px;
-        color: rgba(255,255,255,0.4);
-        margin-bottom: 4px;
+        display: none;
     }
     .morning-ppt-cartes {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2px;
-        margin-top: 4px;
+        display: none;
     }
     .morning-ppt-carte-tag {
         font-size: 7px;
@@ -3875,7 +3870,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v126 — 2026-04-30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v127 — 2026-04-30</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4459,7 +4454,7 @@
             else if (t==='scenario'||f.includes('scenario')||ti.includes('scenario')) titreVignette = 'SCÉNARIO';
             else if (f.includes('petrole')||f.includes('pétrole')||ti.includes('petrole')||ti.includes('pétrole')) titreVignette = 'POINT PÉTROLE';
             else if (sub.includes('CRÉDIT')||sub.includes('CREDIT')||t==='credit') titreVignette = 'POINT CRÉDIT';
-            else titreVignette = (ppt.titre || ppt.fichier || '—').replace(/\.(pptx|pdf|json)$/i,'').replace(/_/g,' ').toUpperCase();
+            else titreVignette = (ppt.titre || ppt.fichier || '—').replace(/\.(pptx|pdf|json)$/i,'').replace(/_/g,' ').replace(/\s*\([^)]*\)/g,'').trim().toUpperCase();
             var analysteTest = ppt.analyste || 'Eric Ravary';
             return '<div class="morning-ppt-card ' + specClass + '" id="mppt-' + idx + '" onclick="loadPptIntoRegie(' + idx + ')">' +
                 '<div class="morning-ppt-analyste">✍️ ' + analysteTest + '</div>' +
