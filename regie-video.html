@@ -950,7 +950,7 @@
 
     .cam-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 6px;
         flex: 1;
         background: rgba(255, 255, 255, 0.03);
@@ -992,7 +992,7 @@
     }/* D-pad */
 
     .dpad {
-        width: 88px;
+        width: 130px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -2075,13 +2075,10 @@
                 <div class="cam-grid">
                     <div class="cam-g" data-cam="3">CAM 3</div>
                     <div class="cam-g" data-cam="6">CAM 6</div>
-                    <div class="cam-g empty">—</div>
                     <div class="cam-g" data-cam="2">CAM 2</div>
                     <div class="cam-g" data-cam="5">CAM 5</div>
-                    <div class="cam-g" data-cam="8">CAM 8</div>
                     <div class="cam-g active" data-cam="1">CAM 1</div>
                     <div class="cam-g" data-cam="4">CAM 4</div>
-                    <div class="cam-g" data-cam="7">CAM 7</div>
                 </div>
                 <div class="dpad">
                     <div class="dpad-row">
@@ -3870,7 +3867,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v127 — 2026-04-30</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">v128 — 2026-05-05</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
