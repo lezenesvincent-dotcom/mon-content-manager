@@ -220,8 +220,11 @@
     "function": "Analyste Développement Durable",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/eva-zarbo.png",
-    "id": "c22"
+    "id": "c22",
+    "photos": [
+      "contacts-photos/c22-1.png"
+    ],
+    "photo": "contacts-photos/c22-1.png"
   },
   {
     "firstName": "Fabrissa",
