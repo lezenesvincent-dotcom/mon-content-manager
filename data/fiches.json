@@ -19,8 +19,8 @@
       "appWebex": false,
       "appTeams": false,
       "replay": true,
-      "chat": true,
-      "qr": false,
+      "chat": false,
+      "qr": true,
       "portailInscription": false,
       "diffGen": true,
       "fournisGen": true,
@@ -80,7 +80,7 @@
       }
     ],
     "mode": "studio",
-    "updatedAt": "2026-05-19T14:14:41.462Z",
+    "updatedAt": "2026-05-19T14:14:52.843Z",
     "uploads": {}
   },
   "1771401928693": {
