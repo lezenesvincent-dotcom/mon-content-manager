@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Régie Local — v6</title>
+    <title>Régie Local — v7</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
     *, * ::before, * ::after {
@@ -2422,6 +2422,8 @@
                 var key = (converted.titre || '').toUpperCase();
                 if (!seen[key]) { seen[key] = true; unique.push(converted); }
             });
+            // Filtrer les contenus supprimés
+            unique = unique.filter(function(item) { return !isDeleted(item.id); });
             allContents = unique;
             refreshConducteur();
             var days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
@@ -3644,7 +3646,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">regie-local-v6 — 2026-05-20</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">regie-local-v7 — 2026-05-20</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4409,16 +4411,27 @@
         delBtn.textContent = '🗑 Supprimer (' + selectedForDelete.length + ')';
     }
 
+    // IDs supprimés persistés dans localStorage
+    var deletedIds = JSON.parse(localStorage.getItem('deletedContentIds') || '[]');
+
+    function saveDeletedIds() {
+        localStorage.setItem('deletedContentIds', JSON.stringify(deletedIds));
+    }
+
+    function isDeleted(id) {
+        return deletedIds.indexOf(id) !== -1;
+    }
+
     function deleteSelectedContents() {
         if (selectedForDelete.length === 0) return;
-        // Supprimer des allContents
-        allContents = allContents.filter(function(item) {
-            return selectedForDelete.indexOf(item.id) === -1;
+        // Ajouter aux IDs supprimés persistés
+        selectedForDelete.forEach(function(id) {
+            if (deletedIds.indexOf(id) === -1) deletedIds.push(id);
         });
-        // Supprimer des localPptData
-        localPptData = localPptData.filter(function(item) {
-            return selectedForDelete.indexOf(item.id) === -1;
-        });
+        saveDeletedIds();
+        // Filtrer
+        allContents = allContents.filter(function(item) { return !isDeleted(item.id); });
+        localPptData = localPptData.filter(function(item) { return !isDeleted(item.id); });
         selectedForDelete = [];
         selectMode = false;
         var btn = document.getElementById('selectModeBtn');
