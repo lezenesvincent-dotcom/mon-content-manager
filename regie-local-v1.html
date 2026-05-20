@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Régie Local — v3</title>
+    <title>Régie Local — v4</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
     *, * ::before, * ::after {
@@ -2324,6 +2324,11 @@
     }
 
     function refreshConducteur() {
+        // Après rechargement serveur, re-merger avec les locaux
+        if (localPptData.length > 0) {
+            refreshConducteurWithLocal();
+            return;
+        }
         var merged = allContents.concat(prsnetContents);
         // Deduplicate by title
         var seen = {};
@@ -3629,7 +3634,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">regie-local-v3 — 2026-05-20</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">regie-local-v4 — 2026-05-20</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4236,25 +4241,53 @@
             if (shapeTxt.length > 2) shapes.push(shapeTxt);
         }
 
-        // Les formes courtes = sujets (gauche), longues = contenus (droite)
-        // Séparer en deux groupes par longueur médiane
-        if (shapes.length === 0) { console.warn('Aucune forme trouvée'); return; }
+        // Extraire formes avec leur position Left depuis le XML
+        var shapesWithPos = [];
+        var spRegex2 = /<p:sp>([\s\S]*?)<\/p:sp>/g;
+        var match2;
+        while ((match2 = spRegex2.exec(xml)) !== null) {
+            var spXml2 = match2[1];
+            // Extraire Left (cx dans xfrm)
+            var leftMatch = spXml2.match(/<a:off[^>]*x="(\d+)"/);
+            var leftVal = leftMatch ? parseInt(leftMatch[1]) : 0;
+            // Extraire texte
+            var shapeTxt2 = '';
+            var tR2 = /<a:t>([^<]+)<\/a:t>/g;
+            var tm3;
+            while ((tm3 = tR2.exec(spXml2)) !== null) {
+                shapeTxt2 += tm3[1] + ' ';
+            }
+            shapeTxt2 = shapeTxt2.trim();
+            if (shapeTxt2.length > 2) {
+                shapesWithPos.push({ txt: shapeTxt2, left: leftVal });
+            }
+        }
 
-        var sorted = shapes.slice().sort(function(a,b){ return a.length - b.length; });
-        var median = sorted[Math.floor(sorted.length / 2)].length;
+        if (shapesWithPos.length === 0) { console.warn('Aucune forme trouvée'); return; }
 
-        var sujets = shapes.filter(function(s){ return s.length <= median; });
-        var contenus = shapes.filter(function(s){ return s.length > median; });
+        // Trouver la frontière gauche/droite via gap max sur les Left
+        var leftsArr = shapesWithPos.map(function(s){ return s.left; }).sort(function(a,b){ return a-b; });
+        var maxGap = 0, frontier = leftsArr[Math.floor(leftsArr.length/2)];
+        for (var gi = 0; gi < leftsArr.length - 1; gi++) {
+            var g = leftsArr[gi+1] - leftsArr[gi];
+            if (g > maxGap) { maxGap = g; frontier = (leftsArr[gi] + leftsArr[gi+1]) / 2; }
+        }
+
+        var sujets = shapesWithPos.filter(function(s){ return s.left < frontier; })
+                                   .sort(function(a,b){ return a.left - b.left; })
+                                   .map(function(s){ return s.txt; });
+        var contenus = shapesWithPos.filter(function(s){ return s.left >= frontier; })
+                                    .sort(function(a,b){ return a.left - b.left; })
+                                    .map(function(s){ return s.txt; });
 
         // Construire les cartes P1-P4
-        var cartes = ['p1','p2','p3','p4'];
         var item = {
             id: 'local-' + Date.now(),
             titre: file.name.replace(/\.(pptx|pdf)$/i,'').replace(/_/g,' '),
             soustitre: '',
             _local: true
         };
-        cartes.forEach(function(p, i) {
+        ['p1','p2','p3','p4'].forEach(function(p, i) {
             item[p] = { sujet: sujets[i] || '', contenu: contenus[i] || '' };
         });
 
@@ -4265,15 +4298,51 @@
 
     function rebuildFromLocal() {
         if (localPptData.length === 0) return;
+        // Merger avec allContents existants sans ecraser
+        var merged = allContents.concat(localPptData);
         var seen = {};
         var unique = [];
-        localPptData.forEach(function(item) {
+        merged.forEach(function(item) {
             var key = (item.titre || item.title || '').toUpperCase();
             if (!seen[key] && key) { seen[key] = true; unique.push(item); }
         });
-        allContents = unique;
-        refreshConducteur();
+        // Ne pas modifier allContents pour ne pas perturber le rechargement
+        // Stocker séparément et merger dans refreshConducteur
+        refreshConducteurWithLocal();
         renderPageCards(unique);
+    }
+
+    function refreshConducteurWithLocal() {
+        var merged = allContents.concat(localPptData);
+        var seen = {};
+        var unique = [];
+        merged.forEach(function(item) {
+            var key = (item.titre || item.title || '').toUpperCase();
+            if (!seen[key] && key) { seen[key] = true; unique.push(item); }
+        });
+        var condItems = document.getElementById('condItems');
+        condItems.innerHTML = '';
+        if (unique.length === 0) {
+            condItems.innerHTML = '<div class="cond-item" style="opacity:0.4;">Aucun contenu</div>';
+            return;
+        }
+        unique.forEach(function(item) {
+            var title = (item.titre || item.title || '').substring(0, 22);
+            if ((item.titre || item.title || '').length > 22) title += '…';
+            var el = document.createElement('div');
+            el.className = 'cond-item' + (item.id === selectedContentId ? ' active' : '');
+            var icon = item._local ?
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' :
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+            el.innerHTML = '<div class="cond-icon">' + icon + '</div>' + title;
+            el.addEventListener('click', function() {
+                selectContent(item);
+                document.querySelectorAll('.cond-item').forEach(function(c) { c.classList.remove('active'); });
+                el.classList.add('active');
+                renderPageCards([item]);
+            });
+            condItems.appendChild(el);
+        });
     }
 </script>
 
