@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Régie Local — v5</title>
+    <title>Régie Local — v6</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
     *, * ::before, * ::after {
@@ -448,12 +448,9 @@
         position: relative;
     }
 
-    .content-card.selectable {
-        cursor: default;
-    }
-    .content-card.selected-for-delete {
-        border-color: rgba(255,60,60,0.7) !important;
-        box-shadow: 0 0 10px rgba(255,60,60,0.3) !important;
+    .cond-item.selected-for-delete {
+        border: 1px solid rgba(255,60,60,0.7) !important;
+        box-shadow: 0 0 8px rgba(255,60,60,0.3) !important;
         opacity: 0.7;
     }
     .content-card:hover {
@@ -2368,14 +2365,16 @@
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
             el.innerHTML = '<div class="cond-icon">' + icon + '</div>' + title;
             el.addEventListener('click', function() {
+                if (selectMode) {
+                    toggleCardDelete(item.id, el);
+                    return;
+                }
                 selectContent(item);
                 document.querySelectorAll('.cond-item').forEach(function(c) {
                     c.classList.remove('active');
                 });
                 el.classList.add('active');
-                // Mettre à jour les vignettes P1-P4
                 renderPageCards(allContents);
-                // Activate IN button
                 var inBtn = document.querySelector('#overlayBtns .cam-pill');
                 if (inBtn)
                     activateBtn(inBtn);
@@ -2473,12 +2472,8 @@
             html += '</div><div class="cc-label">P' + (idx + 1) + '</div>';
             card.innerHTML = html;
             card.dataset.itemId = selected.id;
-            card.addEventListener('click', (function(pKey, idx, cardEl) {
+            card.addEventListener('click', (function(pKey, idx) {
                 return function() {
-                    if (selectMode) {
-                        toggleCardDelete(selected.id, cardEl);
-                        return;
-                    }
                     var page = selected[pKey] || {};
                     var itemForPage = {
                         id: selected.id,
@@ -2491,7 +2486,7 @@
                     };
                     selectContent(itemForPage);
                 };
-            })(pKey, idx, card));
+            })(pKey, idx));
             card.addEventListener('dblclick', (function(pKey, idx) {
                 return function(e) {
                     e.stopPropagation();
@@ -3649,7 +3644,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">regie-local-v5 — 2026-05-20</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">regie-local-v6 — 2026-05-20</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4351,6 +4346,10 @@
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
             el.innerHTML = '<div class="cond-icon">' + icon + '</div>' + title;
             el.addEventListener('click', function() {
+                if (selectMode) {
+                    toggleCardDelete(item.id, el);
+                    return;
+                }
                 selectContent(item);
                 document.querySelectorAll('.cond-item').forEach(function(c) { c.classList.remove('active'); });
                 el.classList.add('active');
