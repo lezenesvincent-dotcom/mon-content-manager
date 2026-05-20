@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Régie Local — v2</title>
+    <title>Régie Local — v3</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
     *, * ::before, * ::after {
@@ -3629,7 +3629,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">regie-local-v2 — 2026-05-20</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">regie-local-v3 — 2026-05-20</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4158,22 +4158,109 @@
         Array.from(input.files).forEach(function(file) {
             var ext = file.name.split('.').pop().toLowerCase();
             if (ext === 'json') {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        var data = JSON.parse(e.target.result);
-                        var ppts = data.ppts || [];
-                        ppts.forEach(function(p) { p._local = true; });
-                        localPptData = localPptData.concat(ppts);
-                        rebuildFromLocal();
-                    } catch(err) { console.warn('JSON parse error:', err); }
-                };
-                reader.readAsText(file);
-            } else {
-                parsePptxWithClaude(file);
+                readJsonFile(file);
+            } else if (ext === 'pptx') {
+                readPptxFile(file);
             }
         });
         input.value = '';
+    }
+
+    function readJsonFile(file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                var data = JSON.parse(e.target.result);
+                var ppts = data.ppts || [];
+                ppts.forEach(function(p) { p._local = true; });
+                localPptData = localPptData.concat(ppts);
+                rebuildFromLocal();
+            } catch(err) { console.warn('JSON parse error:', err); }
+        };
+        reader.readAsText(file);
+    }
+
+    async function readPptxFile(file) {
+        // Charger JSZip si pas encore chargé
+        if (!window.JSZip) {
+            await new Promise(function(res, rej) {
+                var s = document.createElement('script');
+                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                s.onload = res; s.onerror = rej;
+                document.head.appendChild(s);
+            });
+        }
+        var arrayBuffer = await file.arrayBuffer();
+        var zip = await JSZip.loadAsync(arrayBuffer);
+
+        // Extraire le texte de la slide 2
+        var slide2File = zip.file('ppt/slides/slide2.xml');
+        if (!slide2File) {
+            console.warn('Pas de slide 2 trouvée');
+            return;
+        }
+        var xml = await slide2File.async('string');
+
+        // Extraire tous les textes des formes
+        var textes = [];
+        var regex = /<a:t>([^<]+)<\/a:t>/g;
+        var match;
+        var currentShape = '';
+        // Regrouper par paragraphe (<a:p>)
+        var paraRegex = /<a:p>([\s\S]*?)<\/a:p>/g;
+        var paras = [];
+        while ((match = paraRegex.exec(xml)) !== null) {
+            var paraXml = match[1];
+            var txt = '';
+            var tRegex = /<a:t>([^<]+)<\/a:t>/g;
+            var tm;
+            while ((tm = tRegex.exec(paraXml)) !== null) {
+                txt += tm[1];
+            }
+            txt = txt.trim();
+            if (txt.length > 2) paras.push(txt);
+        }
+
+        // Regrouper par forme (<p:sp>)
+        var shapes = [];
+        var spRegex = /<p:sp>([\s\S]*?)<\/p:sp>/g;
+        while ((match = spRegex.exec(xml)) !== null) {
+            var spXml = match[1];
+            var shapeTxt = '';
+            var tR = /<a:t>([^<]+)<\/a:t>/g;
+            var tm2;
+            while ((tm2 = tR.exec(spXml)) !== null) {
+                shapeTxt += tm2[1] + ' ';
+            }
+            shapeTxt = shapeTxt.trim();
+            if (shapeTxt.length > 2) shapes.push(shapeTxt);
+        }
+
+        // Les formes courtes = sujets (gauche), longues = contenus (droite)
+        // Séparer en deux groupes par longueur médiane
+        if (shapes.length === 0) { console.warn('Aucune forme trouvée'); return; }
+
+        var sorted = shapes.slice().sort(function(a,b){ return a.length - b.length; });
+        var median = sorted[Math.floor(sorted.length / 2)].length;
+
+        var sujets = shapes.filter(function(s){ return s.length <= median; });
+        var contenus = shapes.filter(function(s){ return s.length > median; });
+
+        // Construire les cartes P1-P4
+        var cartes = ['p1','p2','p3','p4'];
+        var item = {
+            id: 'local-' + Date.now(),
+            titre: file.name.replace(/\.(pptx|pdf)$/i,'').replace(/_/g,' '),
+            soustitre: '',
+            _local: true
+        };
+        cartes.forEach(function(p, i) {
+            item[p] = { sujet: sujets[i] || '', contenu: contenus[i] || '' };
+        });
+
+        localPptData.push(item);
+        rebuildFromLocal();
+        console.log('PPT importé:', item.titre, '- formes:', shapes.length);
     }
 
     function rebuildFromLocal() {
@@ -4187,50 +4274,6 @@
         allContents = unique;
         refreshConducteur();
         renderPageCards(unique);
-    }
-
-    async function parsePptxWithClaude(file) {
-        var base64 = await new Promise(function(res, rej) {
-            var r = new FileReader();
-            r.onload = function(e) { res(e.target.result.split(',')[1]); };
-            r.onerror = rej;
-            r.readAsDataURL(file);
-        });
-        var ext = file.name.split('.').pop().toLowerCase();
-        var mediaType = ext === 'pdf'
-            ? 'application/pdf'
-            : 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-        var prompt = 'Extrais chaque bullet point de la slide 2 (le carré blanc avec les flèches). Pour chaque bullet retourne un objet JSON: {"sujet":"titre court gauche","contenu":"texte droite"}. Réponds UNIQUEMENT avec le tableau JSON, sans markdown ni backticks.';
-        try {
-            var resp = await fetch('https://api.anthropic.com/v1/messages', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: 'claude-sonnet-4-20250514', max_tokens: 2000,
-                    messages: [{ role: 'user', content: [
-                        { type: 'document', source: { type: 'base64', media_type: mediaType, data: base64 } },
-                        { type: 'text', text: prompt }
-                    ]}]
-                })
-            });
-            var data = await resp.json();
-            var text = (data.content||[]).map(function(b){ return b.text||''; }).join('').replace(/```json|```/g,'').trim();
-            var bullets = JSON.parse(text);
-            var item = {
-                id: 'local-' + Date.now(),
-                titre: file.name.replace(/\.(pptx|pdf)$/i,'').replace(/_/g,' '),
-                soustitre: '',
-                p1: bullets[0] || { sujet: '', contenu: '' },
-                p2: bullets[1] || { sujet: '', contenu: '' },
-                p3: bullets[2] || { sujet: '', contenu: '' },
-                p4: bullets[3] || { sujet: '', contenu: '' },
-                _local: true
-            };
-            localPptData.push(item);
-            rebuildFromLocal();
-        } catch(err) {
-            console.warn('Erreur parsing PPT:', err);
-        }
     }
 </script>
 
