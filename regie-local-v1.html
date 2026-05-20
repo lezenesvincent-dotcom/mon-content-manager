@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Régie Local — v1</title>
+    <title>Régie Local — v2</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
     *, * ::before, * ::after {
@@ -1827,6 +1827,12 @@
             
             
 
+            <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+                <label style="background:rgba(255,200,60,0.15);border:1px solid rgba(255,200,60,0.4);color:rgba(255,200,60,0.9);font-size:11px;font-weight:700;padding:5px 12px;border-radius:7px;cursor:pointer;letter-spacing:0.3px;">
+                    ＋ FICHIER
+                    <input type="file" accept=".pptx,.pdf,.json" style="display:none" multiple onchange="handlePptFileUpload(this)">
+                </label>
+            </div>
             <div class="pages-panel" id="pagesPanel">
                 <div class="pages-scroll" id="pagesScroll">
                     <div class="content-card-empty">Chargement...</div>
@@ -3623,7 +3629,7 @@
         faceRecInterval = setInterval(runFaceDetection, 1500);
     });
     </script>
-    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">regie-local-v1 — 2026-05-20</div>
+    <div id="versionBadge" style="position:fixed;bottom:6px;left:8px;z-index:9998;font-family:-apple-system,sans-serif;font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">regie-local-v2 — 2026-05-20</div>
 
     <!-- DÉCOR UPLOAD MODAL -->
     <div id="decorModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
@@ -4143,7 +4149,90 @@
     btn.style.background = open ? 'rgba(102,126,234,0.5)' : 'rgba(40,40,50,0.7)';
     if (open && (!slotWS || slotWS.readyState > 1)) connectSlotWS();
   }
-  </script>
+  
+    // ===== UPLOAD LOCAL PPT =====
+    var localPptData = [];
+
+    function handlePptFileUpload(input) {
+        if (!input.files || input.files.length === 0) return;
+        Array.from(input.files).forEach(function(file) {
+            var ext = file.name.split('.').pop().toLowerCase();
+            if (ext === 'json') {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        var data = JSON.parse(e.target.result);
+                        var ppts = data.ppts || [];
+                        ppts.forEach(function(p) { p._local = true; });
+                        localPptData = localPptData.concat(ppts);
+                        rebuildFromLocal();
+                    } catch(err) { console.warn('JSON parse error:', err); }
+                };
+                reader.readAsText(file);
+            } else {
+                parsePptxWithClaude(file);
+            }
+        });
+        input.value = '';
+    }
+
+    function rebuildFromLocal() {
+        if (localPptData.length === 0) return;
+        var seen = {};
+        var unique = [];
+        localPptData.forEach(function(item) {
+            var key = (item.titre || item.title || '').toUpperCase();
+            if (!seen[key] && key) { seen[key] = true; unique.push(item); }
+        });
+        allContents = unique;
+        refreshConducteur();
+        renderPageCards(unique);
+    }
+
+    async function parsePptxWithClaude(file) {
+        var base64 = await new Promise(function(res, rej) {
+            var r = new FileReader();
+            r.onload = function(e) { res(e.target.result.split(',')[1]); };
+            r.onerror = rej;
+            r.readAsDataURL(file);
+        });
+        var ext = file.name.split('.').pop().toLowerCase();
+        var mediaType = ext === 'pdf'
+            ? 'application/pdf'
+            : 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+        var prompt = 'Extrais chaque bullet point de la slide 2 (le carré blanc avec les flèches). Pour chaque bullet retourne un objet JSON: {"sujet":"titre court gauche","contenu":"texte droite"}. Réponds UNIQUEMENT avec le tableau JSON, sans markdown ni backticks.';
+        try {
+            var resp = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'claude-sonnet-4-20250514', max_tokens: 2000,
+                    messages: [{ role: 'user', content: [
+                        { type: 'document', source: { type: 'base64', media_type: mediaType, data: base64 } },
+                        { type: 'text', text: prompt }
+                    ]}]
+                })
+            });
+            var data = await resp.json();
+            var text = (data.content||[]).map(function(b){ return b.text||''; }).join('').replace(/```json|```/g,'').trim();
+            var bullets = JSON.parse(text);
+            var item = {
+                id: 'local-' + Date.now(),
+                titre: file.name.replace(/\.(pptx|pdf)$/i,'').replace(/_/g,' '),
+                soustitre: '',
+                p1: bullets[0] || { sujet: '', contenu: '' },
+                p2: bullets[1] || { sujet: '', contenu: '' },
+                p3: bullets[2] || { sujet: '', contenu: '' },
+                p4: bullets[3] || { sujet: '', contenu: '' },
+                _local: true
+            };
+            localPptData.push(item);
+            rebuildFromLocal();
+        } catch(err) {
+            console.warn('Erreur parsing PPT:', err);
+        }
+    }
+</script>
 
     <!-- POPUP EDITION CARTE -->
     <div id="editCardOverlay" onclick="if(event.target===this)closeEditCard()">
