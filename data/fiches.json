@@ -299,14 +299,14 @@
       "portailInscription": false,
       "diffGen": true,
       "fournisGen": true,
-      "studioGen": true,
+      "studioGen": false,
       "visite": true,
       "synthes": true
     },
     "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-06-16T10:49:23.862Z",
+    "updatedAt": "2026-06-16T10:49:26.249Z",
     "uploads": {}
   }
 }
