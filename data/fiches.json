@@ -257,7 +257,7 @@
       "appIBM": false,
       "appZoom": false,
       "appWebex": false,
-      "appTeams": true,
+      "appTeams": false,
       "replay": true,
       "chat": true,
       "qr": false,
@@ -268,10 +268,10 @@
       "visite": true,
       "synthes": true
     },
-    "application": "TEAMS",
+    "application": null,
     "intervenants": [],
     "mode": "studio",
-    "updatedAt": "2026-06-16T10:46:30.472Z",
+    "updatedAt": "2026-06-16T10:46:33.456Z",
     "uploads": {}
   }
 }
