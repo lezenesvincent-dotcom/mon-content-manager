@@ -160,8 +160,11 @@
     "function": "Économiste",
     "company": "CIC Corporate & Institutional Banking",
     "email": "",
-    "photo": "contacts-photos/adrien-regnier-laurent.png",
-    "id": "c16"
+    "id": "c16",
+    "photos": [
+      "contacts-photos/adrien-regnier-laurent.png"
+    ],
+    "photo": "contacts-photos/adrien-regnier-laurent.png"
   },
   {
     "firstName": "Anne-Lise",
